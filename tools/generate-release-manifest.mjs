@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=85;
+const build=86;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 
@@ -42,6 +42,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Automatische Update-Erkennung mit klarer Ja-/Nein-Abfrage für jede höhere Version oder Buildnummer',
     'V0.20 Phase 1: additive Hauptregister für Dashboard, Wunschplan, Sollplan, Istplan und Stundenmatrix',
     'Gemeinsame responsive Registerbedienung mit Tastaturnavigation und eindeutigen Textzuständen',
     'Vollständiges Laufzeitmanifest mit SHA-256-Prüfung aller lokalen Programmdateien',

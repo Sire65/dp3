@@ -1,10 +1,10 @@
-KC DP2 V0.20.0 Build 85 – Paketprüfung
+KC DP2 V0.20.0 Build 86 – Paketprüfung
 ========================================
 Manifest-Version: 0.20.0
-Manifest-Build: 85
-Cache-Name: kc-dp-release-0.20.0-b85
+Manifest-Build: 86
+Cache-Name: kc-dp-release-0.20.0-b86
 Manifest-Dateien: 136
-Runtime-Bytes: 1231558
+Runtime-Bytes: 1231777
 
 Prüfung:
 node tools/verify-release.mjs
@@ -18,8 +18,8 @@ Ergebnis am 24.08.2026:
 - Console-Fehler beim Start: 0
 
 Kritische SHA-256-Prüfsummen:
-54a0a39c60f72fad14da71b39a2d9a929eb9610a8bedf1be1b540c695e3e2fb5  index.html
+8cf14038b74142eb68f39f05bf0c69f398e4f6acfe99ff6a86ba07eae8df9b58  index.html
 6535b53a0c655b8bd9aba17191eb6cea8add13637d3a6f0eecbbd2db97e1fcf2  service-worker.js
-fad8aecbba0be96e2f174770509c9954729b97a85724391af79509ee5acc163d  update-manifest.json
-f91dd4b77285b8bdc06678db39f1430a7091593070f7ff0f19465c573860cd2f  src/ui/v020-shell.js
+6fa3adf8969ddedb0176ce56155f572fd78b65565414dc3018b4bc49bc5f47e9  update-manifest.json
+2561a70ce03d2fef0bc48037a0f5f53febb8e9872456cc870ad65f7d0994f906  src/ui/v020-shell.js
 708dd401de2dc8d724a82aee89d68cebf1085fcace4941b4bd6a92fad2faaf40  src/ui/v020-shell.css

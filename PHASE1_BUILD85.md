@@ -1,4 +1,4 @@
-# KC DP2 V0.20.0 Build 85 – Phase 1
+# KC DP2 V0.20.0 Build 86 – Phase 1
 
 ## Umgesetzt
 
@@ -13,6 +13,9 @@
 - frei verschiebbare Register per Maus sowie Touch/Pointer auf Tablet und Handy
 - lokal gespeicherte persönliche Registerreihenfolge
 - barrierefreie Registerverschiebung mit Alt+Pfeil links/rechts
+- automatische Updateprüfung beim Start, bei Rückkehr, nach Netzrückkehr und alle fünf Minuten
+- klare Updatefrage „Ja, installieren“ oder „Nein, später“ mit Version und Buildnummer
+- GitHub-Pages-Sperre gegen Veröffentlichungen ohne erhöhte Buildnummer
 - Stundenmatrix-Register setzt den vorhandenen Sollplan und betont die bestehende Matrix
 - Dashboard und Stundenmatrix sind in Phase 1 als Grundregister angelegt; der Fachausbau folgt gemäß Masterplan
 

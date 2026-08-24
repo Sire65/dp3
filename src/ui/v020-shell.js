@@ -133,7 +133,7 @@
     if(!topbar||!controls)return;
     const brand=document.createElement('div');
     brand.className='v020-brand';
-    brand.innerHTML='<img src="assets/kc-logo.svg" alt=""><span><strong>KC DP2</strong><small>V0.20.0 · Build 85</small></span>';
+    brand.innerHTML='<img src="assets/kc-logo.svg" alt=""><span><strong>KC DP2</strong><small>V0.20.0 · Build 86</small></span>';
     topbar.prepend(brand);
     root=document.createElement('nav');
     root.id='v020RegisterBar';

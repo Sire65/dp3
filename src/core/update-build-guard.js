@@ -54,7 +54,7 @@
 
   function schedule(){
     setTimeout(()=>check(),1800);
-    setInterval(()=>check(),30*60*1000);
+    setInterval(()=>check(),5*60*1000);
     window.addEventListener('online',()=>check());
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){const last=Date.parse(state.lastCheckAt||0)||0;if(Date.now()-last>60000)check();}});
   }

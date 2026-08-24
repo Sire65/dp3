@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Repository laden
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
 
       - name: Node.js einrichten
         uses: actions/setup-node@v4
@@ -33,6 +35,17 @@ jobs:
         run: |
           node tools/verify-release.mjs
           node tools/smoke-core.mjs
+
+      - name: Neue Buildnummer erzwingen
+        if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'
+        shell: bash
+        run: |
+          CURRENT_BUILD=$(node -p "require('./update-manifest.json').build")
+          PREVIOUS_BUILD=$(git show HEAD^:update-manifest.json | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>console.log(JSON.parse(s).build))")
+          if [ "$CURRENT_BUILD" -le "$PREVIOUS_BUILD" ]; then
+            echo "Fehler: Jede Veröffentlichung benötigt eine höhere Buildnummer. Vorher: $PREVIOUS_BUILD, aktuell: $CURRENT_BUILD"
+            exit 1
+          fi
 
       - name: GitHub Pages konfigurieren
         uses: actions/configure-pages@v5
@@ -45,4 +58,3 @@ jobs:
       - name: GitHub Pages veröffentlichen
         id: deployment
         uses: actions/deploy-pages@v4
-

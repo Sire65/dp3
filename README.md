@@ -2,7 +2,7 @@
 
 Neuentwicklung des Dienstplan-Managers für den Köcheclub Werne auf Basis des stabilisierten Build 84.
 
-Aktueller Stand: **V0.20.0 Build 85 – Phase 1**
+Aktueller Stand: **V0.20.0 Build 86 – Phase 1**
 
 ## Enthalten
 
@@ -14,6 +14,7 @@ Aktueller Stand: **V0.20.0 Build 85 – Phase 1**
 - frei verschiebbare und lokal gespeicherte Hauptregister
 - responsive Bedienung für Desktop, Tablet und Handy
 - installierbare PWA mit geprüftem atomarem Release-Cache
+- automatische Update-Abfrage für jede höhere Version oder Buildnummer
 
 ## Lokale Prüfung
 
@@ -25,4 +26,3 @@ node tools/smoke-core.mjs
 ## Veröffentlichung
 
 Jeder Push auf `main` wird zunächst geprüft. Nur ein grüner Build wird über GitHub Actions auf GitHub Pages veröffentlicht.
-
