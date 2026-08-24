@@ -1,0 +1,10 @@
+# Lokale Betriebsspuren
+*.log
+.DS_Store
+Thumbs.db
+
+# Editor-/Arbeitsdateien
+.vscode/
+.idea/
+node_modules/
+

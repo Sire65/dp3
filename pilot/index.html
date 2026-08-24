@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#741521">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="KC DP2 Pilot">
+  <title>KC DP2 Install-Test</title>
+  <script>
+    (function(){
+      const ios=/iPhone|iPad|iPod/i.test(navigator.userAgent||'');
+      const link=document.createElement('link');
+      link.rel='manifest';
+      link.href=(ios?'manifest-ios.webmanifest':'manifest.webmanifest')+'?v=0.19.51-auto4&kc_update=pilot-auto4';
+      document.head.appendChild(link);
+    })();
+  </script>
+  <link rel="apple-touch-icon" href="../assets/kc-dp2-apple-touch-icon.png?v=0.19.51-auto4&kc_update=pilot-auto4">
+  <link rel="stylesheet" href="../src/ui/pilot.css?v=0.19.51-auto4&kc_update=pilot-auto4">
+</head>
+<body>
+  <main class="pilot-shell">
+    <section class="pilot-card">
+      <div class="pilot-brand">
+        <img src="../assets/kc-dp2-apple-touch-icon.png" alt="KC DP2">
+        <div><h1>KC DP2 Install-Test</h1><p>Köcheclub Werne</p></div>
+      </div>
+
+      <div id="pilotIntro" class="pilot-note">Gerät auswählen. Bei „Handy“ wird Push sofort abgefragt.</div>
+
+      <section id="pilotDeviceChoice" class="pilot-device-choice" aria-label="Gerät auswählen">
+        <button type="button" data-pilot-device="pc"><span>🖥️</span><b>PC</b></button>
+        <button type="button" data-pilot-device="handy"><span>📱</span><b>Handy</b></button>
+        <button type="button" data-pilot-device="tablet"><span>▭</span><b>Tablet</b></button>
+      </section>
+
+      <div id="pilotError" class="pilot-error pilot-hidden"></div>
+      <div id="pilotSteps" class="pilot-status pilot-hidden"></div>
+
+      <section id="pilotNext" class="pilot-next pilot-hidden">
+        <h2 id="pilotNextTitle">Systemfreigabe erforderlich</h2>
+        <div id="pilotDeviceHelp" class="pilot-note compact"></div>
+        <div class="pilot-actions">
+          <button id="pilotContinueBtn" class="pilot-btn">Weiter</button>
+        </div>
+      </section>
+    </section>
+
+    <section id="pilotComplete" class="pilot-card pilot-complete pilot-hidden" style="margin-top:16px">
+      <h2>✅ Install-Test bestanden</h2>
+      <p>KC DP2 wurde installiert und der Push-Test wurde auf diesem Gerät bestätigt.</p>
+      <p id="pilotCompleteMeta" class="pilot-small"></p>
+    </section>
+  </main>
+  <script src="../src/core/pilot-onboarding.js?v=0.19.51-auto4&kc_update=pilot-auto4"></script>
+  <script src="../src/ui/pilot-app.js?v=0.19.51-auto4&kc_update=pilot-auto4"></script>
+</body>
+</html>

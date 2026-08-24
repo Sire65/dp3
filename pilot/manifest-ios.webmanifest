@@ -1,0 +1,11 @@
+{
+  "id":"/Dienstplan/pilot/",
+  "name":"KC DP2 Pilot-Test",
+  "short_name":"KC DP2 Pilot",
+  "description":"Geschützter Pilot-Test für Installation und Push von KC DP2.",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#fff8ee",
+  "theme_color":"#741521",
+  "icons":[{"src":"../assets/kc-dp2-apple-touch-icon.png","sizes":"180x180","type":"image/png","purpose":"any"}]
+}

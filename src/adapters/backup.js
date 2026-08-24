@@ -1,0 +1,12 @@
+(function(){
+  const K=window.KCDP=window.KCDP||{};
+  const te=new TextEncoder();
+  const hex=buf=>[...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+  async function digest(text){return hex(await crypto.subtle.digest('SHA-256',te.encode(text)));}
+  async function readRows(){K.storage.requireUnlock();if(!K.storage.db)await K.storage.init();return new Promise((resolve,reject)=>{const tx=K.storage.db.transaction('encrypted_envelopes','readonly'),q=tx.objectStore('encrypted_envelopes').getAll();q.onsuccess=()=>resolve(q.result||[]);q.onerror=()=>reject(q.error);});}
+  async function exportBackup(){const records=await readRows();const payload={schema:'KC_DP_ENCRYPTED_BACKUP_V1',project:'KC_DP',createdAt:new Date().toISOString(),appVersion:K.VERSION,records};const canonical=JSON.stringify(payload);return {...payload,sha256:await digest(canonical)};}
+  async function preview(raw){const b=typeof raw==='string'?JSON.parse(raw):raw;if(b?.schema!=='KC_DP_ENCRYPTED_BACKUP_V1'||!Array.isArray(b.records))throw new Error('Kein gültiges KC-DP-Backup.');const copy={schema:b.schema,project:b.project,createdAt:b.createdAt,appVersion:b.appVersion,records:b.records};const actual=await digest(JSON.stringify(copy));if(b.sha256&&b.sha256!==actual)throw new Error('Backup-Prüfsumme stimmt nicht.');return {valid:true,createdAt:b.createdAt,appVersion:b.appVersion,count:b.records.length,keys:b.records.map(r=>r.key),sha256:actual};}
+  async function restore(raw,{replace=false}={}){const b=typeof raw==='string'?JSON.parse(raw):raw;await preview(b);K.storage.requireUnlock();if(!K.storage.db)await K.storage.init();return new Promise((resolve,reject)=>{const tx=K.storage.db.transaction('encrypted_envelopes','readwrite'),st=tx.objectStore('encrypted_envelopes');if(replace)st.clear();for(const r of b.records)st.put(r);tx.oncomplete=()=>{K.recordAudit?.('backup.restore',{entity:'backup',after:{count:b.records.length,replace}});resolve({count:b.records.length,replace});};tx.onerror=()=>reject(tx.error);});}
+  function download(obj,name=`KC_DP_Backup_${new Date().toISOString().slice(0,10)}.json`){const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);}
+  K.backup={version:'0.12.0',exportBackup,preview,restore,download};
+})();

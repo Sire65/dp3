@@ -1,0 +1,11 @@
+{
+  "id":"/Dienstplan/pilot2/",
+  "name":"KC DP2",
+  "short_name":"KC DP2",
+  "description":"KC DP2 Install-Test",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#fff8ee",
+  "theme_color":"#741521",
+  "icons":[{"src":"../assets/kc-dp2-apple-touch-icon.png","sizes":"180x180","type":"image/png","purpose":"any"}]
+}

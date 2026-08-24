@@ -1,0 +1,271 @@
+/* KC DP2 V0.19.38 – smartphone-only day view. Tablet/desktop intentionally untouched. */
+@media (max-width:600px){
+  body.kc-phone-day-active{
+    --name-w:78px;
+    --hours-w:0px;
+    --hour-w:92px;
+    --row-h:54px;
+  }
+
+  body.kc-phone-day-active .main-view{padding:0 4px 8px}
+  body.kc-phone-day-active .metrics,
+  body.kc-phone-day-active .impact-strip{display:none!important}
+
+  body.kc-phone-day-active .plan-controls-main{
+    overflow-x:auto;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+  }
+  body.kc-phone-day-active .plan-controls-main::-webkit-scrollbar{display:none}
+  body.kc-phone-day-active #prevDayBtn,
+  body.kc-phone-day-active #dateBtn,
+  body.kc-phone-day-active #nextDayBtn,
+  body.kc-phone-day-active #viewTabs,
+  body.kc-phone-day-active .step-label,
+  body.kc-phone-day-active #planWeatherChip,
+  body.kc-phone-day-active #planProgramChip,
+  body.kc-phone-day-active #planGapChip,
+  body.kc-phone-day-active #inspectorToggleBtn,
+  body.kc-phone-day-active #colorLegendBtn{display:none!important}
+  body.kc-phone-day-active #layerTabs{flex:0 0 auto}
+  body.kc-phone-day-active #layerTabs button{
+    min-width:70px;
+    min-height:40px;
+    padding:0 10px;
+  }
+
+  .kc-phone-day-shell{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    margin:6px 0 8px;
+  }
+  .kc-phone-day-nav{
+    display:grid;
+    grid-template-columns:48px minmax(0,1fr) 48px;
+    align-items:center;
+    gap:6px;
+  }
+  .kc-phone-day-nav button{
+    min-width:48px;
+    min-height:48px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:#fff;
+    color:var(--ink);
+    font-size:28px;
+    line-height:1;
+    touch-action:manipulation;
+  }
+  .kc-phone-day-title{
+    min-width:0;
+    text-align:center;
+    line-height:1.15;
+  }
+  .kc-phone-day-title b{
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:16px;
+  }
+  .kc-phone-day-title small{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:11px;
+  }
+
+  .kc-phone-day-switch{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:6px;
+    padding:3px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:#fff;
+  }
+  .kc-phone-day-switch button{
+    min-height:44px;
+    border:0;
+    border-radius:8px;
+    background:transparent;
+    color:var(--ink);
+    font-weight:750;
+    touch-action:manipulation;
+  }
+  .kc-phone-day-switch button.active{
+    background:var(--accent);
+    color:#fff;
+  }
+
+  .kc-phone-day-status{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    min-height:38px;
+    padding:7px 9px;
+    border:1px solid var(--line);
+    border-radius:9px;
+    background:#fff;
+    font-size:12px;
+  }
+  .kc-phone-day-status strong{white-space:nowrap}
+  .kc-phone-day-status .warn{color:var(--bad);font-weight:800}
+  .kc-phone-day-status .ok{color:var(--good);font-weight:800}
+
+  .kc-phone-day-list{
+    display:flex;
+    flex-direction:column;
+    gap:5px;
+  }
+  .kc-phone-day-row{
+    display:grid;
+    grid-template-columns:minmax(72px,30%) minmax(0,1fr);
+    gap:8px;
+    align-items:center;
+    min-height:48px;
+    padding:7px 9px;
+    border:1px solid var(--line);
+    border-radius:10px;
+    background:#fff;
+    text-align:left;
+    color:var(--ink);
+    touch-action:manipulation;
+  }
+  button.kc-phone-day-row{width:100%}
+  .kc-phone-day-person{
+    min-width:0;
+    font-weight:800;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .kc-phone-day-duty{min-width:0}
+  .kc-phone-day-times{
+    font-weight:750;
+    font-variant-numeric:tabular-nums;
+    line-height:1.25;
+  }
+  .kc-phone-day-sub{
+    display:flex;
+    flex-wrap:wrap;
+    gap:4px;
+    margin-top:4px;
+  }
+  .kc-phone-badge{
+    display:inline-flex;
+    align-items:center;
+    min-height:20px;
+    padding:1px 6px;
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:#f7f9fb;
+    color:#475467;
+    font-size:10px;
+    font-weight:800;
+  }
+  .kc-phone-badge.special{border-color:#d8b55b;background:#fff8df;color:#725300}
+  .kc-phone-badge.standby{border-color:#90b4d6;background:#eef7ff;color:#245b8f}
+  .kc-phone-badge.absent{border-color:#e1a0a0;background:#fff2f2;color:#9a2222}
+  .kc-phone-badge.helper{border-color:#b8a7d7;background:#f7f2ff;color:#5f438d}
+  .kc-phone-day-empty{
+    padding:18px 12px;
+    border:1px dashed var(--line);
+    border-radius:10px;
+    background:#fff;
+    color:var(--muted);
+    text-align:center;
+  }
+
+  body.kc-phone-day-active .planner-meta{display:none!important}
+  body.kc-phone-day-active .planner-wrap{
+    height:calc(100dvh - 210px);
+    min-height:390px;
+    border-radius:8px;
+  }
+  body.kc-phone-day-active .planner-workspace{display:block!important}
+  body.kc-phone-day-active .plan-inspector{display:none!important}
+  body.kc-phone-day-active .planner-grid-wrap{
+    height:100%;
+    overscroll-behavior:contain;
+    -webkit-overflow-scrolling:touch;
+  }
+  body.kc-phone-day-active .sticky-hours,
+  body.kc-phone-day-active .hours-cell{display:none!important}
+  body.kc-phone-day-active .sticky-name{
+    left:0!important;
+    width:var(--name-w)!important;
+    padding:0 5px!important;
+    justify-content:flex-start;
+    font-size:11px;
+  }
+  body.kc-phone-day-active .sticky-name b{font-size:0}
+  body.kc-phone-day-active .sticky-name b:after{
+    content:'Name';
+    font-size:11px;
+  }
+  body.kc-phone-day-active .person-cell{
+    left:0!important;
+    width:var(--name-w)!important;
+    padding:0 5px!important;
+    gap:0!important;
+  }
+  body.kc-phone-day-active .collapse-btn,
+  body.kc-phone-day-active .person-role,
+  body.kc-phone-day-active .helper-badge{display:none!important}
+  body.kc-phone-day-active .person-text{width:100%}
+  body.kc-phone-day-active .person-name{
+    width:100%;
+    font-size:12px;
+    font-weight:800;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  body.kc-phone-day-active .timeline-cell,
+  body.kc-phone-day-active .timeline-head{
+    background-size:92px 100%;
+  }
+  body.kc-phone-day-active .shift-label{
+    padding:0 8px;
+    font-size:11px;
+  }
+  body.kc-phone-day-active .expanded-detail{display:none!important}
+  body.kc-phone-day-active .matrix-label,
+  body.kc-phone-day-active .matrix-time-label{
+    width:var(--name-w);
+    max-width:var(--name-w);
+    padding:0 4px;
+    overflow:hidden;
+    font-size:9px;
+  }
+  body.kc-phone-day-active .matrix-title{
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-size:10px;
+  }
+  body.kc-phone-day-active .standby-person{
+    width:var(--name-w);
+    max-width:var(--name-w);
+    min-width:var(--name-w);
+    padding:4px;
+    overflow:hidden;
+  }
+  body.kc-phone-day-active .standby-person span:not(.helper-badge){display:none!important}
+  body.kc-phone-day-active .standby-person b{
+    display:block;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+    font-size:11px;
+  }
+
+  body.kc-phone-day-active.kc-phone-list-mode .planner-wrap{display:none!important}
+  body.kc-phone-day-active:not(.kc-phone-list-mode) .kc-phone-day-list{display:none!important}
+}

@@ -1,0 +1,25 @@
+KC DP2 V0.20.0 Build 85 – Paketprüfung
+========================================
+Manifest-Version: 0.20.0
+Manifest-Build: 85
+Cache-Name: kc-dp-release-0.20.0-b85
+Manifest-Dateien: 136
+Runtime-Bytes: 1231558
+
+Prüfung:
+node tools/verify-release.mjs
+node tools/smoke-core.mjs
+
+Ergebnis am 24.08.2026:
+- Release-Verifikation: 136/136 Dateien
+- Core-Smoke-Test: grün
+- JavaScript-Syntax: 102/102 Dateien
+- Browser-Startwächter: grün
+- Console-Fehler beim Start: 0
+
+Kritische SHA-256-Prüfsummen:
+54a0a39c60f72fad14da71b39a2d9a929eb9610a8bedf1be1b540c695e3e2fb5  index.html
+6535b53a0c655b8bd9aba17191eb6cea8add13637d3a6f0eecbbd2db97e1fcf2  service-worker.js
+fad8aecbba0be96e2f174770509c9954729b97a85724391af79509ee5acc163d  update-manifest.json
+f91dd4b77285b8bdc06678db39f1430a7091593070f7ff0f19465c573860cd2f  src/ui/v020-shell.js
+708dd401de2dc8d724a82aee89d68cebf1085fcace4941b4bd6a92fad2faaf40  src/ui/v020-shell.css

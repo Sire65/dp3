@@ -1,0 +1,40 @@
+:root{--kc-bordeaux:#7a1420;--kc-bordeaux2:#991d2b;--kc-gold:#bd8d33;--kc-cream:#f7f3ed;--kc-paper:#fffdfa;--kc-ink:#2c2927;--kc-muted:#6f6964;--kc-line:#e4ddd4;--accent:var(--kc-bordeaux);--accent-soft:#f5e8e6;--bg:var(--kc-cream);--panel:var(--kc-paper);--ink:var(--kc-ink);--muted:var(--kc-muted);--line:var(--kc-line);--line2:#f1ebe5}
+body.ux-legacy{background:radial-gradient(circle at 15% 10%,#fff 0,#faf7f2 38%,#f1ece4 100%)}
+body.ux-legacy .app-shell{background:transparent}
+body.ux-legacy .topbar{background:#fffdfaf2;backdrop-filter:blur(14px);border-bottom:1px solid var(--kc-line);box-shadow:0 4px 18px #5a3c2510;padding:8px 12px}
+body.ux-legacy .topbar:before{content:'KC DP2';font-family:Georgia,serif;font-weight:800;color:var(--kc-bordeaux);font-size:18px;margin-right:2px;white-space:nowrap}
+body.ux-legacy .icon-btn,body.ux-legacy .tool-btn,body.ux-legacy .nav-btn,body.ux-legacy .date-chip,body.ux-legacy .segmented,body.ux-legacy .step-label select{border-color:var(--kc-line);border-radius:11px;background:#fff;box-shadow:0 1px 0 #fff inset}
+body.ux-legacy .tool-btn:hover,body.ux-legacy .icon-btn:hover,body.ux-legacy .date-chip:hover,body.ux-legacy .nav-btn:hover{background:#fbf5f1;border-color:#d7c4bd}
+body.ux-legacy .segmented button.active,body.ux-legacy .primary{background:linear-gradient(135deg,var(--kc-bordeaux),var(--kc-bordeaux2));color:#fff}
+body.ux-legacy .magic{border-color:#d2bd89;background:#fffaf0;color:#6b4a0e}
+body.ux-legacy .publish{background:linear-gradient(135deg,var(--kc-bordeaux),var(--kc-bordeaux2));color:#fff;border-color:transparent;font-weight:800}
+body.ux-legacy .plan-control-row{background:#faf6f1;border-bottom:1px solid var(--kc-line);box-shadow:0 6px 20px #5a3c2508}
+body.ux-legacy .plan-controls-main{gap:7px;padding-top:8px;padding-bottom:6px}
+body.ux-legacy .plan-chip{border-radius:999px;border-color:var(--kc-line);background:#fff}
+body.ux-legacy .message-row{background:#fffdf9;border-color:var(--kc-line)}
+body.ux-legacy .metrics{background:#f5efe9;border-color:var(--kc-line);gap:8px;padding:8px 10px}
+body.ux-legacy .metric{border-color:var(--kc-line);border-radius:13px;box-shadow:0 3px 12px #50391f09}
+body.ux-legacy .metric .value{color:var(--kc-bordeaux)}
+body.ux-legacy .impact-strip{background:#fffdf9;border-color:var(--kc-line)}
+body.ux-legacy .planner-wrap,body.ux-legacy .week-view,body.ux-legacy .total-view{border-color:var(--kc-line);border-radius:14px;box-shadow:0 8px 28px #4b39220d}
+body.ux-legacy .planner-meta{background:#fffaf5;border-color:var(--kc-line)}
+body.ux-legacy .sticky-name,body.ux-legacy .sticky-hours,body.ux-legacy .time-header,body.ux-legacy .person-cell,body.ux-legacy .hours-cell{background:#fffdfb;border-color:var(--kc-line)}
+body.ux-legacy .person-name{color:#3a2a29}
+body.ux-legacy .timeline-head,body.ux-legacy .timeline-cell{background-color:#fff}
+body.ux-legacy .shift.front{background:linear-gradient(135deg,#7a1420,#922131)}
+body.ux-legacy .shift.back{background:#566578}
+body.ux-legacy .shift.neutral{background:#6b7280}
+body.ux-legacy .matrix{border-top-color:#cdb99d}
+body.ux-legacy .modal{border-color:var(--kc-line);border-radius:18px;background:#fffdfb}
+body.ux-legacy .context-menu{border-color:var(--kc-line);border-radius:12px}
+body.ux-legacy .search-wrap{border-color:var(--kc-line);border-radius:11px}
+body.ux-legacy .kc-plan-mode-badge{border-radius:999px;box-shadow:0 5px 18px #0002}
+body.kc-tech-simple .db-block{display:grid!important}
+.kc-save-state{display:none;align-items:center;gap:6px;min-height:34px;padding:0 11px;border:1px solid #cfe2d4;border-radius:999px;background:#eef8f1;color:#276746;font-size:12px;font-weight:800;white-space:nowrap}
+body.kc-tech-simple .kc-save-state{display:flex}
+.kc-save-state.warn{background:#fff6e8;border-color:#edd6aa;color:#805716}
+.kc-save-state.bad{background:#fff0f0;border-color:#ecc0c0;color:#902d2d}
+body.ux-legacy .kc-secondary-tool{opacity:.86}
+@media(max-width:1180px){body.ux-legacy .topbar:before{font-size:16px}.kc-save-state{display:none!important}}
+@media(max-width:760px){body.ux-legacy .topbar:before{content:'KC';font-size:15px}body.ux-legacy .topbar{gap:6px;padding:6px 7px}body.ux-legacy .search-wrap{display:none}.kc-save-state{display:none!important}}
+@media(pointer:coarse){body.ux-legacy .icon-btn,body.ux-legacy .tool-btn,body.ux-legacy .nav-btn,body.ux-legacy .date-chip,body.ux-legacy .segmented button{min-height:44px}}

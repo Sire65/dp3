@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 120" role="img" aria-label="Köcheclub Werne Logo">
+  <rect width="160" height="120" fill="white"/>
+  <g fill="none" stroke="#111" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M49 59c-13-2-22-12-22-24 0-13 10-23 23-24 5-8 14-12 24-10 8 1 14 6 18 12 5-4 12-6 18-4 11 2 19 12 19 23 0 12-8 22-20 25"/>
+    <path d="M48 56h63l-5 37H53z"/>
+    <path d="M61 68h37"/>
+  </g>
+  <text x="80" y="111" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700">KÖCHECLUB WERNE</text>
+</svg>

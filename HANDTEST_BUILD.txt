@@ -1,0 +1,11 @@
+production=0.19.55
+handtest=0.19.55-main
+stable=0.19.54-pre-mail
+rc=0.20.0-rc1
+rc_clean=0.20.0-rc1
+rc_source=735c85aa986f2872af670110d813567bbba99449
+p16=0.20.0-p16-handtest
+p16_source=c85c03266b7b85c84c41a8ebf02ce8afe098f915
+p16_isolated=0.20.0-p16-isolated-handtest
+p17_isolated=0.20.0-p17-isolated-handtest
+p18_isolated=0.20.0-p18-isolated-handtest

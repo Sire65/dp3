@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#741521">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="KC DP2">
+  <title>KC DP2</title>
+  <script>(()=>{const ios=/iPhone|iPad|iPod/i.test(navigator.userAgent||'')||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1),l=document.createElement('link');l.rel='manifest';l.href=ios?'./manifest-ios.webmanifest?v=4':'./manifest-android.webmanifest?v=4';document.head.appendChild(l)})();</script>
+  <link rel="apple-touch-icon" href="../assets/kc-dp2-apple-touch-icon.png?v=4">
+  <link rel="stylesheet" href="./app-v4.css?v=4">
+</head>
+<body>
+<main class="shell"><section class="card">
+  <h1 class="title">KC DP2</h1><div class="sub" id="name">Einrichtung</div>
+  <div id="load" class="load">Wird vorbereitet …</div>
+  <div id="iosInstall" class="hide"><div class="info">Unten auf <b>Teilen</b> bzw. <b>•••</b> tippen<br>→ <b>Zum Home-Bildschirm</b><br>→ <b>Hinzufügen</b></div><div class="hint">Danach das neue <b>KC DP2</b>-Symbol einmal öffnen.</div></div>
+  <div id="androidInstall" class="hide"><button class="big" id="installBtn">INSTALLIEREN</button><div class="hint">Einmal bestätigen. Danach geht es automatisch weiter.</div></div>
+  <div id="push" class="hide"><button class="big" id="pushBtn">PUSH ERLAUBEN</button><div class="hint">Danach läuft alles automatisch.</div></div>
+  <div id="access" class="hide state"><div class="ok" id="accessIcon">✅</div><h2 id="accessTitle"></h2><p id="accessText"></p><button class="big hide" id="openBtn"></button></div>
+  <div id="cancelled" class="hide"><h2>Vorgang abgebrochen</h2><p>Du kannst die Seite jetzt schließen.</p></div>
+  <div id="error" class="hide error"><h2>Das hat noch nicht geklappt</h2><p id="errorText"></p><div class="actions"><button class="big" id="retry">Nochmal versuchen</button><button class="secondary" id="abort">Abbrechen</button><button class="secondary" id="report">Meldung senden</button></div><div id="reportState" class="hide sent"></div></div>
+</section></main>
+<script src="./app-v4.js?v=4"></script>
+</body></html>
