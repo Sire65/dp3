@@ -1,4 +1,4 @@
-# KC DP2 V0.20.0 Build 87 – Phase 1
+# KC DP2 V0.20.0 Build 88 – Phase 2
 
 ## Umgesetzt
 
@@ -17,6 +17,9 @@
 - klare Updatefrage „Ja, installieren“ oder „Nein, später“ mit Version und Buildnummer
 - GitHub-Pages-Sperre gegen Veröffentlichungen ohne erhöhte Buildnummer
 - eigener verschlüsselter DP3-IndexedDB-Namensraum ohne Zugriff auf alte Dienstplan-Gerätedaten
+- kompakte Kopfzeile und zentrale Meldungszeile
+- registerabhängige Hauptaktionen statt dauerhafter Button-Flut
+- identische Aktionslogik auf Desktop, Tablet und Handy
 - Stundenmatrix-Register setzt den vorhandenen Sollplan und betont die bestehende Matrix
 - Dashboard und Stundenmatrix sind in Phase 1 als Grundregister angelegt; der Fachausbau folgt gemäß Masterplan
 

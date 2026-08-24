@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 87,
-  "cacheName": "kc-dp-release-0.20.0-b87",
+  "build": 88,
+  "cacheName": "kc-dp-release-0.20.0-b88",
   "releaseNotes": [
+    "Phase 2: entschlackte Kopfzeile, kontextbezogene Hauptaktionen und zentrale Meldungszeile",
     "Eigener verschlüsselter DP3-Gerätespeicher verhindert Kollisionen mit älteren Dienstplan-Installationen",
     "Automatische Update-Erkennung mit klarer Ja-/Nein-Abfrage für jede höhere Version oder Buildnummer",
     "V0.20 Phase 1: additive Hauptregister für Dashboard, Wunschplan, Sollplan, Istplan und Stundenmatrix",
@@ -15,8 +16,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-08-24T20:37:17.253Z",
-  "totalRuntimeBytes": 1231816,
+  "generatedAt": "2026-08-24T20:56:20.427Z",
+  "totalRuntimeBytes": 1237961,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -70,8 +71,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 12033,
-      "sha256": "19e579f496f16b7f0cd3ddbf97e6c79af6410f45e168bb286eb0bc24578efd07",
+      "bytes": 12160,
+      "sha256": "b8405d5d597b94482fa415927f88663e7e265cf01c63d16da3c6f61ec3dcbe9e",
       "runtime": true,
       "forceRefresh": true
     },
@@ -942,6 +943,20 @@
       "runtime": true
     },
     {
+      "path": "src/ui/v020-layout.css",
+      "installPath": "src/ui/v020-layout.css",
+      "bytes": 3231,
+      "sha256": "e71008a74e309fadc9a1ab401878c7e9ef4114e3fc7e39c54b635c45d3e731e2",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/v020-layout.js",
+      "installPath": "src/ui/v020-layout.js",
+      "bytes": 2787,
+      "sha256": "004b7f2a5aab9389b30ff3dcd084e0f61605a7fe2fa6a7567d85b4cc5cda39cb",
+      "runtime": true
+    },
+    {
       "path": "src/ui/v020-shell.css",
       "installPath": "src/ui/v020-shell.css",
       "bytes": 2723,
@@ -952,7 +967,7 @@
       "path": "src/ui/v020-shell.js",
       "installPath": "src/ui/v020-shell.js",
       "bytes": 8246,
-      "sha256": "654f07d6389f2b360cfa8a518d4ad2e3660b5011c73725b28f5537465542a4ad",
+      "sha256": "898e79cf6efeec87579c170f331393c738793389028de1927605641bb74dfc52",
       "runtime": true
     },
     {

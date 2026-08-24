@@ -2,7 +2,7 @@
 
 Neuentwicklung des Dienstplan-Managers für den Köcheclub Werne auf Basis des stabilisierten Build 84.
 
-Aktueller Stand: **V0.20.0 Build 87 – Phase 1**
+Aktueller Stand: **V0.20.0 Build 88 – Phase 2**
 
 ## Enthalten
 
@@ -15,6 +15,7 @@ Aktueller Stand: **V0.20.0 Build 87 – Phase 1**
 - responsive Bedienung für Desktop, Tablet und Handy
 - installierbare PWA mit geprüftem atomarem Release-Cache
 - automatische Update-Abfrage für jede höhere Version oder Buildnummer
+- entschlackte, registerabhängige Bedienoberfläche für Desktop, Tablet und Handy
 
 ## Lokale Prüfung
 

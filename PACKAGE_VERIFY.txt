@@ -1,25 +1,25 @@
-KC DP2 V0.20.0 Build 87 – Paketprüfung
+KC DP2 V0.20.0 Build 88 – Paketprüfung
 ========================================
 Manifest-Version: 0.20.0
-Manifest-Build: 87
-Cache-Name: kc-dp-release-0.20.0-b87
-Manifest-Dateien: 136
-Runtime-Bytes: 1231816
+Manifest-Build: 88
+Cache-Name: kc-dp-release-0.20.0-b88
+Manifest-Dateien: 138
+Runtime-Bytes: 1237961
 
 Prüfung:
 node tools/verify-release.mjs
 node tools/smoke-core.mjs
 
 Ergebnis am 24.08.2026:
-- Release-Verifikation: 136/136 Dateien
+- Release-Verifikation: 138/138 Dateien
 - Core-Smoke-Test: grün
-- JavaScript-Syntax: 102/102 Dateien
+- JavaScript-Syntax: 103/103 Dateien
 - Browser-Startwächter: grün
 - Console-Fehler beim Start: 0
 
 Kritische SHA-256-Prüfsummen:
-19e579f496f16b7f0cd3ddbf97e6c79af6410f45e168bb286eb0bc24578efd07  index.html
+b8405d5d597b94482fa415927f88663e7e265cf01c63d16da3c6f61ec3dcbe9e  index.html
 6535b53a0c655b8bd9aba17191eb6cea8add13637d3a6f0eecbbd2db97e1fcf2  service-worker.js
-8745fc465bf1e6f18c36caef4bc76317cf63fd992c8bce5ac92ccf29eee0e93b  update-manifest.json
-654f07d6389f2b360cfa8a518d4ad2e3660b5011c73725b28f5537465542a4ad  src/ui/v020-shell.js
+44ad753362b996a80a3921962fe837f357976c4b7cc60982025e03dee76456f9  update-manifest.json
+898e79cf6efeec87579c170f331393c738793389028de1927605641bb74dfc52  src/ui/v020-shell.js
 708dd401de2dc8d724a82aee89d68cebf1085fcace4941b4bd6a92fad2faaf40  src/ui/v020-shell.css

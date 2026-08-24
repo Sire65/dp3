@@ -1,0 +1,35 @@
+/* V0.20 Phase 2: eine klare Kopfzeile, ein kontextbezogenes Ribbon, eine Meldungszeile. */
+.topbar{gap:10px;padding:6px 10px;min-height:50px}
+.topbar .top-left{gap:5px;min-width:0}
+.topbar .top-right{gap:6px}
+.topbar .tool-btn,.topbar .icon-btn{height:34px}
+.v020-legacy-layer-tabs{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0 0 0 0)!important;clip-path:inset(50%)!important;white-space:nowrap!important}
+body[data-v020-register] [data-v020-context]{display:none!important}
+body[data-v020-register="dashboard"] [data-v020-context~="dashboard"],
+body[data-v020-register="wish"] [data-v020-context~="wish"],
+body[data-v020-register="planned"] [data-v020-context~="planned"],
+body[data-v020-register="actual"] [data-v020-context~="actual"],
+body[data-v020-register="matrix"] [data-v020-context~="matrix"]{display:inline-flex!important}
+.plan-control-row{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;padding:6px 10px;background:#f7fafc;align-items:stretch}
+.plan-controls-main{width:100%;min-height:34px;overflow-x:auto;scrollbar-width:thin;padding-bottom:1px}
+.plan-message-inline{width:100%;max-width:none;min-width:0;min-height:30px;flex:none;margin:0;border-radius:7px;padding:4px 9px}
+.v020-ribbon-context{position:sticky;left:0;z-index:8;display:flex;align-items:center;gap:7px;min-width:174px;height:32px;padding:3px 10px 3px 7px;border-right:1px solid var(--line);background:#f7fafc;flex:0 0 auto}
+.v020-ribbon-context>span:last-child{display:flex;flex-direction:column;min-width:0;line-height:1.05}
+.v020-ribbon-context b{font-size:12px;color:#344054;white-space:nowrap}
+.v020-ribbon-context small{max-width:200px;margin-top:2px;color:var(--muted);font-size:9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.v020-ribbon-dot{width:9px;height:9px;border-radius:50%;background:#2f66a5;box-shadow:0 0 0 3px #dceaf5;flex:0 0 auto}
+body[data-v020-register="wish"] .v020-ribbon-dot{background:#7554a3;box-shadow:0 0 0 3px #e8def2}
+body[data-v020-register="actual"] .v020-ribbon-dot{background:#3d7a63;box-shadow:0 0 0 3px #dcece3}
+body[data-v020-register="dashboard"] .v020-ribbon-dot{background:#8b5d20;box-shadow:0 0 0 3px #f1e5d2}
+body[data-v020-register="matrix"] .v020-ribbon-dot{background:#b27316;box-shadow:0 0 0 3px #f5e7cf}
+@media(max-width:900px){
+  .topbar{padding:5px;gap:5px}.topbar .search-wrap{display:none}.topbar .top-left{overflow-x:auto;scrollbar-width:none}
+  .topbar #moreBtn,.topbar #notificationBtn,body[data-v020-register="wish"] .topbar #photoBtn,body[data-v020-register="planned"] .topbar #aiPlanBtn,body[data-v020-register="actual"] .topbar #actualImportBtn{display:inline-flex!important}
+  .plan-control-row{padding:5px}.v020-ribbon-context{min-width:142px;padding-left:4px}.v020-ribbon-context small{display:none}
+}
+@media(max-width:560px){
+  .topbar .top-left{flex:1 1 120px}.topbar #notificationBtn{display:none!important}.topbar .tool-btn{font-size:11px;padding:0 7px}
+  .v020-ribbon-context{min-width:auto;padding-right:7px}.v020-ribbon-context b{font-size:11px}
+  .plan-message-inline{font-size:11px}.plan-message-inline #messagesBtn{display:none}
+}
+@media print{.v020-ribbon-context{display:none!important}}
