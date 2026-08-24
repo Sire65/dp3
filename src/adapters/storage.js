@@ -1,6 +1,6 @@
 (function(){
   const K=window.KCDP;
-  const PROJECT_ID='KC_DP',DB_NAME='KC_DP_SECURE_CANDIDATE',STORE='encrypted_envelopes',META_KEY='__kc_local_crypto_meta_v2__',FORMAT='KC_DP_LOCAL_V2',ITERATIONS=310000;
+  const PROJECT_ID='KC_DP3_LOCAL',DB_NAME='KC_DP3_SECURE_V020',STORE='encrypted_envelopes',META_KEY='__kc_dp3_local_crypto_meta_v2__',FORMAT='KC_DP3_LOCAL_V2',ITERATIONS=310000;
   const enc=new TextEncoder(),dec=new TextDecoder();
   function idbTraffic(op){try{window.dispatchEvent(new CustomEvent('KC_DP_IDB_TRAFFIC',{detail:{op,at:new Date().toISOString()}}));}catch(_){ }}
   function b64(bytes){let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(s)}
@@ -27,7 +27,7 @@
       this._metaPromise=(async()=>{
         if(!this.db)await this.init();
         let row=await this._rawGet(META_KEY);if(row?.meta?.salt)return row.meta;
-        const meta={format:'KC_DP_LOCAL_META_V2',salt:b64(randomBytes(16)),iterations:ITERATIONS,createdAt:new Date().toISOString()};
+        const meta={format:'KC_DP3_LOCAL_META_V2',salt:b64(randomBytes(16)),iterations:ITERATIONS,createdAt:new Date().toISOString()};
         await new Promise((resolve,reject)=>{const tx=this.db.transaction(STORE,'readwrite');tx.objectStore(STORE).put({key:META_KEY,meta});tx.oncomplete=()=>resolve(true);tx.onerror=()=>reject(tx.error)});
         return meta;
       })();
@@ -45,14 +45,14 @@
     },
     _serialize(value){return JSON.stringify(value)},
     async _encryptFast(value,serialized){
-      const key=await this._sessionKey(),iv=randomBytes(12),aad='KC_DP_INDEXEDDB_V2',additionalData=enc.encode(`${aad}|${PROJECT_ID}`),plain=enc.encode(serialized===undefined?this._serialize(value):serialized);
+      const key=await this._sessionKey(),iv=randomBytes(12),aad='KC_DP3_INDEXEDDB_V2',additionalData=enc.encode(`${aad}|${PROJECT_ID}`),plain=enc.encode(serialized===undefined?this._serialize(value):serialized);
       const cipher=await crypto.subtle.encrypt({name:'AES-GCM',iv,additionalData,tagLength:128},key,plain);
       this._metrics.encryptedBytes+=plain.byteLength;
       return {format:FORMAT,algorithm:'AES-256-GCM',kdf:'PBKDF2-SHA-256',iterations:ITERATIONS,projectId:PROJECT_ID,saltRef:META_KEY,iv:b64(iv),aad,ciphertext:b64(new Uint8Array(cipher)),createdAt:new Date().toISOString()};
     },
     async _decryptFast(envelope){
       if(envelope?.format!==FORMAT)throw new Error('Unbekanntes lokales V2-Paket.');
-      const key=await this._sessionKey(),iv=unb64(envelope.iv),aad=envelope.aad||'KC_DP_INDEXEDDB_V2',additionalData=enc.encode(`${aad}|${PROJECT_ID}`);
+      const key=await this._sessionKey(),iv=unb64(envelope.iv),aad=envelope.aad||'KC_DP3_INDEXEDDB_V2',additionalData=enc.encode(`${aad}|${PROJECT_ID}`);
       try{const plain=await crypto.subtle.decrypt({name:'AES-GCM',iv,additionalData,tagLength:128},key,unb64(envelope.ciphertext));return JSON.parse(dec.decode(plain));}
       catch(_){throw new Error('Lokale Paketprüfung fehlgeschlagen: falscher Schlüssel oder manipulierte Daten.');}
     },

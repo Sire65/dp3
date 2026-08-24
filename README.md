@@ -2,7 +2,7 @@
 
 Neuentwicklung des Dienstplan-Managers für den Köcheclub Werne auf Basis des stabilisierten Build 84.
 
-Aktueller Stand: **V0.20.0 Build 86 – Phase 1**
+Aktueller Stand: **V0.20.0 Build 87 – Phase 1**
 
 ## Enthalten
 

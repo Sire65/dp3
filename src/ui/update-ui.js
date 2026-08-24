@@ -99,7 +99,7 @@
       try{row=await K.storage?._rawGet?.(key);}catch(_){row=null;}
       if(!row?.envelope)continue;
       try{
-        if(row.envelope.format==='KC_DP_LOCAL_V2'&&typeof K.storage?._decryptFast==='function')await K.storage._decryptFast(row.envelope);
+        if(['KC_DP_LOCAL_V2','KC_DP3_LOCAL_V2'].includes(row.envelope.format)&&typeof K.storage?._decryptFast==='function')await K.storage._decryptFast(row.envelope);
         else if(window.KCSecureSync?.decryptEnvelope)await window.KCSecureSync.decryptEnvelope(row.envelope,{secret:K.storage.secret,projectId:'KC_DP'});
         return true;
       }catch(e){throw new Error('Der lokale Sicherheitsschlüssel passt nicht zu den auf diesem Gerät gespeicherten Daten.');}
