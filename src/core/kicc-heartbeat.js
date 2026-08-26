@@ -26,15 +26,17 @@
     try{
       if(typeof window.KICC_AUTH?.getProgramHeartbeatBridgeAuth==='function'){
         const bridged=await window.KICC_AUTH.getProgramHeartbeatBridgeAuth()||{};
-        if(bridged.authorization||bridged.apikey)return bridged;
+        if(bridged.authorization)return bridged;
       }
     }catch{}
     try{
-      const K=window.KCDP||{};
-      const cfg=K.integrationConfig?.supabase||{};
-      const stored=typeof K.storage?.get==='function'?await K.storage.get('supabaseSession'):null;
-      const accessToken=stored?.access_token||null;
-      const publishableKey=String(cfg.publishableKey||'').trim();
+      const conn=window.KCDP?.supabaseConnection;
+      if(!conn)return {};
+      try{if(typeof conn.ensureSession==='function')await conn.ensureSession();}catch{}
+      const active=typeof conn.sessionSnapshot==='function'?conn.sessionSnapshot():null;
+      const cfg=typeof conn.validateConfig==='function'?conn.validateConfig():(window.KCDP?.integrationConfig?.supabase||{});
+      const accessToken=active?.access_token||null;
+      const publishableKey=String(cfg?.publishableKey||'').trim();
       return {
         authorization:accessToken?`Bearer ${accessToken}`:null,
         apikey:publishableKey||null
@@ -60,8 +62,7 @@
     const auth=await credentials();
     if(!auth.authorization)return {sent:false,reason:'AUTH_REQUIRED'};
     const envelope={schema:'kicc.remote-program-heartbeat.v1',nonce:(crypto.randomUUID?.()||String(Date.now())+Math.random()),sentAt:new Date().toISOString(),authState:'AUTHENTICATED',sourceId:INSTANCE_ID,heartbeat:hb};
-    const headers={'content-type':'application/json','accept':'application/json'};
-    headers.authorization=auth.authorization;
+    const headers={'content-type':'application/json','accept':'application/json',authorization:auth.authorization};
     if(auth.apikey)headers.apikey=auth.apikey;
     const started=performance.now();
     const response=await fetch(url,{method:'POST',headers,body:JSON.stringify(envelope),cache:'no-store',credentials:'omit'});
