@@ -6,6 +6,7 @@
   const VERSION='0.20.0';
   const BUILD=String(window.KC_DP_BUILD||88);
   const INTERVAL_MS=30000;
+  const DEFAULT_ENDPOINT='https://ptblnpiroqftcvlsrhac.supabase.co/functions/v1/kicc-program-heartbeat';
   let errors=0;
   let tx=0;
   let lastSendAt=null;
@@ -20,12 +21,25 @@
     }catch{return 'dp2-browser';}
   }
   const INSTANCE_ID=instanceId();
-  function endpoint(){return window.KICC_PROGRAM_HEARTBEAT_ENDPOINT||null;}
+  function endpoint(){return window.KICC_PROGRAM_HEARTBEAT_ENDPOINT||DEFAULT_ENDPOINT;}
   async function credentials(){
     try{
-      if(typeof window.KICC_AUTH?.getProgramHeartbeatBridgeAuth==='function')return await window.KICC_AUTH.getProgramHeartbeatBridgeAuth()||{};
+      if(typeof window.KICC_AUTH?.getProgramHeartbeatBridgeAuth==='function'){
+        const bridged=await window.KICC_AUTH.getProgramHeartbeatBridgeAuth()||{};
+        if(bridged.authorization||bridged.apikey)return bridged;
+      }
     }catch{}
-    return {};
+    try{
+      const K=window.KCDP||{};
+      const cfg=K.integrationConfig?.supabase||{};
+      const stored=typeof K.storage?.get==='function'?await K.storage.get('supabaseSession'):null;
+      const accessToken=stored?.access_token||null;
+      const publishableKey=String(cfg.publishableKey||'').trim();
+      return {
+        authorization:accessToken?`Bearer ${accessToken}`:null,
+        apikey:publishableKey||null
+      };
+    }catch{return {};}
   }
   function heartbeat(latencyMs=null){
     return {
@@ -44,14 +58,14 @@
     const url=endpoint();
     if(!url||!/^https:\/\//i.test(url))return {sent:false,reason:'REMOTE_NOT_CONFIGURED'};
     const auth=await credentials();
-    if(!auth.authorization&&!auth.apikey)return {sent:false,reason:'AUTH_REQUIRED'};
+    if(!auth.authorization)return {sent:false,reason:'AUTH_REQUIRED'};
     const envelope={schema:'kicc.remote-program-heartbeat.v1',nonce:(crypto.randomUUID?.()||String(Date.now())+Math.random()),sentAt:new Date().toISOString(),authState:'AUTHENTICATED',sourceId:INSTANCE_ID,heartbeat:hb};
     const headers={'content-type':'application/json','accept':'application/json'};
-    if(auth.authorization)headers.authorization=auth.authorization;
+    headers.authorization=auth.authorization;
     if(auth.apikey)headers.apikey=auth.apikey;
     const started=performance.now();
     const response=await fetch(url,{method:'POST',headers,body:JSON.stringify(envelope),cache:'no-store',credentials:'omit'});
-    if(!response.ok)throw new Error('Heartbeat HTTP '+response.status);
+    if(!response.ok){let detail='';try{detail=await response.text();}catch{}throw new Error(`Heartbeat HTTP ${response.status}${detail?` · ${detail.slice(0,120)}`:''}`);}
     tx+=1;lastSendAt=new Date().toISOString();lastError=null;
     return {sent:true,latencyMs:performance.now()-started};
   }
@@ -67,5 +81,5 @@
   }
   addEventListener('online',send);addEventListener('offline',send);addEventListener('visibilitychange',send);
   addEventListener('error',()=>{errors+=1;});addEventListener('unhandledrejection',()=>{errors+=1;});
-  send();setInterval(send,INTERVAL_MS);
+  setTimeout(send,2500);setInterval(send,INTERVAL_MS);
 })();
