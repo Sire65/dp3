@@ -7,6 +7,7 @@
   const BUILD=String(window.KC_DP_BUILD||88);
   const INTERVAL_MS=30000;
   const DEFAULT_ENDPOINT='https://ptblnpiroqftcvlsrhac.supabase.co/functions/v1/kicc-program-heartbeat';
+  const DEFAULT_FLOW_ENDPOINT='https://ptblnpiroqftcvlsrhac.supabase.co/functions/v1/kicc-program-flow';
   let errors=0;
   let tx=0;
   let lastSendAt=null;
@@ -22,6 +23,7 @@
   }
   const INSTANCE_ID=instanceId();
   function endpoint(){return window.KICC_PROGRAM_HEARTBEAT_ENDPOINT||DEFAULT_ENDPOINT;}
+  function flowEndpoint(){return window.KICC_PROGRAM_FLOW_ENDPOINT||DEFAULT_FLOW_ENDPOINT;}
   async function credentials(){
     try{
       if(typeof window.KICC_AUTH?.getProgramHeartbeatBridgeAuth==='function'){
@@ -37,10 +39,7 @@
       const cfg=typeof conn.validateConfig==='function'?conn.validateConfig():(window.KCDP?.integrationConfig?.supabase||{});
       const accessToken=active?.access_token||null;
       const publishableKey=String(cfg?.publishableKey||'').trim();
-      return {
-        authorization:accessToken?`Bearer ${accessToken}`:null,
-        apikey:publishableKey||null
-      };
+      return {authorization:accessToken?`Bearer ${accessToken}`:null,apikey:publishableKey||null};
     }catch{return {};}
   }
   function heartbeat(latencyMs=null){
@@ -56,6 +55,15 @@
     try{window.dispatchEvent(new CustomEvent('kicc:program-heartbeat',{detail:hb}));}catch{}
     try{const bc=new BroadcastChannel('kicc-program-heartbeat-v1');bc.postMessage(hb);bc.close();}catch{}
   }
+  async function postFlow(auth,{sourceId,targetId,flowType='HEARTBEAT',eventCount=1,status='OK'}={}){
+    const url=flowEndpoint();
+    if(!url||!auth?.authorization||!/^https:\/\//i.test(url))return false;
+    const headers={'content-type':'application/json','accept':'application/json',authorization:auth.authorization};
+    if(auth.apikey)headers.apikey=auth.apikey;
+    const body={schema:'kicc.program-flow.v1',programId:PROGRAM_ID,instanceId:INSTANCE_ID,sourceId,targetId,flowType,eventCount,status,measuredAt:new Date().toISOString(),nonce:(crypto.randomUUID?.()||String(Date.now())+Math.random())};
+    const response=await fetch(url,{method:'POST',headers,body:JSON.stringify(body),cache:'no-store',credentials:'omit'});
+    return response.ok;
+  }
   async function postRemote(hb){
     const url=endpoint();
     if(!url||!/^https:\/\//i.test(url))return {sent:false,reason:'REMOTE_NOT_CONFIGURED'};
@@ -68,6 +76,7 @@
     const response=await fetch(url,{method:'POST',headers,body:JSON.stringify(envelope),cache:'no-store',credentials:'omit'});
     if(!response.ok){let detail='';try{detail=await response.text();}catch{}throw new Error(`Heartbeat HTTP ${response.status}${detail?` · ${detail.slice(0,120)}`:''}`);}
     tx+=1;lastSendAt=new Date().toISOString();lastError=null;
+    try{await postFlow(auth,{sourceId:`program:${PROGRAM_ID}`,targetId:'db-supabase-core',flowType:'HEARTBEAT',eventCount:1,status:'OK'});}catch{}
     return {sent:true,latencyMs:performance.now()-started};
   }
   async function send(){
@@ -78,7 +87,7 @@
       const result=await postRemote(hb);
       if(result.sent){hb=heartbeat(result.latencyMs);emitLocal(hb);}
     }catch(error){errors+=1;lastError=error instanceof Error?error.message:String(error);}
-    window.KC_DP_KICC_HEARTBEAT_STATE={programId:PROGRAM_ID,version:VERSION,build:BUILD,instanceId:INSTANCE_ID,lastAttemptAt:new Date().toISOString(),lastSendAt,lastError,remoteConfigured:Boolean(endpoint()),elapsedMs:Math.round(performance.now()-started)};
+    window.KC_DP_KICC_HEARTBEAT_STATE={programId:PROGRAM_ID,version:VERSION,build:BUILD,instanceId:INSTANCE_ID,lastAttemptAt:new Date().toISOString(),lastSendAt,lastError,remoteConfigured:Boolean(endpoint()),flowConfigured:Boolean(flowEndpoint()),elapsedMs:Math.round(performance.now()-started)};
   }
   addEventListener('online',send);addEventListener('offline',send);addEventListener('visibilitychange',send);
   addEventListener('error',()=>{errors+=1;});addEventListener('unhandledrejection',()=>{errors+=1;});
