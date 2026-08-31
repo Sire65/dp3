@@ -1,0 +1,66 @@
+name: KC Web Deep TÜV
+
+on:
+  push:
+    branches: [feature/kc-tuev-baseline]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 3 * * 4'
+
+permissions:
+  contents: read
+
+jobs:
+  web-deep-tuev:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install isolated test tools
+        run: npm install --no-save --no-package-lock playwright@1.55.0 lighthouse@12
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local read-only web server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/kc-web.log 2>&1 &
+          sleep 2
+          curl --fail http://127.0.0.1:4173/ > /dev/null
+      - name: Playwright runtime smoke
+        run: |
+          cat > kc-tuev-smoke.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          const browser = await chromium.launch({headless:true});
+          const page = await browser.newPage({viewport:{width:1366,height:768}});
+          const runtimeErrors=[];
+          page.on('pageerror', e => runtimeErrors.push(e.message));
+          const response=await page.goto('http://127.0.0.1:4173/',{waitUntil:'domcontentloaded',timeout:30000});
+          if(!response || response.status()>=400) throw new Error(`HTTP ${response?.status()}`);
+          await page.waitForTimeout(2000);
+          const info=await page.evaluate(()=>({title:document.title,body:(document.body?.innerText||'').trim().length,overflow:document.documentElement.scrollWidth-document.documentElement.clientWidth}));
+          console.log(JSON.stringify(info));
+          if(info.body<1) throw new Error('Leere Seite');
+          if(runtimeErrors.length) throw new Error(`JavaScript runtime errors: ${runtimeErrors.join(' | ')}`);
+          await browser.close();
+          EOF
+          node kc-tuev-smoke.mjs
+      - name: Lighthouse diagnostic report
+        continue-on-error: true
+        run: npx lighthouse http://127.0.0.1:4173/ --only-categories=performance,accessibility,best-practices --output=html --output=json --output-path=./lighthouse-report --chrome-flags='--headless --no-sandbox'
+      - name: OWASP ZAP passive baseline
+        continue-on-error: true
+        run: docker run --network=host -v "$PWD:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://127.0.0.1:4173/ -I -m 2 -r zap-report.html -J zap-report.json
+      - name: Upload TÜV reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-deep-tuev-reports
+          path: |
+            lighthouse-report*
+            zap-report.*
+            /tmp/kc-web.log
+          if-no-files-found: ignore
+          retention-days: 21
