@@ -25,16 +25,18 @@
     let memberNo=raw.memberNo??raw.member_number??raw.mitgliedsnummer??raw.credential??null;
     if(Array.isArray(raw)&&map){memberNo=map.memberNo!=null?raw[map.memberNo]:null;personId=map.personId!=null?raw[map.personId]:null;name=map.name!=null?raw[map.name]:null;date=map.date!=null?raw[map.date]:null;start=map.start!=null?raw[map.start]:null;end=map.end!=null?raw[map.end]:null;breakMinutes=map.breakMinutes!=null?raw[map.breakMinutes]:0;}
     let matchSource='personId';
-    const perNummer=personByMemberNo(memberNo);
-    if(perNummer){personId=perNummer.personId;matchSource='member_no';}
-    else{
+    const hasMemberNo=!!normNr(memberNo),perNummer=personByMemberNo(memberNo);
+    if(hasMemberNo){
+      if(perNummer){personId=perNummer.personId;matchSource='member_no';}
+      else{personId=null;matchSource='member_no_unmatched';}
+    }else{
       if(personId&&!K.person(String(personId).trim()))personId=null;
       if(!personId&&name){const p=uniquePersonByName(name);if(p){personId=p.personId;matchSource='unique_name';}}
     }
     const out={rowNumber,memberNo:memberNo?String(memberNo).trim():'',personId:personId?String(personId).trim():'',name:String(name||''),date:parseDate(date),start:parseTime(start),end:parseTime(end),breakMinutes:parseBreak(breakMinutes),source:'file_import',matchSource};
     out.issues=[];if(!out.personId)out.issues.push('Person nicht eindeutig zugeordnet');if(!out.date)out.issues.push('Datum fehlt/ungültig');if(out.start==null)out.issues.push('Kommen fehlt/ungültig');if(out.end==null)out.issues.push('Gehen fehlt/ungültig');if(out.start!=null&&out.end!=null&&out.end<=out.start)out.issues.push('Gehen liegt nicht nach Kommen');out.valid=out.issues.length===0;return out;
   }
-  function parseCsv(text){const lines=String(text||'').split(/\r?\n/).filter(l=>l.trim());if(lines.length<2)throw new Error('CSV enthält keine Datenzeilen.');const delimiter=delimiterFor(lines[0]),headers=splitCsvLine(lines[0],delimiter),map=mapHeaders(headers);if(map.date==null||map.start==null||map.end==null||(map.personId==null&&map.name==null))throw new Error('Benötigte Spalten nicht erkannt: Person/ID, Datum, Kommen, Gehen.');return lines.slice(1).map((l,i)=>normalizeRow(splitCsvLine(l,delimiter),{map,rowNumber:i+2}));}
+  function parseCsv(text){const lines=String(text||'').split(/\r?\n/).filter(l=>l.trim());if(lines.length<2)throw new Error('CSV enthält keine Datenzeilen.');const delimiter=delimiterFor(lines[0]),headers=splitCsvLine(lines[0],delimiter),map=mapHeaders(headers);if(map.date==null||map.start==null||map.end==null||(map.memberNo==null&&map.personId==null&&map.name==null))throw new Error('Benötigte Spalten nicht erkannt: Person/ID, Datum, Kommen, Gehen.');return lines.slice(1).map((l,i)=>normalizeRow(splitCsvLine(l,delimiter),{map,rowNumber:i+2}));}
   function parseJson(text){const parsed=JSON.parse(text);const rows=Array.isArray(parsed)?parsed:(Array.isArray(parsed.rows)?parsed.rows:[]);if(!rows.length)throw new Error('JSON enthält keine Istzeit-Datensätze.');return rows.map((r,i)=>normalizeRow(r,{rowNumber:i+1}));}
   async function analyzeFile(file){
     const name=String(file?.name||'').toLowerCase();

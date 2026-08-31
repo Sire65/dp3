@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 190,
-  "cacheName": "kc-dp-release-0.20.0-b190",
+  "build": 191,
+  "cacheName": "kc-dp-release-0.20.0-b191",
   "releaseNotes": [
+    "Build 191: eindeutige Mitgliedsnummern-Zuordnung fuer PC-Manager, Kasse und Wunschimport mit sicherem Fehlerriegel",
     "Build 190: plattformneutrale LF-Integritaetspruefung fuer identische Windows- und GitHub-Pages-Releases",
     "Build 189: Kann-Zeiten liegen wieder vollhoch hinter dem Sollbalken und lassen sich direkt verschieben, skalieren und löschen",
     "Build 186: klickbares Ansichtsmenü mit Schnellwechsel, kontextbezogenen Aktionen, Datenstand, Tastatursteuerung und Außenklick-Schließen",
@@ -85,8 +86,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-08-31T09:39:50.060Z",
-  "totalRuntimeBytes": 30148873,
+  "generatedAt": "2026-08-31T10:16:48.420Z",
+  "totalRuntimeBytes": 30152567,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -140,8 +141,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 19015,
-      "sha256": "c35fdab9aeaac840319a54e6e3bc0d833de49248ee2d7738265b846f0fac8293",
+      "bytes": 19017,
+      "sha256": "8693ea7fe91256e5e811025ef2fd9346658b57c63bfa2245f056f1e9cb8a0ef0",
       "runtime": true,
       "forceRefresh": true
     },
@@ -321,8 +322,8 @@
     {
       "path": "src/adapters/person-provider.js",
       "installPath": "src/adapters/person-provider.js",
-      "bytes": 7306,
-      "sha256": "96d0614b545b9139d429748ced1638831c9af377558e9063dc692fb02810d890",
+      "bytes": 7401,
+      "sha256": "afb7355d4637bb90d4347f95fd0b36584db7104160e1db4f579459465fe34788",
       "runtime": true
     },
     {
@@ -363,15 +364,15 @@
     {
       "path": "src/adapters/timeclock-import.js",
       "installPath": "src/adapters/timeclock-import.js",
-      "bytes": 5666,
-      "sha256": "fd65971b146c21c7ff0265e574466b7c74b013610617593e649d69ba3e4e8cc2",
+      "bytes": 6768,
+      "sha256": "ff81ff529ff3da7156f8ce3b2021a3de90021abe0b80a72b0222f103979539a2",
       "runtime": true
     },
     {
       "path": "src/adapters/wish-import.js",
       "installPath": "src/adapters/wish-import.js",
-      "bytes": 9937,
-      "sha256": "0042321be467ed87134bf65b84bdb8b2b21edea5f68ea686c427a099a53e4560",
+      "bytes": 10431,
+      "sha256": "728b3a91c823630eb0b6de04d77c35f741a637aa6b0e2734707fbbac144a8b29",
       "runtime": true
     },
     {
@@ -580,8 +581,8 @@
     {
       "path": "src/core/model.js",
       "installPath": "src/core/model.js",
-      "bytes": 7995,
-      "sha256": "8e0ae51aaab0a540e7225fc5ddc5a9c5483066aa4615efa4f6e3ee1f13edec2a",
+      "bytes": 9996,
+      "sha256": "a81a4580c5128c5d11746dc3373a09ea40dc8223aeef2316fefe8f8146c49259",
       "runtime": true
     },
     {

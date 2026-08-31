@@ -5,7 +5,7 @@ import vm from 'node:vm';
 
 const root=path.resolve(import.meta.dirname,'..');
 const context=vm.createContext({window:{},console,setTimeout,clearTimeout,structuredClone});
-for(const file of ['src/core/model.js','src/core/auth.js','src/core/planning.js','src/core/staffing.js','src/core/breaks.js','src/core/planner-engine.js','src/core/workflow.js']){
+for(const file of ['src/core/model.js','src/core/auth.js','src/core/planning.js','src/core/staffing.js','src/core/breaks.js','src/core/planner-engine.js','src/core/workflow.js','src/adapters/timeclock-import.js']){
   vm.runInContext(await readFile(path.join(root,file),'utf8'),context,{filename:file});
 }
 const K=context.window.KCDP;
@@ -23,6 +23,14 @@ const deletedId=deleteCandidate.id;
 K.mutations.deleteShift(deletedId,{reason:'Dynamischer Löschregressionstest'});
 assert.equal(K.shifts.find(x=>x.id===deletedId).status,'deleted','Löschung muss revisionssicher als deleted gespeichert werden');
 assert(!K.visiblePlannedShifts(deleteCandidate.date).some(x=>x.id===deletedId),'Gelöschter Soll-Dienst darf direkt nach dem Renderfilter nicht mehr sichtbar sein');
+const knownMember=K.timeclockImport.normalizeRow({memberNo:'kc 0010',name:'Falscher Name',date:'2026-12-05',start:'16:30',end:'21:15'});
+assert.equal(knownMember.personId,'KC-P-002','Normalisierte Mitgliedsnummer muss Hans-Joachim Koch eindeutig zuordnen');
+assert.equal(knownMember.matchSource,'member_no','Mitgliedsnummer muss als Zuordnungsquelle protokolliert werden');
+const unknownMember=K.timeclockImport.normalizeRow({memberNo:'KC-9999',name:'Hans-Joachim Koch',date:'2026-12-05',start:'16:30',end:'21:15'});
+assert.equal(unknownMember.valid,false,'Unbekannte vorhandene Mitgliedsnummer darf nicht �ber den Namen geraten werden');
+assert.equal(unknownMember.matchSource,'member_no_unmatched','Unbekannte Mitgliedsnummer muss als solche protokolliert werden');
+const memberOnlyCsv=K.timeclockImport.parseCsv('Mitgliedsnummer;Datum;Kommen;Gehen\nKC-0010;05.12.2026;16:30;21:15');
+assert.equal(memberOnlyCsv[0].personId,'KC-P-002','CSV nur mit Mitgliedsnummer muss akzeptiert werden');
 const day=K.days.find(x=>x.date==='2026-12-04');
 const evaluation=K.evaluateDay(day);
 assert(Number.isFinite(evaluation.quality)&&evaluation.slots>0,'Tagesbewertung muss berechenbar sein');
