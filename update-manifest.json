@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 191,
-  "cacheName": "kc-dp-release-0.20.0-b191",
+  "build": 192,
+  "cacheName": "kc-dp-release-0.20.0-b192",
   "releaseNotes": [
+    "Build 192: Ist-Abgleich mit Laserscan, Handlungsbedarf, Filtern und lueckenlosem Wunsch-Soll-Ist-Buchungsprotokoll",
     "Build 191: eindeutige Mitgliedsnummern-Zuordnung fuer PC-Manager, Kasse und Wunschimport mit sicherem Fehlerriegel",
     "Build 190: plattformneutrale LF-Integritaetspruefung fuer identische Windows- und GitHub-Pages-Releases",
     "Build 189: Kann-Zeiten liegen wieder vollhoch hinter dem Sollbalken und lassen sich direkt verschieben, skalieren und löschen",
@@ -86,8 +87,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-08-31T10:16:48.420Z",
-  "totalRuntimeBytes": 30152567,
+  "generatedAt": "2026-08-31T15:17:59.946Z",
+  "totalRuntimeBytes": 30175010,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -141,8 +142,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 19017,
-      "sha256": "8693ea7fe91256e5e811025ef2fd9346658b57c63bfa2245f056f1e9cb8a0ef0",
+      "bytes": 19163,
+      "sha256": "b67df7182c17c129217d8e16e07126f1912fcb0ee53d1c3fd8d1b065712b26a2",
       "runtime": true,
       "forceRefresh": true
     },
@@ -772,6 +773,20 @@
       "installPath": "src/ui/active-day.js",
       "bytes": 1391,
       "sha256": "6de6ff7810372c6b2edf28b687c5f914710819a578226c2fbac69a7f6b49e9fa",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/actual-reconciliation.css",
+      "installPath": "src/ui/actual-reconciliation.css",
+      "bytes": 6243,
+      "sha256": "6e1b9064e8baf10424ec7f000ce2f7e1a46a03b01efd19967114d661fc1f6eaf",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/actual-reconciliation.js",
+      "installPath": "src/ui/actual-reconciliation.js",
+      "bytes": 16054,
+      "sha256": "f76a1a82a7af62a7fea3be5531c26fe42690969c4d2e65c55a627277c89cbd7e",
       "runtime": true
     },
     {
