@@ -65,6 +65,12 @@ function matrixToObjects(matrix){
   const headers=(matrix[idx]||[]).map(clean),rows=[];
   for(let r=idx+1;r<matrix.length;r++){
     const vals=matrix[r]||[];if(!vals.some(v=>clean(v)!==''))continue;
+    // ENDE DER TABELLE ERKENNEN: die Vorlage enthaelt unterhalb der Wunschzeiten einen
+    // ZWEITEN Block ("Bereitschaftsdienst") mit EIGENER Kopfzeile, die wieder "Datum" heisst.
+    // Ohne diesen Riegel las der Import einfach weiter, hielt die zweite Kopfzeile fuer eine
+    // Datenzeile und meldete "Datum fehlt oder ist nicht lesbar" - schon bei der voellig
+    // leeren Originalvorlage. Ab einer wiederholten Kopfzeile wird nichts mehr gelesen.
+    if(norm(vals[0])==='datum')break;
     const obj={__rowNumber:r+1};headers.forEach((h,i)=>{if(h)obj[h]=vals[i]??''});rows.push(obj);
   }
   return {rows,headerIndex:idx};

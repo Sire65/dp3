@@ -9,7 +9,7 @@
     const name=plain(row.name||row.clearName||row.displayName||row.display_name||'');if(!name)throw new Error(`Klarname fehlt für ${personId}.`);
     const helper=row.personType==='helper'||row.person_type==='helper'||row.isHelper===true||row.helper===true;
     return {
-      personId,name,pseudoName:plain(row.pseudoName||row.pseudo_name||row.pseudonym||row.nickname||row.preferredName||row.preferred_name||'')||null,personType:helper?'helper':'member',active:row.active!==false,
+      personId,memberNo:plain(row.memberNo||row.member_number||row.mitgliedsnummer||row.credential||'')||null,name,pseudoName:plain(row.pseudoName||row.pseudo_name||row.pseudonym||row.nickname||row.preferredName||row.preferred_name||'')||null,personType:helper?'helper':'member',active:row.active!==false,
       skills:plain(Array.isArray(row.skills)?row.skills.join(' · '):(row.skills||row.qualifications||'')),
       phone:plain(row.phone||row.mobile||'nicht hinterlegt'),email:plain(row.email||row.contacts?.email||''),formProfileId:plain(row.formProfileId||row.form_profile_id||row.handwritingProfileId||row.handwriting_profile_id||'')||null,roles:Array.isArray(row.roles)?row.roles.map(plain):[],allowedAreas:Array.isArray(row.allowedAreas)?row.allowedAreas.map(plain):[],maxHours:Number(row.maxHours|| (helper?6:8)),
       availability:Array.isArray(row.availability)?row.availability.map(a=>({date:a.date,start:Number(a.start),end:Number(a.end)})):[],
