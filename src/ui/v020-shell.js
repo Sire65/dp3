@@ -3,13 +3,16 @@
   const K=window.KCDP=window.KCDP||{};
   const REGISTER=[
     {id:'dashboard',label:'Dashboard',hint:'Planungsübersicht'},
+    {id:'demand',label:'Bedarf',hint:'Besetzungsmatrix, Wetter und Bühnenprogramm'},
     {id:'wish',label:'Wunschplan',hint:'Wünsche und Verfügbarkeit',layer:'wish'},
     {id:'planned',label:'Sollplan',hint:'Planung und Veröffentlichung',layer:'planned'},
     {id:'actual',label:'Istplan',hint:'Istzeiten und Abweichungen',layer:'actual'},
-    {id:'matrix',label:'Stundenmatrix',hint:'Besetzung je Stunde',layer:'planned'}
+    {id:'matrix',label:'Stundenmatrix',hint:'Besetzung je Stunde',layer:'planned'},
+    {id:'deviations',label:'Abweichungen',hint:'Wunsch, Soll und Ist je Person vergleichen'},
+    {id:'fairness',label:'Fairnis',hint:'Stundenverteilung nachvollziehbar vergleichen'}
   ];
   const ORDER_KEY='kc.dp2.v020.register-order';
-  const state=K.v020ShellState=K.v020ShellState||{active:'planned',order:[]};
+  const state=K.v020ShellState=K.v020ShellState||{active:'dashboard',order:[]};
   let root=null,draggedId=null,touchDrag=null,suppressClick=false;
 
   function defaultOrder(){return REGISTER.map(item=>item.id)}
@@ -48,14 +51,15 @@
     const entry=REGISTER.find(item=>item.id===id);
     if(!entry)return false;
     state.active=id;
-    if(entry.layer)layerButton(entry.layer)?.click();
+    if(id==='dashboard')K.state.layer='planned';
+    if(entry.layer){if(id==='matrix'){K.state.layer='planned';document.querySelectorAll('#layerTabs [data-layer]').forEach(button=>button.classList.toggle('active',button.dataset.layer==='planned'))}else layerButton(entry.layer)?.click()}
     paint();
     if(focus)root?.querySelector(`[data-v020-register="${id}"]`)?.focus();
     if(!quiet){
-      const suffix=id==='dashboard'||id==='matrix'?' · Grundansicht in Phase 1, Fachausbau folgt stufenweise.':'';
-      announce(`${entry.label}: ${entry.hint}${suffix}`);
+      announce(`${entry.label}: ${entry.hint}`);
     }
     window.dispatchEvent(new CustomEvent('kc-v020-register-change',{detail:{id,layer:entry.layer||null}}));
+    if(id==='dashboard'){const host=document.getElementById('mainView');if(host)host.innerHTML='<section class="pro-dashboard dashboard-loading"><h1>Planungsdashboard</h1><p>Dashboard wird aufgebaut …</p></section>';setTimeout(()=>{try{K.dashboardPro?.render?.()}catch(error){if(host)host.innerHTML=`<section class="pro-dashboard dashboard-error"><h1>Planungsdashboard</h1><div class="ai-summary"><b>Dashboard konnte nicht aufgebaut werden.</b><br>${String(error.message||error)}</div></section>`;console.error('Dashboard-Fehler',error)}},0)}
     return true;
   }
   function onKeydown(event){
@@ -133,14 +137,14 @@
     if(!topbar||!controls)return;
     const brand=document.createElement('div');
     brand.className='v020-brand';
-    brand.innerHTML='<img src="assets/kc-logo.svg" alt=""><span><strong>KC DP2</strong><small>V0.20.0 · Build 88</small></span>';
+    brand.innerHTML='<img src="assets/kc-logo.svg" alt=""><span><strong>KC DP2</strong><small>V0.20.0 · Build 186</small></span>';
     topbar.prepend(brand);
     root=document.createElement('nav');
     root.id='v020RegisterBar';
     root.className='v020-register-bar';
     root.setAttribute('aria-label','Hauptregister');
     root.setAttribute('role','tablist');
-    root.innerHTML=orderedRegister().map(item=>`<button type="button" role="tab" draggable="true" data-v020-register="${item.id}" title="${item.hint} · Ziehen zum Verschieben · Alt+Pfeiltaste verschiebt per Tastatur"><span class="v020-drag-handle" aria-hidden="true" title="Register verschieben">⋮⋮</span><span>${item.label}</span></button>`).join('');
+    root.innerHTML=orderedRegister().map(item=>`<button type="button" role="tab" draggable="false" data-v020-register="${item.id}" title="${item.hint} · Am rechten Griff verschieben · Alt+Pfeiltaste verschiebt per Tastatur"><span>${item.label}</span><span class="v020-drag-handle" aria-hidden="true" title="Register verschieben">⋮</span></button>`).join('');
     controls.before(root);
     root.addEventListener('click',event=>{
       if(suppressClick){event.preventDefault();return}
@@ -151,6 +155,7 @@
     installReorder();
     document.addEventListener('click',syncLegacyLayer);
     select(state.active,{quiet:true});
+    window.addEventListener('load',()=>setTimeout(()=>select(state.active,{quiet:true}),0),{once:true});
   }
   K.v020Shell={version:'0.20.0-phase1-register-order',registers:REGISTER.map(item=>({...item})),state,select,install,saveOrder};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();

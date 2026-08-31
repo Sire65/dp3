@@ -1,0 +1,9 @@
+.photo-ocr-legend{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px;font-size:11px;color:#4b4650}
+.photo-ocr-legend span{display:inline-flex;align-items:center;gap:5px;padding:3px 7px;border:1px solid #d7d1cb;border-radius:999px;background:#fff}
+.photo-ocr-legend i{width:11px;height:11px;border-radius:3px;border:1px solid currentColor}
+.photo-ocr-legend .missing i{background:#edf6fc;color:#4d82a4}.photo-ocr-legend .partial i{background:#fff6d9;color:#9a7417}.photo-ocr-legend .uncertain i{background:#f4eefb;color:#79549d}
+.photo-table tr.ocr-missing>td{background:#f5faff}.photo-table tr.ocr-partial>td{background:#fffaf0}.photo-table tr.ocr-uncertain>td{background:#faf6fd}
+.photo-table tr.ocr-missing>td:first-child{box-shadow:inset 4px 0 #5f91af}.photo-table tr.ocr-partial>td:first-child{box-shadow:inset 4px 0 #c69827}.photo-table tr.ocr-uncertain>td:first-child{box-shadow:inset 4px 0 #8461a5}
+.photo-table tr.ocr-missing .prStart,.photo-table tr.ocr-missing .prEnd{border-color:#6d9bb7;background:#edf6fc}.photo-table tr.ocr-partial .prStart,.photo-table tr.ocr-partial .prEnd{border-color:#b78a24;background:#fff6d9}.photo-table tr.ocr-uncertain .prStart,.photo-table tr.ocr-uncertain .prEnd{border-color:#8461a5;background:#f4eefb}
+.photo-table tr.ocr-missing .prCheck:before{content:'○ Nicht erkannt · ';font-weight:700;color:#315f7b}.photo-table tr.ocr-partial .prCheck:before{content:'◐ Unvollständig · ';font-weight:700;color:#795b10}.photo-table tr.ocr-uncertain .prCheck:before{content:'◇ Unsicher · ';font-weight:700;color:#654184}
+@media(max-width:700px){.photo-ocr-legend{display:grid;grid-template-columns:1fr}}

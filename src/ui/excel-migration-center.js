@@ -6,7 +6,7 @@ const clean=v=>String(v??'').replace(/\u00a0/g,' ').trim();
 const norm=v=>clean(v).toLocaleLowerCase('de').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,' ').trim();
 const fmtDate=iso=>new Intl.DateTimeFormat('de-DE',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'}).format(new Date(iso+'T12:00:00'));
 const fmtTime=h=>`${String(Math.floor(Number(h))).padStart(2,'0')}:${String(Math.round((Number(h)%1)*60)).padStart(2,'0')}`;
-const typeLabel=t=>({available:'Kann',preferred:'Wunsch',if_needed:'Nur wenn nötig',unavailable:'Sperrzeit / Sperrtag'})[t]||t;
+const typeLabel=t=>K.wishContract?.label?.(t)||({available:'Kann',preferred:'Wunsch',if_needed:'Nur wenn nötig',unavailable:'Sperrzeit'})[t]||t;
 let batches=[];
 function members(){return (K.people||[]).filter(p=>p.active&&p.personType==='member'&&!p.testAccount);}
 function extractIdentity(matrix,fileName=''){

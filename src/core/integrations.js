@@ -5,12 +5,14 @@
  const DEDICATED_KEY='sb_publishable_SqXIeGN-clcZ4gjmpLdSww_4DLfyy24';
  const LEGACY_REFS=['iddudrxuihdodnvejxcp','lddudrxuihdodnvejjxcp','lddudrxuihdodnvejxcp'];
  const defaults={
-  pcManager:{mode:'host',endpoint:'',expectedOrigin:'',autoSync:false},
+  pcManager:{mode:'supabase',endpoint:'',expectedOrigin:'',autoSync:true},
   supabase:{url:DEDICATED_URL,publishableKey:DEDICATED_KEY,supabaseProjectRef:DEDICATED_REF,region:'London · eu-west-2',profile:'KC_DP_DEDICATED_PROJECT',orgId:'KC_WERNE',projectId:'KC_DP',authMode:'password',onlineSyncEnabled:true,autoSync:true,offlineAllowed:true,syncIntervalMinutes:1,deviceName:'',keyReviewRequired:false}
  };
  K.integrationConfig=K.integrationConfig||clone(defaults);
  function normalize(cfg){
   const x=clone(cfg||{}),sb={...defaults.supabase,...(x.supabase||{})};
+  x.pcManager={...defaults.pcManager,...(x.pcManager||{})};
+  if(x.pcManager.mode==='host'&&!x.pcManager.endpoint&&!x.pcManager.expectedOrigin)x.pcManager={...x.pcManager,mode:'supabase',autoSync:true};
   let migrated=false;
   const currentRef=String(sb.supabaseProjectRef||'').trim();
   const currentUrl=String(sb.url||'').trim();

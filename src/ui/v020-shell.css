@@ -3,9 +3,10 @@
 .v020-brand span{display:flex;flex-direction:column;line-height:1.08;white-space:nowrap}
 .v020-brand strong{color:var(--accent);font-size:14px;letter-spacing:.02em}
 .v020-brand small{margin-top:3px;color:var(--muted);font-size:10px;font-weight:700}
-.v020-register-bar{display:flex;align-items:flex-end;gap:4px;padding:7px 10px 0;background:#f4f0eb;border-bottom:1px solid #cabfb4;overflow-x:auto;scrollbar-width:thin}
-.v020-register-bar button{position:relative;display:inline-flex;align-items:center;gap:7px;min-height:38px;padding:8px 15px 8px 8px;border:1px solid #cfc5bb;border-bottom:0;border-radius:9px 9px 0 0;background:#fff;color:#3d3632;font:700 13px/1.1 inherit;white-space:nowrap;cursor:pointer;touch-action:pan-x}
-.v020-drag-handle{display:inline-flex;align-items:center;justify-content:center;width:18px;min-height:24px;margin:-4px 0;color:#8b8178;font-size:12px;letter-spacing:-3px;cursor:grab;touch-action:none;user-select:none}
+.v020-register-bar{display:flex;align-items:end;gap:3px;padding:5px 7px 0;background:#f4f0eb;border-bottom:1px solid #cabfb4;overflow-x:auto;overflow-y:hidden;scrollbar-width:thin}
+.v020-register-bar button{position:relative;display:flex;flex:0 0 auto;align-items:center;justify-content:space-between;gap:3px;min-width:0;min-height:33px;padding:5px 6px;border:1px solid #cfc5bb;border-bottom:0;border-radius:7px 7px 0 0;background:#fff;color:#3d3632;font:700 11px/1.1 inherit;white-space:nowrap;cursor:pointer;touch-action:pan-x}
+.v020-register-bar button>span:first-child{min-width:0;overflow:hidden;text-overflow:ellipsis}
+.v020-drag-handle{display:inline-flex;align-items:center;justify-content:center;width:15px;min-height:22px;margin:-3px 0;color:#8b8178;font-size:11px;letter-spacing:-3px;cursor:grab;touch-action:none;user-select:none}
 .v020-drag-handle:active{cursor:grabbing}
 .v020-register-bar button.dragging{opacity:.58;transform:translateY(-2px);box-shadow:0 7px 16px #0002!important}
 .v020-register-bar button:hover{background:#fffaf4}
@@ -20,7 +21,7 @@
 body[data-v020-register="matrix"] .matrix{box-shadow:0 -4px 16px rgba(47,102,165,.22)}
 @media(max-width:900px){
   .v020-brand{border-right:0;padding-right:3px}.v020-brand span small{display:none}
-  .v020-register-bar{gap:3px;padding:5px 5px 0}
+  .v020-register-bar{display:flex;gap:3px;padding:5px 5px 0;overflow-x:auto;scrollbar-width:thin}
   .v020-register-bar button{min-height:40px;padding:7px 10px 7px 6px;font-size:12px}.v020-drag-handle{width:22px;min-height:30px}
 }
 @media(max-width:560px){

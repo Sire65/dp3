@@ -10,9 +10,10 @@ body[data-v020-register="wish"] [data-v020-context~="wish"],
 body[data-v020-register="planned"] [data-v020-context~="planned"],
 body[data-v020-register="actual"] [data-v020-context~="actual"],
 body[data-v020-register="matrix"] [data-v020-context~="matrix"]{display:inline-flex!important}
-.plan-control-row{display:grid;grid-template-columns:minmax(0,1fr);gap:5px;padding:6px 10px;background:#f7fafc;align-items:stretch}
-.plan-controls-main{width:100%;min-height:34px;overflow-x:auto;scrollbar-width:thin;padding-bottom:1px}
-.plan-message-inline{width:100%;max-width:none;min-width:0;min-height:30px;flex:none;margin:0;border-radius:7px;padding:4px 9px}
+.plan-control-row{display:flex;gap:7px;padding:5px 10px;background:#f7fafc;align-items:center}
+.plan-controls-main{flex:1 1 auto;width:auto;min-width:0;min-height:34px;overflow-x:auto;scrollbar-width:thin;padding-bottom:1px}
+.plan-message-inline{flex:0 1 390px;width:auto;min-width:180px;min-height:32px;margin:0;border:1px solid var(--line);border-radius:7px;padding:3px 8px;white-space:nowrap;overflow:hidden}
+.plan-message-inline #messageText{min-width:0;overflow:hidden;text-overflow:ellipsis}
 .v020-ribbon-context{position:sticky;left:0;z-index:8;display:flex;align-items:center;gap:7px;min-width:174px;height:32px;padding:3px 10px 3px 7px;border-right:1px solid var(--line);background:#f7fafc;flex:0 0 auto}
 .v020-ribbon-context>span:last-child{display:flex;flex-direction:column;min-width:0;line-height:1.05}
 .v020-ribbon-context b{font-size:12px;color:#344054;white-space:nowrap}
@@ -25,7 +26,7 @@ body[data-v020-register="matrix"] .v020-ribbon-dot{background:#b27316;box-shadow
 @media(max-width:900px){
   .topbar{padding:5px;gap:5px}.topbar .search-wrap{display:none}.topbar .top-left{overflow-x:auto;scrollbar-width:none}
   .topbar #moreBtn,.topbar #notificationBtn,body[data-v020-register="wish"] .topbar #photoBtn,body[data-v020-register="planned"] .topbar #aiPlanBtn,body[data-v020-register="actual"] .topbar #actualImportBtn{display:inline-flex!important}
-  .plan-control-row{padding:5px}.v020-ribbon-context{min-width:142px;padding-left:4px}.v020-ribbon-context small{display:none}
+  .plan-control-row{padding:5px;flex-wrap:wrap}.plan-message-inline{flex:1 1 100%;min-width:0}.v020-ribbon-context{min-width:142px;padding-left:4px}.v020-ribbon-context small{display:none}
 }
 @media(max-width:560px){
   .topbar .top-left{flex:1 1 120px}.topbar #notificationBtn{display:none!important}.topbar .tool-btn{font-size:11px;padding:0 7px}

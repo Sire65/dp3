@@ -3,15 +3,17 @@
   const K=window.KCDP=window.KCDP||{};
   const LABELS={
     dashboard:['Übersicht','Kennzahlen, Risiken und Systemstatus'],
+    demand:['Bedarf','Tägliche Grundmatrix mit Wetter- und Programmeinfluss'],
     wish:['Wunschplan','Wünsche, Reserven und Sperren erfassen'],
     planned:['Sollplan','Dienste planen, prüfen und veröffentlichen'],
     actual:['Istplan','Istzeiten übernehmen und Abweichungen prüfen'],
-    matrix:['Stundenmatrix','Besetzung je Zeitabschnitt prüfen']
+    matrix:['Stundenmatrix','Besetzung je Zeitabschnitt prüfen'],
+    fairness:['Fairnis','Stundenverteilung neutral und nachvollziehbar vergleichen']
   };
   const SCOPES={
     aiPlanBtn:'planned',photoBtn:'wish',actualImportBtn:'actual',pauseToggleBtn:'planned',
     addShiftBtn:'planned',checkBtn:'planned matrix',quickPlanBtn:'planned',publishBtn:'planned',
-    planWeatherChip:'dashboard planned matrix',planProgramChip:'dashboard planned matrix',
+    planWeatherChip:'dashboard demand planned matrix',planProgramChip:'dashboard demand planned matrix',
     planGapChip:'dashboard planned matrix',inspectorToggleBtn:'planned matrix',
     colorLegendBtn:'wish planned actual'
   };

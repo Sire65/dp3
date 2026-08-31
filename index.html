@@ -1,37 +1,69 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <script>window.KC_DP_BUILD=88;</script>
+  <script>window.KC_DP_BUILD=189;</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="description" content="KC DP2 – Dienstplanung, Wunschzeiten, Besetzungsmatrix und Auswertung für den Köcheclub Werne.">
   <title>KC DP2 V0.20.0</title>
   <meta name="theme-color" content="#741521">
+  <link rel="icon" href="assets/kc-logo.svg" type="image/svg+xml">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="KC DP2">
   <link rel="manifest" href="manifest.webmanifest?v=0.19.10">
   <link rel="apple-touch-icon" href="assets/kc-dp2-apple-touch-icon.png?v=0.19.10">
-  <link rel="stylesheet" href="src/ui/app.css?v=0.17.10">
+  <link rel="preload" href="assets/kc-login-startbild-v01917.webp" as="image" type="image/webp" fetchpriority="high">
+  <link rel="stylesheet" href="src/ui/app.css?v=0.20.0-b178">
   <link rel="stylesheet" href="src/ui/day-availability-filter.css?v=0.19.42">
   <link rel="stylesheet" href="src/ui/quick-plan-recommendations.css?v=0.19.42">
   <link rel="stylesheet" href="src/ui/planner-audit-ui.css?v=0.19.42">
   <link rel="stylesheet" href="src/ui/source-health-ui.css?v=0.19.42">
-  <link rel="stylesheet" href="src/ui/role-ux.css?v=0.18.1">
+  <link rel="stylesheet" href="src/ui/role-ux.css?v=0.20.0-b90">
   <link rel="stylesheet" href="src/ui/update-ui.css?v=0.19.10">
   <link rel="stylesheet" href="src/ui/installation-center.css?v=0.19.51-install-1">
   <link rel="stylesheet" href="src/ui/diagnostics-center.css?v=0.19.51h">
-  <link rel="stylesheet" href="src/ui/v020-shell.css?v=0.20.0-b88">
-  <link rel="stylesheet" href="src/ui/v020-layout.css?v=0.20.0-b88">
+  <link rel="stylesheet" href="src/ui/v020-shell.css?v=0.20.0-b113">
+  <link rel="stylesheet" href="src/ui/v020-layout.css?v=0.20.0-b130">
+  <link rel="stylesheet" href="src/ui/register-context-menu.css?v=0.20.0-b186">
+  <link rel="stylesheet" href="src/ui/fairness-view.css?v=0.20.0-b185">
+  <link rel="stylesheet" href="src/ui/demand-view.css?v=0.20.0-b91">
+  <link rel="stylesheet" href="src/ui/demand-compact.css?v=0.20.0-b93">
+  <link rel="stylesheet" href="src/ui/register-actions.css?v=0.20.0-b93">
+  <link rel="stylesheet" href="src/ui/wish-bar-composite.css?v=0.20.0-b189">
+  <link rel="stylesheet" href="src/ui/plan-transfer.css?v=0.20.0-b96">
+  <link rel="stylesheet" href="src/ui/gap-workflow.css?v=0.20.0-b97">
+  <link rel="stylesheet" href="src/ui/dashboard-pro.css?v=0.20.0-b103">
+  <link rel="stylesheet" href="src/ui/hour-matrix.css?v=0.20.0-b104"><link rel="stylesheet" href="src/ui/occupancy-radar.css?v=0.20.0-b171"><link rel="stylesheet" href="src/ui/occupancy-radar-summary.css?v=0.20.0-b172-r1"><link rel="stylesheet" href="src/ui/occupancy-block-controls.css?v=0.20.0-b172-r4"><link rel="stylesheet" href="src/ui/person-hours-block.css?v=0.20.0-b172-r3">
+  <link rel="stylesheet" href="src/ui/day-picker.css?v=0.20.0-b105">
+  <link rel="stylesheet" href="src/ui/deviations-view.css?v=0.20.0-b106">
+  <link rel="stylesheet" href="src/ui/forms-center.css?v=0.20.0-b114">
+  <link rel="stylesheet" href="src/ui/regression-fixes.css?v=0.20.0-b116">
+  <link rel="stylesheet" href="src/ui/name-display.css?v=0.20.0-b110">
+  <link rel="stylesheet" href="src/ui/wish-submission-check.css?v=0.20.0-b152">
+  <link rel="stylesheet" href="src/ui/global-history.css?v=0.20.0-b119">
+  <link rel="stylesheet" href="src/ui/active-day.css?v=0.20.0-b120">
+  <link rel="stylesheet" href="src/ui/photo-ocr-review.css?v=0.20.0-b122">
+  <link rel="stylesheet" href="src/ui/planning-focus.css?v=0.20.0-b172-r2">
+  <link rel="stylesheet" href="src/ui/wish-legend-inline.css?v=0.20.0-b150">
+  <link rel="stylesheet" href="src/ui/person-sort.css?v=0.20.0-b149">
+  <link rel="stylesheet" href="src/ui/microtext-zoom.css?v=0.20.0-b151">
+  <link rel="stylesheet" href="src/ui/occupancy-view.css?v=0.20.0-b172-r2"><link rel="stylesheet" href="src/ui/occupancy-area-chart.css?v=0.20.0-b172-r3">
+  <link rel="stylesheet" href="src/ui/batch-planning.css?v=0.20.0-b140">
+  <style>body[data-v020-register="demand"] .plan-control-row,body[data-v020-register="demand"] #metrics,body[data-v020-register="demand"] #impactStrip{display:none!important}</style>
   <!-- LEGACY_CACHE_MARKER app.js?v=0.17.10 -->
-  <!-- LEGACY_UX_MARKER src/ui/role-ux.js?v=0.18.1 -->
+  <!-- LEGACY_UX_MARKER src/ui/role-ux.js?v=0.20.0-b146 -->
+  <link rel="stylesheet" href="src/ui/shift-health-ui.css?v=0.20.0-b177-r1">
+  <link rel="stylesheet" href="src/ui/planned-toolbar.css?v=0.20.0-b180">
+  <link rel="stylesheet" href="src/ui/time-presence.css?v=0.20.0-b183">
+  <link rel="stylesheet" href="src/ui/planner-sidebar.css?v=0.20.0-b172-r2"><link rel="stylesheet" href="src/ui/table-core-inline.css?v=0.20.0-b172-r1">
 </head>
 <body class="ux-login">
   <div id="kcdpUxRoot"></div>
   <div id="app" class="app-shell">
     <header class="topbar">
       <div class="top-left">
-        <button type="button" class="icon-btn" id="settingsBtn" title="Einstellungen" aria-label="Einstellungen">⚙</button>
         <div class="search-wrap"><span>⌕</span><input id="globalSearch" name="kcdp_live_search_v01923" type="search" placeholder="Globale Live-Suche…" autocomplete="one-time-code" autocapitalize="off" spellcheck="false" value="" readonly><div id="searchResults" class="search-results hidden"></div></div>
         <button type="button" class="tool-btn magic" id="aiPlanBtn" title="KI-Vorschlagsplan">🪄 KI-Plan</button>
         <button type="button" class="tool-btn" id="photoBtn" title="Handschriftlichen Wunschplan fotografieren/einlesen">📷 Planfoto</button>
@@ -41,12 +73,17 @@
         <button type="button" class="tool-btn" id="moreBtn" title="Auswertung, Druck, Export und weitere Funktionen">⋯ Mehr</button>
       </div>
       <div class="top-right">
+        <div class="global-history-top" role="group" aria-label="Änderungsverlauf">
+          <button type="button" id="undoBtn" class="global-history-button" disabled title="Keine Änderung zum Rückgängigmachen" aria-label="Rückgängig">↶</button>
+          <button type="button" id="redoBtn" class="global-history-button" disabled title="Keine Änderung zum Wiederholen" aria-label="Wiederholen">↷</button>
+        </div>
         <div class="db-block" role="group" aria-label="Datenbankstatus">
           <button type="button" class="db-col" id="idbStatusBtn" title="IndexedDB Status und Test"><span class="db-label">IDX</span><span class="led led-status ok" id="idbStatusLed"></span><span class="led led-traffic" id="idbTrafficLed"></span></button>
           <button type="button" class="db-col" id="supabaseStatusBtn" title="Supabase Status und Test"><span class="db-label">SUP</span><span class="led led-status maintenance" id="supabaseStatusLed" title="Supabase-Verbindung wird hergestellt"></span><span class="led led-traffic" id="supabaseTrafficLed"></span></button>
         </div>
         <button type="button" class="icon-btn" id="userBtn" title="Benutzer">👤</button>
         <button type="button" class="icon-btn exit" id="exitBtn" title="Abmelden / Verlassen">🚪</button>
+        <button type="button" class="icon-btn" id="settingsBtn" title="Einstellungen" aria-label="Einstellungen">⚙</button>
       </div>
     </header>
 
@@ -57,26 +94,50 @@
         <button type="button" class="nav-btn" id="nextDayBtn" title="Nächster Tag">›</button>
         <div class="segmented" id="viewTabs"><button type="button" data-view="day" class="active">Tag</button><button type="button" data-view="week">Woche</button><button type="button" data-view="total">Zeitraum</button></div>
         <div class="segmented" id="layerTabs"><button type="button" data-layer="wish">Wunsch</button><button type="button" data-layer="planned" class="active">Soll</button><button type="button" data-layer="actual">Ist</button><button type="button" data-layer="compare">Vergleich</button></div>
-        <label class="step-label">Raster <select id="stepSelect"><option value="15">15 Min.</option><option value="30" selected>30 Min.</option><option value="60">60 Min.</option></select></label>
+        <label class="step-label">Raster <select id="stepSelect"><option value="15">15 Min.</option><option value="30">30 Min.</option><option value="60" selected>60 Min.</option></select></label>
         <button type="button" class="tool-btn" id="addShiftBtn">＋ Dienst</button><button type="button" class="tool-btn" id="checkBtn">✓ Prüfen</button><button type="button" class="tool-btn quick-plan-trigger" id="quickPlanBtn" title="Mitarbeiter suchen und schnell einplanen">＋ Einplanen</button><button type="button" class="tool-btn publish" id="publishBtn" title="Sollplan prüfen, versionieren und veröffentlichen">⇧ Veröff.</button>
         <button type="button" class="plan-chip" id="planWeatherChip" title="Wetterdetails">☁ Wetter</button><button type="button" class="plan-chip" id="planProgramChip" title="Programmdetails">♪ Programm</button><button type="button" class="plan-chip warning" id="planGapChip" title="Besetzungslücken">⚠ 0</button><button type="button" class="plan-chip info" id="inspectorToggleBtn" title="Planinfo ein-/ausklappen">ℹ Planinfo</button><button type="button" class="plan-chip color-legend-trigger" id="colorLegendBtn" title="Bedeutung der Dienstplanfarben">◉ Farben</button>
       </div>
-      <div class="message-row plan-message-inline" id="messageRow" aria-live="polite"><span id="messageText">KC DP2 V0.20.0 – Dienstplanung bereit.</span><button type="button" id="undoBtn" class="link-btn hidden">↶</button><button type="button" id="redoBtn" class="link-btn hidden">↷</button><button type="button" id="messagesBtn" class="link-btn">Meldungen ▾</button></div>
+      <div class="message-row plan-message-inline" id="messageRow" aria-live="polite"><span id="messageText">KC DP2 V0.20.0 – Dienstplanung bereit.</span><button type="button" id="messagesBtn" class="link-btn">Meldungen ▾</button></div>
     </div>
     <section class="metrics" id="metrics"></section><section class="impact-strip" id="impactStrip"></section><main id="mainView" class="main-view"></main>
   </div>
-  <div id="modalBackdrop" class="modal-backdrop hidden"><div id="modal" class="modal" role="dialog" aria-modal="true"></div></div><div id="contextMenu" class="context-menu hidden"></div>
+  <div id="modalBackdrop" class="modal-backdrop hidden"><div id="modal" class="modal" role="dialog" aria-modal="true" aria-label="KC DP Dialog"></div></div><div id="contextMenu" class="context-menu hidden"></div>
   <input id="photoInput" type="file" accept="image/*" capture="environment" hidden><input id="actualFileInput" type="file" accept=".csv,.txt,.json,.xlsx,.xls,text/csv,application/json" hidden>
 
-  <script src="src/core/model.js?v=0.20.0-b88"></script>
-  <script src="src/core/planning.js?v=0.17.10"></script><script src="src/core/auth.js?v=0.17.10"></script><script src="src/core/session.js?v=0.17.10"></script><script src="src/core/member-access.js?v=0.18.0"></script><script src="src/core/configuration.js?v=0.17.10"></script><script src="src/core/integrations.js?v=0.17.10"></script><script src="src/core/database-diagnostics.js?v=0.17.10"></script><script src="src/core/auto-sync.js?v=0.17.10"></script><script src="src/core/intelligence.js?v=0.17.10"></script><script src="src/core/history.js?v=0.17.10"></script><script src="src/core/locks.js?v=0.17.10"></script><script src="src/core/recovery.js?v=0.17.10"></script><script src="src/core/release.js?v=0.17.10"></script><script src="src/core/staffing.js?v=0.17.10"></script><script src="src/core/breaks.js?v=0.17.10"></script>
+  <script src="src/core/model.js?v=0.20.0-b173"></script><script src="src/core/wish-contract.js?v=0.20.0-b90"></script><script src="src/core/import-review.js?v=0.20.0-b113"></script>
+  <script src="src/core/planning.js?v=0.17.10"></script><script src="src/core/auth.js?v=0.17.10"></script><script src="src/core/session.js?v=0.17.10"></script><script src="src/core/member-access.js?v=0.20.0-b144"></script><script src="src/core/configuration.js?v=0.17.10"></script><script src="src/core/integrations.js?v=0.20.0-b143"></script><script src="src/core/database-diagnostics.js?v=0.17.10"></script><script src="src/core/auto-sync.js?v=0.17.10"></script><script src="src/core/intelligence.js?v=0.17.10"></script><script src="src/core/history.js?v=0.17.10"></script><script src="src/core/locks.js?v=0.17.10"></script><script src="src/core/recovery.js?v=0.17.10"></script><script src="src/core/release.js?v=0.17.10"></script><script src="src/core/staffing.js?v=0.17.10"></script><script src="src/core/member-opportunities.js?v=0.20.0-b174"></script><script src="src/core/breaks.js?v=0.17.10"></script>
   <script src="src/core/planner-engine.js?v=0.19.42"></script><script src="src/core/planner-recommendations.js?v=0.19.42"></script><script src="src/core/replacement-recommendations.js?v=0.19.42"></script><script src="src/core/day-availability.js?v=0.19.42"></script><script src="src/core/planner-audit.js?v=0.19.42"></script><script src="src/core/source-health.js?v=0.19.42"></script>
-  <script src="src/core/workflow.js?v=0.17.10"></script><script src="src/core/actual.js?v=0.17.10"></script><script src="src/core/analytics.js?v=0.17.10"></script><script src="src/core/export.js?v=0.17.10"></script><script src="src/core/documents.js?v=0.17.10"></script><script src="src/core/distribution.js?v=0.17.10"></script><script src="src/core/packages.js?v=0.17.10"></script><script src="src/core/security-core.js?v=0.17.10"></script>
-  <script src="src/adapters/storage.js?v=0.19.37"></script><script src="src/adapters/backup.js?v=0.17.10"></script><script src="src/adapters/person-provider.js?v=0.19.54-security-1"></script><script src="src/adapters/context-providers.js?v=0.17.10"></script><script src="src/adapters/pdf.js?v=0.17.10"></script><script src="src/adapters/host.js?v=0.17.10"></script><script src="src/adapters/email.js?v=0.17.10"></script><script src="src/adapters/sync.js?v=0.17.10"></script><script src="src/adapters/pc-manager.js?v=0.17.10"></script><script src="src/adapters/supabase-provider.js?v=0.19.37"></script><script src="src/adapters/diagnostics.js?v=0.19.51h"></script><script src="src/core/table-core-adapter.js?v=0.19.51-install-1"></script><script src="src/adapters/installations.js?v=0.19.51-install-1"></script><script src="src/core/manager-auto-sync.js?v=0.19.42"></script><script src="src/core/multidevice-test.js?v=0.19.37"></script><script src="src/adapters/photo-recognition.js?v=0.17.10"></script><script src="src/adapters/timeclock-import.js?v=0.17.10"></script><script src="src/adapters/wish-import.js?v=0.19.53-vhb-1"></script><script src="src/core/notification-channel-safety.js?v=0.19.56"></script><script src="src/core/notifications.js?v=0.19.56-safety"></script><script src="src/adapters/push.js?v=0.19.55"></script>
-  <script src="src/ui/device-ux.js?v=0.17.10"></script><script src="src/ui/wish-sprint.js?v=0.19.51"></script><script src="src/ui/role-ux.js?v=0.19.37"></script><script src="src/core/update-manager.js?v=0.20.0-b88"></script><script src="src/core/update-build-guard.js?build=88"></script><script src="src/ui/update-ui.js?v=0.19.37"></script><script src="src/ui/app.js?v=0.19.37"></script><script src="src/ui/day-availability-filter.js?v=0.19.42"></script><script src="src/ui/quick-plan-recommendations.js?v=0.19.42"></script><script src="src/ui/planner-audit-ui.js?v=0.19.42"></script><script src="src/ui/source-health-ui.js?v=0.19.63"></script><script src="src/ui/session-mobile-hotfix.js?build=88"></script><script src="src/ui/post-unlock-auth-guard.js?build=88"></script><script src="src/core/planner-application-guard.js?v=0.19.42"></script><script src="src/ui/installation-center.js?v=0.19.51-install-1"></script><script src="src/ui/diagnostics-center.js?v=0.19.67-direct-gate-2"></script><script src="src/ui/kc-ux-polish.js?v=0.19.55-early-diag-gate-1"></script><script src="src/ui/notification-safety-ui.js?v=0.19.56-preview-guard"></script><script src="src/ui/notification-channel-settings.js?v=0.19.56"></script><script src="src/ui/v020-shell.js?v=0.20.0-b88"></script><script src="src/ui/v020-layout.js?v=0.20.0-b88"></script>
-  <script src="src/core/kicc-heartbeat.js?v=0.20.0-b88-kicc3-authfix"></script>
+  <script src="src/core/workflow.js?v=0.20.0-b169"></script><script src="src/core/actual.js?v=0.20.0-b141"></script><script src="src/core/analytics.js?v=0.17.10"></script><script src="src/core/export.js?v=0.17.10"></script><script src="src/core/document-identity.js?v=0.20.0-b114"></script><script src="src/vendor/qrcode-generator.js?v=2.0.4"></script><script src="src/core/personalized-forms.js?v=0.20.0-b121"></script><script src="src/core/documents.js?v=0.20.0-b164"></script><script src="src/core/distribution.js?v=0.17.10"></script><script src="src/core/packages.js?v=0.17.10"></script><script src="src/core/security-core.js?v=0.17.10"></script>
+  <script src="src/adapters/storage.js?v=0.19.37"></script><script src="src/adapters/backup.js?v=0.17.10"></script><script src="src/adapters/person-provider.js?v=0.20.0-b173"></script><script src="src/adapters/context-providers.js?v=0.17.10"></script><script src="src/adapters/pdf.js?v=0.20.0-b121"></script><script src="src/adapters/host.js?v=0.17.10"></script><script src="src/adapters/email.js?v=0.17.10"></script><script src="src/adapters/sync.js?v=0.20.0-b174"></script><script src="src/adapters/pc-manager.js?v=0.20.0-b143"></script><script src="src/adapters/supabase-provider.js?v=0.20.0-b147"></script><script src="src/adapters/diagnostics.js?v=0.19.51h"></script><script src="src/core/table-core-adapter.js?v=0.20.0-b173"></script><script src="src/adapters/installations.js?v=0.19.51-install-1"></script><script src="src/core/manager-auto-sync.js?v=0.20.0-b143"></script><script src="src/core/multidevice-test.js?v=0.19.37"></script><script src="src/vendor/tesseract/tesseract.min.js?v=7.0.0"></script><script src="src/vendor/jsQR.js?v=1.4.0"></script><script src="src/adapters/form-ocr.js?v=0.20.0-b122"></script><script src="src/adapters/photo-recognition.js?v=0.20.0-b122"></script><script src="src/adapters/timeclock-import.js?v=0.17.10"></script><script src="src/adapters/wish-import.js?v=0.19.53-vhb-1"></script><script src="src/core/notification-channel-safety.js?v=0.19.56"></script><script src="src/core/notifications.js?v=0.19.56-safety"></script><script src="src/adapters/push.js?v=0.19.55"></script>
+<link rel="stylesheet" href="src/ui/member-opportunities.css?v=0.20.0-b174"><link rel="stylesheet" href="src/ui/ai-plan-results.css?v=0.20.0-b176"><script src="src/ui/device-ux.js?v=0.17.10"></script><script src="src/ui/wish-sprint.js?v=0.19.51"></script><script src="src/ui/role-ux.js?v=0.20.0-b175"></script><script src="src/ui/ai-plan-results.js?v=0.20.0-b176"></script><script src="src/ui/member-opportunities.js?v=0.20.0-b174"></script><script src="src/core/update-manager.js?v=0.20.0-b184"></script><script src="src/core/update-build-guard.js?build=92"></script><script src="src/ui/update-ui.js?v=0.19.37"></script><script src="src/ui/app.js?v=0.20.0-b180"></script><script src="src/ui/day-availability-filter.js?v=0.19.42"></script><script src="src/ui/quick-plan-recommendations.js?v=0.19.42"></script><script src="src/ui/planner-audit-ui.js?v=0.19.42"></script><script src="src/ui/source-health-ui.js?v=0.20.0-b153"></script><script src="src/ui/session-mobile-hotfix.js?build=92"></script><script src="src/ui/post-unlock-auth-guard.js?build=92"></script><script src="src/core/planner-application-guard.js?v=0.19.42"></script><script src="src/ui/installation-center.js?v=0.19.51-install-1"></script><script src="src/ui/diagnostics-center.js?v=0.19.67-direct-gate-2"></script><script src="src/ui/kc-ux-polish.js?v=0.20.0-b110"></script><script src="src/ui/notification-safety-ui.js?v=0.19.56-preview-guard"></script><script src="src/ui/notification-channel-settings.js?v=0.19.56"></script><script src="src/ui/v020-shell.js?v=0.20.0-b186"></script><script src="src/ui/v020-layout.js?v=0.20.0-b133"></script><script src="src/ui/register-context-menu.js?v=0.20.0-b186"></script><script src="src/ui/fairness-view.js?v=0.20.0-b185"></script><script src="src/ui/demand-view.js?v=0.20.0-b116"></script><script src="src/ui/register-actions.js?v=0.20.0-b92"></script>
+<script src="src/core/kicc-heartbeat.js?v=0.20.0-b189-kicc3-authfix"></script>
 <script>
 (function(){const EXPECTED='0.20.0';const actual=window.KC_DP?.VERSION||window.KCDP?.VERSION||window.KC_DP_VERSION||'';if(actual&&actual!==EXPECTED){document.body.insertAdjacentHTML('afterbegin','<div id="releaseMismatch" style="position:fixed;z-index:99999;left:12px;right:12px;top:12px;padding:14px 18px;border:2px solid #c62828;border-radius:10px;background:#fff3f3;color:#8b0000;font:700 15px Arial,sans-serif;box-shadow:0 4px 18px #0003">⚠ Versionskonflikt: Oberfläche '+EXPECTED+' erwartet, geladen ist '+actual+'. Bitte diesen Ordner neu öffnen; alte Browserdateien werden nicht verwendet.</div>');}})();
 </script>
+<script src="src/ui/wish-bar-composite.js?v=0.20.0-b169"></script><script src="src/ui/wish-guide-controls.js?v=0.20.0-b189"></script>
+<script src="src/ui/plan-transfer.js?v=0.20.0-b134"></script>
+<script src="src/ui/gap-workflow.js?v=0.20.0-b97"></script>
+<script src="src/ui/dashboard-pro.js?v=0.20.0-b103"></script>
+<script src="src/ui/day-picker.js?v=0.20.0-b105"></script>
+<script src="src/ui/hour-matrix.js?v=0.20.0-b133"></script>
+<script src="src/ui/deviations-view.js?v=0.20.0-b106"></script>
+<script src="src/ui/forms-center.js?v=0.20.0-b114"></script>
+<script src="src/ui/wish-submission-check.js?v=0.20.0-b152"></script>
+<script src="src/ui/global-history.js?v=0.20.0-b119"></script>
+<script src="src/ui/active-day.js?v=0.20.0-b120"></script>
+<script src="src/ui/photo-ocr-review.js?v=0.20.0-b122"></script>
+<script src="src/ui/planning-focus.js?v=0.20.0-b172-r2"></script>
+<script src="src/ui/wish-legend-inline.js?v=0.20.0-b125"></script>
+<script src="src/ui/person-sort.js?v=0.20.0-b148"></script>
+<script src="src/ui/microtext-zoom.js?v=0.20.0-b150"></script>
+<link rel="stylesheet" href="src/ui/radar-check.css?v=0.20.0-b171"><link rel="stylesheet" href="src/ui/radar-results.css?v=0.20.0-b172-r1"><script src="src/ui/radar-check.js?v=0.20.0-b173"></script><script src="src/ui/radar-results.js?v=0.20.0-b173"></script><script src="src/ui/occupancy-radar.js?v=0.20.0-b171"></script><script src="src/ui/occupancy-radar-summary.js?v=0.20.0-b172-r1"></script><script src="src/ui/person-hours-block.js?v=0.20.0-b173"></script><script src="src/ui/occupancy-block-controls.js?v=0.20.0-b172-r4"></script><script src="src/ui/row-stripe-setting.js?v=0.20.0-b172"></script>
+<script src="src/ui/occupancy-view.js?v=0.20.0-b172-r2"></script><script src="src/ui/occupancy-area-chart.js?v=0.20.0-b172-r2"></script>
+<script src="src/ui/batch-planning.js?v=0.20.0-b140"></script>
+  <script src="src/ui/name-display.js?v=0.20.0-b173"></script>
+  <script src="src/ui/shift-health-ui.js?v=0.20.0-b177-r1"></script>
+  <script src="src/ui/planner-sidebar.js?v=0.20.0-b173"></script>
+  <script src="src/ui/planned-toolbar.js?v=0.20.0-b180"></script>
+  <script src="src/ui/time-presence.js?v=0.20.0-b183"></script>
 </body>
 </html>

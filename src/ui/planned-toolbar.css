@@ -1,0 +1,39 @@
+/* Sollplan: klare Priorität statt einer Reihe gleichwertiger Kleinstbuttons. */
+body[data-v020-register="planned"] .plan-control-row{background:#fbfaf7;border-bottom-color:#d8cec4}
+body[data-v020-register="planned"] .plan-controls-main{gap:7px}
+body[data-v020-register="planned"] #dateBtn{font-weight:800}
+body[data-v020-register="planned"] #checkBtn{border-color:#7f1c2b;background:#fff6f7;color:#751523;font-weight:900}
+body[data-v020-register="planned"] #publishBtn{font-weight:900}
+body[data-v020-register="planned"] #planGapChip{order:50;border-color:#d69831;background:#fff5dc;color:#6c4510;font-weight:900}
+body[data-v020-register="planned"] #planGapChip.warning{border-color:#b92d3a;background:#fff0f1;color:#8d1724}
+body[data-v020-register="planned"] #planWeatherChip{order:49;max-width:230px;overflow:hidden;text-overflow:ellipsis}
+body[data-v020-register="planned"] #planProgramChip,body[data-v020-register="planned"] #inspectorToggleBtn,body[data-v020-register="planned"] #colorLegendBtn{display:none!important}
+.planned-toolbar-more-wrap{position:relative;order:51;flex:0 0 auto}.planned-toolbar-more{font-weight:800}.planned-toolbar-menu{position:absolute;z-index:1500;top:calc(100% + 6px);right:0;display:none;width:265px;padding:7px;border:1px solid #cfc4b9;border-radius:11px;background:#fff;box-shadow:0 14px 34px #2e211b38}.planned-toolbar-menu.open{display:grid;gap:5px}.planned-toolbar-menu button{min-height:38px;padding:8px 10px;border:0;border-radius:8px;background:#f8f5f1;text-align:left;font-weight:750;cursor:pointer}.planned-toolbar-menu button:hover,.planned-toolbar-menu button:focus-visible{background:#fff0d4;outline:2px solid #b67816}
+body[data-v020-register="planned"] .plan-message-inline{margin-left:auto;min-width:300px;background:#fff;border-color:#d9cec4}
+@media(max-width:1280px){body[data-v020-register="planned"] .plan-controls-main{flex-wrap:wrap;overflow:visible}.planned-toolbar-menu{left:auto;right:0}}
+@media(max-width:760px){body[data-v020-register="planned"] #planWeatherChip{max-width:150px}.planned-toolbar-more{font-size:0}.planned-toolbar-more:after{content:'⋯ Mehr';font-size:11px}}
+/* Build 180: vermessene, nicht gequetschte Sollplan-Leiste. */
+body[data-v020-register="planned"] .plan-control-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(290px,350px);gap:7px 10px;align-items:start;padding:6px 10px}
+body[data-v020-register="planned"] .plan-controls-main{display:flex;width:100%;min-width:0;min-height:38px;align-items:center;align-content:center;flex-wrap:wrap;gap:6px 7px;overflow:visible!important;padding:0!important}
+body[data-v020-register="planned"] .plan-controls-main>*{flex:0 0 auto}
+body[data-v020-register="planned"] .v020-ribbon-context{min-width:198px;height:38px}
+body[data-v020-register="planned"] #prevDayBtn,body[data-v020-register="planned"] #nextDayBtn{width:36px;min-width:36px;height:38px;padding:0}
+body[data-v020-register="planned"] #dateBtn{width:146px;min-width:146px;max-width:146px;height:38px;padding:0 10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body[data-v020-register="planned"] #viewTabs{height:38px}body[data-v020-register="planned"] #viewTabs button{height:36px;min-width:31px;padding:0 9px;white-space:nowrap}
+body[data-v020-register="planned"] .step-label{height:38px;white-space:nowrap}body[data-v020-register="planned"] .step-label select{width:78px;min-width:78px}
+body[data-v020-register="planned"] #addShiftBtn{min-width:82px}body[data-v020-register="planned"] #checkBtn{min-width:112px}body[data-v020-register="planned"] #quickPlanBtn{min-width:106px}body[data-v020-register="planned"] #publishBtn{min-width:106px}
+body[data-v020-register="planned"] #addShiftBtn,body[data-v020-register="planned"] #checkBtn,body[data-v020-register="planned"] #quickPlanBtn,body[data-v020-register="planned"] #publishBtn{height:38px;padding:0 11px;display:inline-flex;align-items:center;justify-content:center;line-height:1.1;white-space:nowrap;overflow:visible;text-overflow:clip}
+body[data-v020-register="planned"] #planWeatherChip,body[data-v020-register="planned"] #planGapChip,body[data-v020-register="planned"] .planned-toolbar-more{height:38px;min-width:max-content;padding:0 11px;white-space:nowrap}
+body[data-v020-register="planned"] .plan-message-inline{width:100%;min-width:0;max-width:none;height:38px;margin:0;align-self:start}
+@media(min-width:1760px){body[data-v020-register="planned"] .plan-controls-main{flex-wrap:nowrap}}
+@media(max-width:1100px){body[data-v020-register="planned"] .plan-control-row{grid-template-columns:1fr}body[data-v020-register="planned"] .plan-message-inline{grid-column:1}}
+
+/* Ansichtsidentität: Registerfarbe nur an Führungselementen, nicht an Fachbalken. */
+body[data-v020-register="wish"]{--plan-view-color:#7554a3;--plan-view-soft:#f4effb}
+body[data-v020-register="planned"]{--plan-view-color:#2f66a5;--plan-view-soft:#edf4fc}
+body[data-v020-register="actual"]{--plan-view-color:#3d7a63;--plan-view-soft:#edf7f1}
+body[data-v020-register="deviations"]{--plan-view-color:#7b3d52;--plan-view-soft:#f8eef2}
+body[data-v020-register="wish"] .plan-control-row,body[data-v020-register="planned"] .plan-control-row,body[data-v020-register="actual"] .plan-control-row,body[data-v020-register="deviations"] .plan-control-row{border-bottom:4px solid var(--plan-view-color)}
+body[data-v020-register="wish"] .time-header,body[data-v020-register="planned"] .time-header,body[data-v020-register="actual"] .time-header,body[data-v020-register="deviations"] .time-header{box-shadow:inset 0 4px 0 var(--plan-view-color)}
+body[data-v020-register="wish"] .sticky-name,body[data-v020-register="planned"] .sticky-name,body[data-v020-register="actual"] .sticky-name,body[data-v020-register="deviations"] .sticky-name{background:var(--plan-view-soft);color:var(--plan-view-color)}
+body[data-v020-register="wish"] .timeline-head,body[data-v020-register="planned"] .timeline-head,body[data-v020-register="actual"] .timeline-head,body[data-v020-register="deviations"] .timeline-head{background-color:var(--plan-view-soft)}

@@ -39,12 +39,12 @@
     const ifNeeded=wishes.some(w=>w.wishType==='if_needed'&&w.start<=start&&w.end>=end);
     return {wishes,unavailable,preferred,available,ifNeeded};
   };
-  K.wishTypeLabel=t=>({available:'Verfügbar',preferred:'Bevorzugt',if_needed:'Nur wenn nötig',unavailable:'Nicht verfügbar'})[t]||t;
+  K.wishTypeLabel=t=>K.wishContract?.label?.(typeof t==='string'?t:t)||({available:'Verfügbar',preferred:'Bevorzugt',if_needed:'Nur wenn nötig',unavailable:'Nicht verfügbar'})[t]||t;
   K.validateWish=function(candidate){
     const issues=[],person=K.person(candidate.personId),day=K.days.find(d=>d.date===candidate.date);
     if(!person||!person.active)issues.push({level:'error',text:'Mitarbeiter ist nicht aktiv.'});
     if(candidate.end<=candidate.start)issues.push({level:'error',text:'Ende muss nach Beginn liegen.'});
-    if(!['available','preferred','if_needed','unavailable'].includes(candidate.wishType))issues.push({level:'error',text:'Unbekannter Wunschstatus.'});
+    if(K.wishContract)issues.push(...K.wishContract.validate(candidate));else if(!['available','preferred','if_needed','unavailable'].includes(candidate.wishType))issues.push({level:'error',text:'Unbekannter Wunschstatus.'});
     const overlap=K.wishes.filter(w=>w.id!==candidate.id&&w.personId===candidate.personId&&w.date===candidate.date&&w.status!=='deleted'&&Math.max(w.start,candidate.start)<Math.min(w.end,candidate.end));
     if(overlap.length)issues.push({level:'warn',text:'Überlappt einen weiteren Wunsch dieser Person.'});
     if(person&&!K.helperAvailable(person,candidate.date,candidate.start,candidate.end))issues.push({level:'warn',text:'Aushilfe ist laut Zeitmatrix nicht vollständig verfügbar.'});

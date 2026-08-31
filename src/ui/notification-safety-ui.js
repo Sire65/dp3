@@ -42,7 +42,7 @@
     const nodes=[...root.querySelectorAll('div,section,article,p')];
     for(const el of nodes){
       if(el.dataset.kcSafetyDecorated==='1')continue;
-      const txt=(el.innerText||'').trim();
+      const txt=(el.textContent||'').trim();
       if(!txt.includes('Sicherheitsstatus')||!txt.includes('previewOnly='))continue;
       const parsed=parse(txt);
       const h=human(parsed);

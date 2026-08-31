@@ -90,6 +90,16 @@
     });
     modal.appendChild(x);
   }
+  function ensureSupabaseRelogin(){
+    if(diagOpen())return;
+    const modal=document.getElementById('modal'),result=document.getElementById('dbQuickResult');
+    if(!modal||modal.querySelector('h2')?.textContent?.trim()!=='Supabase / KC Sync'||!result||!/(Sitzung ist nicht mehr aktiv|erneut anmelden|Auth-Sitzung)/i.test(result.textContent||''))return;
+    if(document.getElementById('kcSupabaseRelogin'))return;
+    const actions=modal.querySelector('.modal-actions'),test=document.getElementById('dbTest');if(!actions)return;
+    const button=document.createElement('button');button.id='kcSupabaseRelogin';button.type='button';button.className='primary';button.textContent='Neu anmelden';button.title='Abgelaufene Cloud-Sitzung beenden und erneut anmelden';
+    actions.insertBefore(button,test||null);
+    button.onclick=async()=>{button.disabled=true;button.textContent='Abmeldung läuft …';try{await K.memberAccess?.signOut?.();document.getElementById('dbClose')?.click();await K.roleUx?.ensureLogin?.()}catch(e){button.disabled=false;button.textContent='Neu anmelden';result.className='db-test-status bad';result.replaceChildren();const title=document.createElement('b'),detail=document.createElement('span');title.textContent='✕ Neuanmeldung konnte nicht gestartet werden';detail.textContent=String(e?.message||e);result.append(title,detail)}};
+  }
   function ensureSaveState(){
     if(diagOpen())return;
     const right=document.querySelector('.top-right');if(!right||document.getElementById('kcSaveState'))return;
@@ -123,11 +133,11 @@
     loadModule('src/core/document-identity.js?v=0.19.55-s0','KCDP_DOC_ID');
     loadModule('src/core/email-inbox.js?v=0.19.55-s1','KCDP_EMAIL_CORE');
     loadModule('src/core/inbound-wish-import.js?v=0.19.55-s2','KCDP_INBOUND_IMPORT');
-    loadModule('src/ui/email-center.js?v=0.19.55-s1','KCDP_EMAIL_CENTER');
+    loadModule('src/ui/email-center.js?v=0.20.0-b158','KCDP_EMAIL_CENTER');
     loadModule('src/ui/session-diagnostics-guard.js?v=0.19.69-close-only-2','KCDP_SESSION_DIAG_GUARD');
     loadModule('src/ui/supabase-session-guard.js?v=0.19.55-single-flight-led-2','KCDP_SUPABASE_SESSION_GUARD')
   }
-  function apply(){if(diagOpen())return;roleUx();humanize();updateSaveState();ensureSupabaseCloseX()}
+  function apply(){if(diagOpen())return;roleUx();humanize();updateSaveState();ensureSupabaseCloseX();ensureSupabaseRelogin()}
   function scheduleApply(){
     if(diagOpen()||applyScheduled)return;
     applyScheduled=true;
@@ -140,5 +150,5 @@
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',()=>{loadV01955Modules();apply();obs.observe(document.body,{childList:true,subtree:true})},{once:true});
   else{loadV01955Modules();apply();obs.observe(document.body,{childList:true,subtree:true})}
   window.addEventListener('KC_DP_MANAGER_AUTO_SYNC',updateSaveState);
-  K.kcUxPolish={version:'0.19.55-notification-list-guard-1',apply,updateSaveState,loadV01955Modules,clearLegacyDiagnosticsState,installEarlyDiagnosticsGate,installNotificationGate,ensureSupabaseCloseX};
+  K.kcUxPolish={version:'0.20.0-b110',apply,updateSaveState,loadV01955Modules,clearLegacyDiagnosticsState,installEarlyDiagnosticsGate,installNotificationGate,ensureSupabaseCloseX,ensureSupabaseRelogin};
 })();

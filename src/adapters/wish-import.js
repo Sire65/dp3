@@ -72,7 +72,7 @@ function matrixToObjects(matrix){
 function getField(row,aliases){
   const entries=Object.entries(row||{});const wanted=aliases.map(norm);const found=entries.find(([k])=>wanted.includes(norm(k)));return found?found[1]:'';
 }
-function entry(date,start,end,wishType,comment,rowNumber,sourceField,wishZone='B'){return {date,start,end,wishType,comment:clean(comment),rowNumber,sourceField,wishZone};}
+function entry(date,start,end,wishType,comment,rowNumber,sourceField,wishZone='B'){const row={date,start,end,wishType,comment:clean(comment),rowNumber,sourceField,wishZone,scope:sourceField==='Sperrtag'?'day':'time',source:'form_import'};return K.wishContract?.normalize?.(row)||row;}
 function expandRow(row,index=0){
   const rowNumber=Number(row?.__rowNumber)||index+2,issues=[],entries=[];
   const date=parseDate(getField(row,['Datum','Date','Tag']));

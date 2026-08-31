@@ -1,0 +1,10 @@
+(function(){
+'use strict';
+const K=window.KCDP=window.KCDP||{};
+function buttons(){return{undo:document.getElementById('undoBtn'),redo:document.getElementById('redoBtn')}}
+function update(){const b=buttons(),h=K.historyManager;if(!b.undo||!b.redo||!h)return;b.undo.classList.remove('hidden');b.redo.classList.remove('hidden');b.undo.classList.add('global-history-button');b.redo.classList.add('global-history-button');b.undo.disabled=!h.canUndo();b.redo.disabled=!h.canRedo();const u=h.state.undo.at(-1),r=h.state.redo.at(-1);b.undo.title=u&&h.canUndo()?`Rückgängig: ${u.label}`:'Keine Änderung zum Rückgängigmachen';b.redo.title=r?`Wiederholen: ${r.label}`:'Keine Änderung zum Wiederholen';b.undo.setAttribute('aria-label',b.undo.title);b.redo.setAttribute('aria-label',b.redo.title)}
+function refresh(){const active=K.v020Shell?.state?.active;if(active&&['dashboard','demand','matrix','deviations','fairness'].includes(active))K.v020Shell.select(active,{quiet:true});else K.render?.()}
+function wrap(){const h=K.historyManager;if(!h||h.__globalUiWrapped)return;for(const name of ['record','reset','undo','redo']){const original=h[name]?.bind(h);if(!original)continue;h[name]=function(){const out=original(...arguments);queueMicrotask(update);return out}}h.__globalUiWrapped=true;h.state.max=40}
+function install(){wrap();update();window.addEventListener('kc-history-restored',()=>setTimeout(()=>{refresh();update()},0));window.addEventListener('kc-v020-register-change',update);document.addEventListener('keydown',e=>{if(!(e.ctrlKey||e.metaKey)||e.altKey)return;const key=e.key.toLowerCase();if(key==='z'&&!e.shiftKey&&K.historyManager?.canUndo?.()){e.preventDefault();document.getElementById('undoBtn')?.click()}else if((key==='y'||(key==='z'&&e.shiftKey))&&K.historyManager?.canRedo?.()){e.preventDefault();document.getElementById('redoBtn')?.click()}})}
+K.globalHistory={version:'0.20.0-b119',update,refresh};if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
+})();

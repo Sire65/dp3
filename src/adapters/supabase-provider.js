@@ -1,6 +1,6 @@
 (function(){
  const K=window.KCDP=window.KCDP||{};
- let session=null;
+ let session=null,syncKeyCache=null;
  const state={status:'offline',authStatus:'signed_out',userId:null,lastError:null,lastHealthAt:null,lastPushAt:null,lastPullAt:null,lastAuthAt:null};
  const RAW_TIMEOUT_MS=12000;
  function cfg(){return K.integrationConfig?.supabase||{};}
@@ -70,10 +70,21 @@
  }
  async function updatePassword(password){await ensureSession();try{const {data}=await api('/auth/v1/user',{method:'PUT',body:JSON.stringify({password:String(password)})});return {ok:true,user:data};}catch(e){if(e?.code==='same_password'||/new password should be different/i.test(e?.message||''))throw new Error('Das neue Passwort muss sich vom bisherigen Passwort unterscheiden.');throw e;}}
  async function currentMembership(){await ensureSession();const c=validateConfig(),uid=state.userId;if(!uid)throw new Error('Supabase Benutzer-ID fehlt.');const {data}=await api(`/rest/v1/kc_dp_memberships?select=org_id,user_id,role,active,person_id,display_name,email,phone&org_id=eq.${encodeURIComponent(c.orgId)}&user_id=eq.${encodeURIComponent(uid)}&active=is.true&limit=1`,{method:'GET'});const row=Array.isArray(data)?data[0]:null;if(!row)throw new Error('Keine aktive KC-DP-Mitgliedschaft gefunden.');return row;}
- async function signOut(){try{if(session?.access_token)await raw('/auth/v1/logout',{method:'POST'},true);}finally{await clearSession();state.status='signed_out';state.authStatus='signed_out';}return true;}
+ async function getSyncKey(){
+   await ensureSession();
+   if(syncKeyCache?.secret&&syncKeyCache?.namespace)return {...syncKeyCache};
+   const c=validateConfig(),{data}=await api('/functions/v1/kc-dp-sync-key',{method:'POST',body:JSON.stringify({orgId:c.orgId,projectId:c.projectId})});
+   if(!data?.ok||!data?.key||!data?.namespace)throw new Error(data?.detail||data?.error||'Gemeinsamer Projektschlüssel konnte nicht geladen werden.');
+   syncKeyCache={secret:String(data.key),namespace:String(data.namespace),generation:Number(data.generation||1),fingerprint:data.fingerprint||null};
+   return {...syncKeyCache};
+ } async function signOut(){syncKeyCache=null;K.sync?.resetRemoteKey?.();try{if(session?.access_token)await raw('/auth/v1/logout',{method:'POST'},true);}finally{await clearSession();state.status='signed_out';state.authStatus='signed_out';}return true;}
  async function provisionMemberAccess({personId,displayName,email='',phone='',role='employee'}={}){
    await ensureSession();const c=validateConfig();const {data}=await api('/functions/v1/kc-dp-user-admin',{method:'POST',body:JSON.stringify({action:'provision',orgId:c.orgId,personId,displayName,email,phone,role})});
    if(!data?.ok)throw new Error(data?.detail||data?.error||'Benutzerzugang konnte nicht eingerichtet werden.');return data;
+ }
+ async function listMemberAccess(){
+   await ensureSession();const c=validateConfig();const {data}=await api('/functions/v1/kc-dp-user-admin',{method:'POST',body:JSON.stringify({action:'list',orgId:c.orgId})});
+   if(!data?.ok)throw new Error(data?.detail||data?.error||'Benutzerrollen konnten nicht geladen werden.');return Array.isArray(data.memberships)?data.memberships:[];
  }
  async function deactivateMemberAccess(personId){
    await ensureSession();const c=validateConfig();const {data}=await api('/functions/v1/kc-dp-user-admin',{method:'POST',body:JSON.stringify({action:'deactivate',orgId:c.orgId,personId})});
@@ -103,16 +114,17 @@
  }
  async function api(path,opt={}){await ensureSession();return raw(path,opt,true);}
  async function provider(req){const c=validateConfig();try{
-   if(req.action==='health'){state.status='checking';const {data}=await api(`/rest/v1/kc_dp_sync_operations?select=seq,operation_id&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(c.projectId)}&limit=1`,{method:'GET'});state.status='ready';state.lastHealthAt=new Date().toISOString();state.lastError=null;return {ok:true,rows:Array.isArray(data)?data.length:0,userId:state.userId};}
-   if(req.action==='push'){state.status='syncing';const w=req.wireOperation||{},body={p_org_id:c.orgId,p_project_id:c.projectId,p_operation_id:w.operationId,p_entity:w.entity,p_entity_id:w.entityId||w.operationId,p_operation:w.operation,p_base_version:w.baseVersion==null?null:Number(w.baseVersion),p_envelope:w.envelope,p_device_id:K.multiDeviceTest?.deviceId?.()||null};const {data}=await api('/rest/v1/rpc/kc_dp_push_operation',{method:'POST',body:JSON.stringify(body)});state.status='ready';state.lastPushAt=new Date().toISOString();return data||{status:'ok'};}
-   if(req.action==='pull'){state.status='syncing';const cursor=Number(req.cursor||0),path=`/rest/v1/kc_dp_sync_operations?select=seq,operation_id,envelope,remote_version&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(c.projectId)}&seq=gt.${cursor}&order=seq.asc&limit=500`,{data}=await api(path,{method:'GET'}),rows=Array.isArray(data)?data:[];state.status='ready';state.lastPullAt=new Date().toISOString();return {wireOperations:rows.map(r=>({operationId:r.operation_id,envelope:r.envelope,remoteVersion:r.remote_version})),cursor:rows.length?rows[rows.length-1].seq:cursor};}
+   const syncProjectId=String(req.syncNamespace||req.wireOperation?.syncNamespace||c.projectId);
+   if(req.action==='health'){state.status='checking';const {data}=await api(`/rest/v1/kc_dp_sync_operations?select=seq,operation_id&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(syncProjectId)}&limit=1`,{method:'GET'});state.status='ready';state.lastHealthAt=new Date().toISOString();state.lastError=null;return {ok:true,rows:Array.isArray(data)?data.length:0,userId:state.userId};}
+   if(req.action==='push'){state.status='syncing';const w=req.wireOperation||{},body={p_org_id:c.orgId,p_project_id:syncProjectId,p_operation_id:w.operationId,p_entity:w.entity,p_entity_id:w.entityId||w.operationId,p_operation:w.operation,p_base_version:w.baseVersion==null?null:Number(w.baseVersion),p_envelope:w.envelope,p_device_id:K.multiDeviceTest?.deviceId?.()||null};const {data}=await api('/rest/v1/rpc/kc_dp_push_operation',{method:'POST',body:JSON.stringify(body)});state.status='ready';state.lastPushAt=new Date().toISOString();return data||{status:'ok'};}
+   if(req.action==='pull'){state.status='syncing';const cursor=Number(req.cursor||0),path=`/rest/v1/kc_dp_sync_operations?select=seq,operation_id,envelope,remote_version&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(syncProjectId)}&seq=gt.${cursor}&order=seq.asc&limit=500`,{data}=await api(path,{method:'GET'}),rows=Array.isArray(data)?data:[];state.status='ready';state.lastPullAt=new Date().toISOString();return {wireOperations:rows.map(r=>({operationId:r.operation_id,envelope:r.envelope,remoteVersion:r.remote_version})),cursor:rows.length?rows[rows.length-1].seq:cursor};}
    throw new Error('Unbekannte Supabase-Aktion.');
   }catch(e){state.status='error';state.lastError=e.message;throw e;}}
  function configure(patch={}){K.integrations?.update?.('supabase',patch);validateConfig();K.sync?.setProvider?.(provider);state.status='configured';return {...cfg(),publishableKey:cfg().publishableKey?'***gesetzt***':''};}
  function configureIfPossible(){try{validateConfig();K.sync?.setProvider?.(provider);state.status=sessionValid()?'authenticated':'configured';return true;}catch(_){K.sync?.setProvider?.(null);state.status='offline';return false;}}
  function setAccessToken(token){const t=String(token||'').trim();if(!t){return false;}const jwt=decodeJwt(t);applySession({access_token:t,refresh_token:'',expires_at:Number(jwt?.exp||Math.floor(Date.now()/1000)+3600),user:jwt?.sub?{id:jwt.sub}:null});saveSession();return true;}
  function restoreSession(s){applySession(s);return !!session;}
- async function clearSession(){applySession(null);try{if(K.storage?.unlocked)await K.storage.remove('supabaseSession');}catch(_){}return true;}
+ async function clearSession(){syncKeyCache=null;K.sync?.resetRemoteKey?.();applySession(null);try{if(K.storage?.unlocked)await K.storage.remove('supabaseSession');}catch(_){}return true;}
  async function test(){await ensureSession();return provider({action:'health'});}
  async function testProject(){const r=await raw('/auth/v1/settings',{method:'GET'},false);return {ok:true,status:r.response.status,settings:r.data};}
  async function probeDatabase(){await ensureSession();const c=validateConfig();const {data,response}=await api(`/rest/v1/kc_dp_sync_operations?select=seq&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(c.projectId)}&limit=1`,{method:'GET'});return {ok:true,status:response.status,detail:`kc_dp_sync_operations erreichbar · ${Array.isArray(data)?data.length:0} Zeile(n)`};}
@@ -126,6 +138,6 @@
  async function updateSyncTest(id,patch){return rest('kc_dp_sync_test_runs',{method:'PATCH',query:`?id=eq.${encodeURIComponent(id)}`,body:{...patch,updated_at:new Date().toISOString()}});}
  async function listServerConflicts(){const c=validateConfig();return rest('kc_dp_sync_conflicts',{query:`?select=id,entity,entity_id,operation_id,device_id,base_version,remote_version,status,detected_at,resolved_at&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(c.projectId)}&order=detected_at.desc&limit=50`});}
  async function resolveServerConflict(id,status,resolution={}){return rest('kc_dp_sync_conflicts',{method:'PATCH',query:`?id=eq.${encodeURIComponent(id)}`,body:{status,resolution,resolved_at:new Date().toISOString()}});}
- K.supabaseConnection={version:'0.19.55-hotfix1',contract:'KC_DP_SUPABASE_SYNC_V1',state,configure,configureIfPossible,setAccessToken,restoreSession,persistSession:saveSession,sessionSnapshot:()=>session?JSON.parse(JSON.stringify(session)):null,clearSession,hasAccessToken:()=>!!session?.access_token,signInAnonymously,signInWithPassword,sendOtp,verifyOtp,requestPasswordReset,updatePassword,currentMembership,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,sendClientReport,signOut,refreshSession,ensureSession,test,testProject,probeDatabase,probeRls,probeRoundtrip,registerDevice,listDevices,createSyncTest,listSyncTests,updateSyncTest,listServerConflicts,resolveServerConflict,transportDiagnosis,provider,validateConfig};
+ K.supabaseConnection={version:'0.20.0-sync-g2',contract:'KC_DP_SUPABASE_SYNC_V1',state,configure,configureIfPossible,setAccessToken,restoreSession,persistSession:saveSession,sessionSnapshot:()=>session?JSON.parse(JSON.stringify(session)):null,clearSession,hasAccessToken:()=>!!session?.access_token,signInAnonymously,signInWithPassword,sendOtp,verifyOtp,requestPasswordReset,updatePassword,currentMembership,listMemberAccess,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,sendClientReport,getSyncKey,signOut,refreshSession,ensureSession,test,testProject,probeDatabase,probeRls,probeRoundtrip,registerDevice,listDevices,createSyncTest,listSyncTests,updateSyncTest,listServerConflicts,resolveServerConflict,transportDiagnosis,provider,validateConfig};
  configureIfPossible();
 })();

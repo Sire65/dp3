@@ -1,6 +1,6 @@
 (function(){
   const K=window.KCDP=window.KCDP||{};
-  let installed=false,launcherVisible=false,selectedArea=null,lastBodyMode='',roleObserver=null,bodyObserver=null;
+  let installed=false,launcherVisible=false,selectedArea=null,lastBodyMode='',roleObserver=null,bodyObserver=null,modeBadgeTimer=null;
   const $=id=>document.getElementById(id);
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const roleRoot=()=>document.getElementById('kcdpUxRoot');
@@ -18,10 +18,12 @@
     $('kcPlanModeBadge')?.remove();
   }
   function planModeBadge(mode){
+    if(modeBadgeTimer){clearTimeout(modeBadgeTimer);modeBadgeTimer=null;}
     let b=$('kcPlanModeBadge');
     if(!b){b=document.createElement('div');b.id='kcPlanModeBadge';b.className='kc-plan-mode-badge';document.body.appendChild(b);}
     b.className=`kc-plan-mode-badge ${mode}`;
     b.textContent=mode==='view'?'👁 Nur ansehen':'✏ Bearbeiten';
+    if(mode==='edit')modeBadgeTimer=setTimeout(()=>{const current=$('kcPlanModeBadge');if(current?.classList.contains('edit'))current.remove();modeBadgeTimer=null;},3000);
   }
   function legacyReturn(){
     let b=$('uxLegacyReturn');

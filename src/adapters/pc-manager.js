@@ -20,7 +20,7 @@
    const sections=await supabaseGet(`/rest/v1/kc_manager_state_sections?select=section_key,payload,version,updated_at&org_id=eq.${org}&section_key=in.(dienstplan_people,dienstplan_context,dienstplan_publication)`);
    const peopleCfg=sectionPayload(sections,'dienstplan_people'),context=sectionPayload(sections,'dienstplan_context'),publicationRaw=sectionPayload(sections,'dienstplan_publication');
    const details=Array.isArray(peopleCfg.items)?peopleCfg.items:(Array.isArray(peopleCfg.people)?peopleCfg.people:[]),detailById=new Map(details.map(x=>[String(x?.personId||x?.person_id||''),x]));
-   const people=(Array.isArray(directory)?directory:[]).map(row=>{const d=detailById.get(String(row.person_id))||{};return {...d,personId:String(row.person_id),displayName:row.preferred_name||row.display_name,active:row.active!==false};});
+   const people=(Array.isArray(directory)?directory:[]).map(row=>{const d=detailById.get(String(row.person_id))||{},clearName=d.name||d.clearName||d.displayName||row.display_name,pseudoName=d.pseudoName||d.pseudo_name||d.pseudonym||d.nickname||(row.preferred_name&&row.preferred_name!==row.display_name?row.preferred_name:null);return {...d,personId:String(row.person_id),name:clearName,displayName:clearName,pseudoName,active:row.active!==false};});
    const publication=publicationRaw.publication&&typeof publicationRaw.publication==='object'?publicationRaw.publication:publicationRaw;
    return {contract:'KC_PC_MANAGER_DP_BRIDGE_V1',people,weather:context.weather||null,program:context.program||null,event:context.event||null,publication,meta:{source:'supabase_core_manager',peopleRows:people.length,managerSections:Array.isArray(sections)?sections.length:0}};
  }

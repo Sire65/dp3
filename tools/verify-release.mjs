@@ -16,6 +16,6 @@ for(const file of manifest.files||[]){
 const index=await readFile(path.join(root,'index.html'),'utf8');
 const referenced=[...index.matchAll(/(?:src|href)="([^"?#]+\.(?:js|css|webmanifest|png|svg|webp))/g)].map(x=>x[1]);
 for(const file of referenced)if(!seen.has(file))failures.push(`In index.html geladen, aber nicht manifestiert: ${file}`);
-if(Number(manifest.build)!==88)failures.push(`Falscher Build im Manifest: ${manifest.build}`);
-if(!manifest.cacheName.endsWith('-b88'))failures.push(`Falscher Cache-Name: ${manifest.cacheName}`);
+if(Number(manifest.build)!==189)failures.push(`Falscher Build im Manifest: ${manifest.build}`);
+if(!manifest.cacheName.endsWith('-b189'))failures.push(`Falscher Cache-Name: ${manifest.cacheName}`);
 if(failures.length){console.error(failures.join('\n'));process.exitCode=1;}else console.log(`Release OK: ${seen.size} Dateien vollständig geprüft (${manifest.version} Build ${manifest.build})`);

@@ -49,6 +49,7 @@
     let rows;
     if(canDraft)rows=K.shifts.filter(s=>s.layer==='planned');
     else{const latest=K.latestPublishedVersion();rows=latest?latest.shifts:[];}
+    rows=rows.filter(s=>!['cancelled','absent','failed','deleted'].includes(String(s.status||'').toLowerCase()));
     const out=date?rows.filter(s=>s.date===date):rows;
     return clone(out);
   };

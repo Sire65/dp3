@@ -9,9 +9,9 @@
     const name=plain(row.name||row.clearName||row.displayName||row.display_name||'');if(!name)throw new Error(`Klarname fehlt für ${personId}.`);
     const helper=row.personType==='helper'||row.person_type==='helper'||row.isHelper===true||row.helper===true;
     return {
-      personId,name,pseudoName:row.pseudoName==null?null:plain(row.pseudoName),personType:helper?'helper':'member',active:row.active!==false,
+      personId,name,pseudoName:plain(row.pseudoName||row.pseudo_name||row.pseudonym||row.nickname||row.preferredName||row.preferred_name||'')||null,personType:helper?'helper':'member',active:row.active!==false,
       skills:plain(Array.isArray(row.skills)?row.skills.join(' · '):(row.skills||row.qualifications||'')),
-      phone:plain(row.phone||row.mobile||'nicht hinterlegt'),email:plain(row.email||row.contacts?.email||''),roles:Array.isArray(row.roles)?row.roles.map(plain):[],allowedAreas:Array.isArray(row.allowedAreas)?row.allowedAreas.map(plain):[],maxHours:Number(row.maxHours|| (helper?6:8)),
+      phone:plain(row.phone||row.mobile||'nicht hinterlegt'),email:plain(row.email||row.contacts?.email||''),formProfileId:plain(row.formProfileId||row.form_profile_id||row.handwritingProfileId||row.handwriting_profile_id||'')||null,roles:Array.isArray(row.roles)?row.roles.map(plain):[],allowedAreas:Array.isArray(row.allowedAreas)?row.allowedAreas.map(plain):[],maxHours:Number(row.maxHours|| (helper?6:8)),
       availability:Array.isArray(row.availability)?row.availability.map(a=>({date:a.date,start:Number(a.start),end:Number(a.end)})):[],
       preferences:row.preferences&&typeof row.preferences==='object'?row.preferences:{},expanded:false
     };
@@ -42,7 +42,7 @@
   }
   function commitRows(normalized,{source='pc_manager'}={}){
     const localById=new Map((K.people||[]).map(p=>[p.personId,p]));
-    K.people=normalized.map(p=>({...p,expanded:localById.get(p.personId)?.expanded||false}));
+    K.people=normalized.map(p=>({...p,pseudoName:p.pseudoName||localById.get(p.personId)?.pseudoName||null,formProfileId:p.formProfileId||localById.get(p.personId)?.formProfileId||null,expanded:localById.get(p.personId)?.expanded||false}));
     state.status='ready';state.source=source;state.lastSyncAt=new Date().toISOString();state.lastError=null;state.lastBlock=null;state.records=K.people.length;
     return K.people;
   }
@@ -67,8 +67,8 @@
       const p=K.person(personId);if(!p)return null;
       if(context==='pos')return {personId:p.personId,displayName:p.pseudoName||p.personId,personType:p.personType,active:p.active};
       if(context==='designer')return {personId:p.personId,displayName:p.name,active:p.active};
-      if(context==='manager')return {personId:p.personId,name:p.name,pseudoName:p.pseudoName,personType:p.personType,active:p.active,skills:p.skills,phone:p.phone,email:p.email,roles:p.roles,allowedAreas:p.allowedAreas,availability:p.availability};
-      return {personId:p.personId,displayName:p.name,personType:p.personType,active:p.active,skills:p.skills};
+      if(context==='manager')return {personId:p.personId,name:p.name,pseudoName:p.pseudoName,formProfileId:p.formProfileId,personType:p.personType,active:p.active,skills:p.skills,phone:p.phone,email:p.email,roles:p.roles,allowedAreas:p.allowedAreas,availability:p.availability};
+      return {personId:p.personId,displayName:p.name,pseudoName:p.pseudoName||null,personType:p.personType,active:p.active,skills:p.skills};
     },
     test(){const rows=validateRows(K.people||[]);return {ok:true,count:rows.length,helpers:rows.filter(p=>p.personType==='helper').length,pseudonyms:rows.filter(p=>p.pseudoName).length,referenced:referencedPersonIds().length};}
   };

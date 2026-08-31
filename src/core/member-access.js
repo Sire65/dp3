@@ -52,6 +52,11 @@
   async function finishPasswordRecovery(password){if(String(password||'').length<8)throw new Error('Das Passwort muss mindestens 8 Zeichen lang sein.');await K.supabaseConnection.updatePassword(password);await K.supabaseConnection.signOut();await setRememberHint(false);return true;}
   async function persistSessionIfNeeded(){if(!K.storage?.unlocked)return false;if(state.remember&&K.supabaseConnection?.hasAccessToken?.()){await K.supabaseConnection.persistSession?.();return true;}try{await K.storage.remove('supabaseSession');}catch(_){}return false;}
   async function restore(){await restorePublicConfig();if(!configured())return null;try{if(K.supabaseConnection?.hasAccessToken?.())return await applyRemoteIdentity();}catch(_){await K.supabaseConnection?.clearSession?.();}return null;}
+  async function listMemberAccess(){
+    if(K.currentUser?.role!=='admin')throw new Error('Nur Administratoren dürfen Benutzerrollen einsehen.');
+    if(!configured())throw new Error('Supabase ist noch nicht vollständig eingerichtet.');
+    return K.supabaseConnection.listMemberAccess();
+  }
   async function provisionMemberAccess({personId,displayName,email='',phone='',role='employee'}={}){
     if(K.currentUser?.role!=='admin')throw new Error('Nur Administratoren dürfen Benutzerzugänge verwalten.');
     if(!configured())throw new Error('Supabase ist noch nicht vollständig eingerichtet.');
@@ -76,5 +81,5 @@
   }
   async function signOut(){state.status='signed_out';state.user=null;state.membership=null;state.firstAccess=false;await setRememberHint(false);try{await K.supabaseConnection?.signOut?.();}catch(_){await K.supabaseConnection?.clearSession?.();}K.session?.logout?.('KC-DP Abmeldung');return true;}
   function localTestLogin({personId,role='employee'}={}){if(!(location.hostname==='127.0.0.1'||location.hostname==='localhost'||location.protocol==='file:'))throw new Error('Lokaler Prüfzugang ist nur auf diesem Gerät verfügbar.');const p=K.person(personId||K.people?.[0]?.personId);if(!p)throw new Error('Person nicht gefunden.');K.auth.setCurrentUser({personId:p.personId,role:normalizeRole(role),displayName:p.name});K.session?.adoptAuthenticatedUser?.({personId:p.personId,role:normalizeRole(role),displayName:p.name,provider:'local-test'});state.status='authenticated';state.user={personId:p.personId,role:normalizeRole(role),displayName:p.name,localTest:true};return clone(state.user);}
-  K.memberAccess={version:'0.18.0',state,normalizeRole,configured,publicConfig,cachePublicConfig,restorePublicConfig,setRememberHint,rememberedHint,persistSessionIfNeeded,consumeRecoverySessionFromUrl,finishPasswordRecovery,restore,signInPassword,sendFirstAccessCode,verifyFirstAccessCode,setInitialPassword,requestPasswordReset,applyRemoteIdentity,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,signOut,localTestLogin};
+  K.memberAccess={version:'0.18.0',state,normalizeRole,configured,publicConfig,cachePublicConfig,restorePublicConfig,setRememberHint,rememberedHint,persistSessionIfNeeded,consumeRecoverySessionFromUrl,finishPasswordRecovery,restore,signInPassword,sendFirstAccessCode,verifyFirstAccessCode,setInitialPassword,requestPasswordReset,applyRemoteIdentity,listMemberAccess,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,signOut,localTestLogin};
 })();

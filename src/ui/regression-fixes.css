@@ -1,0 +1,5 @@
+/* Build 116: gezielte Wiederherstellung und live berechnete Bedarfsmatrix. */
+.demand-nav .demand-edit-toggle{margin-left:5px;border-color:#9f8575;color:#741521}
+.demand-nav .demand-edit-toggle.active{background:#741521;color:#fff}
+.demand-table input[type="number"]{width:70px;padding-right:2px;font-weight:700;background:#fffdf8}
+.demand-live-note{margin-right:auto;align-self:center;color:#4f6658;font-size:13px;font-weight:700}

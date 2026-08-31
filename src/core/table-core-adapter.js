@@ -22,5 +22,24 @@
     render();return{replace(rows){s.rows=rows||[];render()},selection(){return[...s.selected]},clearSelection(){s.selected.clear();render()},snapshot(){return{rows:s.rows.length,visible:view().length,selected:s.selected.size,sort:s.sort}}}
   }
   function create(host,opts){const core=nativeCore();if(core?.create){try{return core.create(host,opts)}catch(e){console.warn('TableCore adapter: Master-Core fallback',e)}}return fallback(host,opts)}
-  K.tableCore={version:'adapter-1.2',masterApi:'1.1',create,nativeCore};
+  const enhanced=new WeakMap(),collator=new Intl.Collator('de',{numeric:true,sensitivity:'base'});
+  function enhance(table,opts={}){
+    if(!table?.tHead?.rows?.[0]||!table.tBodies?.[0]||enhanced.has(table))return enhanced.get(table)||null;
+    const headers=[...table.tHead.rows[0].cells];if(headers.length<2||headers.some(h=>Number(h.colSpan||1)>1||Number(h.rowSpan||1)>1))return null;
+    const body=table.tBodies[0],rows=[...body.rows],normalRows=rows.filter(r=>r.cells.length>1&&!r.cells[0]?.hasAttribute('colspan'));
+    normalRows.forEach((r,i)=>r.dataset.tcOriginal=String(i));
+    const s={query:'',sort:-1,dir:1,rows:normalRows};enhanced.set(table,s);table.dataset.tablecoreEnhanced='1';
+    const toolbar=document.createElement('div');toolbar.className='kc-tc-inline-toolbar';toolbar.innerHTML=`<label><span class="sr-only">Tabelle filtern</span><input type="search" data-tc-inline-filter placeholder="${esc(opts.filterPlaceholder||'Tabelle filtern …')}" aria-label="Tabelle filtern"></label><span data-tc-inline-count></span>`;
+    table.before(toolbar);const input=toolbar.querySelector('input'),count=toolbar.querySelector('[data-tc-inline-count]');
+    const value=(row,index)=>String(row.cells[index]?.dataset.sortValue||row.cells[index]?.innerText||'').trim();
+    const compare=(a,b)=>{const av=value(a,s.sort),bv=value(b,s.sort),clean=x=>x.replace(/\s*(h|std\.?|%|min\.?)$/i,'').replace(/\./g,'').replace(',','.').trim(),an=Number(clean(av)),bn=Number(clean(bv));return(Number.isFinite(an)&&Number.isFinite(bn)?an-bn:collator.compare(av,bv))*s.dir};
+    const apply=()=>{const q=s.query.toLocaleLowerCase('de'),ordered=s.sort<0?[...s.rows].sort((a,b)=>Number(a.dataset.tcOriginal)-Number(b.dataset.tcOriginal)):[...s.rows].sort(compare);ordered.forEach(r=>body.append(r));let shown=0;s.rows.forEach(r=>{const visible=!q||r.innerText.toLocaleLowerCase('de').includes(q);r.hidden=!visible;if(visible)shown++});count.textContent=`${shown} von ${s.rows.length}`;headers.forEach((h,i)=>{h.setAttribute('aria-sort',s.sort===i?(s.dir>0?'ascending':'descending'):'none');const mark=h.querySelector('.kc-tc-sort-mark');if(mark)mark.textContent=s.sort===i?(s.dir>0?'▲':'▼'):'↕'})};
+    headers.forEach((h,i)=>{h.classList.add('kc-tc-sortable');h.tabIndex=0;h.title=(h.title?h.title+' · ':'')+'Sortieren';const mark=document.createElement('span');mark.className='kc-tc-sort-mark';mark.textContent='↕';mark.setAttribute('aria-hidden','true');h.append(mark);const sort=()=>{s.dir=s.sort===i?-s.dir:1;s.sort=i;apply()};h.addEventListener('click',e=>{if(!e.target.closest('input,button,select'))sort()});h.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();sort()}})});
+    input.addEventListener('input',()=>{s.query=input.value.trim();apply()});apply();return{filter:q=>{input.value=q||'';input.dispatchEvent(new Event('input'))},sort:(i,dir=1)=>{s.sort=Number(i);s.dir=dir<0?-1:1;apply()},snapshot:()=>({rows:s.rows.length,visible:s.rows.filter(r=>!r.hidden).length,sort:s.sort,dir:s.dir})}
+  }
+  const excluded='table.tc,table.hm-table,table.hm-radar-table,table.occ-summary,table.demand-table,table.photo-table,table.matrix,table.roster-grid,table.handwriting-table';
+  function eligible(table){return !table.matches(excluded)&&!table.closest('.kc-tc-scroll')&&!table.querySelector('input,select,textarea')&&table.tHead?.rows?.length===1&&table.tBodies?.[0]?.rows?.length>1}
+  let pending=false;function enhanceAll(){pending=false;document.querySelectorAll('table').forEach(t=>{if(eligible(t))enhance(t,{filterPlaceholder:t.closest('#hmPersonHours')?'Mitarbeiter oder Stunden filtern …':'Tabelle filtern …'})})}function scheduleEnhance(){if(!pending){pending=true;requestAnimationFrame(enhanceAll)}}
+  new MutationObserver(scheduleEnhance).observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleEnhance,{once:true});else scheduleEnhance();
+  K.tableCore={version:'adapter-1.3',masterApi:'1.1',create,enhance,enhanceAll,nativeCore};
 })();

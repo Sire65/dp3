@@ -5,5 +5,5 @@
     <path d="M48 56h63l-5 37H53z"/>
     <path d="M61 68h37"/>
   </g>
-  <text x="80" y="111" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700">KÖCHECLUB WERNE</text>
+  <text x="80" y="105" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" font-weight="700">KÖCHECLUB WERNE</text><text x="80" y="117" text-anchor="middle" font-family="Arial, sans-serif" font-size="8" font-weight="700">since 1991</text>
 </svg>

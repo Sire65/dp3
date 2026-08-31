@@ -117,6 +117,15 @@
     return {record:target,issues,comparison:target.comparison};
   }
 
+  function deleteActual(id,{reason=''}={}){
+    K.auth?.require?.('roster.actual.correct','Sie dürfen Istzeiten nicht löschen.');
+    if(K.actualWorkflow.status==='closed')throw new Error('Der Istplan ist abgeschlossen. Vor Änderungen muss er administrativ wieder geöffnet werden.');
+    const target=K.actualShifts.find(a=>a.id===id);if(!target)throw new Error('Istzeit nicht gefunden.');
+    const before=clone(target);target.status='deleted';target.deletedAt=new Date().toISOString();target.deletedBy=K.currentUser?.personId||null;target.version=Number(target.version||0)+1;target.updatedAt=target.deletedAt;
+    K.recordAudit?.('actual.delete',{entity:'actual_shift',entityId:target.id,before,after:target,reason});
+    K.sync?.enqueue?.({entity:'actual_shift',operation:'delete',payload:target,baseVersion:before.version||null});
+    return before;
+  }
   function importRows(rows,{batchName='Istzeitimport',source='file_import',fileMeta={}}={}){
     K.auth?.require?.('roster.actual.import','Sie dürfen keine Istzeiten importieren.');
     if(K.actualWorkflow.status==='closed')throw new Error('Der Istplan ist abgeschlossen.');
@@ -186,5 +195,5 @@
     return {req,total:stand.length,front:stand.filter(a=>a.zone==='front').length,back:stand.filter(a=>a.zone==='back').length,special:special.length,unassigned:unassigned.length,active:stand,specialActive:special,unassignedActive:unassigned};
   }
 
-  K.actual={version:'0.7.0',minutes,overlapMinutes,statusFromDelta,matchCandidate,linkRecord,comparison,missingPlanned,dayStats,eventStats,validateActual,saveActual,importRows,correctActual,relinkActual,createCorrectionRequest,resolveCorrectionRequest,closePlan,reopenPlan,coverageAt};
+  K.actual={version:'0.7.1',minutes,overlapMinutes,statusFromDelta,matchCandidate,linkRecord,comparison,missingPlanned,dayStats,eventStats,validateActual,saveActual,deleteActual,importRows,correctActual,relinkActual,createCorrectionRequest,resolveCorrectionRequest,closePlan,reopenPlan,coverageAt};
 })();

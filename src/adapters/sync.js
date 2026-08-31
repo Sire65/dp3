@@ -2,8 +2,9 @@
   const K=window.KCDP=window.KCDP||{};
   let provider=typeof window.KCDPSupabaseProvider==='function'?window.KCDPSupabaseProvider:null;
   let secretProvider=()=>K.storage?.secret||null;
+  let remoteKeyContext=null,remoteKeyPromise=null;
   const listeners=new Set();
-  const state={status:provider?'ready':'offline',lastSyncAt:null,lastCheckAt:null,lastError:null,cursor:null,maintenance:false};
+  const state={status:provider?'ready':'offline',lastSyncAt:null,lastCheckAt:null,lastError:null,cursor:null,maintenance:false,syncGeneration:null,syncNamespace:null,keyFingerprint:null,legacyPacketsArchived:0};
   let durableWrite=Promise.resolve();
   K.syncOutbox=K.syncOutbox||[];K.syncConflicts=K.syncConflicts||[];
 
@@ -21,10 +22,29 @@
   }
   function enqueue(input){const op=makeOp(input);K.syncOutbox.push(op);emit('queue',{operation:op});persistQueue().catch(()=>{});return op;}
   function due(op){return op.status==='pending'&&(!op.nextAttemptAt||new Date(op.nextAttemptAt).getTime()<=Date.now());}
+  async function ensureRemoteKey(){
+    if(remoteKeyContext?.secret)return remoteKeyContext;
+    if(remoteKeyPromise)return remoteKeyPromise;
+    remoteKeyPromise=(async()=>{
+      if(K.supabaseConnection?.getSyncKey){
+        const key=await K.supabaseConnection.getSyncKey();
+        if(!key?.secret||!key?.namespace)throw new Error('Der gemeinsame Projektschlüssel ist unvollständig.');
+        remoteKeyContext={secret:key.secret,namespace:key.namespace,generation:Number(key.generation||1),fingerprint:key.fingerprint||null};
+      }else{
+        const secret=secretProvider?.();if(!secret)throw new Error('Remote-Sync ist gesperrt: kein Sitzungsschlüssel verfügbar.');
+        remoteKeyContext={secret,namespace:'KC_DP',generation:1,fingerprint:null};
+      }
+      const previous=state.syncNamespace;
+      state.syncGeneration=remoteKeyContext.generation;state.syncNamespace=remoteKeyContext.namespace;state.keyFingerprint=remoteKeyContext.fingerprint;
+      if(previous&&previous!==remoteKeyContext.namespace){state.cursor=null;state.legacyPacketsArchived=Number(state.legacyPacketsArchived||0)+1;}
+      return remoteKeyContext;
+    })();
+    try{return await remoteKeyPromise}finally{remoteKeyPromise=null}
+  }
   async function toWireOperation(op){
-    const secret=secretProvider?.();if(!secret)throw new Error('Remote-Sync ist gesperrt: kein Sitzungsschlüssel verfügbar.');
-    const envelope=await KCSecureSync.encryptEnvelope(op,{secret,projectId:'KC_DP',aad:'KC_DP_REMOTE_SYNC_V1'});
-    return {contract:'KC_DP_SYNC_V1',operationId:op.operationId,entity:op.entity,entityId:op.payload?.id||op.payload?.date||op.entityId||op.operationId,operation:op.operation,baseVersion:op.baseVersion??null,localVersion:op.localVersion??null,envelope};
+    const key=await ensureRemoteKey();
+    const envelope=await KCSecureSync.encryptEnvelope(op,{secret:key.secret,projectId:key.namespace,aad:'KC_DP_REMOTE_SYNC_V2'});
+    return {contract:'KC_DP_SYNC_V1',operationId:op.operationId,entity:op.entity,entityId:op.payload?.id||op.payload?.date||op.entityId||op.operationId,operation:op.operation,baseVersion:op.baseVersion??null,localVersion:op.localVersion??null,syncNamespace:key.namespace,envelope};
   }
   function transportAuthenticated(){
     if(!K.memberAccess?.configured?.())return true;
@@ -35,7 +55,7 @@
     await requireTransport();state.lastCheckAt=new Date().toISOString();
     if(!provider){setStatus('offline','Supabase-Provider ist nicht verbunden.');return {ok:false,status:'offline'};}
     setStatus('checking');emit('traffic',{direction:'tx'});
-    try{const res=await provider({action:'health',contract:'KC_DP_SYNC_V1'});emit('traffic',{direction:'rx'});if(res?.ok===false)throw new Error(res.message||'Remote-Healthcheck fehlgeschlagen.');setStatus(state.maintenance?'maintenance':'ready');return {ok:true,response:res||{ok:true}};}
+    try{const key=await ensureRemoteKey(),res=await provider({action:'health',contract:'KC_DP_SYNC_V1',syncNamespace:key.namespace});emit('traffic',{direction:'rx'});if(res?.ok===false)throw new Error(res.message||'Remote-Healthcheck fehlgeschlagen.');setStatus(state.maintenance?'maintenance':'ready');return {ok:true,response:res||{ok:true},syncGeneration:key.generation,syncNamespace:key.namespace};}
     catch(e){setStatus('error',e.message);throw e;}
   }
   async function flush(){
@@ -62,9 +82,9 @@
     K.recordAudit?.('sync.conflict.resolve',{entity:'sync_conflict',entityId:id,reason:choice,after:c});return c;
   }
 
-  function collectionFor(entity){if(entity==='shift')return K.shifts;if(entity==='wish')return K.wishes;if(entity==='standby')return K.standby;return null;}
+  function collectionFor(entity){if(entity==='shift')return K.shifts;if(entity==='wish')return K.wishes;if(entity==='standby')return K.standby;if(entity==='member_shift_offer')return K.memberShiftOffers;return null;}
   function applyRemote(op){
-    if(op.entity==='day_config'){K.configuration?.updateDay?.(op.payload.date,op.payload);return;}
+    if(op.entity==='day_config'){const date=op.payload?.date||op.entityId;if(date)K.daySettings[date]=JSON.parse(JSON.stringify(op.payload));return;}
     if(op.entity==='demand_matrix'){if(op.payload?.date&&Array.isArray(op.payload.rows))K.demandMatrix[op.payload.date]=JSON.parse(JSON.stringify(op.payload.rows));return;}
     if(op.entity==='plan_day'&&Array.isArray(op.payload?.shifts)){K.shifts=K.shifts.filter(s=>!(s.date===op.payload.date&&s.layer==='planned'));K.shifts.push(...op.payload.shifts.map(x=>({...x})));return;}
     const list=collectionFor(op.entity);if(!list)return;const payload=op.payload||{},id=payload.id||op.entityId;if(!id)return;let local=list.find(x=>x.id===id);
@@ -74,14 +94,28 @@
   }
   async function pull(){
     await requireTransport();if(!provider)throw new Error('Supabase-Provider ist nicht verbunden.');
-    const secret=secretProvider?.();if(!secret)throw new Error('Remote-Sync ist gesperrt: kein Sitzungsschlüssel verfügbar.');setStatus('syncing');emit('traffic',{direction:'tx'});
-    try{const res=await provider({action:'pull',contract:'KC_DP_SYNC_V1',cursor:state.cursor});emit('traffic',{direction:'rx'});let applied=0;for(const wire of res?.wireOperations||[]){const op=wire.envelope?await KCSecureSync.decryptEnvelope(wire.envelope,{secret,projectId:'KC_DP'}):wire.operation;if(op){applyRemote(op);applied++;}}state.cursor=res?.cursor??state.cursor;state.lastSyncAt=new Date().toISOString();setStatus(state.maintenance?'maintenance':'ready');K.recordAudit?.('sync.pull',{entity:'sync',after:{applied,cursor:state.cursor}});return {applied,cursor:state.cursor,conflicts:K.syncConflicts.filter(x=>x.status==='open').length};}catch(e){setStatus('error',e.message);throw e;}
+    const key=await ensureRemoteKey();setStatus('syncing');emit('traffic',{direction:'tx'});
+    try{const res=await provider({action:'pull',contract:'KC_DP_SYNC_V1',cursor:state.cursor,syncNamespace:key.namespace});emit('traffic',{direction:'rx'});let applied=0;for(const wire of res?.wireOperations||[]){const op=wire.envelope?await KCSecureSync.decryptEnvelope(wire.envelope,{secret:key.secret,projectId:key.namespace}):wire.operation;if(op){applyRemote(op);applied++;}}state.cursor=res?.cursor??state.cursor;state.lastSyncAt=new Date().toISOString();setStatus(state.maintenance?'maintenance':'ready');K.recordAudit?.('sync.pull',{entity:'sync',after:{applied,cursor:state.cursor,generation:key.generation}});return {applied,cursor:state.cursor,conflicts:K.syncConflicts.filter(x=>x.status==='open').length,generation:key.generation};}catch(e){setStatus('error',e.message);throw e;}
+  }
+  async function publishBaseline({confirmed=false}={}){
+    K.auth?.require?.('roster.sync.run','Sie dürfen keinen Cloud-Ausgangsstand veröffentlichen.');
+    if(!confirmed)throw new Error('Die Veröffentlichung des lokalen Planbestands wurde nicht bestätigt.');
+    const role=String(K.currentUser?.role||'');if(!['admin','planner','duty_manager'].includes(role))throw new Error('Für den Cloud-Ausgangsstand ist eine Planungsrolle erforderlich.');
+    const key=await ensureRemoteKey(),remote=await provider({action:'health',contract:'KC_DP_SYNC_V1',syncNamespace:key.namespace});
+    if(Number(remote?.rows||0)>0)throw new Error('Die sichere Cloud-Generation enthält bereits Daten und wird nicht überschrieben.');
+    let staged=0;
+    for(const wish of K.wishes||[]){enqueue({entity:'wish',operation:'baseline',payload:JSON.parse(JSON.stringify(wish)),baseVersion:null});staged++;}
+    for(const shift of K.shifts||[]){enqueue({entity:'shift',operation:'baseline',payload:JSON.parse(JSON.stringify(shift)),baseVersion:null});staged++;}
+    for(const standby of K.standby||[]){enqueue({entity:'standby',operation:'baseline',payload:JSON.parse(JSON.stringify(standby)),baseVersion:null});staged++;}
+    for(const [date,value] of Object.entries(K.daySettings||{})){enqueue({entity:'day_config',operation:'baseline',payload:{...JSON.parse(JSON.stringify(value)),date},baseVersion:null});staged++;}
+    for(const [date,rows] of Object.entries(K.demandMatrix||{})){enqueue({entity:'demand_matrix',operation:'baseline',payload:{date,rows:JSON.parse(JSON.stringify(rows))},baseVersion:null});staged++;}
+    await persistQueue();const pushed=await flush(),pulled=await pull();K.recordAudit?.('sync.baseline.publish',{entity:'sync',after:{staged,sent:pushed.sent,generation:key.generation,namespace:key.namespace}});return {staged,pushed,pulled,generation:key.generation};
   }
   async function syncBoth(){const pushed=await flush();const pulled=await pull();return {pushed,pulled};}
   K.sync={
     version:'0.16.0',state,
-    setProvider(fn){provider=typeof fn==='function'?fn:null;setStatus(provider?'ready':'offline');},setSecretProvider(fn){secretProvider=typeof fn==='function'?fn:secretProvider;},hasProvider(){return !!provider;},
-    on(fn){if(typeof fn==='function')listeners.add(fn);return()=>listeners.delete(fn);},enqueue,healthCheck,flush,pull,syncBoth,resolveConflict,persistQueue,whenDurable:()=>durableWrite,
+    setProvider(fn){provider=typeof fn==='function'?fn:null;setStatus(provider?'ready':'offline');},setSecretProvider(fn){secretProvider=typeof fn==='function'?fn:secretProvider;},resetRemoteKey(){remoteKeyContext=null;remoteKeyPromise=null;},hasProvider(){return !!provider;},
+    publishBaseline,on(fn){if(typeof fn==='function')listeners.add(fn);return()=>listeners.delete(fn);},enqueue,healthCheck,flush,pull,syncBoth,resolveConflict,persistQueue,whenDurable:()=>durableWrite,
     restore({outbox=[],conflicts=[],meta={}}={}){K.syncOutbox=Array.isArray(outbox)?outbox:[];K.syncConflicts=Array.isArray(conflicts)?conflicts:[];Object.assign(state,meta||{});if(!provider&&state.status!=='maintenance')state.status='offline';emit('status');},
     snapshot(){return {outbox:K.syncOutbox,conflicts:K.syncConflicts,meta:{...state}};},
     pending(){return K.syncOutbox.filter(x=>x.status==='pending'||x.status==='sending').length;},openConflicts(){return K.syncConflicts.filter(x=>x.status==='open').length;}

@@ -73,8 +73,8 @@
       candidate=K.normalizeShiftClassification?.(candidate)||candidate;
       const issues=K.validateShift(candidate);if(issues.some(i=>i.level==='error'))throw new Error(issues.find(i=>i.level==='error').text);
       let target=existingId?K.shifts.find(s=>s.id===existingId):null;const before=target?{...target}:null;
-      if(target)Object.assign(target,candidate,{id:target.id,layer:'planned'});
-      else{target={...candidate,id:candidate.id||`S-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,layer:'planned',status:candidate.status||'draft'};K.shifts.push(target);}
+      if(target){Object.assign(target,candidate,{id:target.id,layer:'planned'});target.planningSource=before.planningSource||before.source||(before.sourceWishId?'wish_transfer':'manual');if(target.planningSource!=='manual'){target.sourceManuallyModified=true;target.sourceModifiedAt=new Date().toISOString();target.sourceModifiedBy=K.currentUser?.displayName||K.currentUser?.personId||null;}}
+      else{target={...candidate,id:candidate.id||`S-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,layer:'planned',status:candidate.status||'draft'};target.planningSource=target.planningSource||target.source||(target.sourceWishId?'wish_transfer':'manual');target.sourceCreatedAt=target.sourceCreatedAt||new Date().toISOString();target.sourceCreatedBy=target.sourceCreatedBy||K.currentUser?.displayName||K.currentUser?.personId||null;K.shifts.push(target);}
       const baseVersion=Number(target.version||0);target.version=baseVersion+1;
       audit(before?'shift.update':'shift.create',{entity:'shift',entityId:target.id,before,after:target,reason});
       queue('shift',before?'update':'create',target,baseVersion);
@@ -94,6 +94,7 @@
     },
     saveWish(candidate,{existingId=candidate?.id||null,reason=''}={}){
       requireWish(candidate.personId);
+      candidate=K.wishContract?.normalize?.(candidate)||candidate;
       const issues=K.validateWish(candidate);if(issues.some(i=>i.level==='error'))throw new Error(issues.find(i=>i.level==='error').text);
       let target=existingId?K.wishes.find(w=>w.id===existingId):null;const before=target?{...target}:null;
       if(target)Object.assign(target,candidate,{id:target.id});else{target={...candidate,id:candidate.id||`W-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,status:candidate.status||'confirmed'};K.wishes.push(target);}
