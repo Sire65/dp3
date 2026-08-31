@@ -4,9 +4,11 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=189;
+const build=190;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
+const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
+function canonicalData(relative,data){return canonicalTextExtensions.has(path.extname(relative).toLowerCase())?Buffer.from(data.toString('utf8').replace(/\r\n?/g,'\n'),'utf8'):data;}
 
 async function walk(dir=''){
   const entries=await readdir(path.join(root,dir),{withFileTypes:true});
@@ -14,7 +16,7 @@ async function walk(dir=''){
   for(const entry of entries){
     const rel=path.posix.join(dir.replaceAll('\\','/'),entry.name);
     if(entry.isDirectory()){
-      if(['tools','tmp','output'].includes(entry.name))continue;
+      if(['tools','tmp','output','.git','.chrome-dump-test'].includes(entry.name)||entry.name.includes('-backup-build'))continue;
       out.push(...await walk(rel));
     }else if(allowed.has(path.extname(entry.name).toLowerCase())&&!excluded.has(rel))out.push(rel);
   }
@@ -25,7 +27,8 @@ const paths=(await walk()).sort((a,b)=>a.localeCompare(b,'en'));
 const files=[];
 let totalRuntimeBytes=0;
 for(const relative of paths){
-  const data=await readFile(path.join(root,...relative.split('/')));
+  const raw=await readFile(path.join(root,...relative.split('/')));
+  const data=canonicalData(relative,raw);
   const runtime=!relative.startsWith('pilot-mobile/');
   if(runtime)totalRuntimeBytes+=data.byteLength;
   files.push({
@@ -42,6 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 190: plattformneutrale LF-Integritaetspruefung fuer identische Windows- und GitHub-Pages-Releases',
     'Build 189: Kann-Zeiten liegen wieder vollhoch hinter dem Sollbalken und lassen sich direkt verschieben, skalieren und löschen',
     'Build 186: klickbares Ansichtsmenü mit Schnellwechsel, kontextbezogenen Aktionen, Datenstand, Tastatursteuerung und Außenklick-Schließen',
     'Build 185: kompakte aussagekräftige Fairness-Seite mit Datenbasisstatus, Kennzahlen, Suche, Sortierung, Personendetails und V/H/Z-Zeitverteilung',
