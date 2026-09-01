@@ -2,74 +2,25 @@
   const K=window.KCDP=window.KCDP||{};
   let provider=typeof window.KCDPPCManagerProvider==='function'?window.KCDPPCManagerProvider:null;
   const plain=v=>String(v??'').replace(/[<>&"'`]/g,'').replace(/[\u0000-\u001F\u007F]/g,'').trim();
+  const helperKinds=new Set(['helper','guest','employee','gast','aushilfe','aushilfen','aushilfskraft']);
+  const memberKinds=new Set(['member','regular','honorary','aktiv','passiv','ehrenmitglied']);
   const state={status:provider?'ready':'offline',source:provider?'pc_manager':'local_snapshot',lastSyncAt:null,lastError:null,lastBlock:null,records:K.people?.length||0};
-
+  const canonicalId=id=>K.personIdAliases?.[String(id||'').trim()]||String(id||'').trim();
+  const baseline=()=>new Map((K.canonicalPeople||[]).map(p=>[p.personId,p]));
   function normalize(row){
-    const personId=String(row?.personId||row?.person_id||'').trim();if(!personId)throw new Error('personId fehlt.');
-    const name=plain(row.name||row.clearName||row.displayName||row.display_name||'');if(!name)throw new Error(`Klarname fehlt für ${personId}.`);
-    const helper=row.personType==='helper'||row.person_type==='helper'||row.isHelper===true||row.helper===true;
-    return {
-      personId,memberNo:plain(row.memberNo||row.member_number||row.mitgliedsnummer||row.credential||'')||null,name,pseudoName:plain(row.pseudoName||row.pseudo_name||row.pseudonym||row.nickname||row.preferredName||row.preferred_name||'')||null,personType:helper?'helper':'member',active:row.active!==false,
-      skills:plain(Array.isArray(row.skills)?row.skills.join(' · '):(row.skills||row.qualifications||'')),
-      phone:plain(row.phone||row.mobile||'nicht hinterlegt'),email:plain(row.email||row.contacts?.email||''),formProfileId:plain(row.formProfileId||row.form_profile_id||row.handwritingProfileId||row.handwriting_profile_id||'')||null,roles:Array.isArray(row.roles)?row.roles.map(plain):[],allowedAreas:Array.isArray(row.allowedAreas)?row.allowedAreas.map(plain):[],maxHours:Number(row.maxHours|| (helper?6:8)),
-      availability:Array.isArray(row.availability)?row.availability.map(a=>({date:a.date,start:Number(a.start),end:Number(a.end)})):[],
-      preferences:row.preferences&&typeof row.preferences==='object'?row.preferences:{},expanded:false
-    };
+    const personId=canonicalId(row?.personId||row?.person_id);if(!personId)throw new Error('personId fehlt.');
+    const fixed=baseline().get(personId),name=plain(row.name||row.clearName||row.displayName||row.display_name||fixed?.name||'');if(!name)throw new Error(`Klarname fehlt für ${personId}.`);
+    const rawType=plain(row.personType||row.person_type||row.membershipType||row.membership_type||'').toLowerCase();
+    const helper=helperKinds.has(rawType)||row.isHelper===true||row.helper===true||fixed?.personType==='helper'||(!fixed&&!memberKinds.has(rawType));
+    return {personId,memberNo:plain(row.memberNo||row.member_number||row.mitgliedsnummer||row.credential||fixed?.memberNo||'')||null,name,pseudoName:plain(row.pseudoName||row.pseudo_name||row.pseudonym||row.nickname||row.preferredName||row.preferred_name||fixed?.pseudoName||'')||null,personType:helper?'helper':'member',active:row.active!==false,skills:plain(Array.isArray(row.skills)?row.skills.join(' · '):(row.skills||row.qualifications||fixed?.skills||'')),phone:plain(row.phone||row.mobile||fixed?.phone||'nicht hinterlegt'),email:plain(row.email||row.contacts?.email||fixed?.email||''),formProfileId:plain(row.formProfileId||row.form_profile_id||row.handwritingProfileId||row.handwriting_profile_id||fixed?.formProfileId||'')||null,roles:Array.isArray(row.roles)?row.roles.map(plain):(fixed?.roles||[]),allowedAreas:Array.isArray(row.allowedAreas)?row.allowedAreas.map(plain):(fixed?.allowedAreas||[]),maxHours:Number(row.maxHours||fixed?.maxHours||(helper?6:8)),availability:Array.isArray(row.availability)?row.availability.map(a=>({date:a.date,start:Number(a.start),end:Number(a.end)})):(fixed?.availability||[]),preferences:row.preferences&&typeof row.preferences==='object'?row.preferences:(fixed?.preferences||{}),expanded:false};
   }
-  function validateRows(rows){
-    if(!Array.isArray(rows))throw new Error('PC-Manager muss eine Personenliste liefern.');
-    const ids=new Set(),out=[];for(const raw of rows){const r=normalize(raw);if(ids.has(r.personId))throw new Error(`Doppelte personId: ${r.personId}`);ids.add(r.personId);out.push(r);}return out;
-  }
-  function referencedPersonIds(){
-    const ids=new Set();
-    const scan=list=>{for(const row of Array.isArray(list)?list:[]){const id=String(row?.personId||row?.person_id||'').trim();if(id)ids.add(id);}};
-    scan(K.shifts);scan(K.wishes);scan(K.standby);scan(K.actualShifts);scan(K.replacements);scan(K.memberUxData?.colleaguePreferences);
-    return [...ids].sort();
-  }
-  function publicationMeta(snapshot={}){
-    const p=snapshot?.publication?.people||snapshot?.meta?.peoplePublication||snapshot?.peoplePublication||{};
-    return {published:p.published===true||p.status==='published',complete:p.complete===true,version:Number(p.version||0)||null,raw:p};
-  }
-  function assessAuthoritativeSnapshot(rows,snapshot={}){
-    let normalized;try{normalized=validateRows(rows);}catch(e){return {ok:false,code:'INVALID_PEOPLE',reason:e.message,missingPersonIds:[],normalized:null};}
-    const publication=publicationMeta(snapshot);
-    if(!publication.published||!publication.complete)return {ok:false,code:'NOT_PUBLISHED_COMPLETE',reason:'PC-Manager-Personendaten sind noch nicht vollständig freigegeben.',missingPersonIds:[],publication,normalized:null};
-    const incoming=new Set(normalized.map(p=>p.personId));
-    const missing=referencedPersonIds().filter(id=>!incoming.has(id));
-    if(missing.length)return {ok:false,code:'REFERENCED_PERSON_MISSING',reason:`PC-Manager-Snapshot fehlt für verwendete personId: ${missing.join(', ')}`,missingPersonIds:missing,publication,normalized:null};
-    if(!normalized.length&&(K.people||[]).length)return {ok:false,code:'EMPTY_REPLACEMENT',reason:'Leerer PC-Manager-Snapshot darf vorhandene Personendaten nicht ersetzen.',missingPersonIds:[],publication,normalized:null};
-    return {ok:true,code:'READY',reason:null,missingPersonIds:[],publication,normalized};
-  }
-  function commitRows(normalized,{source='pc_manager'}={}){
-    const localById=new Map((K.people||[]).map(p=>[p.personId,p]));
-    K.people=normalized.map(p=>({...p,pseudoName:p.pseudoName||localById.get(p.personId)?.pseudoName||null,formProfileId:p.formProfileId||localById.get(p.personId)?.formProfileId||null,expanded:localById.get(p.personId)?.expanded||false}));
-    state.status='ready';state.source=source;state.lastSyncAt=new Date().toISOString();state.lastError=null;state.lastBlock=null;state.records=K.people.length;
-    return K.people;
-  }
+  function validateRows(rows){if(!Array.isArray(rows))throw new Error('PC-Manager muss eine Personenliste liefern.');const ids=new Set(),out=[];for(const raw of rows){const r=normalize(raw);if(!K.personPlanningAllowed?.(r.personId))continue;if(ids.has(r.personId))throw new Error(`Doppelte personId: ${r.personId}`);ids.add(r.personId);out.push(r);}return out;}
+  function referencedPersonIds(){const ids=new Set(),scan=list=>{for(const row of Array.isArray(list)?list:[]){const id=canonicalId(row?.personId||row?.person_id);if(id)ids.add(id);}};scan(K.shifts);scan(K.wishes);scan(K.standby);scan(K.actualShifts);scan(K.replacements);scan(K.memberUxData?.colleaguePreferences);return [...ids].sort();}
+  function publicationMeta(snapshot={}){const p=snapshot?.publication?.people||snapshot?.meta?.peoplePublication||snapshot?.peoplePublication||{};return {published:p.published===true||p.status==='published',complete:p.complete===true,version:Number(p.version||0)||null,raw:p};}
+  function assessAuthoritativeSnapshot(rows,snapshot={}){let normalized;try{normalized=validateRows(rows);}catch(e){return {ok:false,code:'INVALID_PEOPLE',reason:e.message,missingPersonIds:[],normalized:null};}const publication=publicationMeta(snapshot);if(!publication.published||!publication.complete)return {ok:false,code:'NOT_PUBLISHED_COMPLETE',reason:'PC-Manager-Personendaten sind noch nicht vollständig freigegeben.',missingPersonIds:[],publication,normalized:null};const incoming=new Set(normalized.map(p=>p.personId));const missing=referencedPersonIds().filter(id=>!K.localPersonIds?.has(id)&&!incoming.has(id));if(missing.length)return {ok:false,code:'REFERENCED_PERSON_MISSING',reason:`PC-Manager-Snapshot fehlt für verwendete personId: ${missing.join(', ')}`,missingPersonIds:missing,publication,normalized:null};if(!normalized.length&&(K.people||[]).length)return {ok:false,code:'EMPTY_REPLACEMENT',reason:'Leerer PC-Manager-Snapshot darf vorhandene Personendaten nicht ersetzen.',missingPersonIds:[],publication,normalized:null};return {ok:true,code:'READY',reason:null,missingPersonIds:[],publication,normalized};}
+  function commitRows(normalized,{source='pc_manager'}={}){const current=new Map((K.people||[]).map(p=>[p.personId,p])),fixed=baseline(),remote=new Map(normalized.filter(p=>K.personPlanningAllowed?.(p.personId)!==false).map(p=>[p.personId,p]));let ids;if(source==='local_snapshot')ids=[...fixed.keys()];else ids=[...new Set([...remote.keys(),...[...fixed.keys()].filter(id=>K.localPersonIds?.has(id))])];K.people=ids.map(id=>{const base=fixed.get(id)||{},incoming=remote.get(id)||current.get(id)||base;const local=source==='local_snapshot'&&base.personId;return {...base,...incoming,personId:id,memberNo:(local?base.memberNo:incoming.memberNo)||base.memberNo||null,name:(local?base.name:incoming.name)||base.name,personType:(local?base.personType:incoming.personType)||base.personType,pseudoName:incoming.pseudoName||base.pseudoName||null,formProfileId:incoming.formProfileId||base.formProfileId||null,expanded:current.get(id)?.expanded||false};});state.status='ready';state.source=source;state.lastSyncAt=new Date().toISOString();state.lastError=null;state.lastBlock=null;state.records=K.people.length;return K.people;}
   function applySnapshot(rows,{source='pc_manager'}={}){return commitRows(validateRows(rows),{source});}
-  function applyAuthoritativeSnapshot(rows,{source='pc_manager',snapshot={}}={}){
-    const assessment=assessAuthoritativeSnapshot(rows,snapshot);
-    if(!assessment.ok){state.status='blocked';state.lastError=null;state.lastBlock={at:new Date().toISOString(),code:assessment.code,reason:assessment.reason,missingPersonIds:assessment.missingPersonIds};return {applied:false,...assessment,people:K.people};}
-    const people=commitRows(assessment.normalized,{source});
-    return {applied:true,code:'APPLIED',publication:assessment.publication,people};
-  }
-  K.personAdapter={
-    version:'0.19.42',state,
-    setProvider(fn){provider=typeof fn==='function'?fn:null;state.status=provider?'ready':'offline';state.source=provider?'pc_manager':'local_snapshot';},
-    hasProvider(){return !!provider;},validateRows,referencedPersonIds,publicationMeta,assessAuthoritativeSnapshot,applySnapshot,applyAuthoritativeSnapshot,
-    async sync(){
-      K.auth?.require?.('roster.people.sync','Sie dürfen Mitarbeiterdaten nicht synchronisieren.');
-      if(!provider)throw new Error('PC-Manager-Provider ist nicht verbunden.');state.status='syncing';
-      try{const res=await provider({action:'listPeople',contract:'KC_PERSON_REF_V1'});const rows=Array.isArray(res)?res:res?.people;const out=applyAuthoritativeSnapshot(rows,{source:'pc_manager',snapshot:Array.isArray(res)?{}:res});if(!out.applied){K.recordAudit?.('people.sync_blocked',{entity:'people',after:{code:out.code,missingPersonIds:out.missingPersonIds}});return out;}K.recordAudit?.('people.sync',{entity:'people',after:{count:out.people.length,source:'pc_manager'}});return out;}
-      catch(e){state.status='error';state.lastError=e.message;throw e;}
-    },
-    view(personId,context='roster'){
-      const p=K.person(personId);if(!p)return null;
-      if(context==='pos')return {personId:p.personId,displayName:p.pseudoName||p.personId,personType:p.personType,active:p.active};
-      if(context==='designer')return {personId:p.personId,displayName:p.name,active:p.active};
-      if(context==='manager')return {personId:p.personId,name:p.name,pseudoName:p.pseudoName,formProfileId:p.formProfileId,personType:p.personType,active:p.active,skills:p.skills,phone:p.phone,email:p.email,roles:p.roles,allowedAreas:p.allowedAreas,availability:p.availability};
-      return {personId:p.personId,displayName:p.name,pseudoName:p.pseudoName||null,personType:p.personType,active:p.active,skills:p.skills};
-    },
-    test(){const rows=validateRows(K.people||[]);return {ok:true,count:rows.length,helpers:rows.filter(p=>p.personType==='helper').length,pseudonyms:rows.filter(p=>p.pseudoName).length,referenced:referencedPersonIds().length};}
-  };
+  function applyAuthoritativeSnapshot(rows,{source='pc_manager',snapshot={}}={}){const a=assessAuthoritativeSnapshot(rows,snapshot);if(!a.ok){state.status='blocked';state.lastError=null;state.lastBlock={at:new Date().toISOString(),code:a.code,reason:a.reason,missingPersonIds:a.missingPersonIds};return {applied:false,...a,people:K.people};}return {applied:true,code:'APPLIED',publication:a.publication,people:commitRows(a.normalized,{source})};}
+  function migrateReferences(){let count=0;const keys=['personId','person_id','requesterPersonId','targetPersonId','fromPersonId','toPersonId','colleaguePersonId','replacementPersonId'];const scan=list=>{for(const row of Array.isArray(list)?list:[]){if(!row||typeof row!=='object')continue;for(const key of keys){if(!row[key])continue;const next=canonicalId(row[key]);if(next!==row[key]){row[key]=next;count++;}}}};['shifts','wishes','standby','actualShifts','replacements','replacementRequests','memberShiftOffers','actualCorrectionRequests','acknowledgements','swapRequests'].forEach(k=>scan(K[k]));scan(K.memberUxData?.colleaguePreferences);if(K.currentUser?.personId){const next=canonicalId(K.currentUser.personId);if(next!==K.currentUser.personId){K.currentUser.personId=next;count++;}}return {changed:count>0,count};}
+  K.personAdapter={version:'0.20.0-personstand-20260901',state,setProvider(fn){provider=typeof fn==='function'?fn:null;state.status=provider?'ready':'offline';state.source=provider?'pc_manager':'local_snapshot';},hasProvider(){return !!provider;},validateRows,referencedPersonIds,publicationMeta,assessAuthoritativeSnapshot,applySnapshot,applyAuthoritativeSnapshot,migrateReferences,canonicalId,async sync(){K.auth?.require?.('roster.people.sync','Sie dürfen Mitarbeiterdaten nicht synchronisieren.');if(!provider)throw new Error('PC-Manager-Provider ist nicht verbunden.');state.status='syncing';try{const res=await provider({action:'listPeople',contract:'KC_PERSON_REF_V1'});const rows=Array.isArray(res)?res:res?.people,out=applyAuthoritativeSnapshot(rows,{source:'pc_manager',snapshot:Array.isArray(res)?{}:res});if(!out.applied){K.recordAudit?.('people.sync_blocked',{entity:'people',after:{code:out.code,missingPersonIds:out.missingPersonIds}});return out;}K.recordAudit?.('people.sync',{entity:'people',after:{count:out.people.length,source:'pc_manager'}});return out;}catch(e){state.status='error';state.lastError=e.message;throw e;}},view(personId,context='roster'){const p=K.person(personId);if(!p)return null;if(context==='pos')return {personId:p.personId,displayName:p.pseudoName||p.personId,personType:p.personType,active:p.active};if(context==='designer')return {personId:p.personId,displayName:p.name,active:p.active};if(context==='manager')return {personId:p.personId,name:p.name,pseudoName:p.pseudoName,formProfileId:p.formProfileId,personType:p.personType,active:p.active,skills:p.skills,phone:p.phone,email:p.email,roles:p.roles,allowedAreas:p.allowedAreas,availability:p.availability};return {personId:p.personId,displayName:p.name,pseudoName:p.pseudoName||null,personType:p.personType,active:p.active,skills:p.skills};},test(){const rows=validateRows(K.people||[]);return {ok:true,count:rows.length,helpers:rows.filter(p=>p.personType==='helper').length,pseudonyms:rows.filter(p=>p.pseudoName).length,referenced:referencedPersonIds().length};}};
 })();

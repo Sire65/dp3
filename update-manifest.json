@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 203,
-  "cacheName": "kc-dp-release-0.20.0-b203",
+  "build": 204,
+  "cacheName": "kc-dp-release-0.20.0-b204",
   "releaseNotes": [
+    "Build 204: verbindlicher KC-Personenstand mit zentralen IDs, sicherer Alt-ID-Migration und Ausschluss nicht planbarer Personen",
     "Build 203: Freitagspraesentation mit sicherer Testvorbereitung, Kassen-Simulation, Personenkonto und flexibler Balkenbearbeitung",
     "Build 192: Ist-Abgleich mit Laserscan, Handlungsbedarf, Filtern und lueckenlosem Wunsch-Soll-Ist-Buchungsprotokoll",
     "Build 191: eindeutige Mitgliedsnummern-Zuordnung fuer PC-Manager, Kasse und Wunschimport mit sicherem Fehlerriegel",
@@ -88,8 +89,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-01T12:42:14.416Z",
-  "totalRuntimeBytes": 30229526,
+  "generatedAt": "2026-09-01T14:28:57.953Z",
+  "totalRuntimeBytes": 30231690,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -144,7 +145,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 19553,
-      "sha256": "63b66c04a092751d93e758eddc83496def31e00330b28e910200126f74269a72",
+      "sha256": "a90a00d686f42c4b0a8b3da8a2caaa60d8635387a795fbeb43b4d6a1d57992a7",
       "runtime": true,
       "forceRefresh": true
     },
@@ -310,8 +311,8 @@
     {
       "path": "src/adapters/pc-manager.js",
       "installPath": "src/adapters/pc-manager.js",
-      "bytes": 10415,
-      "sha256": "8de1f476f82647bc2fa5aa16e536d45a90901d92642ca98eb9ac2f05a524294e",
+      "bytes": 11030,
+      "sha256": "90721f4903938200b0a0312cd356175a9d2b5b8bf4d3d57266b3599ac6aa3ca1",
       "runtime": true
     },
     {
@@ -324,8 +325,8 @@
     {
       "path": "src/adapters/person-provider.js",
       "installPath": "src/adapters/person-provider.js",
-      "bytes": 7401,
-      "sha256": "afb7355d4637bb90d4347f95fd0b36584db7104160e1db4f579459465fe34788",
+      "bytes": 9319,
+      "sha256": "e34c33055152a4e62cea1725ee4c6559e4b10d24d4cd0397c8f9c0411077eccf",
       "runtime": true
     },
     {
@@ -583,8 +584,8 @@
     {
       "path": "src/core/model.js",
       "installPath": "src/core/model.js",
-      "bytes": 9996,
-      "sha256": "a81a4580c5128c5d11746dc3373a09ea40dc8223aeef2316fefe8f8146c49259",
+      "bytes": 9394,
+      "sha256": "08d249c656d008805fac87f7368b0ed51eabaf623ac07fc6746b4a9b499bb416",
       "runtime": true
     },
     {
@@ -828,8 +829,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 259862,
-      "sha256": "57ad310262164e51c4f9e7c6f7b85bf0d37bc49de299a70583fdcb08ad4963fa",
+      "bytes": 260095,
+      "sha256": "24466e238a3ecbf494eb00f5f55ed7e08d5a3a1da728cf56b5cef38fdf63cfee",
       "runtime": true
     },
     {
