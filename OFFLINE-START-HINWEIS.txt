@@ -1,0 +1,11 @@
+KC DP2 BUILD 205 - OFFLINE-NOTFALLSTART
+
+1. ZIP vollständig in einen eigenen Ordner entpacken.
+2. DP2-OFFLINE-STARTEN.cmd doppelt anklicken.
+3. Das schwarze Fenster während der Präsentation geöffnet lassen.
+4. DP2 öffnet automatisch unter http://127.0.0.1:8765/.
+5. Beenden nach der Präsentation: im schwarzen Fenster Strg+C drücken.
+
+Wichtig: Nicht index.html direkt per file:// öffnen. Der lokale Startserver stellt sicher,
+dass Datenbank, Module und sämtliche Rechtsklickfunktionen gleich geladen werden.
+Für den Start ist kein Internet erforderlich. Node.js muss auf dem Präsentations-PC installiert sein.

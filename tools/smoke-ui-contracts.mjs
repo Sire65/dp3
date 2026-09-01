@@ -125,4 +125,7 @@ const pdfContext={window:{KCDP:{}}};vm.runInNewContext(pdf,pdfContext);
 const pageStub={querySelector:()=>null,querySelectorAll:()=>[],children:[]},pdfBytes=await pdfContext.window.KCDP.pdfAdapter._test.buildPages([pageStub],{qrMatrix,qrLabel:profile.profileId});
 assert.equal(String.fromCharCode(...pdfBytes.slice(0,4)),'%PDF','QR-PDF muss als gültiger PDF-Datenstrom beginnen');
 
+const planTransfer=await read('src/ui/plan-transfer.js');
+assert(app.includes('Diesen Wunsch in Sollplan übernehmen')&&app.includes('Diesen Dienst in Istplan übernehmen')&&planTransfer.includes('sourceId')&&planTransfer.includes('x.source.id===sourceId'),'Rechtsklick muss einzelne Wunsch- und Sollbalken sicher in die nächste Planungsstufe übernehmen.');
+
 console.log('UI-Vertrags-Smoke-Test OK: kompakte Register, Bedarfseditor, Excel-Ausgabe, Tagesauswahl, Stundenmatrix und Importprüfung');

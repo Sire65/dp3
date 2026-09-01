@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 204,
-  "cacheName": "kc-dp-release-0.20.0-b204",
+  "build": 205,
+  "cacheName": "kc-dp-release-0.20.0-b205",
   "releaseNotes": [
+    "Build 205: zuverlässige Rechtsklick-Einzelübernahme Wunsch zu Soll und Soll zu Ist sowie Ein-Klick-Offline-Start",
     "Build 204: verbindlicher KC-Personenstand mit zentralen IDs, sicherer Alt-ID-Migration und Ausschluss nicht planbarer Personen",
     "Build 203: Freitagspraesentation mit sicherer Testvorbereitung, Kassen-Simulation, Personenkonto und flexibler Balkenbearbeitung",
     "Build 192: Ist-Abgleich mit Laserscan, Handlungsbedarf, Filtern und lueckenlosem Wunsch-Soll-Ist-Buchungsprotokoll",
@@ -89,8 +90,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-01T14:28:57.953Z",
-  "totalRuntimeBytes": 30231690,
+  "generatedAt": "2026-09-01T14:53:19.745Z",
+  "totalRuntimeBytes": 30232284,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -144,8 +145,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 19553,
-      "sha256": "a90a00d686f42c4b0a8b3da8a2caaa60d8635387a795fbeb43b4d6a1d57992a7",
+      "bytes": 19563,
+      "sha256": "a871108ead822f64d9785fa38c45040f348bab01afa1ec305b37cbbd5222bc1c",
       "runtime": true,
       "forceRefresh": true
     },
@@ -829,8 +830,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 260095,
-      "sha256": "24466e238a3ecbf494eb00f5f55ed7e08d5a3a1da728cf56b5cef38fdf63cfee",
+      "bytes": 260603,
+      "sha256": "3af9aaf01ee994731bf55e6337901f716b113f96136d5bac9c01b2bab1c18d17",
       "runtime": true
     },
     {
@@ -1305,8 +1306,8 @@
     {
       "path": "src/ui/plan-transfer.js",
       "installPath": "src/ui/plan-transfer.js",
-      "bytes": 12672,
-      "sha256": "650778f43f03b1d462b6cd29287010082ee6d39f996b247ae31ceec0a209bd2e",
+      "bytes": 12748,
+      "sha256": "3cc4d799248cf763ff7433a422cbaaf780fc28d1eb8f0721993c9de7d5f52be2",
       "runtime": true
     },
     {

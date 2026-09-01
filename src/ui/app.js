@@ -439,7 +439,9 @@ function openWishContext(x,y,w){
     items.push({label:w.wishType==='available'||w.wishType==='if_needed'?'Kann-Zeit löschen':'Wunsch löschen',action:()=>deletePlanningBar({kind:'wish',id:w.id},'Kontextmenü')});
   }
   if(K.auth?.has('roster.plan.edit')){
-    items.splice(Math.min(1,items.length),0,{label:'Als Soll-Dienst öffnen',action:()=>openShiftEditor({
+    const preferred=w.wishType==='preferred'?w:(K.wishes||[]).find(x=>x.status!=='deleted'&&x.personId===w.personId&&x.date===w.date&&x.wishType==='preferred'&&+x.start>=+w.start&&+x.end<=+w.end);
+    if(preferred)items.splice(Math.min(1,items.length),0,{label:'⇥ Diesen Wunsch in Sollplan übernehmen',action:()=>K.planTransfer?.preview?.('wish',null,preferred.id)});
+    items.splice(Math.min(preferred?2:1,items.length),0,{label:'Als Soll-Dienst öffnen',action:()=>openShiftEditor({
       id:'',personId:w.personId,date:w.date,start:w.start,end:w.end,
       zone:day().type==='market'?'front':'neutral',area:day().type==='market'?'Verkauf':'Vor-/Nachbereitung',
       layer:'planned',breakMinutes:0,status:'draft'
@@ -452,6 +454,7 @@ function openShiftContext(x,y,s){
   const items=[];
   if(K.auth?.has('roster.plan.edit')){
     items.push({label:'Bearbeiten',action:()=>openShiftEditor(s)});
+    items.push({label:'⇥ Diesen Dienst in Istplan übernehmen',action:()=>K.planTransfer?.preview?.('actual',null,s.id)});
     items.push({label:'⇄ Diensttausch / Ersatz…',action:()=>openSwapDialog(s)});
     if(K.auth?.has('roster.absence.manage')&&s.status!=='absent')items.push({label:'⛔ Kurzfristigen Ausfall erfassen…',action:()=>openAbsenceDialog(s)});
     if(s.status==='absent'&&K.auth?.has('roster.replacement.search'))items.push({label:'🧩 Ersatz für Ausfall suchen…',action:()=>openReplacementSearch({date:s.date,start:s.start,end:s.end,zone:s.zone,area:s.area,replacementForShiftId:s.id,excludePersonId:s.personId,reason:(K.absences||[]).find(a=>a.shiftId===s.id)?.reason||'Ausfall'})});
