@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=192;
+const build=203;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -45,6 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 203: Freitagspraesentation mit sicherer Testvorbereitung, Kassen-Simulation, Personenkonto und flexibler Balkenbearbeitung',
     'Build 192: Ist-Abgleich mit Laserscan, Handlungsbedarf, Filtern und lueckenlosem Wunsch-Soll-Ist-Buchungsprotokoll',
     'Build 191: eindeutige Mitgliedsnummern-Zuordnung fuer PC-Manager, Kasse und Wunschimport mit sicherem Fehlerriegel',
     'Build 190: plattformneutrale LF-Integritaetspruefung fuer identische Windows- und GitHub-Pages-Releases',

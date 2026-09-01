@@ -49,6 +49,14 @@ function renderRows(host,rows){
     return;
   }
   list.innerHTML=shown.map(r=>`<article style="padding:14px;border:1px solid #d8d0ca;border-radius:12px;background:#fff;margin:0 0 10px"><div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start"><b>${esc(r.error_code||'Fehler')}</b><span>${esc(r.status||'–')}</span></div><p style="margin:8px 0;white-space:pre-wrap">${esc(r.message||'')}</p><small>${esc(r.member_name||r.person_id||'Unbekannt')} · ${esc(r.app_version||'–')} · ${fmt(r.last_seen_at)}</small></article>`).join('');
+  [...list.querySelectorAll('article')].forEach((article,index)=>{
+    const r=shown[index];
+    if(!r?.id||String(r.status||'').toLowerCase()==='resolved')return;
+    const actions=article.querySelector('div > span')?.parentElement;
+    if(!actions)return;
+    actions.style.display='flex';actions.style.alignItems='center';actions.style.gap='8px';
+    actions.insertAdjacentHTML('beforeend','<button type="button" data-diag-resolve="'+esc(r.id)+'" title="Als erledigt markieren und aus den offenen Meldungen entfernen" aria-label="Meldung als erledigt markieren" style="width:40px;height:40px;border:1px solid #d4c7c0;border-radius:10px;background:#fff;font-size:19px;cursor:pointer">🗑️</button>');
+  });
 }
 function updateSummary(host){
   const box=host.querySelector('#kcDiagSummary');
@@ -57,6 +65,18 @@ function updateSummary(host){
   box.textContent=`${shown.length} angezeigt · ${open} offen · ${all.length} insgesamt`;
 }
 function refreshView(host){renderRows(host);updateSummary(host);}
+async function resolveRows(host,ids){
+  const unique=[...new Set((ids||[]).filter(Boolean))];
+  if(!unique.length)return;
+  if(!confirm(unique.length===1?'Diese Meldung als erledigt markieren und aus den offenen Meldungen entfernen?':unique.length+' angezeigte Meldungen als erledigt markieren?'))return;
+  const bulk=host.querySelector('#kcDiagResolveShown');if(bulk)bulk.disabled=true;
+  try{
+    for(const id of unique)await withTimeout(K.diagnostics.setStatus(id,'resolved'),LOAD_TIMEOUT_MS,'Statusänderung');
+    for(const row of host._kcDiagRows||[])if(unique.includes(row.id))row.status='resolved';
+    refreshView(host);
+  }catch(err){alert('Meldung konnte nicht erledigt werden: '+(err?.message||err));}
+  finally{if(bulk)bulk.disabled=false;}
+}
 async function load(host){
   const body=host.querySelector('#kcDiagBody'),loadBtn=host.querySelector('#kcDiagLoad');
   if(!body||!loadBtn)return;
@@ -87,13 +107,14 @@ function open(){
   const host=document.createElement('div');
   host.id='kcDiagOverlay';
   host.style.cssText='position:fixed;inset:0;z-index:250000;background:rgba(22,18,18,.66);display:flex;align-items:flex-start;justify-content:center;padding:18px;overflow:auto;touch-action:pan-y';
-  host.innerHTML=`<section style="width:min(760px,100%);margin:18px auto;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.35);padding:20px;color:#25211f"><div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start"><div><h2 style="margin:0;color:#8d1728;font-size:1.55rem">🛠 Zentrale Fehlerdiagnose</h2><p style="margin:8px 0 0">Diagnosefenster geöffnet. Es wird noch keine Datenbankabfrage ausgeführt.</p></div><button id="kcDiagClose" type="button" style="min-width:52px;min-height:52px;border:1px solid #d4c7c0;border-radius:14px;background:#fff;font-size:28px">×</button></div><div style="margin:18px 0;padding:14px;border-radius:12px;background:#eef8f0;border:1px solid #97c8a1"><b>✓ Oberfläche reagiert</b><p style="margin:6px 0 0">Erst mit dem nächsten Button werden die gespeicherten Fehler aus Supabase geladen.</p></div><button id="kcDiagLoad" type="button" style="width:100%;min-height:58px;border:0;border-radius:12px;background:#8d1728;color:#fff;font-size:1.05rem;font-weight:700">Fehlerdaten laden</button><div id="kcDiagTools" hidden style="margin-top:14px;display:grid;grid-template-columns:1fr;gap:10px"><label style="font-weight:700">Anzeige<select id="kcDiagFilter" style="display:block;width:100%;margin-top:6px;min-height:48px;border:1px solid #d4c7c0;border-radius:10px;padding:0 12px;background:#fff;font-size:1rem"><option value="open">Offene Meldungen</option><option value="new">Nur neue</option><option value="resolved">Behobene Meldungen</option><option value="tests">Testmeldungen</option><option value="all">Alle ohne Tests</option><option value="all_with_tests">Alle inkl. Tests</option></select></label><label style="font-weight:700">Suche<input id="kcDiagSearch" type="search" aria-label="Diagnosemeldungen durchsuchen" placeholder="Fehler, Mitglied, Gerät …" style="display:block;width:100%;box-sizing:border-box;margin-top:6px;min-height:48px;border:1px solid #d4c7c0;border-radius:10px;padding:0 12px;font-size:1rem"></label><div id="kcDiagSummary" style="padding:10px 12px;border-radius:10px;background:#f7f4f2;color:#544b46;font-size:.95rem"></div></div><div id="kcDiagBody" style="margin-top:16px"></div></section>`;
+  host.innerHTML=`<section style="width:min(760px,100%);margin:18px auto;background:#fff;border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.35);padding:20px;color:#25211f"><div style="display:flex;justify-content:space-between;gap:14px;align-items:flex-start"><div><h2 style="margin:0;color:#8d1728;font-size:1.55rem">🛠 Zentrale Fehlerdiagnose</h2><p style="margin:8px 0 0">Diagnosefenster geöffnet. Es wird noch keine Datenbankabfrage ausgeführt.</p></div><button id="kcDiagClose" type="button" style="min-width:52px;min-height:52px;border:1px solid #d4c7c0;border-radius:14px;background:#fff;font-size:28px">×</button></div><div style="margin:18px 0;padding:14px;border-radius:12px;background:#eef8f0;border:1px solid #97c8a1"><b>✓ Oberfläche reagiert</b><p style="margin:6px 0 0">Erst mit dem nächsten Button werden die gespeicherten Fehler aus Supabase geladen.</p></div><button id="kcDiagLoad" type="button" style="width:100%;min-height:58px;border:0;border-radius:12px;background:#8d1728;color:#fff;font-size:1.05rem;font-weight:700">Fehlerdaten laden</button><div id="kcDiagTools" hidden style="margin-top:14px;display:grid;grid-template-columns:1fr;gap:10px"><label style="font-weight:700">Anzeige<select id="kcDiagFilter" style="display:block;width:100%;margin-top:6px;min-height:48px;border:1px solid #d4c7c0;border-radius:10px;padding:0 12px;background:#fff;font-size:1rem"><option value="open">Offene Meldungen</option><option value="new">Nur neue</option><option value="resolved">Behobene Meldungen</option><option value="tests">Testmeldungen</option><option value="all">Alle ohne Tests</option><option value="all_with_tests">Alle inkl. Tests</option></select></label><label style="font-weight:700">Suche<input id="kcDiagSearch" type="search" aria-label="Diagnosemeldungen durchsuchen" placeholder="Fehler, Mitglied, Gerät …" style="display:block;width:100%;box-sizing:border-box;margin-top:6px;min-height:48px;border:1px solid #d4c7c0;border-radius:10px;padding:0 12px;font-size:1rem"></label><div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap"><div id="kcDiagSummary" style="flex:1;padding:10px 12px;border-radius:10px;background:#f7f4f2;color:#544b46;font-size:.95rem"></div><button id="kcDiagResolveShown" type="button" title="Alle momentan angezeigten offenen Meldungen als erledigt markieren" style="min-height:44px;padding:0 14px;border:1px solid #b89e91;border-radius:10px;background:#fff;font-weight:700;cursor:pointer">🗑️ Angezeigte erledigen</button></div></div><div id="kcDiagBody" style="margin-top:16px"></div></section>`;
   document.body.appendChild(host);
   host.querySelector('#kcDiagClose').onclick=close;
   host.querySelector('#kcDiagLoad').onclick=()=>load(host);
   host.querySelector('#kcDiagFilter').onchange=()=>refreshView(host);
   host.querySelector('#kcDiagSearch').oninput=()=>refreshView(host);
-  host.onclick=e=>{if(e.target===host)close();};
+  host.querySelector('#kcDiagResolveShown').onclick=()=>resolveRows(host,visibleRows(host).filter(r=>String(r.status||'').toLowerCase()!=='resolved').map(r=>r.id));
+  host.onclick=e=>{if(e.target===host)close();const button=e.target.closest?.('[data-diag-resolve]');if(button)resolveRows(host,[button.dataset.diagResolve]);};
   return true;
 }
 function inject(){
@@ -130,5 +151,5 @@ document.addEventListener('click',onDocumentClick,true);
 loadCompanion('kcDpSupabaseConnectionMonitor','src/core/supabase-connection-monitor.js?v=0.19.51-monitor3');
 loadCompanion('kcDpDiagnosticsHistoryView','src/ui/diagnostics-history-view.js?v=0.19.51-history4');
 loadCompanion('kcDpExcelMigrationCenter','src/ui/excel-migration-center.js?v=0.19.51-migration1');
-K.diagnosticsCenter={version:'0.19.71-isolated-two-step-filters',open,close,load,allowed,inject};
+K.diagnosticsCenter={version:'0.20.0-b201-trash',open,close,load,allowed,inject};
 })();

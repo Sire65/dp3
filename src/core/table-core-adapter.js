@@ -38,7 +38,7 @@
     input.addEventListener('input',()=>{s.query=input.value.trim();apply()});apply();return{filter:q=>{input.value=q||'';input.dispatchEvent(new Event('input'))},sort:(i,dir=1)=>{s.sort=Number(i);s.dir=dir<0?-1:1;apply()},snapshot:()=>({rows:s.rows.length,visible:s.rows.filter(r=>!r.hidden).length,sort:s.sort,dir:s.dir})}
   }
   const excluded='table.tc,table.hm-table,table.hm-radar-table,table.occ-summary,table.demand-table,table.photo-table,table.matrix,table.roster-grid,table.handwriting-table';
-  function eligible(table){return !table.matches(excluded)&&!table.closest('.kc-tc-scroll')&&!table.querySelector('input,select,textarea')&&table.tHead?.rows?.length===1&&table.tBodies?.[0]?.rows?.length>1}
+  function eligible(table){return !table.closest('#printRoot')&&!table.matches(excluded)&&!table.closest('.kc-tc-scroll')&&!table.querySelector('input,select,textarea')&&table.tHead?.rows?.length===1&&table.tBodies?.[0]?.rows?.length>1}
   let pending=false;function enhanceAll(){pending=false;document.querySelectorAll('table').forEach(t=>{if(eligible(t))enhance(t,{filterPlaceholder:t.closest('#hmPersonHours')?'Mitarbeiter oder Stunden filtern …':'Tabelle filtern …'})})}function scheduleEnhance(){if(!pending){pending=true;requestAnimationFrame(enhanceAll)}}
   new MutationObserver(scheduleEnhance).observe(document.documentElement,{childList:true,subtree:true});if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',scheduleEnhance,{once:true});else scheduleEnhance();
   K.tableCore={version:'adapter-1.3',masterApi:'1.1',create,enhance,enhanceAll,nativeCore};

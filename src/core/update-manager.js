@@ -15,6 +15,8 @@
   function cleanPath(path){return String(path||'').replace(/^\.\//,'').replace(/^\//,'');}
   function sameOriginUrl(path,cacheBust=false){const u=new URL(cleanPath(path),location.href);if(cacheBust)u.searchParams.set('kc_update',Date.now().toString());return u.toString();}
   async function sha256(buffer){const digest=await crypto.subtle.digest('SHA-256',buffer);return Array.from(new Uint8Array(digest)).map(b=>b.toString(16).padStart(2,'0')).join('');}
+  const CANONICAL_TEXT_EXTENSIONS=new Set(['html','js','css','webmanifest','svg']);
+  function canonicalVerifiedBuffer(file,buffer){const clean=installPath(file).split(/[?#]/)[0].toLowerCase(),dot=clean.lastIndexOf('.'),ext=dot>=0?clean.slice(dot+1):'';if(!CANONICAL_TEXT_EXTENSIONS.has(ext))return buffer;return new TextEncoder().encode(new TextDecoder().decode(buffer).replace(/\r\n?/g,'\n')).buffer;}
   function safeStoreGet(key,fallback=null){try{const x=localStorage.getItem(key);return x?JSON.parse(x):fallback;}catch(_){return fallback;}}
   function safeStoreSet(key,value){try{localStorage.setItem(key,JSON.stringify(value));}catch(_){}}
   function queueReport(report){const q=safeStoreGet(REPORT_QUEUE_KEY,[]);q.push(report);safeStoreSet(REPORT_QUEUE_KEY,q.slice(-10));}
@@ -69,9 +71,9 @@
     for(let i=0;i<files.length;i++){
       const file=files[i];
       const onChunk=n=>{state.downloadedBytes+=n;const elapsed=Math.max(.1,(performance.now()-started)/1000),rate=state.downloadedBytes/elapsed,remaining=Math.max(0,total-state.downloadedBytes),eta=rate>0?remaining/rate:Infinity;window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_PROGRESS',{detail:{phase:'download',file:installPath(file),index:i+1,count:files.length,downloaded:state.downloadedBytes,total,percent:total?Math.min(99,Math.round(state.downloadedBytes/total*100)):0,rate,eta}}));};
-      const {buffer,type}=await fetchFile(file,onChunk);
-      if(Number(file.bytes||0)>0&&Math.abs(buffer.byteLength-Number(file.bytes))>4)throw new Error(`${installPath(file)}: Dateigröße stimmt nicht mit dem Release überein.`);
-      if(file.sha256){state.phase='verify';window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_PROGRESS',{detail:{phase:'verify',file:installPath(file),index:i+1,count:files.length,downloaded:state.downloadedBytes,total,percent:total?Math.min(99,Math.round(state.downloadedBytes/total*100)):0,eta:0}}));const hash=await sha256(buffer);if(hash.toLowerCase()!==String(file.sha256).toLowerCase())throw new Error(`${installPath(file)}: SHA-256-Integritätsprüfung fehlgeschlagen (ist ${hash.slice(0,12)}…, erwartet ${String(file.sha256).slice(0,12)}…).`);}
+      const {buffer,type}=await fetchFile(file,onChunk),verifiedBuffer=canonicalVerifiedBuffer(file,buffer);
+      if(Number(file.bytes||0)>0&&Math.abs(verifiedBuffer.byteLength-Number(file.bytes))>4)throw new Error(`${installPath(file)}: Dateigröße stimmt nicht mit dem Release überein.`);
+      if(file.sha256){state.phase='verify';window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_PROGRESS',{detail:{phase:'verify',file:installPath(file),index:i+1,count:files.length,downloaded:state.downloadedBytes,total,percent:total?Math.min(99,Math.round(state.downloadedBytes/total*100)):0,eta:0}}));const hash=await sha256(verifiedBuffer);if(hash.toLowerCase()!==String(file.sha256).toLowerCase())throw new Error(`${installPath(file)}: SHA-256-Integritätsprüfung fehlgeschlagen (ist ${hash.slice(0,12)}…, erwartet ${String(file.sha256).slice(0,12)}…).`);}
       await cache.put(sameOriginUrl(installPath(file),false),new Response(buffer,{status:200,headers:{'Content-Type':type,'Content-Length':String(buffer.byteLength),'X-KC-DP-Release':manifest.version,'X-KC-DP-SHA256':file.sha256||''}}));
     }
     safeStoreSet('kc_dp_staged_release',{version:manifest.version,cacheName,at:Date.now()});

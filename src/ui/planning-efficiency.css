@@ -1,0 +1,16 @@
+/* Kontextaktionen, verdeckte Kann-Zeit und registerbezogene Zeilenfarben */
+.context-menu-heading{padding:7px 9px 4px;margin-top:4px;border-top:1px solid #ded7d0;color:#6b6258;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em}
+.context-menu .context-quick-action{color:#542142;font-weight:650;background:#fbf8fd}
+.context-menu .context-quick-action:hover{background:#eee5f5}
+.shift-can-reference{position:absolute;right:23px;top:3px;z-index:12;max-width:98px;height:24px;padding:0 7px;border:1px solid #5d477d;border-radius:9px;background:#f7f1fc;color:#4a3569;font:800 10px/22px system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:0 1px 3px #0003}
+.shift-can-reference:hover,.shift-can-reference:focus-visible{background:#5d477d;color:#fff;outline:2px solid #dacbed}
+.shift-can-reference.outside{border-color:#a51f32;background:#fff0f2;color:#8c1829}
+.shift.can-overrun{box-shadow:inset 0 -4px 0 #d53246,0 1px 3px #0002}
+.plan-wish-guide-reveal{display:none!important}
+body[data-v020-register="wish"] .person-row.register-alt-row .person-cell,body[data-v020-register="wish"] .person-row.register-alt-row .hours-cell,body[data-v020-register="wish"] .person-row.register-alt-row .timeline-cell{background-color:#faf7fc}
+body[data-v020-register="planned"] .person-row.register-alt-row .person-cell,body[data-v020-register="planned"] .person-row.register-alt-row .hours-cell,body[data-v020-register="planned"] .person-row.register-alt-row .timeline-cell{background-color:#f4f8fc}
+body[data-v020-register="actual"] .person-row.register-alt-row .person-cell,body[data-v020-register="actual"] .person-row.register-alt-row .hours-cell,body[data-v020-register="actual"] .person-row.register-alt-row .timeline-cell{background-color:#f2f8f5}
+body[data-v020-register="wish"] .summary-table tbody tr:nth-child(even)>td{background-color:#faf7fc!important}
+body[data-v020-register="planned"] .summary-table tbody tr:nth-child(even)>td{background-color:#f4f8fc!important}
+body[data-v020-register="actual"] .summary-table tbody tr:nth-child(even)>td{background-color:#f2f8f5!important}
+@media(max-width:760px){.shift-can-reference{right:18px;max-width:58px;padding:0 5px}}

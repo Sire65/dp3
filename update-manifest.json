@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 192,
-  "cacheName": "kc-dp-release-0.20.0-b192",
+  "build": 203,
+  "cacheName": "kc-dp-release-0.20.0-b203",
   "releaseNotes": [
+    "Build 203: Freitagspraesentation mit sicherer Testvorbereitung, Kassen-Simulation, Personenkonto und flexibler Balkenbearbeitung",
     "Build 192: Ist-Abgleich mit Laserscan, Handlungsbedarf, Filtern und lueckenlosem Wunsch-Soll-Ist-Buchungsprotokoll",
     "Build 191: eindeutige Mitgliedsnummern-Zuordnung fuer PC-Manager, Kasse und Wunschimport mit sicherem Fehlerriegel",
     "Build 190: plattformneutrale LF-Integritaetspruefung fuer identische Windows- und GitHub-Pages-Releases",
@@ -87,8 +88,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-08-31T15:17:59.946Z",
-  "totalRuntimeBytes": 30175010,
+  "generatedAt": "2026-09-01T12:42:14.416Z",
+  "totalRuntimeBytes": 30229526,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -142,8 +143,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 19163,
-      "sha256": "b67df7182c17c129217d8e16e07126f1912fcb0ee53d1c3fd8d1b065712b26a2",
+      "bytes": 19553,
+      "sha256": "63b66c04a092751d93e758eddc83496def31e00330b28e910200126f74269a72",
       "runtime": true,
       "forceRefresh": true
     },
@@ -722,8 +723,8 @@
     {
       "path": "src/core/table-core-adapter.js",
       "installPath": "src/core/table-core-adapter.js",
-      "bytes": 7140,
-      "sha256": "caea9b12fcd4ec1935c87e4eb993fbc77a64130ef2bad424c454f276e6c0dd48",
+      "bytes": 7170,
+      "sha256": "bfc198851e8f5edf4194ba060c9284f2f34f1b1d087fbaa103f18be34f5689ba",
       "runtime": true
     },
     {
@@ -736,8 +737,8 @@
     {
       "path": "src/core/update-manager.js",
       "installPath": "src/core/update-manager.js",
-      "bytes": 13040,
-      "sha256": "d1379c74c136ff0f7ab464a7b2d53d9737e53eb52aeef202d9ecfdbe4908645e",
+      "bytes": 13512,
+      "sha256": "d4070884d25d6c9e5a522ab1ff6da31d28fae0e733c92511cc3f147090c5a844",
       "runtime": true
     },
     {
@@ -820,15 +821,15 @@
     {
       "path": "src/ui/app.css",
       "installPath": "src/ui/app.css",
-      "bytes": 48253,
-      "sha256": "7487a16de580f6cbb25d8afa09ea9e5be01ec27343c6768b01a05d57b8c38538",
+      "bytes": 48938,
+      "sha256": "b344fb46bf9dc2b6770ffbfe5db6e0395abd5677b5a3547fda32a55e10ab547d",
       "runtime": true
     },
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 258504,
-      "sha256": "4446a535287a8d8fbfc97263ad76598b334a864d0a7fd3671920c56212ae5eb6",
+      "bytes": 259862,
+      "sha256": "57ad310262164e51c4f9e7c6f7b85bf0d37bc49de299a70583fdcb08ad4963fa",
       "runtime": true
     },
     {
@@ -939,8 +940,8 @@
     {
       "path": "src/ui/diagnostics-center.js",
       "installPath": "src/ui/diagnostics-center.js",
-      "bytes": 9336,
-      "sha256": "bdbdbca1599ee826958db5e6226b0690551d849fb07161531c746b3449a1aa34",
+      "bytes": 11465,
+      "sha256": "baf2be2d681050b2479ead021a4430ff197a378e52d315f65b6f78824b116eac",
       "runtime": true
     },
     {
@@ -997,6 +998,13 @@
       "installPath": "src/ui/forms-center.js",
       "bytes": 5516,
       "sha256": "8c5468788e150fc4484eb5ad71153ea395afc1499d0136bd70737355c338a771",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/friday-presentation-simulation.js",
+      "installPath": "src/ui/friday-presentation-simulation.js",
+      "bytes": 2984,
+      "sha256": "a0c466b19d3e6cdae9ad5745d6a1cb43dd5d9f07fa553ebf0496ae659481e417",
       "runtime": true
     },
     {
@@ -1217,6 +1225,20 @@
       "runtime": true
     },
     {
+      "path": "src/ui/person-account-print.css",
+      "installPath": "src/ui/person-account-print.css",
+      "bytes": 2499,
+      "sha256": "70968bc9317b894ad1de4e3c38e25bca3c4495dc571fa4db05fbfc62edbc0c40",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/person-account-print.js",
+      "installPath": "src/ui/person-account-print.js",
+      "bytes": 19234,
+      "sha256": "c3a6b807038ae6fcaae2360dd0c795e39a6bb24e2d3649763d6d2505ee40a854",
+      "runtime": true
+    },
+    {
       "path": "src/ui/person-hours-block.css",
       "installPath": "src/ui/person-hours-block.css",
       "bytes": 1418,
@@ -1282,8 +1304,8 @@
     {
       "path": "src/ui/plan-transfer.js",
       "installPath": "src/ui/plan-transfer.js",
-      "bytes": 12579,
-      "sha256": "f795e2a169ddfa651fb51085b2ec7465b0f763f94be0b01c1d5e91d8807971fb",
+      "bytes": 12672,
+      "sha256": "650778f43f03b1d462b6cd29287010082ee6d39f996b247ae31ceec0a209bd2e",
       "runtime": true
     },
     {
@@ -1326,6 +1348,20 @@
       "installPath": "src/ui/planner-sidebar.js",
       "bytes": 11075,
       "sha256": "97ee38fbf55366984d94b5f342b1dde1305ba48ba8f0405da3daf481054d25f6",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/planning-efficiency.css",
+      "installPath": "src/ui/planning-efficiency.css",
+      "bytes": 2223,
+      "sha256": "7d0e5064d655f0c0c66d02ac6e1986d04f16a753be89ccef5cf893000e50a712",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/planning-efficiency.js",
+      "installPath": "src/ui/planning-efficiency.js",
+      "bytes": 9183,
+      "sha256": "bb1b507901a372ccc4b1353d99a57071461d5fd157177c0c66f12cf2e491bd86",
       "runtime": true
     },
     {
@@ -1611,8 +1647,8 @@
     {
       "path": "src/ui/wish-guide-controls.js",
       "installPath": "src/ui/wish-guide-controls.js",
-      "bytes": 6115,
-      "sha256": "fcce02c4747c793a48bab72af8c328d228479c9c12bbb19841fca988e152b4d2",
+      "bytes": 6011,
+      "sha256": "ca068d9b1c36616986346060991235b8fabd727093cdf91b2dbb06d51844c85a",
       "runtime": true
     },
     {
@@ -1646,8 +1682,8 @@
     {
       "path": "src/ui/wish-submission-check.css",
       "installPath": "src/ui/wish-submission-check.css",
-      "bytes": 3185,
-      "sha256": "2c832cb2e28b827ce15a2317ae02afdaa6a9535e1e6c4e7b209a27cfed6efe88",
+      "bytes": 6064,
+      "sha256": "02647a7527367ed08094f1bf1c5eb60f644c02ec25fb167a7eee128933f105fb",
       "runtime": true
     },
     {
@@ -1732,6 +1768,13 @@
       "installPath": "src/vendor/tesseract/worker.min.js",
       "bytes": 111307,
       "sha256": "576b7df7e3393e137e51849357c9adb53fe7ac1bb69bfa06cf3d61520f182c6d",
+      "runtime": true
+    },
+    {
+      "path": "templates/KC_DP2_Freitagstest_Wunsch_Hans-Joachim.xlsx",
+      "installPath": "templates/KC_DP2_Freitagstest_Wunsch_Hans-Joachim.xlsx",
+      "bytes": 10461,
+      "sha256": "ee5181c8cdab945a0d7e5098606b7702e6dcce472d0361ad9386c48332903159",
       "runtime": true
     },
     {
