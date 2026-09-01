@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 const K=window.KCDP=window.KCDP||{};
-if(!window.XLSX&&document.readyState==='loading')document.write('<script src="src/adapters/xlsx-local.js?v=0.19.42"><\/script>');
+if(!window.XLSX&&document.readyState==='loading')document.write('<script src="src/adapters/xlsx-local.js?v=0.20.0-b206"><\/script>');
 
 const clean=v=>String(v??'').replace(/\u00a0/g,' ').trim();
 const norm=v=>clean(v).toLowerCase().replace(/[„“”]/g,'"').replace(/\s+/g,' ');

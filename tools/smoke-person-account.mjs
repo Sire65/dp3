@@ -4,5 +4,5 @@ const required=['Wunsch','Soll','Ist geprüft','Ist aus Buchungen','Tageszeit','
 const missing=required.filter(x=>!js.includes(x));
 if(missing.length)throw new Error('Personenkonto-Vertrag fehlt: '+missing.join(', '));
 if(!css.includes('repeat(3')||!css.includes('@media'))throw new Error('Responsive Personenauswahl fehlt');
-if(!html.includes('person-account-print.js?v=0.20.0-b200')||!html.includes('KC_DP_BUILD=205'))throw new Error('Build-Integration fehlt');
+if(!html.includes('person-account-print.js?v=0.20.0-b200')||!html.includes('KC_DP_BUILD=206'))throw new Error('Build-Integration fehlt');
 console.log('Personenkonto-Smoke-Test OK: Verlauf, Summen, Namenswahl, Druck und responsive Auswahl');

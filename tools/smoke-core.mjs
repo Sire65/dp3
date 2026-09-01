@@ -4,8 +4,8 @@ import path from 'node:path';
 import vm from 'node:vm';
 
 const root=path.resolve(import.meta.dirname,'..');
-const context=vm.createContext({window:{},console,setTimeout,clearTimeout,structuredClone});
-for(const file of ['src/core/model.js','src/core/auth.js','src/core/planning.js','src/core/staffing.js','src/core/breaks.js','src/core/planner-engine.js','src/core/workflow.js','src/adapters/timeclock-import.js']){
+const context=vm.createContext({window:{},document:{readyState:'complete',write:()=>{}},console,setTimeout,clearTimeout,structuredClone,TextDecoder});
+for(const file of ['src/core/model.js','src/core/auth.js','src/core/planning.js','src/core/staffing.js','src/core/breaks.js','src/core/planner-engine.js','src/core/workflow.js','src/adapters/timeclock-import.js','src/adapters/xlsx-local.js','src/adapters/wish-import.js']){
   vm.runInContext(await readFile(path.join(root,file),'utf8'),context,{filename:file});
 }
 const K=context.window.KCDP;
@@ -31,6 +31,15 @@ assert.equal(unknownMember.valid,false,'Unbekannte vorhandene Mitgliedsnummer da
 assert.equal(unknownMember.matchSource,'member_no_unmatched','Unbekannte Mitgliedsnummer muss als solche protokolliert werden');
 const memberOnlyCsv=K.timeclockImport.parseCsv('Mitgliedsnummer;Datum;Kommen;Gehen\nKC-0010;05.12.2026;16:30;21:15');
 assert.equal(memberOnlyCsv[0].personId,'KC-P-002','CSV nur mit Mitgliedsnummer muss akzeptiert werden');
+const fridayWorkbook=await readFile(path.join(root,'templates','KC_DP2_Freitagstest_Wunsch_Hans-Joachim.xlsx'));
+const workbookBuffer=fridayWorkbook.buffer.slice(fridayWorkbook.byteOffset,fridayWorkbook.byteOffset+fridayWorkbook.byteLength);
+const fridayBook=context.window.XLSX.read(workbookBuffer,{type:'array'});
+const fridayMatrix=context.window.XLSX.utils.sheet_to_json(fridayBook.Sheets[fridayBook.SheetNames[0]],{header:1});
+const fridayImport=K.wishImport.normalizeMatrix(fridayMatrix);
+assert.equal(fridayImport.valid,true,'Freitagstest-XLSX muss mit dem eingebauten Offline-Leser importierbar sein');
+assert.equal(fridayImport.entries.length,6,'Freitagstest-XLSX muss Kann, Wunsch, Sperrtag und Sperrzeit vollständig liefern');
+assert(fridayImport.entries.some(x=>x.date==='2026-12-05'&&x.wishType==='unavailable'&&x.sourceField==='Sperrtag'),'Vollständiger Sperrtag muss importiert werden');
+assert(fridayImport.entries.some(x=>x.date==='2026-12-06'&&x.wishType==='unavailable'&&x.sourceField==='Sperrzeit'),'Sperrzeit muss importiert werden');
 const day=K.days.find(x=>x.date==='2026-12-04');
 const evaluation=K.evaluateDay(day);
 assert(Number.isFinite(evaluation.quality)&&evaluation.slots>0,'Tagesbewertung muss berechenbar sein');

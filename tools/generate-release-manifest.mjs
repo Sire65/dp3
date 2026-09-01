@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=205;
+const build=206;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -45,7 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
-    'Build 205: zuverlässige Rechtsklick-Einzelübernahme Wunsch zu Soll und Soll zu Ist sowie Ein-Klick-Offline-Start',
+    'Build 206: Excel- und CSV-Wunschimport erkennt auch XLSX-Dateien mit XML-Namenspräfixen; Freitagstest-Vorlage vollständig geprüft',
     'Build 204: verbindlicher KC-Personenstand mit zentralen IDs, sicherer Alt-ID-Migration und Ausschluss nicht planbarer Personen',
     'Build 203: Freitagspraesentation mit sicherer Testvorbereitung, Kassen-Simulation, Personenkonto und flexibler Balkenbearbeitung',
     'Build 192: Ist-Abgleich mit Laserscan, Handlungsbedarf, Filtern und lueckenlosem Wunsch-Soll-Ist-Buchungsprotokoll',
