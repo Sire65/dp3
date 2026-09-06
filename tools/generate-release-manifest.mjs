@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=213;
+const build=214;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -45,6 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 214: Twinkey-Test direkt auf der Startauswahl und Mitgliederbegrüßung vor der bisherigen Auswahl',
     'Build 213: Twinkey aus dem Adminzugang mit isolierten Beispieldaten testen',
     'Build 212: Twinkey begrüßt Mitglieder und begleitet Wunschplan, Dienste und Zeiten mit freiwilligem Vorlesen',
     'Build 211: ein nicht zugestelltes Lebenszeichen nennt seinen Grund, statt lautlos wie \u201eProgramm nicht benutzt\u201c auszusehen',

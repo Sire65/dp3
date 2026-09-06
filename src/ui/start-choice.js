@@ -56,6 +56,7 @@
         ${edit?'<button type="button" class="kc-start-choice-option" id="kcChoiceEdit"><span class="kc-start-choice-icon">✏️</span><span class="kc-start-choice-copy"><b>Dienstplan bearbeiten</b><span>Dienste einplanen, verschieben und den Sollplan bearbeiten. Nur für berechtigte Planer.</span></span></button>':''}
         <button type="button" class="kc-start-choice-option" id="kcChoiceMine"><span class="kc-start-choice-icon">👤</span><span class="kc-start-choice-copy"><b>Meine Dienste</b><span>Nur die eigenen Einsatzzeiten und den persönlichen Plan übersichtlich anzeigen.</span></span></button>
         <button type="button" class="kc-start-choice-option" id="kcChoiceWish"><span class="kc-start-choice-icon">📝</span><span class="kc-start-choice-copy"><span class="kc-start-choice-titleline"><b>Wunschplan</b>${wishDeadlineChip()}</span><span>Eigene Wunschzeiten ansehen und – solange freigegeben – eintragen oder ändern.</span></span></button>
+        ${user.role==='admin'?'<button type="button" class="kc-start-choice-option" id="kcChoiceTwinkey"><span class="kc-start-choice-icon">🧑‍🍳</span><span class="kc-start-choice-copy"><b>Twinkey testen</b><span>Mitgliederführung mit Beispieldaten ausprobieren. Ihr Adminzugang bleibt erhalten.</span></span></button>':''}
       </div>
       <div class="kc-start-choice-footer"><span>Angemeldet als <b>${esc(user.displayName||'Benutzer')}</b>${role?.label?` · ${esc(role.label)}`:''}</span><button type="button" class="kc-start-choice-logout" id="kcChoiceLogout">Abmelden</button></div>
     </section></div>`;
@@ -63,9 +64,11 @@
 
   function showLauncher(){
     if(!K.currentUser?.personId||replacementRoute())return;
+    if(K.currentUser.role==='employee'&&K.twinkey&&K.twinkey.mode()!=='plain'){launcherVisible=true;selectedArea='twinkey';clearPlanMode();hideLegacyReturn();setUxMode('role');K.twinkey.home();ensureChoiceReturn();return;}
     launcherVisible=true;selectedArea='launcher';clearPlanMode();hideLegacyReturn();
     document.body.classList.remove('kc-phone-day-active','kc-phone-list-mode');setUxMode('role');
     const root=roleRoot();if(!root)return;root.innerHTML=launcherHtml();
+    if($('kcChoiceTwinkey'))$('kcChoiceTwinkey').onclick=()=>K.twinkeyTest.open();
     $('kcChoiceView').onclick=()=>openLegacy('view');
     if($('kcChoiceEdit'))$('kcChoiceEdit').onclick=()=>openLegacy('edit');
     $('kcChoiceMine').onclick=()=>openPersonal('plan');

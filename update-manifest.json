@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 213,
-  "cacheName": "kc-dp-release-0.20.0-b213",
+  "build": 214,
+  "cacheName": "kc-dp-release-0.20.0-b214",
   "releaseNotes": [
+    "Build 214: Twinkey-Test direkt auf der Startauswahl und Mitgliederbegrüßung vor der bisherigen Auswahl",
     "Build 213: Twinkey aus dem Adminzugang mit isolierten Beispieldaten testen",
     "Build 212: Twinkey begrüßt Mitglieder und begleitet Wunschplan, Dienste und Zeiten mit freiwilligem Vorlesen",
     "Build 211: ein nicht zugestelltes Lebenszeichen nennt seinen Grund, statt lautlos wie „Programm nicht benutzt“ auszusehen",
@@ -97,8 +98,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-06T16:58:49.108Z",
-  "totalRuntimeBytes": 30324942,
+  "generatedAt": "2026-09-06T17:11:40.664Z",
+  "totalRuntimeBytes": 30325580,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -153,7 +154,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 20214,
-      "sha256": "8844efdfa270e855aebcefdb8ba32e6e86f808783452be8bbfa43019af2e107f",
+      "sha256": "c5dd489fb9091fe155760f99136b25bcae20d8bcb179648d00cc47973872b023",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1593,8 +1594,8 @@
     {
       "path": "src/ui/start-choice.js",
       "installPath": "src/ui/start-choice.js",
-      "bytes": 11360,
-      "sha256": "61f1123c447423339c2cda08cf77de86575ae4b037569e521b3580777122dd6d",
+      "bytes": 11998,
+      "sha256": "c69cdf3a2a92eeb10314e5dc373fd9f8748cff8202037a90a76b5c0239b33b53",
       "runtime": true
     },
     {
