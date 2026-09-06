@@ -94,8 +94,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-06T05:11:02.738Z",
-  "totalRuntimeBytes": 30299075,
+  "generatedAt": "2026-09-06T12:43:14.096Z",
+  "totalRuntimeBytes": 30299967,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -547,8 +547,8 @@
     {
       "path": "src/core/kicc-heartbeat.js",
       "installPath": "src/core/kicc-heartbeat.js",
-      "bytes": 6674,
-      "sha256": "1e3e7fc5496b19fe06436d965c8a10a4c2c02624e64688ab6ed18b7f460f927e",
+      "bytes": 7566,
+      "sha256": "4802da859a30ee07c54e7f9f827fb65d7955ea32ba92b5e005e3503575183443",
       "runtime": true
     },
     {
