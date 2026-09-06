@@ -104,8 +104,19 @@
   }
 
   function saveActual(candidate,{reason='',source=candidate.source||'manual_correction',importBatchId=candidate.importBatchId||null}={}){
-    K.auth?.require?.(source==='file_import'||source==='timeclock'?'roster.actual.import':'roster.actual.correct','Sie dürfen Istzeiten nicht bearbeiten.');
+    K.auth?.require?.(source==='file_import'||source==='timeclock'||source==='planned_transfer'?'roster.actual.import':'roster.actual.correct','Sie dürfen Istzeiten nicht bearbeiten.');
     if(K.actualWorkflow.status==='closed')throw new Error('Der Istplan ist abgeschlossen. Vor Änderungen muss er administrativ wieder geöffnet werden.');
+    // A transfer may only create an unchanged copy of an active, explicitly linked plan.
+    // Editing an existing actual record continues to require roster.actual.correct.
+    if(source==='planned_transfer'){
+      const planned=K.shifts.find(s=>s.id===candidate.linkedShiftId&&s.layer==='planned'&&plannedActive(s));
+      if(candidate.id||!planned||planned.personId!==candidate.personId||planned.date!==candidate.date||
+        +planned.start!==candidate.start||+planned.end!==candidate.end||Number(planned.breakMinutes||0)!==Number(candidate.breakMinutes||0))
+        throw new Error('Der Solldienst wurde geändert oder ist nicht mehr übernehmbar. Bitte Vorschau neu öffnen.');
+      if(K.actualShifts.some(a=>a.status!=='deleted'&&(a.linkedShiftId===planned.id||a.plannedShiftId===planned.id||
+        (sameDay(a,candidate)&&+a.start===candidate.start&&+a.end===candidate.end))))
+        throw new Error('Für diesen Solldienst ist bereits eine Istzeit vorhanden.');
+    }
     const issues=validateActual(candidate);if(issues.some(i=>i.level==='error'))throw new Error(issues.find(i=>i.level==='error').text);
     let target=candidate.id?K.actualShifts.find(a=>a.id===candidate.id):null;const before=target?clone(target):null;
     if(target)Object.assign(target,candidate,{id:target.id});else{target={...candidate,id:candidate.id||`A-${Date.now()}-${Math.random().toString(36).slice(2,6)}`};K.actualShifts.push(target);}
