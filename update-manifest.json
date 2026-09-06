@@ -2,9 +2,12 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 206,
-  "cacheName": "kc-dp-release-0.20.0-b206",
+  "build": 209,
+  "cacheName": "kc-dp-release-0.20.0-b209",
   "releaseNotes": [
+    "Build 209: Kochhelfer, persönliche Stundenübersicht, geprüfte Wunschvorschläge und einfache App-Installationshilfe",
+    "Build 208: geführter Mitgliederassistent als fünfter Eingabeweg mit Bereitschaft, Freundesvorlage und Handyansicht",
+    "Build 207: mobile Tagesmatrix mit Kann, Wunsch, Sperren, Reserve, V/H/B und konkreter Freundesvorschau",
     "Build 206: Excel- und CSV-Wunschimport erkennt auch XLSX-Dateien mit XML-Namenspräfixen; Freitagstest-Vorlage vollständig geprüft",
     "Build 204: verbindlicher KC-Personenstand mit zentralen IDs, sicherer Alt-ID-Migration und Ausschluss nicht planbarer Personen",
     "Build 203: Freitagspraesentation mit sicherer Testvorbereitung, Kassen-Simulation, Personenkonto und flexibler Balkenbearbeitung",
@@ -90,8 +93,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-01T15:15:50.477Z",
-  "totalRuntimeBytes": 30232360,
+  "generatedAt": "2026-09-06T04:29:32.204Z",
+  "totalRuntimeBytes": 30294311,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -145,8 +148,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 19575,
-      "sha256": "e687fc1580279c288745b8cbdb5c38bd080517f75b2d72405e422a9329c34a09",
+      "bytes": 20048,
+      "sha256": "924e4a6cb6f1f3840c2589c5120eebe94dfa6200adfdc00d3dbaff987bbc34a0",
       "runtime": true,
       "forceRefresh": true
     },
@@ -583,6 +586,13 @@
       "runtime": true
     },
     {
+      "path": "src/core/mobile-wish-matrix.js",
+      "installPath": "src/core/mobile-wish-matrix.js",
+      "bytes": 4671,
+      "sha256": "543290c0a2ee29918fd024657c2d4ffbfca8e022f538f1c33a7d30ae787ecfcc",
+      "runtime": true
+    },
+    {
       "path": "src/core/model.js",
       "installPath": "src/core/model.js",
       "bytes": 9394,
@@ -830,8 +840,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 260603,
-      "sha256": "3af9aaf01ee994731bf55e6337901f716b113f96136d5bac9c01b2bab1c18d17",
+      "bytes": 260816,
+      "sha256": "1a90a55a21026a285052342f6fcd0c05b21ef24b779adceb9dd39d70552b67a1",
       "runtime": true
     },
     {
@@ -846,6 +856,20 @@
       "installPath": "src/ui/batch-planning.js",
       "bytes": 15949,
       "sha256": "b789b50148aecb4beac03b69b25f77a491221c9e94813debf04adbe711219ca7",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/chef-companion.css",
+      "installPath": "src/ui/chef-companion.css",
+      "bytes": 1193,
+      "sha256": "f1aa27a200e6556e5e24739f1103015beb231459a27bebce0a5ec610e7e1a72d",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/chef-companion.js",
+      "installPath": "src/ui/chef-companion.js",
+      "bytes": 11388,
+      "sha256": "380b702e1218fb1f66915b0e959874a36da1720f659d8a5bc2e765b2d8192c51",
       "runtime": true
     },
     {
@@ -1126,6 +1150,20 @@
       "installPath": "src/ui/mobile-day.js",
       "bytes": 12292,
       "sha256": "76a236e703fb67f0c70bd7e8ec2712aaee43a1d3b72ca513742b6e2867d67d9f",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/mobile-wish-matrix.css",
+      "installPath": "src/ui/mobile-wish-matrix.css",
+      "bytes": 3610,
+      "sha256": "4848868d010fd62624c9395f60a92abc130eb30ee2d9b2ca53f4959a23b5a1ae",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/mobile-wish-matrix.js",
+      "installPath": "src/ui/mobile-wish-matrix.js",
+      "bytes": 15142,
+      "sha256": "1f74fd58712e97804d87e607a7239c77725cd8a22b19630be252b9400f77a67f",
       "runtime": true
     },
     {
@@ -1488,8 +1526,8 @@
     {
       "path": "src/ui/role-ux.js",
       "installPath": "src/ui/role-ux.js",
-      "bytes": 90657,
-      "sha256": "c06ec2ca44f60ffa01d9acb73d52c0f999a3ecc0e163d6c9525d2f752ae175bd",
+      "bytes": 91379,
+      "sha256": "f616d7285fdd4dd44bc298947b958892c004c9069d9ac7643056085018302117",
       "runtime": true
     },
     {
@@ -1633,6 +1671,20 @@
       "runtime": true
     },
     {
+      "path": "src/ui/wish-assistant.css",
+      "installPath": "src/ui/wish-assistant.css",
+      "bytes": 3601,
+      "sha256": "2464061a775ebc1a368af2e70711a0e9eae303ec403aa8758769b92050d301eb",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/wish-assistant.js",
+      "installPath": "src/ui/wish-assistant.js",
+      "bytes": 20710,
+      "sha256": "02a0e7bf54f3b490f2cc7e68a45727db63293021d594584be253b153af7915eb",
+      "runtime": true
+    },
+    {
       "path": "src/ui/wish-bar-composite.css",
       "installPath": "src/ui/wish-bar-composite.css",
       "bytes": 3731,
@@ -1677,8 +1729,8 @@
     {
       "path": "src/ui/wish-sprint.js",
       "installPath": "src/ui/wish-sprint.js",
-      "bytes": 8564,
-      "sha256": "4a5dd0ca4959a901b1f4d08a01ec6061866f333f0deceff211761f47e0ad5915",
+      "bytes": 8752,
+      "sha256": "d36cc3b2b4fd7c007e9f5e1f64796ac707ade220b8fd4990deb84c38f33685cd",
       "runtime": true
     },
     {
@@ -1691,8 +1743,8 @@
     {
       "path": "src/ui/wish-submission-check.js",
       "installPath": "src/ui/wish-submission-check.js",
-      "bytes": 10060,
-      "sha256": "56931ed525a07b2744ba08fa89b02205eb79dfe5118df3b75c517188a15e9f26",
+      "bytes": 10100,
+      "sha256": "1699ee5b88337625e812309eccb9206a8afc903c7026c7fba6d5d09a98303147",
       "runtime": true
     },
     {
