@@ -7,8 +7,8 @@ if errorlevel 1 (
   pause
   exit /b 1
 )
-start "" powershell -NoProfile -WindowStyle Hidden -Command "Start-Sleep -Seconds 2; Start-Process 'http://127.0.0.1:8765/index.html?build=210&offline=1'"
-echo KC DP2 Build 210 wird lokal gestartet.
+start "" powershell -NoProfile -WindowStyle Hidden -Command "Start-Sleep -Seconds 2; Start-Process 'http://127.0.0.1:8765/index.html?build=212&offline=1'"
+echo KC DP2 Build 212 wird lokal gestartet.
 echo Dieses Fenster waehrend der Nutzung bitte geoeffnet lassen.
 echo Beenden: Strg+C
 node tools\static-server.mjs
