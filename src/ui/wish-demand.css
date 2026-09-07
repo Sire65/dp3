@@ -1,1 +1,24 @@
 .wa-root .wa-reserve-check{display:flex;align-items:center;gap:12px;min-height:48px;margin-top:10px}.wa-reserve-check input{width:24px;height:24px;accent-color:#227444}.wd-overlay{position:fixed;inset:0;z-index:100001;background:#0006;padding:clamp(8px,3vw,28px);overflow:auto}.wd-dialog{max-width:760px;margin:auto;padding:22px;background:#fffdf9;border-radius:18px;font:16px/1.45 Arial,sans-serif;color:#352d27}.wd-report{border-bottom:1px solid #d7cbbb;padding:10px 0}.wd-report h3{margin:8px 0}.wd-report p{font-size:.9rem}.wd-part{padding:9px 0;border-top:1px solid #ece4d9}.wd-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}.wd-dialog button{min-height:48px;padding:12px 16px;font:inherit;border:1px solid #cabbab;border-radius:10px;background:white;color:#352d27;cursor:pointer}.wd-dialog #wdAccept{background:#227444;color:white}.wd-dialog [data-wd-alternative]{display:block;width:100%;margin:10px 0;text-align:left}.wd-live{margin:14px 0}.wd-dialog summary{padding:12px 0;cursor:pointer}
+
+.as-overview{margin-top:24px;border-top:2px solid #dfd5c9;padding-top:8px}
+.as-context{font-size:.86rem;line-height:1.5}
+.as-dayhint{background:#eef6f0;padding:9px;border-radius:8px;color:#215537!important}
+.as-period{margin:16px 0;border:1px solid #ddd5cb;border-radius:12px;overflow:hidden;background:white}
+.as-period h3{font-size:1rem;margin:0;padding:10px 12px;background:#f1ece6}
+.as-areas{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.as-area{padding:12px;border-top:1px solid #e4ddd4;min-width:0;border-left:4px solid #aaa}
+.as-gap{border-left-color:#287444}.as-full{border-left-color:#627383}.as-over{border-left-color:#b8751f}
+.as-area-head{display:flex;flex-wrap:wrap;gap:6px 12px;justify-content:space-between}
+.as-area-head strong{font-size:.88rem}.as-gap strong{color:#215c35}.as-over strong{color:#815017}
+.wa-question .as-count{font-size:.85rem;margin:8px 0;color:#514a44}
+.wa-question .as-people{font-size:.9rem;margin:5px 0;overflow-wrap:anywhere}
+.as-flex{padding:10px 12px;margin:0;background:#f7f3ed;font-size:.85rem;overflow-wrap:anywhere}
+.as-offers{display:grid;gap:10px;padding:14px;background:#edf6ef;border:1px solid #bad3c0;border-radius:12px}
+.as-offers .ux-btn{width:100%;text-align:left}
+.as-offers small{line-height:1.5}
+#waStaffingStatus:not(:empty){padding:12px;background:#edf6ef;border-radius:8px;margin-top:14px}
+.wa-review-edit .wa-editlinks{margin-top:8px}
+
+.wa-root .as-offers .ux-btn{height:auto;min-height:56px;line-height:1.45;display:block;overflow:visible;padding:12px}
+.as-highlights{display:grid;gap:5px;padding-top:10px;border-top:1px solid #ded8cf;margin-top:8px;font-size:.86rem;line-height:1.4}
+.as-highlights span{display:block}

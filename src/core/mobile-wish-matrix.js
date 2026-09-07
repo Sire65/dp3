@@ -33,13 +33,13 @@ function copyPreview(sourceId,ids){
  const dates=new Set(add.map(w=>w.date));
  return {add,skipped:source.length-add.length,errors:validate(own.filter(w=>dates.has(w.date)).concat(add))};
 }
-async function save(personId,dates,list,expected){
+async function save(personId,dates,list,expected,{reviewedDemand=false}={}){
  assertEditable(personId);
  if(expected!==undefined&&JSON.stringify(rows(personId).filter(w=>dates.includes(w.date)))!==expected)throw Error('Ihre Angaben wurden inzwischen geändert. Bitte den Tag erneut öffnen.');
  if(list.some(w=>w.personId!==personId||!dates.includes(w.date)))throw Error('Die Angaben gehören nicht zur ausgewählten Person oder zum ausgewählten Tag.');
  if(list.some(w=>w.id&&!rows(personId).some(x=>x.id===w.id&&x.date===w.date)))throw Error('Eintrag gehört nicht zu Ihrer Tagesmatrix.');
  const errors=validate(list);if(errors.length)throw Error(errors.join(' '));
- if(K.wishDemandUi&&list.some(w=>w.wishType==='preferred')){
+ if(!reviewedDemand&&K.wishDemandUi&&list.some(w=>w.wishType==='preferred')){
   const snapshot=JSON.stringify(rows(personId));
   if(!await K.wishDemandUi.confirm(list,dates,personId))throw Error('Nicht gespeichert. Du kannst deine Zeiten weiter bearbeiten.');
   assertEditable(personId);
