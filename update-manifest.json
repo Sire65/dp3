@@ -2,10 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 216,
-  "cacheName": "kc-dp-release-0.20.0-b216",
+  "build": 217,
+  "cacheName": "kc-dp-release-0.20.0-b217",
   "releaseNotes": [
-    "Build 216: Wunschprüfung gegen Besetzungsmatrix, Papierplanung, Reserve-Häkchen und CSV-Vorlage",
+    "Build 217: Bedarfsmatrix mit allen neun Spalten als PDF drucken",
     "Build 215: laufende Tagesübersicht, Uhrzeiten ab Tagesrahmen und mitgelieferte Twinkey-Ansagen",
     "Build 214: Twinkey-Test direkt auf der Startauswahl und Mitgliederbegrüßung vor der bisherigen Auswahl",
     "Build 213: Twinkey aus dem Adminzugang mit isolierten Beispieldaten testen",
@@ -100,8 +100,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-07T06:42:10.318Z",
-  "totalRuntimeBytes": 35529342,
+  "generatedAt": "2026-09-07T06:50:22.084Z",
+  "totalRuntimeBytes": 35532260,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -267,8 +267,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 20530,
-      "sha256": "052f78e1308d90b53f4005d817c20662f18b3a037522d71578b58da41be0ddf9",
+      "bytes": 20534,
+      "sha256": "c151acf13e87274da526351ac8895cf214c31c0d86c60fcc3e9677898ffaeb4e",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1064,8 +1064,8 @@
     {
       "path": "src/ui/demand-view.js",
       "installPath": "src/ui/demand-view.js",
-      "bytes": 14886,
-      "sha256": "b4e89d07866e4deed75f178cffc960ec5e4d04773922f9e79350d6c54d866191",
+      "bytes": 17770,
+      "sha256": "4116204318be2db576a1820892953a57b1ee40772f99c0630d9a18b68ed6d27d",
       "runtime": true
     },
     {
@@ -1085,8 +1085,8 @@
     {
       "path": "src/ui/device-ux.js",
       "installPath": "src/ui/device-ux.js",
-      "bytes": 3880,
-      "sha256": "21331f5c7ea09ff2f710cdc108c1deb8a6cf2fecab255ac029faea8c9ca0d3ff",
+      "bytes": 3884,
+      "sha256": "f06c0373850b12e509e92a4e63d4de2aca4f38b7c422269051b0117d5d92098c",
       "runtime": true
     },
     {
@@ -1729,8 +1729,8 @@
     {
       "path": "src/ui/start-choice.js",
       "installPath": "src/ui/start-choice.js",
-      "bytes": 12369,
-      "sha256": "fe7b252e1657aea76b99a1af249c13b07621a2bb9dc9c1f6d4d4da553465db93",
+      "bytes": 12395,
+      "sha256": "9ab9731fd6a3154ae757745dd8edb2ec66bbc7b06c199b629cdef67a594d9501",
       "runtime": true
     },
     {

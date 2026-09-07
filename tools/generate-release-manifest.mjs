@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=216;
+const build=217;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -45,7 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
-    'Build 216: Wunschprüfung gegen Besetzungsmatrix, Papierplanung, Reserve-Häkchen und CSV-Vorlage',
+    'Build 217: Bedarfsmatrix mit allen neun Spalten als PDF drucken',
     'Build 215: laufende Tagesübersicht, Uhrzeiten ab Tagesrahmen und mitgelieferte Twinkey-Ansagen',
     'Build 214: Twinkey-Test direkt auf der Startauswahl und Mitgliederbegrüßung vor der bisherigen Auswahl',
     'Build 213: Twinkey aus dem Adminzugang mit isolierten Beispieldaten testen',

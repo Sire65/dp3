@@ -13,7 +13,7 @@
       const link=document.createElement('link');link.rel='stylesheet';link.href='src/ui/start-choice.css?v=0.19.40';link.dataset.kcStartChoice='1';document.head.appendChild(link);
     }
     if(!document.querySelector('script[data-kc-start-choice]')){
-      const script=document.createElement('script');script.src='src/ui/start-choice.js?v=0.19.40';script.dataset.kcStartChoice='1';script.async=false;document.head.appendChild(script);
+      const script=document.createElement('script');script.src='src/ui/start-choice.js?v=0.20.0-b217';script.dataset.kcStartChoice='1';script.async=false;document.head.appendChild(script);
     }
   }
   function loadPhoneDayAssets(){
