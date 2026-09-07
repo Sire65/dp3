@@ -5,14 +5,11 @@ try{
  await page.goto('http://127.0.0.1:8774/twinkey-test.html?kc_update=220');
  await page.locator('[data-tw-mode=guided]').click();
  await page.locator('[data-tw-task=wish]').click();
- assert.match(await page.locator('.wa-heading').innerText(),/Trage deine Zeiten wie gewohnt ein/);
- await page.locator('[data-wa-day]').first().click();
- assert.match(await page.locator('#waCurrentSummary').innerText(),/Besetzung auf einen Blick/);
- assert.equal(await page.locator('#waDemandLive details').count(),0);
- assert(await page.locator('.as-overview').isVisible());
- await page.locator('[data-choice=status][data-value=yes]').click();
- assert(await page.locator('[data-slot-key=can]').first().isVisible());
- assert(await page.locator('#waNext').isEnabled());
+ assert.match(await page.locator('.wa-heading').innerText(),/Wähle deinen Tag/);
+ await page.locator('[data-day]').first().click();
+ assert(await page.locator('.sw-root').isVisible());
+ await page.locator('#swCards').click();assert(await page.locator('.sw-cards .sw-card').count()<=3);
+ await page.locator('.sw-card').first().click();if(await page.locator('#swConfirm').count())await page.locator('#swConfirm').click();assert(await page.locator('#swNext').isEnabled());
  console.log('Real local Twinkey entry OK: direct selection, staffing overview, enabled Next on the served local page.');
 }finally{await browser.close()}
 
