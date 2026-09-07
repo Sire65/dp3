@@ -3,6 +3,13 @@
 <head>
   <script>window.KC_DP_BUILD=218;</script>
   <meta charset="utf-8">
+  <script>
+  // Refresh only program files on the local preview origin; user data stays in place.
+  if(['localhost','127.0.0.1','[::1]'].includes(location.hostname)&&new URL(location.href).searchParams.has('kc_update')&&'serviceWorker' in navigator){
+    navigator.serviceWorker.addEventListener('controllerchange',()=>{const url=new URL(location.href);url.searchParams.delete('kc_update');location.replace(url.href);},{once:true});
+    navigator.serviceWorker.register('service-worker.js?local-preview=218',{updateViaCache:'none'}).then(reg=>reg.update()).catch(console.error);
+  }
+  </script>
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="description" content="KC DP2 – Dienstplanung, Wunschzeiten, Besetzungsmatrix und Auswertung für den Köcheclub Werne.">
   <title>KC DP2 V0.20.0</title>

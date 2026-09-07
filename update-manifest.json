@@ -101,8 +101,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-07T12:18:56.568Z",
-  "totalRuntimeBytes": 35545693,
+  "generatedAt": "2026-09-07T12:50:22.244Z",
+  "totalRuntimeBytes": 35546288,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -268,8 +268,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 20600,
-      "sha256": "bdefb750fc48a6d84410fd8a4b80b8fa709cd82a99d2919e83ac79d0dd94f144",
+      "bytes": 21195,
+      "sha256": "e691402e13d35a6678f9555357a7d396ffec0a163bc047d93b9a5205bc3b4458",
       "runtime": true,
       "forceRefresh": true
     },

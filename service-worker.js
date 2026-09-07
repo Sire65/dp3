@@ -5,6 +5,7 @@
    Same-version fingerprint changes from the canonical production pipeline are treated as a controlled
    migration and are accepted only after full runtime verification.
 */
+const LOCAL_PREVIEW=['localhost','127.0.0.1','[::1]'].includes(self.location.hostname);
 const ENGINE='kc-dp-update-engine-v2.0-atomic-release';
 const META_CACHE='kc-dp-release-meta-v1';
 const META_URL=new URL('__kc_dp_release_meta__',self.registration.scope).toString();
@@ -128,14 +129,15 @@ function badgeHtml(run){
 async function injectBadge(response,run){try{const type=response.headers.get('content-type')||'';if(!/text\/html/i.test(type))return response;let html=await response.text();const badge=badgeHtml(run);html=html.includes('</body>')?html.replace('</body>',badge+'</body>'):html+badge;const h=new Headers(response.headers);h.set('Cache-Control','no-store');h.delete('Content-Length');return new Response(html,{status:response.status,statusText:response.statusText,headers:h});}catch(_){return response;}}
 async function pushReceipt(data,eventName){try{const notificationId=String(data?.notificationId||'');if(!notificationId)return false;const sub=await self.registration.pushManager.getSubscription();const endpoint=sub?.endpoint;if(!endpoint)return false;const r=await fetchWithTimeout(PUSH_RECEIPT_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({notificationId,endpoint,event:eventName}),cache:'no-store'});return r.ok;}catch(_){return false;}}
 
-self.addEventListener('install',event=>event.waitUntil((async()=>{await ensureInitialRelease();await self.skipWaiting();})()));
-self.addEventListener('activate',event=>event.waitUntil((async()=>{let meta=await ensureInitialRelease();meta=await refreshForcedRuntime(meta);meta=await normalizeRecoveryCache(meta);await pruneCaches(meta);await self.clients.claim();})()));
+self.addEventListener('install',event=>event.waitUntil((async()=>{if(!LOCAL_PREVIEW)await ensureInitialRelease();await self.skipWaiting();})()));
+self.addEventListener('activate',event=>event.waitUntil((async()=>{if(LOCAL_PREVIEW){await self.clients.claim();return;}let meta=await ensureInitialRelease();meta=await refreshForcedRuntime(meta);meta=await normalizeRecoveryCache(meta);await pruneCaches(meta);await self.clients.claim();})()));
 self.addEventListener('message',event=>{if(event.origin&&event.origin!==self.location.origin)return;const d=event.data||{};if(d.type==='KC_DP_SWITCH_RELEASE')event.waitUntil((async()=>{try{const cache=await caches.open(String(d.cacheName||'')),expected=Array.isArray(d.expectedFiles)?d.expectedFiles:[];for(const p of expected){const u=new URL(p,self.registration.scope).toString();if(!await cache.match(u,{ignoreSearch:true}))throw new Error(`Update-Datei fehlt im geprüften Cache: ${p}`);}const old=await activeMeta(),next={activeCache:String(d.cacheName),activeVersion:String(d.version),manifestFingerprint:null,buildId:null,previousCache:old?.activeCache||null,previousVersion:old?.activeVersion||null,pendingBoot:true,switchedAt:Date.now(),engine:ENGINE};await writeMeta(next);await pruneCaches(next);const reply={type:'KC_DP_UPDATE_ACTIVATED',version:String(d.version)};event.ports?.[0]?.postMessage(reply);await tellClients(reply);}catch(e){const reply={type:'KC_DP_UPDATE_ACTIVATION_FAILED',version:String(d.version||''),message:e instanceof Error?e.message:String(e)};event.ports?.[0]?.postMessage(reply);await tellClients(reply);}})());if(d.type==='KC_DP_BOOT_OK')event.waitUntil((async()=>{const meta=await readMeta();if(meta?.pendingBoot&&String(d.version||'')===String(meta.activeVersion||'')){meta.pendingBoot=false;meta.bootConfirmedAt=new Date().toISOString();await writeMeta(meta);await pruneCaches(meta);}})());if(d.type==='KC_DP_RELEASE_STATUS')event.waitUntil((async()=>{const meta=await activeMeta();event.source?.postMessage?.({type:'KC_DP_RELEASE_STATUS_RESULT',meta});})());if(d.type==='KC_DP_START_GUARD_LOG')event.waitUntil((async()=>{event.source?.postMessage?.({type:'KC_DP_START_GUARD_LOG_RESULT',logs:await readStartLogs()});})());});
 
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin){if(/\.supabase\.co$/i.test(url.hostname)){event.respondWith(fetchWithTimeout(event.request,{cache:'no-store'}));}return;}
+  if(LOCAL_PREVIEW){event.respondWith(fetchWithTimeout(event.request,{cache:'no-store'}));return;}
   if(url.toString()===START_LOG_URL){event.respondWith((async()=>new Response(JSON.stringify(await readStartLogs(),null,2),{headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}))());return;}
   if(url.searchParams.has('kc_update')||event.request.headers.get('X-KC-DP-Update')==='1'){event.respondWith(fetchWithTimeout(event.request,{cache:'no-store'}));return;}
   if(url.pathname.endsWith('/update-manifest.json')||url.pathname.endsWith('/service-worker.js')){event.respondWith(fetchWithTimeout(event.request,{cache:'no-store'}));return;}
