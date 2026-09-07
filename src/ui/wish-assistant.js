@@ -57,9 +57,9 @@ function currentSummary(){
 function updateSummary(){const el=$('waCurrentSummary');if(el)el.innerHTML=currentSummary();const demand=$('waDemandLive');if(demand){demand.innerHTML=staffingHtml();bindStaffing();}}
 function staffingHtml(){return K.assistantStaffing?.render(state.date,state.status==='unknown'?M().rows(owner,state.date):rowsFor(state),step)||'';}
 function bindStaffing(){
- document.querySelectorAll('[data-as-start]').forEach(b=>b.onclick=()=>{
+ document.querySelectorAll('[data-as-start]').forEach(b=>{b.onkeydown=e=>{if(b.getAttribute('role')==='button'&&['Enter',' '].includes(e.key)){e.preventDefault();b.click();}};b.onclick=()=>{
   if(busy||!editable()||self()!==owner)return error('Die Anmeldung oder Wunschphase hat sich geändert. Bitte erneut öffnen.');
-  const draft=rowsFor(state),g=K.assistantStaffing.suggestions(state.date,draft).find(x=>x.start===Number(b.dataset.asStart)&&x.end===Number(b.dataset.asEnd)&&x.wishZone===b.dataset.asZone);
+  const draft=rowsFor(state),g=K.assistantStaffing.suggestions(state.date,draft,Infinity).find(x=>x.start===Number(b.dataset.asStart)&&x.end===Number(b.dataset.asEnd)&&x.wishZone===b.dataset.asZone);
   if(!g){updateSummary();return error('Die Besetzung oder deine Angaben haben sich geändert. Bitte den aktuellen Vorschlag prüfen.');}
   const old=draft.filter(w=>w.wishType==='preferred'),next=[];
   for(const w of old){
@@ -72,7 +72,7 @@ function bindStaffing(){
   state.applyZone=false;state.wishAnswer='custom';dirty=true;render();
   const feedback=$('waStaffingStatus');feedback.textContent='Wunschzeit angepasst: '+tm(g.start)+'–'+tm(g.end)+' Uhr · '+(g.wishZone==='V'?'Vorne':g.wishZone==='H'?'Hinten':'Beides')+'. Noch nicht gespeichert.';
   feedback.focus();
- });
+ };});
 }
 function friendHtml(){return `<details class="wa-friend"><summary>Zeiten von einem Freund verwenden</summary><label>Freund auswählen<select id="waFriend"><option value="">Bitte auswählen</option>${K.people.filter(p=>p.active!==false&&p.personId!==self()).map(p=>`<option value="${esc(p.personId)}">${esc(p.name)}</option>`).join('')}</select></label><div id="waFriendPreview"></div></details>`;}
 function body(){

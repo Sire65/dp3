@@ -22,3 +22,5 @@
 .wa-root .as-offers .ux-btn{height:auto;min-height:56px;line-height:1.45;display:block;overflow:visible;padding:12px}
 .as-highlights{display:grid;gap:5px;padding-top:10px;border-top:1px solid #ded8cf;margin-top:8px;font-size:.86rem;line-height:1.4}
 .as-highlights span{display:block}
+
+.as-selectable{cursor:pointer;transition:background .15s}.as-selectable:hover{background:#eef7f0}.as-selectable:focus-visible{outline:3px solid #356ca5;outline-offset:-3px}.as-selected{background:#edf5ff;border-left-color:#356ca5}.wa-question .as-card-hint{font-size:.85rem;font-weight:600;margin:10px 0 0;padding-top:8px;border-top:1px solid #e1e5df}.as-selectable .as-card-hint{color:#215c35}

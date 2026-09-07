@@ -32,8 +32,8 @@ try{
  assert.equal(counts.find(p=>p.start===14).flexible.length,1);
  await page.locator('#waNext').click();
  assert.match(await page.locator('.as-offers').innerText(),/Wunsch hierhin ändern/);
- assert.equal(await page.locator('[data-as-start="12"][data-as-zone="V"]').count(),0);
- await page.locator('[data-as-start="12"][data-as-end="14"][data-as-zone="H"]').click();
+ assert.equal(await page.locator('.as-offers [data-as-start="12"][data-as-zone="V"]').count(),0);
+ await page.locator('.as-offers [data-as-start="12"][data-as-end="14"][data-as-zone="H"]').click();
  assert.match(await page.locator('#waStaffingStatus').innerText(),/Hinten/);
  assert.match(await page.locator('#waCurrentSummary').innerText(),/11:00–17:00/);
  assert.match(await page.locator('#waCurrentSummary').innerText(),/12:00–14:00.*Wunschzeit.*Hinten/s);
@@ -63,9 +63,18 @@ try{
  assert(result.basic.length);assert(result.basic.every(x=>x.start>=11&&x.end<=17));
  assert(result.qualified.every(x=>x.zone!=='back'));assert.equal(result.blocked.length,0);
  assert.equal(result.scheduled.length,0);assert.equal(result.reserve.length,0);assert(result.unchanged);
+ // Every eligible card, including those outside the shortlist, supports keyboard selection.
+ await page.evaluate(()=>KCDP.wishAssistant.open('2026-12-04'));await page.locator('#waNext').click();
+ assert(await page.locator('.as-area[role=button]').count()>await page.locator('.as-offers [data-as-start]').count());
+ const card=page.locator('.as-area[role=button]').last();
+ const chosen=await card.evaluate(e=>({start:e.dataset.asStart,end:e.dataset.asEnd,zone:e.dataset.asZone}));
+ await card.focus();await card.press('Enter');
+ assert.match(await page.locator('#waStaffingStatus').innerText(),/Wunschzeit angepasst/);
+ assert(await page.locator('.as-selected').count()>0);
+ assert.equal(await page.evaluate(()=>KCDP.wishes.find(w=>w.id==='pref').wishZone),'V');
  // Revalidate offers after another person fills a gap.
  await page.evaluate(()=>KCDP.wishAssistant.open('2026-12-04'));await page.locator('#waNext').click();
- const offer=page.locator('[data-as-start="12"][data-as-zone="H"]');assert.equal(await offer.count(),1);
+ const offer=page.locator('.as-offers [data-as-start="12"][data-as-zone="H"]');assert.equal(await offer.count(),1);
  await page.evaluate(()=>KCDP.wishes.push({id:'new',personId:'dora',date:'2026-12-04',start:12,end:14,wishType:'preferred',wishZone:'H',status:'confirmed'}));
  await offer.click();assert.match(await page.locator('#waError').innerText(),/geändert/);
  assert.equal(await page.evaluate(()=>KCDP.wishes.find(w=>w.id==='pref').wishZone),'V');
