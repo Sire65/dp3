@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 218,
-  "cacheName": "kc-dp-release-0.20.0-b218",
+  "build": 219,
+  "cacheName": "kc-dp-release-0.20.0-b219",
   "releaseNotes": [
+    "Build 219: Nach vollständiger Auswahl automatisch weiter; Weiter bleibt zusätzlich bedienbar",
     "Build 218: Besetzung, Namen und offene Zeiten direkt im Assistenten; passende Bereichsvorschläge ohne Aufklappen",
     "Build 217: Bedarfsmatrix mit allen neun Spalten als PDF drucken",
     "Build 215: laufende Tagesübersicht, Uhrzeiten ab Tagesrahmen und mitgelieferte Twinkey-Ansagen",
@@ -101,8 +102,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-07T12:50:22.244Z",
-  "totalRuntimeBytes": 35546288,
+  "generatedAt": "2026-09-07T12:53:21.749Z",
+  "totalRuntimeBytes": 35546465,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -269,7 +270,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 21195,
-      "sha256": "e691402e13d35a6678f9555357a7d396ffec0a163bc047d93b9a5205bc3b4458",
+      "sha256": "b19d4e7bc575ffd5dd045673b55399a2dfff9b842315ce3d1814eeb351a59fa8",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1863,8 +1864,8 @@
     {
       "path": "src/ui/wish-assistant.js",
       "installPath": "src/ui/wish-assistant.js",
-      "bytes": 25637,
-      "sha256": "ded2da790f55a253498081e820bf013fe57c38d22dfeb2e02d7b736f6422a133",
+      "bytes": 25814,
+      "sha256": "7b9aecaa388d861704a0ea37dd2d808564bbf9991c4017d7764332c2b741b457",
       "runtime": true
     },
     {

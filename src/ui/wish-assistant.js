@@ -94,12 +94,15 @@ function render(){
  $('waBack').onclick=()=>{if(busy)return;if(index===0){$('waCancel').click();return}step=seq[index-1];render()};
  $('waNext').onclick=()=>advance();bindStaffing();
  document.querySelectorAll('[data-choice]').forEach(b=>b.onclick=()=>{
+  if(busy)return;
   dirty=true;const key=b.dataset.choice,value=b.dataset.value;
   if(key==='standby'){state.standby.answer=value;if(value==='yes'&&!state.standby.slots.length)state.standby.slots=[{start:null,end:null}];}
   else{state[key]=value;if(key==='status'&&['yes','reserve'].includes(value)){if(!state.can.length)state.can=[{start:null,end:null,wishType:value==='reserve'?'if_needed':'available',wishZone:state.zone}];}if(key==='zone')state.applyZone=true;}
   if(key==='wishAnswer'&&value==='all')state.pref=state.can.filter(w=>w.wishType==='available').map(w=>({start:w.start,end:w.end,wishType:'preferred',wishZone:w.wishZone}));
   if(key==='wishAnswer'&&value==='custom'&&!state.pref.length)state.pref=[{start:null,end:null,wishType:'preferred',wishZone:state.zone}];
   if(key==='blockAnswer'&&value==='yes'&&!state.blocks.length)state.blocks=[{start:null,end:null,wishType:'unavailable'}];render();
+  const needsTimes=(key==='wishAnswer'&&value==='custom')||(key==='blockAnswer'&&value==='yes')||(key==='standby'&&value==='yes');
+  if(!needsTimes)advance();
  });
  document.querySelectorAll('[data-slot-key]').forEach(e=>e.onchange=()=>{dirty=true;const list=e.dataset.slotKey==='standby'?state.standby.slots:state[e.dataset.slotKey];list[Number(e.dataset.slotIndex)][e.dataset.slotField]=e.value===''?null:Number(e.value);if(e.dataset.slotField==='start'){const end=document.querySelector(`[data-slot-key="${e.dataset.slotKey}"][data-slot-index="${e.dataset.slotIndex}"][data-slot-field="end"]`);end.innerHTML=timeOptions(list[Number(e.dataset.slotIndex)].end,'end',e.dataset.slotKey,Number(e.dataset.slotIndex),list[Number(e.dataset.slotIndex)]);}updateSummary()});
  document.querySelectorAll('[data-reserve-index]').forEach(e=>e.onchange=()=>{dirty=true;state.can[Number(e.dataset.reserveIndex)].wishType=e.checked?'if_needed':'available';state.status=state.can.every(w=>w.wishType==='if_needed')?'reserve':'yes';render()});

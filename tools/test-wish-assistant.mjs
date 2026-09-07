@@ -23,14 +23,14 @@ try{
  const screenshot=async name=>{await page.evaluate(()=>{document.body.scrollTo({top:0,behavior:'instant'});scrollTo({top:0,behavior:'instant'})});await page.screenshot({path:path.join(out,name),fullPage:true})};
  await screenshot('handy-assistent-start.png');
  await page.locator('#waNext').click();assert.match(await page.locator('#waError').innerText(),/Antwort/);
- await page.locator('[data-choice=status][data-value=yes]').click();await page.locator('#waNext').click();
+ await page.locator('[data-choice=status][data-value=yes]').click();
  await page.locator('#waWhole').click();await screenshot('handy-assistent-zeiten.png');await page.locator('#waNext').click();
  await page.locator('[data-choice=wishAnswer][data-value=custom]').click();
  await page.locator('[data-slot-key=pref][data-slot-field=start]').selectOption('12');await page.locator('[data-slot-key=pref][data-slot-field=end]').selectOption('18');await page.locator('#waNext').click();
- await page.locator('[data-choice=blockAnswer][data-value=no]').click();await page.locator('#waNext').click();
+ await page.locator('[data-choice=blockAnswer][data-value=no]').click();
  await page.locator('[data-choice=standby][data-value=yes]').click();
  await page.locator('[data-slot-key=standby][data-slot-field=start]').selectOption('21');await page.locator('[data-slot-key=standby][data-slot-field=end]').selectOption('23');await page.locator('#waNext').click();
- await page.locator('[data-choice=zone][data-value=H]').click();await page.locator('#waNext').click();
+ await page.locator('[data-choice=zone][data-value=H]').click();
  await screenshot('handy-assistent-pruefen.png');await page.locator('#waNext').click();
  assert.match(await page.locator('.wa-done').innerText(),/gespeichert/);
  let result=await page.evaluate(()=>({rows:KCDP.mobileWishMatrix.rows('me'),queue:KCDP.testQueue}));assert.equal(result.rows.length,2);assert.equal(result.rows[0].assistantDay.standby.slots[0].start,21);assert.equal(result.queue[0].payload.assistantDay.standby.answer,'yes');assert.equal(result.rows[1].wishZone,'H');
@@ -38,19 +38,19 @@ try{
  await page.evaluate(()=>{KCDP.wishes=JSON.parse(KCDP.testSaved);KCDP.wishAssistant.open('2026-12-04')});
  await page.locator('#waNext').click();await page.locator('#waNext').click();await page.locator('#waNext').click();await page.locator('#waNext').click();
  assert.equal(await page.locator('[data-slot-key=standby][data-slot-field=start]').inputValue(),'21');
- await page.locator('[data-choice=standby][data-value=no]').click();await page.locator('#waNext').click();await page.locator('#waNext').click();await page.locator('#waNext').click();
+ await page.locator('[data-choice=standby][data-value=no]').click();await page.locator('#waNext').click();await page.locator('#waNext').click();
  assert.equal(await page.evaluate(()=>KCDP.mobileWishMatrix.rows('me')[0].assistantDay.standby.answer),'no');
  assert.ok(await page.evaluate(()=>KCDP.testQueue.length)>2);
  // Friend selection shows times, copies only time fields, asks own readiness.
  await page.evaluate(()=>KCDP.wishAssistant.open('2026-12-04'));await page.locator('#waNext').click();
  await page.locator('.wa-friend summary').click();await page.locator('#waFriend').selectOption('friend');assert.match(await page.locator('#waFriendPreview').innerText(),/11:00–21:00/);await screenshot('handy-assistent-freund.png');await page.locator('#waUseFriend').click();await page.locator('#waNext').click();assert.match(await page.locator('.wa-question').innerText(),/Welche Zeit/);
  // Reserve skips wish; valid separate readiness and date block branches.
- await page.evaluate(()=>KCDP.wishAssistant.open('2026-12-05'));await page.locator('[data-choice=status][data-value=yes]').click();await page.locator('#waNext').click();await page.locator('#waWhole').click();await page.locator('[data-reserve-index="0"]').check();await page.locator('#waNext').click();assert.match(await page.locator('.wa-question h1').innerText(),/nicht kannst/);
- await page.locator('[data-choice=blockAnswer][data-value=no]').click();await page.locator('#waNext').click();await page.locator('[data-choice=standby][data-value=no]').click();await page.locator('#waNext').click();await page.locator('#waNext').click();await page.locator('#waNext').click();
+ await page.evaluate(()=>KCDP.wishAssistant.open('2026-12-05'));await page.locator('[data-choice=status][data-value=yes]').click();await page.locator('#waWhole').click();await page.locator('[data-reserve-index="0"]').check();await page.locator('#waNext').click();assert.match(await page.locator('.wa-question h1').innerText(),/nicht kannst/);
+ await page.locator('[data-choice=blockAnswer][data-value=no]').click();await page.locator('[data-choice=standby][data-value=no]').click();await page.locator('#waNext').click();await page.locator('#waNext').click();
  assert.equal(await page.evaluate(()=>KCDP.mobileWishMatrix.rows('me','2026-12-05')[0].wishType),'if_needed');
- await page.evaluate(()=>KCDP.wishAssistant.open('2026-12-05'));await page.locator('[data-choice=status][data-value=no]').click();await page.locator('#waNext').click();await page.locator('[data-offdate="2026-12-06"]').check();await page.locator('#waNext').click();assert.match(await page.locator('.wa-question').innerText(),/bisherigen Angaben/);await page.locator('#waNext').click();
+ await page.evaluate(()=>KCDP.wishAssistant.open('2026-12-05'));await page.locator('[data-choice=status][data-value=no]').click();await page.locator('[data-offdate="2026-12-06"]').check();await page.locator('#waNext').click();assert.match(await page.locator('.wa-question').innerText(),/bisherigen Angaben/);await page.locator('#waNext').click();
  assert.equal(await page.evaluate(()=>KCDP.mobileWishMatrix.rows('me').filter(w=>w.scope==='day').length),2);
- const before=await page.evaluate(()=>JSON.stringify(KCDP.wishes));await page.evaluate(()=>KCDP.wishAssistant.open('2026-12-04'));await page.locator('[data-choice=status][data-value=unknown]').click();await page.locator('#waNext').click();await page.locator('#waNext').click();assert.equal(await page.evaluate(()=>JSON.stringify(KCDP.wishes)),before);
+ const before=await page.evaluate(()=>JSON.stringify(KCDP.wishes));await page.evaluate(()=>KCDP.wishAssistant.open('2026-12-04'));await page.locator('[data-choice=status][data-value=unknown]').click();await page.locator('#waNext').click();assert.equal(await page.evaluate(()=>JSON.stringify(KCDP.wishes)),before);
  await page.evaluate(()=>KCDP.wishAssistant.open('2026-12-04'));await page.evaluate(()=>KCDP.state.wishPhase='closed');await page.locator('#waNext').click();assert.match(await page.locator('#waError').innerText(),/geändert/);
  await page.evaluate(()=>{KCDP.state.wishPhase='open';KCDP.wishAssistant.start()});
  for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:844});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Day overflow '+width);await page.locator('[data-wa-day="2026-12-04"]').click();assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Question overflow '+width);await page.evaluate(()=>KCDP.wishAssistant.start());}
