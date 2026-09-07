@@ -57,22 +57,50 @@ function currentSummary(){
 function updateSummary(){const el=$('waCurrentSummary');if(el)el.innerHTML=currentSummary();const demand=$('waDemandLive');if(demand){demand.innerHTML=staffingHtml();bindStaffing();}}
 function staffingHtml(){return K.assistantStaffing?.render(state.date,state.status==='unknown'?M().rows(owner,state.date):rowsFor(state),step)||'';}
 function bindStaffing(){
- document.querySelectorAll('[data-as-start]').forEach(b=>{b.onkeydown=e=>{if(b.getAttribute('role')==='button'&&['Enter',' '].includes(e.key)){e.preventDefault();b.click();}};b.onclick=()=>{
+ document.querySelectorAll('[data-as-start]').forEach(b=>{
+ b.onkeydown=e=>{if(b.getAttribute('role')==='button'&&['Enter',' '].includes(e.key)){e.preventDefault();b.click();}};
+ b.onclick=()=>{
   if(busy||!editable()||self()!==owner)return error('Die Anmeldung oder Wunschphase hat sich geändert. Bitte erneut öffnen.');
-  const draft=rowsFor(state),g=K.assistantStaffing.suggestions(state.date,draft,Infinity).find(x=>x.start===Number(b.dataset.asStart)&&x.end===Number(b.dataset.asEnd)&&x.wishZone===b.dataset.asZone);
-  if(!g){updateSummary();return error('Die Besetzung oder deine Angaben haben sich geändert. Bitte den aktuellen Vorschlag prüfen.');}
-  const old=draft.filter(w=>w.wishType==='preferred'),next=[];
-  for(const w of old){
-   if(Math.max(w.start,g.start)>=Math.min(w.end,g.end)){next.push(w);continue;}
-   if(w.start<g.start)next.push({...w,end:g.start});
-   if(w.end>g.end)next.push({...w,id:w.start<g.start?'':w.id,start:g.end});
-  }
-  state.can=draft.filter(w=>['available','if_needed'].includes(w.wishType));
-  state.pref=[...next,{start:g.start,end:g.end,wishType:'preferred',wishZone:g.wishZone}];
-  state.applyZone=false;state.wishAnswer='custom';dirty=true;render();
-  const feedback=$('waStaffingStatus');feedback.textContent='Wunschzeit angepasst: '+tm(g.start)+'–'+tm(g.end)+' Uhr · '+(g.wishZone==='V'?'Vorne':g.wishZone==='H'?'Hinten':'Beides')+'. Noch nicht gespeichert.';
-  feedback.focus();
- };});
+  const find=()=>K.assistantStaffing.suggestions(state.date,rowsFor(state),Infinity,true).find(x=>x.start===Number(b.dataset.asStart)&&x.end===Number(b.dataset.asEnd)&&x.wishZone===b.dataset.asZone);
+  const g=find();if(!g){updateSummary();return error('Die Besetzung oder deine Angaben haben sich geändert. Bitte erneut wählen.');}
+  document.querySelectorAll('.as-pick').forEach(e=>e.remove());
+  const box=document.createElement('div');box.className='as-pick';box.setAttribute('role','group');box.setAttribute('aria-label','Zeit übernehmen');
+  const outside=g.needsCan&&rowsFor(state).some(w=>w.wishType==='available'&&Number.isFinite(w.start)&&Number.isFinite(w.end));
+  box.innerHTML='<b>'+tm(g.start)+'–'+tm(g.end)+' Uhr · '+(g.wishZone==='V'?'Vorne':g.wishZone==='H'?'Hinten':'Beides')+'</b>'+
+   (outside?'<label><input type="checkbox" data-extend> Ja, ich kann auch zu dieser Zeit helfen. Meine Kannzeit ergänzen.</label>':'<p>Wie möchtest du diese Zeit eintragen?</p>')+
+   '<button type="button" class="ux-btn primary" data-pick="wish">Da möchte ich helfen</button><small>Als Kannzeit und Wunschzeit'+(g.replace?' · ersetzt deinen Wunsch in diesem Zeitfenster':'')+'</small>'+
+   '<button type="button" class="ux-btn secondary" data-pick="can">Da könnte ich helfen</button><small>Nur als Kannzeit · vorhandene Wünsche bleiben erhalten</small><button type="button" class="ux-btn secondary" data-cancel>Abbrechen</button>';
+  b.insertAdjacentElement('afterend',box);
+  box.querySelector('[data-cancel]').onclick=()=>{box.remove();b.focus();};
+  const buttons=box.querySelectorAll('[data-pick]');
+  if(outside){buttons.forEach(x=>x.disabled=true);box.querySelector('[data-extend]').onchange=e=>buttons.forEach(x=>x.disabled=!e.target.checked);}
+  buttons.forEach(button=>button.onclick=()=>{
+   if(busy||!editable()||self()!==owner)return error('Die Anmeldung oder Wunschphase hat sich geändert.');
+   const fresh=find();if(!fresh){updateSummary();return error('Dieser Zeitraum hat sich geändert. Bitte erneut wählen.');}
+   if(fresh.needsCan&&rowsFor(state).some(w=>w.wishType==='available'&&Number.isFinite(w.start)&&Number.isFinite(w.end))&&!box.querySelector('[data-extend]')?.checked){updateSummary();return error('Bitte die zusätzliche Kannzeit ausdrücklich bestätigen.');}
+   const draft=rowsFor(state),old=draft.filter(w=>w.wishType==='preferred'),next=[],want=button.dataset.pick==='wish';
+   state.can=draft.filter(w=>['available','if_needed'].includes(w.wishType)&&Number.isFinite(w.start)&&Number.isFinite(w.end));
+   let cursor=g.start;
+   for(const w of state.can.filter(w=>w.wishType==='available').sort((a,b)=>a.start-b.start)){
+    if(w.end<=cursor||w.start>=g.end)continue;
+    if(w.start>cursor)state.can.push({start:cursor,end:Math.min(w.start,g.end),wishType:'available',wishZone:'B'});
+    cursor=Math.max(cursor,w.end);
+   }
+   if(cursor<g.end)state.can.push({start:cursor,end:g.end,wishType:'available',wishZone:'B'});
+   if(want){
+    for(const w of old){
+     if(Math.max(w.start,g.start)>=Math.min(w.end,g.end)){next.push(w);continue;}
+     if(w.start<g.start)next.push({...w,end:g.start});
+     if(w.end>g.end)next.push({...w,id:w.start<g.start?'':w.id,start:g.end});
+    }
+    state.pref=[...next,{start:g.start,end:g.end,wishType:'preferred',wishZone:g.wishZone}];state.wishAnswer='custom';
+   }else{state.pref=old;state.wishAnswer=old.length?'custom':'none';}
+   state.status='yes';state.applyZone=false;dirty=true;render();
+   const feedback=$('waStaffingStatus');feedback.textContent=(want?'Wunschzeit angepasst: ':'Kannzeit ergänzt: ')+tm(g.start)+'–'+tm(g.end)+' Uhr. Noch nicht gespeichert.';feedback.focus();
+  });
+  (box.querySelector('[data-extend]')||buttons[0]).focus();
+ };
+ });
 }
 function friendHtml(){return `<details class="wa-friend"><summary>Zeiten von einem Freund verwenden</summary><label>Freund auswählen<select id="waFriend"><option value="">Bitte auswählen</option>${K.people.filter(p=>p.active!==false&&p.personId!==self()).map(p=>`<option value="${esc(p.personId)}">${esc(p.name)}</option>`).join('')}</select></label><div id="waFriendPreview"></div></details>`;}
 function body(){

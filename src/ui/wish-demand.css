@@ -24,3 +24,5 @@
 .as-highlights span{display:block}
 
 .as-selectable{cursor:pointer;transition:background .15s}.as-selectable:hover{background:#eef7f0}.as-selectable:focus-visible{outline:3px solid #356ca5;outline-offset:-3px}.as-selected{background:#edf5ff;border-left-color:#356ca5}.wa-question .as-card-hint{font-size:.85rem;font-weight:600;margin:10px 0 0;padding-top:8px;border-top:1px solid #e1e5df}.as-selectable .as-card-hint{color:#215c35}
+
+.as-pick{grid-column:1/-1;display:grid;gap:10px;padding:16px;border:2px solid #287444;border-radius:10px;background:#f2f8f3}.as-pick .ux-btn{height:auto;min-height:48px;white-space:normal}.as-pick small{line-height:1.4}.as-pick label{display:flex;align-items:center}.as-pick input{width:24px;height:24px;flex-shrink:0}

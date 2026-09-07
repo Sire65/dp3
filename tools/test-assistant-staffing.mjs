@@ -33,8 +33,8 @@ try{
  await page.locator('#waNext').click();
  assert.match(await page.locator('.as-offers').innerText(),/Wunsch hierhin ändern/);
  assert.equal(await page.locator('.as-offers [data-as-start="12"][data-as-zone="V"]').count(),0);
- await page.locator('.as-offers [data-as-start="12"][data-as-end="14"][data-as-zone="H"]').click();
- assert.match(await page.locator('#waStaffingStatus').innerText(),/Hinten/);
+ await page.locator('.as-offers [data-as-start="12"][data-as-end="14"][data-as-zone="H"]').click();await page.locator('[data-pick=wish]').click();
+ assert.match(await page.locator('#waStaffingStatus').innerText(),/Wunschzeit angepasst/);
  assert.match(await page.locator('#waCurrentSummary').innerText(),/11:00–17:00/);
  assert.match(await page.locator('#waCurrentSummary').innerText(),/12:00–14:00.*Wunschzeit.*Hinten/s);
  assert.equal(await page.evaluate(()=>KCDP.wishes.find(w=>w.id==='pref').wishZone),'V','Suggestion is draft only');
@@ -68,7 +68,7 @@ try{
  assert(await page.locator('.as-area[role=button]').count()>await page.locator('.as-offers [data-as-start]').count());
  const card=page.locator('.as-area[role=button]').last();
  const chosen=await card.evaluate(e=>({start:e.dataset.asStart,end:e.dataset.asEnd,zone:e.dataset.asZone}));
- await card.focus();await card.press('Enter');
+ await card.focus();await card.press('Enter');if(await page.locator('[data-extend]').count())await page.locator('[data-extend]').check();await page.locator('[data-pick=wish]').click();
  assert.match(await page.locator('#waStaffingStatus').innerText(),/Wunschzeit angepasst/);
  assert(await page.locator('.as-selected').count()>0);
  assert.equal(await page.evaluate(()=>KCDP.wishes.find(w=>w.id==='pref').wishZone),'V');
@@ -78,6 +78,20 @@ try{
  await page.evaluate(()=>KCDP.wishes.push({id:'new',personId:'dora',date:'2026-12-04',start:12,end:14,wishType:'preferred',wishZone:'H',status:'confirmed'}));
  await offer.click();assert.match(await page.locator('#waError').innerText(),/geändert/);
  assert.equal(await page.evaluate(()=>KCDP.wishes.find(w=>w.id==='pref').wishZone),'V');
+ // Start with a card, with no prior availability.
+ await page.evaluate(()=>{KCDP.wishes=KCDP.wishes.filter(w=>w.personId!=='me');KCDP.wishAssistant.open('2026-12-04')});
+ await page.locator('.as-area[role=button]').first().click();
+ assert.equal(await page.locator('[data-extend]').count(),0);
+ await page.locator('[data-pick=can]').click();
+ assert.match(await page.locator('#waCurrentSummary').innerText(),/Kannzeit/);
+ assert.doesNotMatch(await page.locator('#waCurrentSummary').innerText(),/Wunschzeit/);
+ await page.locator('.as-area[role=button]').last().click();
+ assert(await page.locator('[data-pick=wish]').isDisabled());
+ await page.locator('[data-extend]').check();await page.locator('[data-pick=wish]').click();
+ assert.match(await page.locator('#waCurrentSummary').innerText(),/Wunschzeit/);
+ assert.equal(await page.evaluate(()=>KCDP.wishes.filter(w=>w.personId==='me').length),0);
+ await page.locator('#waNext').click();
+ assert(await page.locator('[data-slot-key=can]').first().isVisible(),'Own time inputs remain available');
  assert.deepEqual(errors,[]);
  console.log('Assistant staffing OK: visible names/counts, planned/wish deduplication, adjusted demand, blocks, flexible wishes, exact availability boundaries, direct area change, draft preservation, stale offers, qualifications, 320–1280px.');
 }finally{await browser.close()}

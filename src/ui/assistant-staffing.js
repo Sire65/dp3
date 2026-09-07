@@ -42,7 +42,7 @@ function dayHint(date){
  if(!parts.length||parts.some(p=>p.areas.some(a=>a.status==='unknown')))return 'Besetzungsbedarf noch nicht vollständig hinterlegt';
  return parts.some(p=>p.areas.some(a=>a.status==='over'))?'Bereits mehr Einträge als benötigt':'Bedarf durch Dienste / Wünsche gedeckt';
 }
-function suggestions(date,draft,limit=3){
+function suggestions(date,draft,limit=3,allowNew=false){
  const own=K.currentUser?.personId,person=K.person?.(own);if(!person||person.active===false)return [];
  const rows=draft.filter(complete),can=rows.filter(x=>x.wishType==='available'),out=[];
  for(const p of overview(date,draft))for(const a of p.areas){
@@ -50,9 +50,9 @@ function suggestions(date,draft,limit=3){
   const zone=a.zone==='total'?'neutral':a.zone,wishZone=zone==='front'?'V':zone==='back'?'H':'B';
   if(K.staffing?.qualificationOk&&zone!=='neutral'&&!K.staffing.qualificationOk(person,zone))continue;
   let covered=p.start;for(const c of can.filter(c=>K.wishDemand.zone(c)==='flex'||a.zone==='total'||K.wishDemand.zone(c)===zone).sort((a,b)=>a.start-b.start))if(c.start<=covered&&c.end>covered)covered=c.end;
-  if(covered<p.end||p.end-p.start<.5)continue;
-  const candidate={personId:own,date,start:p.start,end:p.end,wishZone,zone,layer:'planned',breakMinutes:0,status:'draft'};
-  if(rows.some(r=>['unavailable','if_needed'].includes(r.wishType)&&Math.max(r.start,p.start)<Math.min(r.end,p.end)))continue;
+  if((covered<p.end&&!allowNew)||p.end-p.start<.5)continue;
+  const candidate={personId:own,date,start:p.start,end:p.end,wishZone,zone,layer:'planned',breakMinutes:0,status:'draft',needsCan:covered<p.end};
+  if(rows.some(r=>['unavailable','if_needed'].includes(r.wishType)&&(r.scope==='day'||Math.max(r.start,p.start)<Math.min(r.end,p.end))))continue;
   const overlapping=rows.filter(r=>r.wishType==='preferred'&&Math.max(r.start,p.start)<Math.min(r.end,p.end));
   if(overlapping.some(r=>K.wishDemand.zone(r)===zone||K.wishDemand.zone(r)==='flex'||a.zone==='total'))continue;
   if(overlapping.length&&!overlapping.every(r=>p.areas.some(area=>area.zone===K.wishDemand.zone(r)&&['full','over'].includes(area.status))))continue;
@@ -74,9 +74,10 @@ function peopleHtml(people,kind){
 function card(p,a,draft,offers){
  const zone=a.zone==='front'?'V':a.zone==='back'?'H':'B',g=offers.find(g=>g.start===p.start&&g.end===p.end&&g.wishZone===zone);
  const chosen=draft.some(r=>r.wishType==='preferred'&&r.start<=p.start&&r.end>=p.end&&(r.wishZone||'B')===zone);
+ const canChosen=draft.some(r=>r.wishType==='available'&&r.start<=p.start&&r.end>=p.end);
  const status=a.status==='gap'?(p.flexible.length?a.missing+' noch zuzuordnen':a.missing+' gesucht'):a.status==='full'?'✓ Bedarf gedeckt':a.status==='over'?-a.missing+' mehr als benötigt':'Bedarf unbekannt';
  const attrs=g?' role="button" tabindex="0" data-as-start="'+g.start+'" data-as-end="'+g.end+'" data-as-zone="'+g.wishZone+'" aria-label="'+label(a.zone)+' '+tm(p.start)+' bis '+tm(p.end)+': '+(g.replace?'Wunsch hierhin ändern':'als Wunsch übernehmen')+'"':'';
- let hint=chosen?'✓ In deiner Wunsch-Auswahl':g?(g.replace?'Hier tippen: Wunsch hierhin ändern':'Hier tippen: als Wunsch übernehmen'):a.status==='full'||a.status==='over'?'Bereits gedeckt – wähle ein freies Zeitfenster.':a.status==='unknown'?'Bedarf noch nicht bekannt.':'Passt nicht zu deinen aktuellen Angaben oder Einsatzregeln.';
+ let hint=chosen?'✓ In deiner Wunsch-Auswahl':g&&canChosen?'✓ Kannzeit eingetragen · antippen für Wunschzeit':g?(g.replace?'Hier tippen: anderen Bereich wählen':'Hier tippen: Zeit auswählen'):a.status==='full'||a.status==='over'?'Bereits gedeckt – wähle ein freies Zeitfenster.':a.status==='unknown'?'Bedarf noch nicht bekannt.':'Passt nicht zu deinen aktuellen Angaben oder Einsatzregeln.';
  const own=K.currentUser?.personId,overlap=r=>r.start<p.end&&r.end>p.start;
  if(!chosen&&!g&&a.status==='gap'){
   if(!draft.some(r=>r.wishType==='available'&&complete(r)))hint='Trage zuerst deine Kannzeit ein.';
@@ -88,10 +89,10 @@ function card(p,a,draft,offers){
 }
 function render(date,draft,step){
  const parts=overview(date,draft),selected=draft.filter(r=>complete(r)&&['available','if_needed'].includes(r.wishType)),filtered=selected.length&&!['availability','offdays'].includes(step);
- const relevant=filtered?parts.filter(p=>selected.some(r=>Math.max(r.start,p.start)<Math.min(r.end,p.end))):parts;
- const choosing=!['offdays'].includes(step),allOffers=choosing?suggestions(date,draft,Infinity):[],offers=allOffers.slice(0,3);
- let html='<section class="as-overview" aria-label="Besetzung und offene Zeiten"><h2>Wo wird noch Hilfe gebraucht?</h2><p class="as-context">'+(filtered?'Zeitfenster innerhalb deiner Kannzeit.':'Übersicht für diesen Tag.')+' Aktuell geladener Stand · Wünsche sind noch keine feste Einteilung. Passende Bereichskarten kannst du direkt antippen.</p>';
- if(offers.length)html+='<div class="as-offers"><b>Das passt zu deiner Kannzeit</b>'+offers.map(g=>'<button type="button" class="ux-btn secondary" data-as-start="'+g.start+'" data-as-end="'+g.end+'" data-as-zone="'+g.wishZone+'">'+label(g.zone==='neutral'?'total':g.zone)+' · '+tm(g.start)+'–'+tm(g.end)+' · '+g.missing+' gesucht<br>'+(g.replace?'Wunsch hierhin ändern':'Als Wunsch ergänzen')+'</button>').join('')+'<small>Deine Kannzeit bleibt erhalten. „Wunsch hierhin ändern“ ersetzt nur die Wunschzeit im angezeigten Zeitfenster.</small></div>';
+ const relevant=parts;
+ const choosing=!['offdays'].includes(step),allOffers=choosing?suggestions(date,draft,Infinity,true):[],offers=allOffers.slice(0,3);
+ let html='<section class="as-overview" aria-label="Besetzung und offene Zeiten"><h2>Wo wird noch Hilfe gebraucht?</h2><p class="as-context">'+(filtered?'Deine Zeiten und weitere freie Möglichkeiten.':'Übersicht für diesen Tag.')+' Aktuell geladener Stand · Wünsche sind noch keine feste Einteilung. Passende Bereichskarten kannst du direkt antippen.</p>';
+ if(offers.length)html+='<div class="as-offers"><b>Freie Zeiten zur Auswahl</b>'+offers.map(g=>'<button type="button" class="ux-btn secondary" data-as-start="'+g.start+'" data-as-end="'+g.end+'" data-as-zone="'+g.wishZone+'">'+label(g.zone==='neutral'?'total':g.zone)+' · '+tm(g.start)+'–'+tm(g.end)+' · '+g.missing+' gesucht<br>'+(g.replace?'Wunsch hierhin ändern':'Zeit auswählen')+'</button>').join('')+'<small>Eigene Uhrzeiten bleiben möglich. Bei zusätzlichen Zeiten bestätigst du zuerst deine Verfügbarkeit.</small></div>';
  html+=relevant.length?relevant.map(p=>'<article class="as-period"><h3>'+tm(p.start)+'–'+tm(p.end)+' Uhr</h3><div class="as-areas">'+p.areas.map(a=>card(p,a,draft,allOffers)).join('')+'</div>'+(p.flexible.length?'<p class="as-flex"><b>Bereich noch offen:</b> '+p.flexible.map(x=>personText(x)+' ('+(x.kind==='planned'?'Sollplan':'Wunsch')+')').join('; ')+'. Diese Personen sind oben keinem Bereich zugerechnet.</p>':'')+(p.special.length?'<p class="as-flex"><b>Z-Dienst:</b> '+p.special.map(x=>personText(x)+' ('+(x.kind==='planned'?'Sollplan':'Wunsch')+')').join('; ')+'</p>':'')+'</article>').join(''):'<p>Für diese Zeiten ist noch keine Besetzungsübersicht verfügbar. Du kannst deine Verfügbarkeit trotzdem angeben.</p>';
  return html+'<p class="as-context">Jede Person zählt je Zeitfenster einmal. Ein geplanter Dienst ersetzt dabei den Wunsch derselben Person. Die verbindliche Einteilung macht der Planer.</p></section>';
 }
