@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 220,
-  "cacheName": "kc-dp-release-0.20.0-b220",
+  "build": 221,
+  "cacheName": "kc-dp-release-0.20.0-b221",
   "releaseNotes": [
+    "Build 221: Lautsprechersymbol für Twinkey, Ton beim Start ausgeschaltet",
     "Build 220: Twinkey-Einstieg direkt weiter und Besetzungsübersicht auch im isolierten Testzugang",
     "Build 219: Nach vollständiger Auswahl automatisch weiter; Weiter bleibt zusätzlich bedienbar",
     "Build 218: Besetzung, Namen und offene Zeiten direkt im Assistenten; passende Bereichsvorschläge ohne Aufklappen",
@@ -103,8 +104,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-07T13:55:25.146Z",
-  "totalRuntimeBytes": 35546607,
+  "generatedAt": "2026-09-07T17:26:35.039Z",
+  "totalRuntimeBytes": 35547353,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -271,7 +272,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 21195,
-      "sha256": "2c04dd86c2d67fbcf547eaea8cb201b036b34a601300f8d7c32e27d5cab2344c",
+      "sha256": "4a3572079719de91791d01a8feebb2901e9720ef7165a6053c37489c1125d162",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1796,21 +1797,21 @@
       "path": "src/ui/twinkey-test-launcher.js",
       "installPath": "src/ui/twinkey-test-launcher.js",
       "bytes": 1573,
-      "sha256": "14212c9131f9c4aefd90bf93899d01e7f1470ee19882b01f6ea72d77fc3c3497",
+      "sha256": "1ee61623fdde9832f5ce8e7959b723b4f431f6a9871c328a04d26966c3c4963d",
       "runtime": true
     },
     {
       "path": "src/ui/twinkey.css",
       "installPath": "src/ui/twinkey.css",
-      "bytes": 2739,
-      "sha256": "68ba4f12a50e6b31dbed5a4e4fafb721872a237a9d4646eac34d7d2a0ce0a7f7",
+      "bytes": 3120,
+      "sha256": "71b84c610a4c279ac5dd038e8fdbebc822fbb52875478d84a2905a37c28c76cb",
       "runtime": true
     },
     {
       "path": "src/ui/twinkey.js",
       "installPath": "src/ui/twinkey.js",
-      "bytes": 12554,
-      "sha256": "3ac587f38319d4c07f573eda3690168cf865b67cab71a1d5f006bad251f19372",
+      "bytes": 12919,
+      "sha256": "8dbd73afc493986ec0004a66885b47d996c4ba44b66a7214eb1b08c23ec11e37",
       "runtime": true
     },
     {
@@ -2062,7 +2063,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 5598,
-      "sha256": "05d9a3c4c7fd60401152b8c629a86e0a04adcc1194b013f343dda3cdf4363ac2",
+      "sha256": "401c239386c2adc0de3a081994a95a0c737cbbd5d4803dd6603f9142739083ab",
       "runtime": true,
       "forceRefresh": true
     }

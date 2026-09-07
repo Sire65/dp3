@@ -24,12 +24,13 @@ function speak(){
   const fallback=()=>{if(failed||token!==speechId)return;failed=true;end();device()};player.onerror=fallback;player.play().catch(fallback);
  }else device();
 }
-function controls(){return `<div class="tw-audio"><button type="button" id="twVoice" aria-pressed="${voice}">${voice?'Ton aus':'Vorlesen'}</button><button type="button" id="twRepeat" aria-label="Noch einmal vorlesen" ${voice?'':'hidden'}>Wiederholen</button><button type="button" id="twStop" ${voice?'':'hidden'}>Stopp</button><span class="tw-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><small id="twVoiceStatus" role="status"></small></div>`;}
+function voiceLabel(){return '<span aria-hidden="true" class="tw-speaker">'+(voice?'🔊':'🔇')+'</span><span>'+(voice?'Ton an':'Ton aus')+'</span>';}
+function controls(){return `<div class="tw-audio"><button type="button" id="twVoice" aria-pressed="${voice}" aria-label="${voice?'Ton ausschalten':'Ton einschalten'}" title="${voice?'Ton ausschalten':'Ton einschalten'}">${voiceLabel()}</button><button type="button" id="twRepeat" aria-label="Noch einmal vorlesen" ${voice?'':'hidden'}>Wiederholen</button><button type="button" id="twStop" ${voice?'':'hidden'}>Stopp</button><span class="tw-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><small id="twVoiceStatus" role="status"></small></div>`;}
 function bind(text,key){
  spoken=text;const changed=key!==lastKey;lastKey=key;
  const toggle=$('twVoice');if(!toggle)return;
  if(K.twinkeyUseDeviceVoice&&(!window.speechSynthesis||!window.SpeechSynthesisUtterance)){toggle.disabled=true;toggle.textContent='Vorlesen auf diesem Gerät nicht verfügbar';return;}
- toggle.onclick=()=>{voice=!voice;toggle.textContent=voice?'Ton aus':'Vorlesen';toggle.setAttribute('aria-pressed',String(voice));$('twRepeat').hidden=$('twStop').hidden=!voice;if(voice)speak();else stop()};
+ toggle.onclick=()=>{voice=!voice;toggle.innerHTML=voiceLabel();toggle.setAttribute('aria-label',voice?'Ton ausschalten':'Ton einschalten');toggle.title=voice?'Ton ausschalten':'Ton einschalten';toggle.setAttribute('aria-pressed',String(voice));$('twRepeat').hidden=$('twStop').hidden=!voice;if(voice)speak();else stop()};
  $('twRepeat').onclick=speak;$('twStop').onclick=stop;if(voice&&changed)speak();
 }
 function reset(){stop();owner=null;mode=null;voice=false;lastKey='';spoken='';}
