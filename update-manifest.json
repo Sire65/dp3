@@ -2,9 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 214,
-  "cacheName": "kc-dp-release-0.20.0-b214",
+  "build": 216,
+  "cacheName": "kc-dp-release-0.20.0-b216",
   "releaseNotes": [
+    "Build 216: Wunschprüfung gegen Besetzungsmatrix, Papierplanung, Reserve-Häkchen und CSV-Vorlage",
+    "Build 215: laufende Tagesübersicht, Uhrzeiten ab Tagesrahmen und mitgelieferte Twinkey-Ansagen",
     "Build 214: Twinkey-Test direkt auf der Startauswahl und Mitgliederbegrüßung vor der bisherigen Auswahl",
     "Build 213: Twinkey aus dem Adminzugang mit isolierten Beispieldaten testen",
     "Build 212: Twinkey begrüßt Mitglieder und begleitet Wunschplan, Dienste und Zeiten mit freiwilligem Vorlesen",
@@ -98,8 +100,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-06T17:11:40.664Z",
-  "totalRuntimeBytes": 30325580,
+  "generatedAt": "2026-09-07T06:42:10.318Z",
+  "totalRuntimeBytes": 35529342,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -151,10 +153,122 @@
       "runtime": true
     },
     {
+      "path": "assets/twinkey/audio/actual.wav",
+      "installPath": "assets/twinkey/audio/actual.wav",
+      "bytes": 263672,
+      "sha256": "36e7373877e540d4cd51ca18e47ce796c2dc86d0b59bcb7898ce7168ebd295da",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/availability.wav",
+      "installPath": "assets/twinkey/audio/availability.wav",
+      "bytes": 296084,
+      "sha256": "a4e94364defdc0c82f2205e4bb6981580fc4a200651ecacef59dce7a54a2febd",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/blocks.wav",
+      "installPath": "assets/twinkey/audio/blocks.wav",
+      "bytes": 374544,
+      "sha256": "dfa5d011838553a4cca1cded3dfafa58765b0bb1032cd9f3338cfd28e2c1a6dc",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/can.wav",
+      "installPath": "assets/twinkey/audio/can.wav",
+      "bytes": 353586,
+      "sha256": "d61bef09842b7f400a94c9302d0418b522870fcc165328d62a59763380153eac",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/days.wav",
+      "installPath": "assets/twinkey/audio/days.wav",
+      "bytes": 361316,
+      "sha256": "455a13736a9e56ba2ec07e7486eb1c10d35dc6fd585934bee684b69d0923349d",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/done.wav",
+      "installPath": "assets/twinkey/audio/done.wav",
+      "bytes": 339270,
+      "sha256": "1eac9137da68a1ed165351df3365bf8cdc97815ecd78889e8b57ebccd34d402f",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/finish.wav",
+      "installPath": "assets/twinkey/audio/finish.wav",
+      "bytes": 274466,
+      "sha256": "b64e56b78b6df65d5b87452be640108fe6cafb21dce9cbd437abb2031f70cb2d",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/offdays.wav",
+      "installPath": "assets/twinkey/audio/offdays.wav",
+      "bytes": 262350,
+      "sha256": "53e7558c9d9c2891e5ccdd600115adb5cd61a75b30f4e24fdb97650dad9a5268",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/planfalse.wav",
+      "installPath": "assets/twinkey/audio/planfalse.wav",
+      "bytes": 151020,
+      "sha256": "158d6809849361973fea6827edca2066e8400c82a0df6662711acbea299d297b",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/plantrue.wav",
+      "installPath": "assets/twinkey/audio/plantrue.wav",
+      "bytes": 406284,
+      "sha256": "7aeb6ee1cd41cf68a604c0fdf3bfda01b360c7146155ad545ceddbb4b61e7e46",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/review.wav",
+      "installPath": "assets/twinkey/audio/review.wav",
+      "bytes": 361108,
+      "sha256": "16225e682645f07f7bd8a0d80d828c2c54584efd21f6597b4f6edc7be5b8bf81",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/standby.wav",
+      "installPath": "assets/twinkey/audio/standby.wav",
+      "bytes": 334864,
+      "sha256": "bcb43748153f70bce750487ce2f27fd930237a525646c76b54a68c85df1d4b31",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/tasks.wav",
+      "installPath": "assets/twinkey/audio/tasks.wav",
+      "bytes": 338402,
+      "sha256": "1c6c7e3d6f61767b9b9a3596ee52fc7c268a8c5bb21d8c75b62759ad70d98a0e",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/welcome.wav",
+      "installPath": "assets/twinkey/audio/welcome.wav",
+      "bytes": 499522,
+      "sha256": "fc65daaee6a5bd5f93cbb1b7b9a92a81cacc4ef830994c6185fb6c39329c9831",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/wish.wav",
+      "installPath": "assets/twinkey/audio/wish.wav",
+      "bytes": 298510,
+      "sha256": "38137899e79ca1d06488c0a9d229388414950ecd627385dd2923e4ed22ac224c",
+      "runtime": true
+    },
+    {
+      "path": "assets/twinkey/audio/zone.wav",
+      "installPath": "assets/twinkey/audio/zone.wav",
+      "bytes": 267638,
+      "sha256": "d1c4c0dbb54b80ab9bd5513588ce8e707cd4645314f329e7c91d092396a2abd5",
+      "runtime": true
+    },
+    {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 20214,
-      "sha256": "c5dd489fb9091fe155760f99136b25bcae20d8bcb179648d00cc47973872b023",
+      "bytes": 20530,
+      "sha256": "052f78e1308d90b53f4005d817c20662f18b3a037522d71578b58da41be0ddf9",
       "runtime": true,
       "forceRefresh": true
     },
@@ -593,8 +707,8 @@
     {
       "path": "src/core/mobile-wish-matrix.js",
       "installPath": "src/core/mobile-wish-matrix.js",
-      "bytes": 4671,
-      "sha256": "543290c0a2ee29918fd024657c2d4ffbfca8e022f538f1c33a7d30ae787ecfcc",
+      "bytes": 5246,
+      "sha256": "dbfa153b1e687bb2549ba530142c130740d50a3fb2c4c589df65fb24fa735f79",
       "runtime": true
     },
     {
@@ -766,6 +880,13 @@
       "runtime": true
     },
     {
+      "path": "src/core/wish-demand.js",
+      "installPath": "src/core/wish-demand.js",
+      "bytes": 5014,
+      "sha256": "b36ad1e588b54d647d6860162ef4ca9b8335b17bb9be7f8cafa10a1d3bf2050a",
+      "runtime": true
+    },
+    {
       "path": "src/core/wish-zone.js",
       "installPath": "src/core/wish-zone.js",
       "bytes": 4226,
@@ -875,6 +996,13 @@
       "installPath": "src/ui/chef-companion.js",
       "bytes": 11980,
       "sha256": "9be0cdad1205fc26baa2f6585cda58ee2ef88226731abd8efd5fba57d9b5e83c",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/compatible-template.js",
+      "installPath": "src/ui/compatible-template.js",
+      "bytes": 734,
+      "sha256": "7a9de65fdac4d27757350f38fae0fad79bdc031c5a8c2e1c7f53d65cfa1bcb07",
       "runtime": true
     },
     {
@@ -1167,8 +1295,8 @@
     {
       "path": "src/ui/mobile-wish-matrix.js",
       "installPath": "src/ui/mobile-wish-matrix.js",
-      "bytes": 15142,
-      "sha256": "1f74fd58712e97804d87e607a7239c77725cd8a22b19630be252b9400f77a67f",
+      "bytes": 15147,
+      "sha256": "59207e98ce4ca4616d20892e287ccec69b4f54a3d170efa0c9315fa22ce1f022",
       "runtime": true
     },
     {
@@ -1267,6 +1395,13 @@
       "installPath": "src/ui/occupancy-view.js",
       "bytes": 15825,
       "sha256": "441ae9ad76f51a0cbf6169b484c898b9d98b1c137b9b64ba3136025960bcdcc8",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/paper-staffing.js",
+      "installPath": "src/ui/paper-staffing.js",
+      "bytes": 3881,
+      "sha256": "ff4e6168b9716a68c83cd0ee568301ad07c156cc87bf8847ad32f16327804159",
       "runtime": true
     },
     {
@@ -1531,8 +1666,8 @@
     {
       "path": "src/ui/role-ux.js",
       "installPath": "src/ui/role-ux.js",
-      "bytes": 91954,
-      "sha256": "03dd69fd7b0387b3f7b262b7c82a3796add31269d592efa93c3387766c5f06af",
+      "bytes": 92297,
+      "sha256": "14b8e22f13ac20b3e1f97444e3f625e64c99003183cae51f1aea2a0ffdaaff31",
       "runtime": true
     },
     {
@@ -1594,8 +1729,8 @@
     {
       "path": "src/ui/start-choice.js",
       "installPath": "src/ui/start-choice.js",
-      "bytes": 11998,
-      "sha256": "c69cdf3a2a92eeb10314e5dc373fd9f8748cff8202037a90a76b5c0239b33b53",
+      "bytes": 12369,
+      "sha256": "fe7b252e1657aea76b99a1af249c13b07621a2bb9dc9c1f6d4d4da553465db93",
       "runtime": true
     },
     {
@@ -1657,15 +1792,15 @@
     {
       "path": "src/ui/twinkey.css",
       "installPath": "src/ui/twinkey.css",
-      "bytes": 2378,
-      "sha256": "05db50dd4c51c7f6adf8ba39874008ad0d36b7d21aa8fa98183db5172cf1d8fd",
+      "bytes": 2739,
+      "sha256": "68ba4f12a50e6b31dbed5a4e4fafb721872a237a9d4646eac34d7d2a0ce0a7f7",
       "runtime": true
     },
     {
       "path": "src/ui/twinkey.js",
       "installPath": "src/ui/twinkey.js",
-      "bytes": 11719,
-      "sha256": "780c07f83e39f95a82f92e45cd1e3e485a08a8ffd01eb864ae6403605bbfc939",
+      "bytes": 12514,
+      "sha256": "9d414274ddf2bee5da56fdc65f6215c8767a7d34e2bbd7116f96089e9eec3e7c",
       "runtime": true
     },
     {
@@ -1720,8 +1855,8 @@
     {
       "path": "src/ui/wish-assistant.js",
       "installPath": "src/ui/wish-assistant.js",
-      "bytes": 21407,
-      "sha256": "97834d44ebb4072ffa61bcb4c9526b32a7df95f8b3ac4a51dcc0331af268ec2d",
+      "bytes": 23942,
+      "sha256": "d5eef5985e02b8d0e51c40e8903e140e6a87d825cfda6fe07901c10af605a9c4",
       "runtime": true
     },
     {
@@ -1736,6 +1871,20 @@
       "installPath": "src/ui/wish-bar-composite.js",
       "bytes": 10466,
       "sha256": "dd22cddc5cd4dd2520142cd24c79b78f5f9a1923b8337e3774502b850754249f",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/wish-demand.css",
+      "installPath": "src/ui/wish-demand.css",
+      "bytes": 1012,
+      "sha256": "f6e5eda89ee818a276eb4f0881328d9d7ac4add8a4f329d07ec1d8a0512f5bb4",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/wish-demand.js",
+      "installPath": "src/ui/wish-demand.js",
+      "bytes": 4927,
+      "sha256": "49fd5d45e89d81e1198ed48be7ea9eb14bb5de2a9a284c45cb09778dbca2d822",
       "runtime": true
     },
     {
@@ -1902,8 +2051,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 5262,
-      "sha256": "24f899cd01563c70c59f29b35a3e13e633461ba94f37099196951b1a7fb30b82",
+      "bytes": 5519,
+      "sha256": "cb14e6934fa5a632b6475f04c5854fb28fd07f4b4c381351e06d26ce75011453",
       "runtime": true,
       "forceRefresh": true
     }

@@ -4,21 +4,31 @@ const K=window.KCDP,$=id=>document.getElementById(id),esc=v=>String(v??'').repla
 const tm=h=>`${String(Math.floor(h)).padStart(2,'0')}:${String(Math.round(h%1*60)).padStart(2,'0')}`;
 const dt=d=>new Intl.DateTimeFormat('de-DE',{weekday:'short',day:'numeric',month:'long'}).format(new Date(d+'T12:00:00'));
 const self=()=>K.currentUser?.personId,active=x=>!['deleted','cancelled','absent','failed'].includes(x.status);
-let owner=null,mode=null,voice=false,lastKey='',spoken='',speechId=0;
-function stop(){speechId++;window.speechSynthesis?.cancel();document.querySelectorAll('.tw-wave').forEach(x=>x.classList.remove('speaking'));}
+let owner=null,mode=null,voice=false,lastKey='',spoken='',speechId=0,clip=null;
+const audioKeys=new Set(['welcome','tasks','days','availability','can','wish','blocks','standby','zone','offdays','review','done','finish','planfalse','plantrue','actual']);
+function stop(){speechId++;if(clip){clip.pause();clip=null;}window.speechSynthesis?.cancel();document.querySelectorAll('.tw-wave').forEach(x=>x.classList.remove('speaking'));}
 function speak(){
- stop();if(!voice||!spoken||!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
- const token=speechId,u=new SpeechSynthesisUtterance(spoken);u.lang='de-DE';u.rate=.94;
- const voices=speechSynthesis.getVoices(),german=voices.filter(v=>/^de(?:-|_)/i.test(v.lang));u.voice=german.find(v=>v.localService)||german[0]||null;
- u.onstart=()=>{if(token===speechId)document.querySelectorAll('.tw-wave').forEach(x=>x.classList.add('speaking'))};
- const end=()=>{if(token===speechId)document.querySelectorAll('.tw-wave').forEach(x=>x.classList.remove('speaking'))};u.onend=end;u.onerror=()=>{end();const status=$('twVoiceStatus');if(status)status.textContent='Vorlesen ist gerade nicht verfügbar. Du kannst alles mitlesen.'};
- speechSynthesis.speak(u);
+ stop();if(!voice||!spoken)return;const token=speechId;
+ const end=()=>{if(token===speechId)document.querySelectorAll('.tw-wave').forEach(x=>x.classList.remove('speaking'))};
+ const begin=()=>{if(token===speechId)document.querySelectorAll('.tw-wave').forEach(x=>x.classList.add('speaking'))};
+ const device=()=>{
+  if(token!==speechId)return;
+  if(!window.speechSynthesis||!window.SpeechSynthesisUtterance){const status=$('twVoiceStatus');if(status)status.textContent='Vorlesen ist gerade nicht verfügbar. Du kannst alles mitlesen.';return;}
+  const u=new SpeechSynthesisUtterance(spoken);u.lang='de-DE';u.rate=.94;
+  const german=speechSynthesis.getVoices().filter(v=>/^de(?:-|_)/i.test(v.lang));u.voice=german.find(v=>/Katja/i.test(v.name))||german.find(v=>v.localService)||german[0]||null;
+  u.onstart=begin;u.onend=end;u.onerror=end;speechSynthesis.speak(u);
+ };
+ const key=lastKey.startsWith('wish-')?lastKey.split('-').at(-1):lastKey;
+ if(audioKeys.has(key)&&!K.twinkeyUseDeviceVoice){
+  const player=clip=new Audio(new URL('assets/twinkey/audio/'+key+'.wav',document.baseURI).href);player.onplaying=begin;player.onended=end;let failed=false;
+  const fallback=()=>{if(failed||token!==speechId)return;failed=true;end();device()};player.onerror=fallback;player.play().catch(fallback);
+ }else device();
 }
 function controls(){return `<div class="tw-audio"><button type="button" id="twVoice" aria-pressed="${voice}">${voice?'Ton aus':'Vorlesen'}</button><button type="button" id="twRepeat" aria-label="Noch einmal vorlesen" ${voice?'':'hidden'}>Wiederholen</button><button type="button" id="twStop" ${voice?'':'hidden'}>Stopp</button><span class="tw-wave" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span><small id="twVoiceStatus" role="status"></small></div>`;}
 function bind(text,key){
  spoken=text;const changed=key!==lastKey;lastKey=key;
  const toggle=$('twVoice');if(!toggle)return;
- if(!window.speechSynthesis||!window.SpeechSynthesisUtterance){toggle.disabled=true;toggle.textContent='Vorlesen auf diesem Gerät nicht verfügbar';return;}
+ if(K.twinkeyUseDeviceVoice&&(!window.speechSynthesis||!window.SpeechSynthesisUtterance)){toggle.disabled=true;toggle.textContent='Vorlesen auf diesem Gerät nicht verfügbar';return;}
  toggle.onclick=()=>{voice=!voice;toggle.textContent=voice?'Ton aus':'Vorlesen';toggle.setAttribute('aria-pressed',String(voice));$('twRepeat').hidden=$('twStop').hidden=!voice;if(voice)speak();else stop()};
  $('twRepeat').onclick=speak;$('twStop').onclick=stop;if(voice&&changed)speak();
 }

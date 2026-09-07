@@ -4,8 +4,8 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=214;
-const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz']);
+const build=216;
+const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
 function canonicalData(relative,data){return canonicalTextExtensions.has(path.extname(relative).toLowerCase())?Buffer.from(data.toString('utf8').replace(/\r\n?/g,'\n'),'utf8'):data;}
@@ -45,6 +45,8 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 216: Wunschprüfung gegen Besetzungsmatrix, Papierplanung, Reserve-Häkchen und CSV-Vorlage',
+    'Build 215: laufende Tagesübersicht, Uhrzeiten ab Tagesrahmen und mitgelieferte Twinkey-Ansagen',
     'Build 214: Twinkey-Test direkt auf der Startauswahl und Mitgliederbegrüßung vor der bisherigen Auswahl',
     'Build 213: Twinkey aus dem Adminzugang mit isolierten Beispieldaten testen',
     'Build 212: Twinkey begrüßt Mitglieder und begleitet Wunschplan, Dienste und Zeiten mit freiwilligem Vorlesen',

@@ -57,6 +57,7 @@
         <button type="button" class="kc-start-choice-option" id="kcChoiceMine"><span class="kc-start-choice-icon">👤</span><span class="kc-start-choice-copy"><b>Meine Dienste</b><span>Nur die eigenen Einsatzzeiten und den persönlichen Plan übersichtlich anzeigen.</span></span></button>
         <button type="button" class="kc-start-choice-option" id="kcChoiceWish"><span class="kc-start-choice-icon">📝</span><span class="kc-start-choice-copy"><span class="kc-start-choice-titleline"><b>Wunschplan</b>${wishDeadlineChip()}</span><span>Eigene Wunschzeiten ansehen und – solange freigegeben – eintragen oder ändern.</span></span></button>
         ${user.role==='admin'?'<button type="button" class="kc-start-choice-option" id="kcChoiceTwinkey"><span class="kc-start-choice-icon">🧑‍🍳</span><span class="kc-start-choice-copy"><b>Twinkey testen</b><span>Mitgliederführung mit Beispieldaten ausprobieren. Ihr Adminzugang bleibt erhalten.</span></span></button>':''}
+        ${edit?'<button type="button" class="kc-start-choice-option" id="kcChoicePaper"><span class="kc-start-choice-icon">▤</span><span class="kc-start-choice-copy"><b>Besetzungsmatrix drucken</b><span>Sollzahlen und leere Felder für die Planung auf Papier.</span></span></button>':''}
       </div>
       <div class="kc-start-choice-footer"><span>Angemeldet als <b>${esc(user.displayName||'Benutzer')}</b>${role?.label?` · ${esc(role.label)}`:''}</span><button type="button" class="kc-start-choice-logout" id="kcChoiceLogout">Abmelden</button></div>
     </section></div>`;
@@ -68,6 +69,7 @@
     launcherVisible=true;selectedArea='launcher';clearPlanMode();hideLegacyReturn();
     document.body.classList.remove('kc-phone-day-active','kc-phone-list-mode');setUxMode('role');
     const root=roleRoot();if(!root)return;root.innerHTML=launcherHtml();
+    if($('kcChoicePaper'))$('kcChoicePaper').onclick=()=>K.paperStaffing.open();
     if($('kcChoiceTwinkey'))$('kcChoiceTwinkey').onclick=()=>K.twinkeyTest.open();
     $('kcChoiceView').onclick=()=>openLegacy('view');
     if($('kcChoiceEdit'))$('kcChoiceEdit').onclick=()=>openLegacy('edit');

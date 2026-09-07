@@ -2,3 +2,4 @@
 .wa-root .wa-actions{flex-wrap:wrap}.wa-root .wa-actions .ux-btn{flex-basis:150px;min-width:0}.wa-root .chef-helper>div{min-width:0}
 .ux-bottomnav[hidden]{display:none!important}.chef-helper .tw-display summary{font-size:.8rem;font-weight:400;padding:6px 0;color:#6a6058}.chef-helper .tw-display button{font-size:.85rem}.tw-root .wa-question{scroll-margin-bottom:85px}
 .wa-root .chef-helper{align-items:flex-start}.wa-root .tw-audio{gap:0 10px}.wa-root .tw-audio button{font-size:.82rem}.wa-root .chef-helper p{font-size:.95rem}.wa-root .chef-helper svg{width:54px;min-width:54px;height:66px}
+.wa-root .wa-timepair select{min-height:56px;font-size:18px;padding:12px}.wa-timehint{font-size:.9rem}.wa-root .wa-other-time{margin-top:12px;min-height:48px}.wa-slot .wa-remove{display:block;min-height:48px;margin-top:8px}.wa-existing .wa-draft-status{font-weight:700;font-size:.82rem;margin:8px 0 0;color:#78541b}.wa-existing>p{margin:6px 0;font-size:.85rem}

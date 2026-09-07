@@ -39,6 +39,13 @@ async function save(personId,dates,list,expected){
  if(list.some(w=>w.personId!==personId||!dates.includes(w.date)))throw Error('Die Angaben gehören nicht zur ausgewählten Person oder zum ausgewählten Tag.');
  if(list.some(w=>w.id&&!rows(personId).some(x=>x.id===w.id&&x.date===w.date)))throw Error('Eintrag gehört nicht zu Ihrer Tagesmatrix.');
  const errors=validate(list);if(errors.length)throw Error(errors.join(' '));
+ if(K.wishDemandUi&&list.some(w=>w.wishType==='preferred')){
+  const snapshot=JSON.stringify(rows(personId));
+  if(!await K.wishDemandUi.confirm(list,dates,personId))throw Error('Nicht gespeichert. Du kannst deine Zeiten weiter bearbeiten.');
+  assertEditable(personId);
+  if(JSON.stringify(rows(personId))!==snapshot)throw Error('Deine Angaben wurden inzwischen geändert. Bitte neu öffnen.');
+  const checked=validate(list);if(checked.length)throw Error(checked.join(' '));
+ }
  const before=rows(personId).filter(w=>dates.includes(w.date)),kept=new Set();
  for(const w of list){
   const existing=before.find(x=>!kept.has(x.id)&&(w.id?x.id===w.id:same(x,w)));
@@ -53,8 +60,8 @@ async function save(personId,dates,list,expected){
 async function copy(sourceId,ids){
  assertEditable(K.currentUser?.personId);
  const preview=copyPreview(sourceId,ids);if(preview.errors.length)throw Error(preview.errors.join(' '));
- for(const w of preview.add)K.mutations.saveWish(w,{existingId:null,reason:'Geprüfte Freundeszeiten übernommen'});
- await K.persistAll();return preview;
+ const personId=K.currentUser.personId,dates=[...new Set(preview.add.map(w=>w.date))],own=rows(personId).filter(w=>dates.includes(w.date));
+ if(preview.add.length)await save(personId,dates,own.concat(preview.add),JSON.stringify(own));return preview;
 }
 K.mobileWishMatrix={rows,validate,save,copy,copyPreview,same,assertEditable};
 })();

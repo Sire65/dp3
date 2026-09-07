@@ -36,6 +36,7 @@ jobs:
           node tools/verify-release.mjs
           node tools/smoke-core.mjs
           node tools/smoke-plan-transfer.mjs
+          node tools/smoke-wish-demand.mjs
 
       - name: Neue Buildnummer erzwingen
         if: github.event_name == 'push' && github.event.before != '0000000000000000000000000000000000000000'

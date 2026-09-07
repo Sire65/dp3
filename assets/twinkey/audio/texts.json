@@ -1,0 +1,18 @@
+{
+ "welcome":"Hallo! Ich bin Twinkey, dein persönlicher Assistent für die Dienstplanung. Möchtest du mit mir starten oder ohne Assistent weitergehen?",
+ "tasks":"Was möchtest du heute machen? Wähle eine Möglichkeit aus. Ich begleite dich weiter.",
+ "days":"Wann möchtest du helfen? Wähle einen Tag. Deine bisherigen Angaben siehst du direkt dazu.",
+ "availability":"Kannst du an diesem Tag helfen? Wähle die Antwort aus, die für dich passt.",
+ "can":"Von wann bis wann könntest du helfen? Wähle zuerst deine mögliche Anfangszeit und dann die Endzeit.",
+ "wish":"Welche Zeit wäre dir am liebsten? Oben siehst du, wann du helfen kannst.",
+ "blocks":"Gibt es Zeiten, in denen du nicht kannst? Deine bisher ausgewählten Zeiten stehen oben zur Übersicht.",
+ "standby":"Könntest du als Bereitschaft einspringen? Das ist ein Angebot und noch kein geplanter Dienst.",
+ "zone":"Wo möchtest du helfen? Vorne, hinten oder in beiden Bereichen?",
+ "offdays":"Gilt die Sperre auch für weitere Tage? Wähle die passenden Tage aus.",
+ "review":"Passt das so für dich? Prüfe deine Zeiten. Erst mit Speichern werden deine Angaben übernommen.",
+ "done":"Deine Angaben sind gespeichert. Möchtest du einen weiteren Tag eintragen oder bist du fertig?",
+ "finish":"Bist du mit allen Tagen fertig? Hier siehst du deine bisherigen Angaben.",
+ "planfalse":"Hier siehst du deine freigegebenen Dienste.",
+ "plantrue":"Welchen Dienst möchtest du ändern lassen? Deine Einteilung bleibt bestehen, bis der Planer die Änderung bestätigt.",
+ "actual":"Welche erfassten Zeiten möchtest du ansehen? Wähle einen Tag aus."
+}
