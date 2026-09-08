@@ -134,6 +134,8 @@ function plannedNotice(){
  return shifts.length?'<p class="ux-goodbox">Bereits geplant: '+shifts.map(s=>tm(s.start)+'–'+tm(s.end)+' Uhr · Einsatzbereich '+esc(zlabel(s.zone))).join('; ')+'. Deine (Wunschzeit) darf sich damit überschneiden. Der geplante Dienst bleibt unverändert.</p>':'';
 }
 function render(){
+ const readinessIssue=['check','review'].includes(step)&&blockMode!=='day'?standbyErrors():[];
+ if(readinessIssue.length)step='standby';
  if(lastStep&&lastStep!==step)history.push(lastStep);lastStep=step;
  const titles={blocks:'Zuerst: Gibt es Sperren?',can:'In welchem kompletten Zeitraum könntest du helfen? (Kann-Zeit)',standby:'Kannst du zusätzlich Bereitschaft übernehmen?',wish:'Wann möchtest du helfen? (Wunschzeit)',check:'So passt deine Zeit (Wunschzeit)',alternatives:'Hier wird noch Hilfe gebraucht',review:'Deine Zusammenfassung'};
  let html='<h1>'+titles[step]+'</h1><p>'+dateLabel(date)+'</p>';
@@ -161,10 +163,15 @@ function render(){
  }else html+=(blockMode==='day'&&stored.some(w=>w.wishType!=='unavailable')?'<p class="ux-warningbox">Die Tagessperre ersetzt deine bisherigen Zeitangaben für diesen Tag.</p>':'')+entrySummary(rows())+stats()+'<p>Erst mit „Angaben speichern“ werden die Änderungen übernommen.</p>';
  html+=(['wish','check','review'].includes(step)?plannedNotice():'');
  html+='<div id="swError" role="alert"></div>'+(step==='can'||step==='wish'?'':teamButton())+team()+'<div class="wa-actions"><button class="ux-btn secondary" id="swBack">Zurück</button>'+(!(step==='check'&&coverage().some(p=>p.status==='full'))&&step!=='alternatives'?'<button class="ux-btn primary" id="swNext">'+(step==='review'?'Angaben speichern':step==='check'?'Fertig':'Weiter')+'</button>':'')+'</div>';
- shell(html,titles[step]);bind();
+ shell(html,titles[step]);bind();if(readinessIssue.length)error(readinessIssue.join(' '));
 }
 function teamButton(){return '<button class="ux-btn secondary" id="swTeamToggle" aria-expanded="false" aria-controls="swTeam">Bisherige Besetzung anzeigen</button>';}
-function error(msg){$('swError').textContent=msg;$('swError').className='ux-warningbox';}
+function clearWarning(){ $('swWarning')?.remove();const box=$('swError');if(box){box.replaceChildren();box.className='';} }
+function error(msg){
+ const box=$('swError');if(!box)return;box.textContent=msg;box.className='ux-warningbox';box.tabIndex=-1;
+ const read=document.createElement('button');read.type='button';read.className='ux-btn secondary';read.textContent='Meldung gelesen';read.onclick=clearWarning;box.append(document.createElement('br'),read);
+ $('swWarning')?.remove();const badge=document.createElement('button');badge.id='swWarning';badge.type='button';badge.className='ux-btn secondary';badge.textContent='⚠ Meldung';badge.setAttribute('aria-label','Wichtige Meldung anzeigen');badge.onclick=()=>{box.scrollIntoView({behavior:'smooth',block:'center'});box.focus({preventScroll:true});badge.remove();};document.querySelector('.chef-helper b')?.insertAdjacentElement('afterend',badge);
+}
 function changed(){dirty=true;accepted='';}
 function bind(){
  if($('swNoStandby'))$('swNoStandby').onclick=()=>{standby={answer:'no',slots:[]};changed();step='check';render();};
@@ -176,7 +183,7 @@ function bind(){
  if($('swTimeBlock'))$('swTimeBlock').onchange=e=>{blockMode=e.target.checked?'time':'none';if(blockMode==='time'&&!blocks.length)blocks.push({start:null,end:null});changed();render();};
  if($('swAddBlock'))$('swAddBlock').onclick=()=>{blocks.push({start:null,end:null});changed();render();};
  document.querySelectorAll('[data-remove-block]').forEach(b=>b.onclick=()=>{blocks.splice(Number(b.dataset.removeBlock),1);if(!blocks.length)blockMode='none';changed();render();});
- document.querySelectorAll('[data-list]').forEach(e=>e.onchange=()=>{const list=e.dataset.list==='blocks'?blocks:e.dataset.list==='can'?can:e.dataset.list==='standby'?standby.slots:times,r=list[Number(e.dataset.i)];if(!r)return;r[e.dataset.field]=e.value===''?null:Number(e.value);changed();if(step==='can'||step==='wish'){const errors=step==='can'?canErrors():timeErrors();const el=document.querySelector('[data-time-error="'+e.dataset.list+'-'+e.dataset.i+'"]');el.textContent=errors.join(' ');}});
+ document.querySelectorAll('[data-list]').forEach(e=>e.onchange=()=>{const list=e.dataset.list==='blocks'?blocks:e.dataset.list==='can'?can:e.dataset.list==='standby'?standby.slots:times,r=list[Number(e.dataset.i)];if(!r)return;r[e.dataset.field]=e.value===''?null:Number(e.value);changed();if(step==='can'||step==='wish'){const errors=step==='can'?canErrors():timeErrors();const el=document.querySelector('[data-time-error="'+e.dataset.list+'-'+e.dataset.i+'"]');el.textContent=errors.join(' ');if(errors.length)error(errors.join(' '));else clearWarning();}});
  document.querySelectorAll('[data-zone]').forEach(e=>e.onchange=()=>{(e.dataset.kind==='can'?can:times)[Number(e.dataset.zone)].wishZone=e.value;changed();});
  document.querySelectorAll('[data-remove]').forEach(b=>b.onclick=()=>{(b.dataset.remove==='can'?can:times).splice(Number(b.dataset.i),1);changed();render();});
  if($('swEditBlocks'))$('swEditBlocks').onclick=()=>{step='blocks';render();};
