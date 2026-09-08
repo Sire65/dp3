@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';import {createRequire} from 'node:module
 const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_MODULE),browser=await chromium.launch({headless:true,channel:'chrome'});
 try{
 const page=await browser.newPage({viewport:{width:390,height:844}}),errors=[];page.on('pageerror',e=>errors.push(e.message));
-await page.goto('http://127.0.0.1:8774/twinkey-test.html?kc_update=226');
+await page.goto('http://127.0.0.1:8774/twinkey-test.html?kc_update=227');
 await page.locator('[data-tw-mode=guided]').click();await page.locator('[data-tw-task=wish]').click();
 const reset=async()=>page.evaluate(()=>{const K=KCDP;K.wishes=[];K.shifts=[];K.state.wishPhase='open';K.requirementFor=()=>({front:1,back:1,total:2});K.baseRequirementFor=K.requirementFor;K.simpleWishAssistant.open('2026-12-04');});
 const fill=async(kind,i,start,end)=>{await page.locator('[data-list='+kind+'][data-i="'+i+'"][data-field=start]').selectOption(String(start));await page.locator('[data-list='+kind+'][data-i="'+i+'"][data-field=end]').selectOption(String(end));};
@@ -15,11 +15,11 @@ await page.evaluate(()=>KCDP.shifts=[{id:'plan',personId:'TW-DEMO-2',date:'2026-
 await page.locator('#swNext').click();assert(await page.locator('#swKeep').isVisible());
 await page.locator('.sw-covered summary').first().click();assert.match(await page.locator('.sw-covered').first().innerText(),/Anna Beispiel/);
 await page.locator('#swAlternatives').click();assert(await page.locator('[data-alt]').count()>0);await page.locator('.sw-covered summary').first().click();await page.locator('[data-alt]').first().click();assert.equal(await page.evaluate(()=>KCDP.wishes.length),0);await page.locator('#swNext').click();assert.match(await page.locator('.sw-hours').innerText(),/Stunden im Durchschnitt/);await page.locator('#swNext').click();assert(await page.evaluate(()=>KCDP.wishes.some(w=>w.wishType==='available'&&w.start===11&&w.end===18)));
-await reset();await page.locator('#swNext').click();await fill('can',0,11,18);await page.locator('#swNext').click();await page.locator('#swAddTime').click();await fill('times',0,12,14);
-await page.evaluate(()=>KCDP.shifts=[{personId:KCDP.currentUser.personId,date:'2026-12-04',start:13,end:15,zone:'front',layer:'planned'}]);await page.locator('#swNext').click();assert.match(await page.locator('#swError').innerText(),/13:00–15:00.*Vorne/);
+await reset();await page.locator('#swNext').click();await fill('can',0,11,17);await page.locator('#swNext').click();await page.locator('#swAddTime').click();await fill('times',0,11,18);await page.locator('#swNext').click();assert.match(await page.locator('#swError').innerText(),/innerhalb Ihrer Kann-Zeit/);await fill('times',0,11,15);
+await page.evaluate(()=>KCDP.shifts=[{personId:KCDP.currentUser.personId,date:'2026-12-04',start:14,end:18,zone:'front',layer:'planned'}]);await page.locator('#swNext').click();assert.equal(await page.locator('#swError').innerText(),'');assert.match(await page.locator('.sw-root').innerText(),/14:00–18:00.*Vorne/);await page.locator('#swNext').click();await page.locator('#swNext').click();assert(await page.evaluate(()=>KCDP.wishes.some(w=>w.wishType==='preferred'&&w.start===11&&w.end===15)));assert(await page.evaluate(()=>KCDP.shifts[0].start===14&&KCDP.shifts[0].end===18));
 await reset();await page.locator('#swNext').click();await page.locator('#swNext').click();await page.locator('#swNone').click();await page.locator('#swNext').click();
 for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'overflow '+width);}
 await page.locator('#swNext').click();assert.equal(await page.evaluate(()=>KCDP.wishes.filter(w=>w.wishType==='preferred').length),0);
 const hours=await page.evaluate(()=>{const K=KCDP,id=K.currentUser.personId;K.wishes=[{personId:id,date:'2026-12-04',start:11,end:15,wishType:'preferred'},{personId:id,date:'2026-12-04',start:13,end:17,wishType:'preferred'},{personId:id,date:'2026-12-04',start:14,end:15,wishType:'unavailable'}];return K.assistantHours.calculate(id).totals.wish;});assert.equal(hours,5);
-assert.deepEqual(errors,[]);console.log('Build226 browser OK: separated can/wish, blocks, names, confirmed alternative, preserved availability, exact planned conflict, no-wish save, responsive summary, deduplicated hours.');
+assert.deepEqual(errors,[]);console.log('Build227 browser OK: separated can/wish, blocks, names, confirmed alternative, preserved availability, planned overlap allowed and saved, no-wish save, responsive summary, deduplicated hours.');
 }finally{await browser.close();}

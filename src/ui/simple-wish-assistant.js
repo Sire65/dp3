@@ -50,7 +50,6 @@ function timeErrors(){
  for(const t of times.filter(valid)){
   const b=blockMode==='time'&&blocks.find(b=>valid(b)&&overlap(t,b));
   if(b)errors.push('Du hast '+tm(b.start)+'–'+tm(b.end)+' Uhr gesperrt. Bitte passe deine Zeit oder die Sperre an.');
-  for(const planned of (K.shifts||[]).filter(s=>active(s)&&s.layer==='planned'&&s.personId===owner&&s.date===date&&overlap(s,t)))errors.push('Du bist bereits von '+tm(planned.start)+'–'+tm(planned.end)+' Uhr im Einsatzbereich '+zlabel(planned.zone)+' eingeplant. Deine (Wunschzeit) überschneidet sich damit.');
  }
  if(!errors.length)errors.push(...M().validate(rows()));
  return [...new Set(errors)];
@@ -129,6 +128,10 @@ function team(){
  const parts=K.assistantStaffing.overview(date,stored);
  return '<div id="swTeam" hidden><p>Aktuell geladener Stand · gespeicherte Wünsche und geplante Dienste getrennt.</p>'+parts.map(p=>'<article class="sw-covered"><b>'+tm(p.start)+'–'+tm(p.end)+' Uhr</b>'+p.areas.map(a=>'<p><b>'+zlabel(a.zone)+'</b> · Bedarf '+(a.needed??'unbekannt')+' · '+a.planned+' geplant · '+a.wishes+' Wünsche<br>'+a.people.map(x=>esc(K.person(x.personId)?.pseudoName||K.person(x.personId)?.name||x.personId)+' · '+x.records.map(r=>tm(r.start)+'–'+tm(r.end)).join(', ')+' ('+(x.kind==='planned'?'geplant':'Wunsch')+')').join('<br>')+'</p>').join('')+(p.flexible.length?'<p>Bereich offen: '+p.flexible.map(x=>esc(K.person(x.personId)?.name||x.personId)+' ('+(x.kind==='planned'?'geplant':'Wunsch')+')').join(', ')+'</p>':'')+'</article>').join('')+'</div>';
 }
+function plannedNotice(){
+ const shifts=(K.shifts||[]).filter(s=>active(s)&&s.layer==='planned'&&s.personId===owner&&s.date===date&&times.some(t=>valid(t)&&overlap(s,t)));
+ return shifts.length?'<p class="ux-goodbox">Bereits geplant: '+shifts.map(s=>tm(s.start)+'–'+tm(s.end)+' Uhr · Einsatzbereich '+esc(zlabel(s.zone))).join('; ')+'. Deine (Wunschzeit) darf sich damit überschneiden. Der geplante Dienst bleibt unverändert.</p>':'';
+}
 function render(){
  const titles={blocks:'Zuerst: Gibt es Sperren?',can:'Wann kannst du helfen? (Kann-Zeit)',wish:'Wann möchtest du helfen? (Wunschzeit)',check:'So passt deine Zeit (Wunschzeit)',alternatives:'Hier wird noch Hilfe gebraucht',review:'Deine Zusammenfassung'};
  let html='<h1>'+titles[step]+'</h1><p>'+dateLabel(date)+'</p>';
@@ -149,6 +152,7 @@ function render(){
  }else if(step==='alternatives'){
  html+=(alternatives(alternativeIndex).length?'':'<p>Keine passende freie Alternative gefunden. Du kannst deine eigene Zeit ändern oder zurückgehen und den Wunsch behalten.</p>')+'<p>Öffne eine Zeitkachel und prüfe, ob die Zeit für dich passt.</p><div class="sw-grid">'+alternatives(alternativeIndex).map((g,i)=>{const s=slotTeam(g);return '<details class="sw-covered"><summary><b>'+tm(g.start)+'–'+tm(g.end)+' (Wunschzeit)</b><span>Einsatzbereich '+zlabel(g.wishZone)+' · '+s.short+'</span><span>'+g.missing+' gesucht</span></summary>'+s.html+'<p>Möchtest du lieber diese Zeit übernehmen?</p><p>Falls sie außerhalb deiner (Kann-Zeit) liegt, wird diese dafür ergänzt.</p><button class="ux-btn primary" data-alt="'+i+'">Ja, Zeit übernehmen</button></details>';}).join('')+'</div><button class="ux-btn secondary" id="swOwn">Eigene Zeit ändern</button>';
  }else html+=(blockMode==='day'&&stored.some(w=>w.wishType!=='unavailable')?'<p class="ux-warningbox">Die Tagessperre ersetzt deine bisherigen Zeitangaben für diesen Tag.</p>':'')+entrySummary(rows())+stats()+'<p>Erst mit „Angaben speichern“ werden die Änderungen übernommen.</p>';
+ html+=(['wish','check','review'].includes(step)?plannedNotice():'');
  html+='<div id="swError" role="alert"></div>'+(step==='can'||step==='wish'?'':teamButton())+team()+'<div class="wa-actions"><button class="ux-btn secondary" id="swBack">Zurück</button>'+(!(step==='check'&&coverage().some(p=>p.status==='full'))&&step!=='alternatives'?'<button class="ux-btn primary" id="swNext">'+(step==='review'?'Angaben speichern':step==='check'?'Fertig':'Weiter')+'</button>':'')+'</div>';
  shell(html,titles[step]);bind();
 }
