@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 233,
-  "cacheName": "kc-dp-release-0.20.0-b233",
+  "build": 234,
+  "cacheName": "kc-dp-release-0.20.0-b234",
   "releaseNotes": [
+    "Build 234: Original-Kochmütze und sichere Einrichtung vereinbarter Mitgliedszugänge über die bestehende Adminanmeldung",
     "Build 233: Druckausgabe für Tageszusammenfassung und Gesamtübersicht",
     "Build 232: Kompakte Tagesauswahl mit persönlichem Zeitstrahl und vollständigem Beispielzeitraum",
     "Build 231: Bereitschaft bei jedem Rückweg erneut prüfen und wichtige Meldungen neben Twinkey anzeigen",
@@ -115,28 +116,35 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-08T14:11:19.192Z",
-  "totalRuntimeBytes": 35592788,
+  "generatedAt": "2026-09-08T17:31:32.162Z",
+  "totalRuntimeBytes": 36663683,
   "files": [
+    {
+      "path": "assets/kc-app-icon.svg",
+      "installPath": "assets/kc-app-icon.svg",
+      "bytes": 384184,
+      "sha256": "7247933b471fae01209d2aaf2b044dea287c7d4e05ed9a61abc5fce1e1f04b2e",
+      "runtime": true
+    },
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
       "installPath": "assets/kc-dp2-apple-touch-icon.png",
-      "bytes": 6880,
-      "sha256": "54a38378cda274664b1e4240852b0765f8e34ad2816499a962291d06a3ab9b92",
+      "bytes": 7026,
+      "sha256": "3ab0bc1de8dd54e2ddfb0501b18a568ab5e5945fb9c2851d294ec984c7a5a57b",
       "runtime": true
     },
     {
       "path": "assets/kc-dp2-icon-192.png",
       "installPath": "assets/kc-dp2-icon-192.png",
-      "bytes": 7540,
-      "sha256": "c997df019522046a8463591f38d21c0552997ac0e61f250ae22a5ea004eb108a",
+      "bytes": 7746,
+      "sha256": "e049aac2a9ed0fe988b875a14d122aa477b3b28d0f4930cdc4c40f5593bdf4b3",
       "runtime": true
     },
     {
       "path": "assets/kc-dp2-icon-512.png",
       "installPath": "assets/kc-dp2-icon-512.png",
-      "bytes": 20350,
-      "sha256": "494e2c57686df31ffc9b33bd3c181817178cde78bfde46c71810066a1c06e0ea",
+      "bytes": 31038,
+      "sha256": "dc83d7fa59181f1f14466a6886008dec94c01380bd4bcbcc827aea14fd809195",
       "runtime": true
     },
     {
@@ -163,8 +171,15 @@
     {
       "path": "assets/kc-logo.svg",
       "installPath": "assets/kc-logo.svg",
-      "bytes": 721,
-      "sha256": "cfdc2d0b57a4b46244be7b972e54e4386af57e582ae4f93360038a2178aab7e7",
+      "bytes": 384128,
+      "sha256": "53e2199a80045f6fcf99d830e6f53235a90643c5715fff7ef3ead4ac84dd517c",
+      "runtime": true
+    },
+    {
+      "path": "assets/kc-original-kochmuetze.png",
+      "installPath": "assets/kc-original-kochmuetze.png",
+      "bytes": 287949,
+      "sha256": "37497e4568badf6efcdcdf039fd9b6c42e93cf6727919c4d06bcdae4ae0be9fe",
       "runtime": true
     },
     {
@@ -282,16 +297,16 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 21318,
-      "sha256": "9d4cbda3f66747e3028048871e8e5063cb603c2484fde7283c89304fb6563288",
+      "bytes": 21478,
+      "sha256": "507400713509002de1ee6549d8bad7133acdec0e10ab0f93f4c9687d2b90e946",
       "runtime": true,
       "forceRefresh": true
     },
     {
       "path": "manifest.webmanifest",
       "installPath": "manifest.webmanifest",
-      "bytes": 544,
-      "sha256": "969f08536b18b58fefa638dc5b64d65844b2571e3628073d90746755dc0d4dbc",
+      "bytes": 629,
+      "sha256": "3da6b3fb2b6996a5cd7f6c9dd26465ae5eccf5a48f72bfe42581972a98d44492",
       "runtime": true
     },
     {
@@ -491,8 +506,8 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 22951,
-      "sha256": "4be9fb87fdb5dff76941b753280eacdfdd7b0ed938212c85d20e121ad5f93c34",
+      "bytes": 23372,
+      "sha256": "5c78054ff30fe8b2381eaab6695cc673349c69e8f015df6c0377648729860b50",
       "runtime": true
     },
     {
@@ -1023,8 +1038,8 @@
     {
       "path": "src/ui/chef-companion.js",
       "installPath": "src/ui/chef-companion.js",
-      "bytes": 11980,
-      "sha256": "9be0cdad1205fc26baa2f6585cda58ee2ef88226731abd8efd5fba57d9b5e83c",
+      "bytes": 11924,
+      "sha256": "463fc233ffbbed768a29c97981f951d8e9f000a0f84d3e0a797d94b7d4133477",
       "runtime": true
     },
     {
@@ -1266,6 +1281,13 @@
       "runtime": true
     },
     {
+      "path": "src/ui/member-access-setup.js",
+      "installPath": "src/ui/member-access-setup.js",
+      "bytes": 2466,
+      "sha256": "ef9fffc6498da2d8aca2d77962e1adefb31c5b1c56bafda4c657aadae9140db3",
+      "runtime": true
+    },
+    {
       "path": "src/ui/member-opportunities.css",
       "installPath": "src/ui/member-opportunities.css",
       "bytes": 2206,
@@ -1424,6 +1446,20 @@
       "installPath": "src/ui/occupancy-view.js",
       "bytes": 15825,
       "sha256": "441ae9ad76f51a0cbf6169b484c898b9d98b1c137b9b64ba3136025960bcdcc8",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/original-brand.css",
+      "installPath": "src/ui/original-brand.css",
+      "bytes": 288,
+      "sha256": "d29f668ea025d1faef6bf75a8e30541457f9b1576c45c920fcd2058f0caee9c1",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/original-brand.js",
+      "installPath": "src/ui/original-brand.js",
+      "bytes": 822,
+      "sha256": "b060622790f7e74f20b9007253db4d59572db78673be3fc89c795924569b1d1a",
       "runtime": true
     },
     {
@@ -1695,8 +1731,8 @@
     {
       "path": "src/ui/role-ux.js",
       "installPath": "src/ui/role-ux.js",
-      "bytes": 92297,
-      "sha256": "14b8e22f13ac20b3e1f97444e3f625e64c99003183cae51f1aea2a0ffdaaff31",
+      "bytes": 92296,
+      "sha256": "bfba17698e6e9542ba15821799b0317465b4f952d9855bf648005ede10687693",
       "runtime": true
     },
     {
@@ -1822,7 +1858,7 @@
       "path": "src/ui/twinkey-test-launcher.js",
       "installPath": "src/ui/twinkey-test-launcher.js",
       "bytes": 1573,
-      "sha256": "308ef861676a7b7315b1fefa96945cdf8917f417fadc07d1fa2dbcf9df77191b",
+      "sha256": "33fb2510f12db9d935704d389deca140dd4722839d5792c8b5ee997b3508edcf",
       "runtime": true
     },
     {
@@ -2087,8 +2123,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 5758,
-      "sha256": "2cb6b5939a006b2c8f93e9e7da89b0ce0e9652826410ebda043f91c8b2d8f7c8",
+      "bytes": 5888,
+      "sha256": "7fbc1fb3071caa9ad8791d185eabf928855fdfc8ce1122e2a6d013beeb8b9c46",
       "runtime": true,
       "forceRefresh": true
     }
