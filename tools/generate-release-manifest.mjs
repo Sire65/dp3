@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=232;
+const build=233;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -45,6 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 233: Druckausgabe für Tageszusammenfassung und Gesamtübersicht',
     'Build 232: Kompakte Tagesauswahl mit persönlichem Zeitstrahl und vollständigem Beispielzeitraum',
     'Build 231: Bereitschaft bei jedem Rückweg erneut prüfen und wichtige Meldungen neben Twinkey anzeigen',
     'Build 230: Vorbereitung außerhalb der Standbesetzung, zusätzliche Bereitschaft ohne Überschneidung und Stunden je Zeitraum',

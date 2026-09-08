@@ -164,7 +164,7 @@ function render(){
  if(full)html+='<p>Möchtest du deine (Wunschzeit) trotzdem eintragen?</p><div class="sw-grid"><button class="ux-btn primary" id="swKeep">Ja, Wunsch behalten · Fertig</button><button class="ux-btn secondary" id="swAlternatives">Alternativen anzeigen</button></div>';
  }else if(step==='alternatives'){
  html+=(alternatives(alternativeIndex).length?'':'<p>Keine passende freie Alternative gefunden. Du kannst deine eigene Zeit ändern oder zurückgehen und den Wunsch behalten.</p>')+(times.length>1?'<label>Welche (Wunschzeit) möchtest du ändern?<select id="swAlternativeTime">'+times.map((t,i)=>'<option value="'+i+'" '+(i===alternativeIndex?'selected':'')+'>'+tm(t.start)+'–'+tm(t.end)+' · '+zlabel(t.wishZone)+'</option>').join('')+'</select></label>':'')+'<p>Öffne eine Zeitkachel und prüfe, ob die Zeit für dich passt.</p><div class="sw-grid">'+alternatives(alternativeIndex).map((g,i)=>{const s=slotTeam(g);return '<details class="sw-covered"><summary><b>'+tm(g.start)+'–'+tm(g.end)+' (Wunschzeit)</b><span>Einsatzbereich '+zlabel(g.wishZone)+' · '+s.short+'</span><span>'+g.missing+' gesucht</span></summary>'+s.html+'<p>Möchtest du lieber diese Zeit übernehmen?</p><p>Falls sie außerhalb deiner (Kann-Zeit) liegt, wird diese dafür ergänzt.</p><button class="ux-btn primary" data-alt="'+i+'">Ja, Zeit übernehmen</button></details>';}).join('')+'</div><button class="ux-btn secondary" id="swOwn">Eigene Zeit ändern</button>';
- }else html+=(blockMode==='day'&&stored.some(w=>w.wishType!=='unavailable')?'<p class="ux-warningbox">Die Tagessperre ersetzt deine bisherigen Zeitangaben für diesen Tag.</p>':'')+entrySummary(rows())+stats()+'<p>Erst mit „Angaben speichern“ werden die Änderungen übernommen.</p>';
+ }else html+=(blockMode==='day'&&stored.some(w=>w.wishType!=='unavailable')?'<p class="ux-warningbox">Die Tagessperre ersetzt deine bisherigen Zeitangaben für diesen Tag.</p>':'')+ '<button class="ux-btn secondary" id="swPrint">Zusammenfassung drucken</button>'+entrySummary(rows())+stats()+'<p>Erst mit „Angaben speichern“ werden die Änderungen übernommen.</p>';
  html+=(['wish','check','review'].includes(step)?plannedNotice():'');
  html+='<div id="swError" role="alert"></div>'+(step==='can'||step==='wish'?'':teamButton())+team()+'<div class="wa-actions"><button class="ux-btn secondary" id="swBack">Zurück</button>'+(!(step==='check'&&coverage().some(p=>p.status==='full'))&&step!=='alternatives'?'<button class="ux-btn primary" id="swNext">'+(step==='review'?'Angaben speichern':step==='check'?'Fertig':'Weiter')+'</button>':'')+'</div>';
  shell(html,titles[step]);bind();if(readinessIssue.length)error(readinessIssue.join(' '));
@@ -178,6 +178,7 @@ function error(msg){
 }
 function changed(){dirty=true;accepted='';}
 function bind(){
+ if($('swPrint'))$('swPrint').onclick=()=>printSummary(false);
  if($('swNoStandby'))$('swNoStandby').onclick=()=>{standby={answer:'no',slots:[]};changed();step='check';render();};
  if($('swYesStandby'))$('swYesStandby').onclick=()=>{standby.answer='yes';if(!standby.slots.length)standby.slots.push({start:null,end:null});changed();render();};
  if($('swAddStandby'))$('swAddStandby').onclick=()=>{standby.slots.push({start:null,end:null});changed();render();};
@@ -225,9 +226,15 @@ function dayFinished(){
 }
 function finishOverview(show){
  step='finish';
- shell('<button class="ux-btn secondary" id="swFinishBack">Zurück</button><h1>'+(show?'Deine Gesamtübersicht':'Möchtest du deine Gesamtübersicht ansehen?')+'</h1>'+(show?'<p>Gespeicherte Angaben für alle Tage im ausgewählten Planungszeitraum.</p>'+K.days.map(d=>'<section><h2>'+dateLabel(d.date)+'</h2>'+entrySummary(M().rows(owner,d.date))+'</section>').join('')+stats(false):'<p>Alle Tage mit deinen Zeiten, Tagesstunden, Gesamtstunden und dem bisherigen Durchschnitt.</p>')+'<div class="sw-grid">'+(show?'<button class="ux-btn secondary" id="swMore">Weitere Zeiten erfassen</button>':'<button class="ux-btn secondary" id="swOverview">Gesamtübersicht anzeigen</button>')+'<button class="ux-btn primary" id="swLeave">'+(show?'Fertig · Assistent verlassen':'Ohne Übersicht beenden')+'</button></div>','Deine Angaben sind gespeichert. Vor dem Beenden kannst du alle Tage zusammen ansehen.');
+ shell('<button class="ux-btn secondary" id="swFinishBack">Zurück</button><h1>'+(show?'Deine Gesamtübersicht':'Möchtest du deine Gesamtübersicht ansehen?')+'</h1>'+(show?'<button class="ux-btn secondary" id="swPrintAll">Gesamtübersicht drucken</button><p>Gespeicherte Angaben für alle Tage im ausgewählten Planungszeitraum.</p>'+K.days.map(d=>'<section><h2>'+dateLabel(d.date)+'</h2>'+entrySummary(M().rows(owner,d.date))+'</section>').join('')+stats(false):'<p>Alle Tage mit deinen Zeiten, Tagesstunden, Gesamtstunden und dem bisherigen Durchschnitt.</p>')+'<div class="sw-grid">'+(show?'<button class="ux-btn secondary" id="swMore">Weitere Zeiten erfassen</button>':'<button class="ux-btn secondary" id="swOverview">Gesamtübersicht anzeigen</button>')+'<button class="ux-btn primary" id="swLeave">'+(show?'Fertig · Assistent verlassen':'Ohne Übersicht beenden')+'</button></div>','Deine Angaben sind gespeichert. Vor dem Beenden kannst du alle Tage zusammen ansehen.');
+ if($('swPrintAll'))$('swPrintAll').onclick=()=>printSummary(true);
  $('swFinishBack').onclick=()=>show?finishOverview(false):dayFinished();
  if($('swOverview'))$('swOverview').onclick=()=>finishOverview(true);if($('swMore'))$('swMore').onclick=()=>start();$('swLeave').onclick=()=>{dirty=false;K.roleUx.openTimes();};
+}
+function printSummary(all){
+ const sheet=document.createElement('section');sheet.id='swPrintSheet';const person=K.person(owner);
+ sheet.innerHTML='<h1>'+ (all?'Meine Gesamtübersicht':'Meine Tageszusammenfassung')+'</h1><p>'+esc(person?.name||person?.pseudoName||'')+'</p><p>'+(all?'Gespeicherte Angaben':'Vorschau · noch nicht gespeichert')+'</p>'+ (all?K.days:[day()]).map(d=>'<section><h2>'+dateLabel(d.date)+'</h2>'+entrySummary(all?M().rows(owner,d.date):rows())+'</section>').join('')+stats(!all);
+ document.body.append(sheet);document.body.classList.add('sw-printing');try{window.print();}finally{document.body.classList.remove('sw-printing');sheet.remove();}
 }
 function standbyErrors(){
  if(blockMode==='day')return [];

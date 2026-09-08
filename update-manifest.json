@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 232,
-  "cacheName": "kc-dp-release-0.20.0-b232",
+  "build": 233,
+  "cacheName": "kc-dp-release-0.20.0-b233",
   "releaseNotes": [
+    "Build 233: Druckausgabe für Tageszusammenfassung und Gesamtübersicht",
     "Build 232: Kompakte Tagesauswahl mit persönlichem Zeitstrahl und vollständigem Beispielzeitraum",
     "Build 231: Bereitschaft bei jedem Rückweg erneut prüfen und wichtige Meldungen neben Twinkey anzeigen",
     "Build 230: Vorbereitung außerhalb der Standbesetzung, zusätzliche Bereitschaft ohne Überschneidung und Stunden je Zeitraum",
@@ -114,8 +115,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-08T13:09:22.189Z",
-  "totalRuntimeBytes": 35591384,
+  "generatedAt": "2026-09-08T14:11:19.192Z",
+  "totalRuntimeBytes": 35592788,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -282,7 +283,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 21318,
-      "sha256": "7008300f080d37cccf1b0f1e0c8ecfb3e2040ee66f11f9a303c6fc6f4ef3c0d0",
+      "sha256": "9d4cbda3f66747e3028048871e8e5063cb603c2484fde7283c89304fb6563288",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1736,8 +1737,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 32526,
-      "sha256": "16bc539b28ac8073fdb9e072be17cd5946bebe20aabfac354d77172f1f0f1a67",
+      "bytes": 33491,
+      "sha256": "2b55fb991ea4d3ba9de141bd0ca80f3caa11e5c2cd798a3a4f212a808ff64b06",
       "runtime": true
     },
     {
@@ -1821,7 +1822,7 @@
       "path": "src/ui/twinkey-test-launcher.js",
       "installPath": "src/ui/twinkey-test-launcher.js",
       "bytes": 1573,
-      "sha256": "88006cba0ff9b36dc0f33a24fbe45920e7558c2d8f770f538b7a81b56d1f9465",
+      "sha256": "308ef861676a7b7315b1fefa96945cdf8917f417fadc07d1fa2dbcf9df77191b",
       "runtime": true
     },
     {
@@ -1911,8 +1912,8 @@
     {
       "path": "src/ui/wish-demand.css",
       "installPath": "src/ui/wish-demand.css",
-      "bytes": 6611,
-      "sha256": "9c0b47beda8f7c2b7e0660751715424139be3cba3b9c8ae3a1a0c9f57f9b1546",
+      "bytes": 7050,
+      "sha256": "0d4bd7ddf74d38b1d3ed891d755d5c74020d646d91f4d7fd112d0704849dac20",
       "runtime": true
     },
     {
@@ -2087,7 +2088,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 5758,
-      "sha256": "ced24d8ac6c48af9ee76f7ccc9c7fd7b01c5c13cc503b37e620fabc65a08878e",
+      "sha256": "2cb6b5939a006b2c8f93e9e7da89b0ce0e9652826410ebda043f91c8b2d8f7c8",
       "runtime": true,
       "forceRefresh": true
     }
