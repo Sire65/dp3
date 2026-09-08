@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=225;
+const build=226;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -45,7 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
-    'Build 225: Sperren zuerst, eigene Zeiten, Besetzungsprüfung und direkte Übernahme freier Alternativen',
+    'Build 226: Getrennte Kann- und Wunschzeiten, kompakte Besetzungskacheln mit Namen, bestätigte Alternativen und Stundenübersicht',
     'Build 224: Ruhiger geführter Einstieg mit wenigen Zeitvorschlägen, eigener Zeit und kurzer Bestätigung',
     'Build 223: Zeitkarten als Kann- oder Wunschzeit wählen; eigene Zeiten und bestätigte Erweiterung der Verfügbarkeit',
     'Build 222: Passende Bereichskarten direkt als Wunsch übernehmen, Auswahl und Sperrgründe sichtbar',
