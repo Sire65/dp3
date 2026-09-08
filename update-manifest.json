@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 229,
-  "cacheName": "kc-dp-release-0.20.0-b229",
+  "build": 230,
+  "cacheName": "kc-dp-release-0.20.0-b230",
   "releaseNotes": [
+    "Build 230: Vorbereitung außerhalb der Standbesetzung, zusätzliche Bereitschaft ohne Überschneidung und Stunden je Zeitraum",
     "Build 229: Eigene Wunschzeit klar anzeigen und schrittweise Rücknavigation einschließlich Abschluss",
     "Build 228: Hilfebedarf frei erkunden, geführter Tagesabschluss und Gesamtübersicht vor dem Beenden",
     "Build 227: Wunschzeit darf geplante Dienste überschneiden; bestehender Dienst bleibt als Hinweis sichtbar",
@@ -111,8 +112,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-08T09:00:10.530Z",
-  "totalRuntimeBytes": 35583537,
+  "generatedAt": "2026-09-08T12:10:56.806Z",
+  "totalRuntimeBytes": 35587453,
   "files": [
     {
       "path": "assets/kc-dp2-apple-touch-icon.png",
@@ -278,8 +279,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 21327,
-      "sha256": "11abc41af116fefe245b8e40087d2c1a9f3c75a2eb7e17d0d8643ba1e9c542e8",
+      "bytes": 21318,
+      "sha256": "1d16ed283045a98d218d9b49b397bef6dcc61d20cdd4ab0e445c30ddb5e7320a",
       "runtime": true,
       "forceRefresh": true
     },
@@ -718,8 +719,8 @@
     {
       "path": "src/core/mobile-wish-matrix.js",
       "installPath": "src/core/mobile-wish-matrix.js",
-      "bytes": 5289,
-      "sha256": "7275485c81830249db529ac1c461a3f9c0fc0756e9f607ee43a1aab95328a536",
+      "bytes": 5336,
+      "sha256": "01d05079057211ee50b7c20bbfe1f65a24290f818de80d0106aabcdc3096ed50",
       "runtime": true
     },
     {
@@ -886,8 +887,8 @@
     {
       "path": "src/core/wish-contract.js",
       "installPath": "src/core/wish-contract.js",
-      "bytes": 2705,
-      "sha256": "0824bfd57f5816d3a01113b36a1f22db67e41deac9645e01babbefcd4bd337a0",
+      "bytes": 2738,
+      "sha256": "d91a8907fad5248cfd83ca3f90271ad3093901dda51f29cc19300b6f0a03f48a",
       "runtime": true
     },
     {
@@ -900,8 +901,8 @@
     {
       "path": "src/core/wish-zone.js",
       "installPath": "src/core/wish-zone.js",
-      "bytes": 4226,
-      "sha256": "f1bb05635f46514cc999318ef1a2459df596a7b4bfd2f1ed0005692a10eba4e3",
+      "bytes": 4376,
+      "sha256": "1badac98e192f525163dfdce48ffd54f114f7401b1be6aba97028f14d613487e",
       "runtime": true
     },
     {
@@ -977,15 +978,15 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 260816,
-      "sha256": "1a90a55a21026a285052342f6fcd0c05b21ef24b779adceb9dd39d70552b67a1",
+      "bytes": 260834,
+      "sha256": "f925bf4e782412a6c5484a86a53fbffa0629d02d96188310ffadf7f0fbc8cf03",
       "runtime": true
     },
     {
       "path": "src/ui/assistant-hours.js",
       "installPath": "src/ui/assistant-hours.js",
-      "bytes": 1598,
-      "sha256": "3dc462b817f3b3321be02d0c87f3f26a5f630a1ab9d28c47f9e76bf933c49863",
+      "bytes": 1810,
+      "sha256": "661782568786e91cefb9b6cb69235b41f8526202678759e401c0e99c4a20dc4d",
       "runtime": true
     },
     {
@@ -1005,8 +1006,8 @@
     {
       "path": "src/ui/batch-planning.js",
       "installPath": "src/ui/batch-planning.js",
-      "bytes": 15949,
-      "sha256": "b789b50148aecb4beac03b69b25f77a491221c9e94813debf04adbe711219ca7",
+      "bytes": 15967,
+      "sha256": "1f0b7f80454b342b1cc9da4b08a11eb44eba46059af5239c375e49d7fd6d09ae",
       "runtime": true
     },
     {
@@ -1320,8 +1321,8 @@
     {
       "path": "src/ui/mobile-wish-matrix.js",
       "installPath": "src/ui/mobile-wish-matrix.js",
-      "bytes": 15147,
-      "sha256": "59207e98ce4ca4616d20892e287ccec69b4f54a3d170efa0c9315fa22ce1f022",
+      "bytes": 15228,
+      "sha256": "ffbf01c7e9c2c7fb1f0cff6ad0fa4a03f0b817255c97d7dd856d8b7546e31daf",
       "runtime": true
     },
     {
@@ -1509,8 +1510,8 @@
     {
       "path": "src/ui/plan-transfer.js",
       "installPath": "src/ui/plan-transfer.js",
-      "bytes": 16507,
-      "sha256": "b553ed0c13ba7718a1b4c9a166d6d521f2c89c8cd05a72b5614963da29b9e1da",
+      "bytes": 16617,
+      "sha256": "274a8719ad9fb52b502eda2ddb8bc430cf1ac6105a31d27e992a0ef66e96d841",
       "runtime": true
     },
     {
@@ -1733,8 +1734,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 26102,
-      "sha256": "f35158cf7e7d3b18f31c71085b028f90068dfb4501dd848f33cdf149bb5ad14f",
+      "bytes": 29293,
+      "sha256": "40eeef6b93c0ae3c1e915d79a5f312a9ae1341d7b117822cf7f186166e996547",
       "runtime": true
     },
     {
@@ -1818,7 +1819,7 @@
       "path": "src/ui/twinkey-test-launcher.js",
       "installPath": "src/ui/twinkey-test-launcher.js",
       "bytes": 1573,
-      "sha256": "64144ad21a878f3529c3f930bd86b69104eb078cf6365e8ebc3b75a8304dfc64",
+      "sha256": "f7afe33234e3d9e11db127b29f3a5d0ed6dca396a541fe5e7fb6e5803d2b4106",
       "runtime": true
     },
     {
@@ -1901,8 +1902,8 @@
     {
       "path": "src/ui/wish-bar-composite.js",
       "installPath": "src/ui/wish-bar-composite.js",
-      "bytes": 10466,
-      "sha256": "dd22cddc5cd4dd2520142cd24c79b78f5f9a1923b8337e3774502b850754249f",
+      "bytes": 10517,
+      "sha256": "dea6a364459563f9e2674df23ae9ea297a8e16db783c545354f47afb14dddbcb",
       "runtime": true
     },
     {
@@ -2083,8 +2084,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 5730,
-      "sha256": "58dd5fe8a28a708821e93b7a01cea0485876df7e6bd08a2ff85fcb0514b8f1e2",
+      "bytes": 5744,
+      "sha256": "11b66a01e44a7a178975993be664013797af36224099cc9dd30d4df814a3380c",
       "runtime": true,
       "forceRefresh": true
     }

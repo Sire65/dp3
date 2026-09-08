@@ -1,19 +1,19 @@
 (function(){
 'use strict';
 const K=window.KCDP=window.KCDP||{};
-const VALID=new Set(['V','H','B']);
+const VALID=new Set(['V','H','B','Z']);
 const normalize=v=>{const s=String(v??'').trim().toUpperCase();return VALID.has(s)?s:'B';};
-const label=v=>normalize(v)==='V'?'V · vorne':normalize(v)==='H'?'H · hinten':'B · beides';
+const label=v=>normalize(v)==='Z'?'Z · Vorbereitung außerhalb':normalize(v)==='V'?'V · vorne':normalize(v)==='H'?'H · hinten':'B · beides';
 const short=v=>normalize(v);
 
-K.wishZone={values:['V','H','B'],normalize,label,short};
+K.wishZone={values:['V','H','B','Z'],normalize,label,short};
 (K.wishes||[]).forEach(w=>{w.wishZone=normalize(w.wishZone)});
 
 const originalValidateWish=K.validateWish;
 if(typeof originalValidateWish==='function')K.validateWish=function(w){
   const out=[...(originalValidateWish.call(this,w)||[])];
   const raw=String(w?.wishZone??'B').trim().toUpperCase();
-  if(!VALID.has(raw))out.push({level:'error',text:'Einsatzbereich muss V (vorne), H (hinten) oder B (beides) sein.'});
+  if(!VALID.has(raw))out.push({level:'error',text:'Einsatzbereich muss V (vorne), H (hinten), B (beides) oder Z (Vorbereitung außerhalb) sein.'});
   return out;
 };
 
@@ -21,7 +21,7 @@ const originalSaveWish=K.mutations?.saveWish;
 if(typeof originalSaveWish==='function')K.mutations.saveWish=function(record,meta){
   const raw=document.getElementById('wZone')?.value ?? record?.wishZone ?? 'B';
   const zone=String(raw).trim().toUpperCase();
-  if(!VALID.has(zone))throw new Error('Einsatzbereich: ausschließlich V, H oder B auswählen.');
+  if(!VALID.has(zone))throw new Error('Einsatzbereich: V, H, B oder Z auswählen.');
   return originalSaveWish.call(this,{...record,wishZone:zone},meta);
 };
 
@@ -47,7 +47,7 @@ function addZoneToWishDialog(){
   const found=(K.wishes||[]).find(w=>w.personId===person&&w.date===date&&(editingId?w.id===editingId:Math.abs(Number(w.start)-Number(toNum(start)))<0.001));
   if(found)current=normalize(found.wishZone);
   const field=document.createElement('div');field.className='field';
-  field.innerHTML=`<label>Einsatz V/H/B</label><select id="wZone" aria-label="Einsatzbereich"><option value="V">V · nur vorne</option><option value="H">H · nur hinten</option><option value="B">B · beides</option></select><small style="display:block;margin-top:4px">Nur diese drei Werte sind zulässig.</small>`;
+  field.innerHTML=`<label>Einsatzbereich</label><select id="wZone" aria-label="Einsatzbereich"><option value="V">V · nur vorne</option><option value="H">H · nur hinten</option><option value="B">B · beides</option><option value="Z">Z · Vorbereitung außerhalb</option></select><small style="display:block;margin-top:4px">Vorbereitung außerhalb zählt nicht zur Standbesetzung.</small>`;
   type.closest('.field')?.insertAdjacentElement('afterend',field);
   document.getElementById('wZone').value=current;
 }

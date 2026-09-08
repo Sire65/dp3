@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=229;
+const build=230;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -45,6 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 230: Vorbereitung außerhalb der Standbesetzung, zusätzliche Bereitschaft ohne Überschneidung und Stunden je Zeitraum',
     'Build 229: Eigene Wunschzeit klar anzeigen und schrittweise Rücknavigation einschließlich Abschluss',
     'Build 228: Hilfebedarf frei erkunden, geführter Tagesabschluss und Gesamtübersicht vor dem Beenden',
     'Build 227: Wunschzeit darf geplante Dienste überschneiden; bestehender Dienst bleibt als Hinweis sichtbar',
