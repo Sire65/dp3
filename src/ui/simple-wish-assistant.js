@@ -8,7 +8,7 @@ const valid=r=>Number.isFinite(r.start)&&Number.isFinite(r.end)&&r.start>=0&&r.e
 const active=r=>!['deleted','cancelled','failed','absent'].includes(r.status);
 const overlap=(a,b)=>a.start<b.end&&a.end>b.start;
 const dateLabel=d=>new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'numeric',month:'long'}).format(new Date(d+'T12:00:00'));
-let owner=null,date=null,stored=[],baseline='',blocks=[],can=[],times=[],blockMode='none',step='days',dirty=false,busy=false,accepted='',alternativeIndex=0;
+let owner=null,date=null,stored=[],baseline='',blocks=[],can=[],times=[],blockMode='none',step='days',dirty=false,busy=false,accepted='',alternativeIndex=0,history=[],lastStep=null;
 const self=()=>K.currentUser?.personId,day=()=>K.days.find(d=>d.date===date);
 function editable(){try{M().assertEditable(owner);return owner===self();}catch{return false;}}
 function shell(html,tip){
@@ -16,14 +16,14 @@ function shell(html,tip){
  K.chefCompanion.wireQuiet();K.twinkey?.bind(tip,'guided-'+(date||'days')+'-'+step);window.scrollTo({top:0,behavior:'instant'});
 }
 function start(message=''){
- owner=self();date=null;step='days';dirty=false;busy=false;
+ history=[];lastStep=null;owner=self();date=null;step='days';dirty=false;busy=false;
  shell('<h1>Wähle deinen Tag</h1>'+(message?'<p role="status" class="ux-goodbox">'+esc(message)+'</p>':'')+
  '<div class="wa-daygrid">'+K.days.map(d=>'<button class="wa-day" data-day="'+d.date+'"><b>'+dateLabel(d.date)+'</b>'+entrySummary(M().rows(owner,d.date))+'</button>').join('')+'</div><button class="ux-btn secondary" id="swExit">Zurück</button>',
  'Wähle einen Tag. Wir prüfen zuerst deine Sperren, dann deine Verfügbarkeit (Kann-Zeit) und deine bevorzugte Zeit (Wunschzeit).');
  document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>open(b.dataset.day));$('swExit').onclick=()=>K.roleUx.openTimes();
 }
 function open(value){
- owner=self();date=value;stored=clone(M().rows(owner,date));baseline=JSON.stringify(stored);
+ history=[];lastStep=null;owner=self();date=value;stored=clone(M().rows(owner,date));baseline=JSON.stringify(stored);
  blocks=stored.filter(w=>w.wishType==='unavailable'&&w.scope!=='day').map(w=>({start:w.start,end:w.end}));
  blockMode=stored.some(w=>w.wishType==='unavailable'&&w.scope==='day')?'day':blocks.length?'time':'none';
  can=stored.filter(w=>['available','if_needed'].includes(w.wishType)).map(w=>({start:w.start,end:w.end,wishZone:w.wishZone||'B',reserve:w.wishType==='if_needed'}));
@@ -133,6 +133,7 @@ function plannedNotice(){
  return shifts.length?'<p class="ux-goodbox">Bereits geplant: '+shifts.map(s=>tm(s.start)+'–'+tm(s.end)+' Uhr · Einsatzbereich '+esc(zlabel(s.zone))).join('; ')+'. Deine (Wunschzeit) darf sich damit überschneiden. Der geplante Dienst bleibt unverändert.</p>':'';
 }
 function render(){
+ if(lastStep&&lastStep!==step)history.push(lastStep);lastStep=step;
  const titles={blocks:'Zuerst: Gibt es Sperren?',can:'Wann kannst du helfen? (Kann-Zeit)',wish:'Wann möchtest du helfen? (Wunschzeit)',check:'So passt deine Zeit (Wunschzeit)',alternatives:'Hier wird noch Hilfe gebraucht',review:'Deine Zusammenfassung'};
  let html='<h1>'+titles[step]+'</h1><p>'+dateLabel(date)+'</p>';
  if(step==='blocks'){
@@ -145,7 +146,7 @@ function render(){
  html+='<div class="sw-grid"><button class="ux-btn secondary" id="swAddTime">'+(step==='wish'&&!times.length?'Eigene Wunschzeit eingeben':'Weitere Zeit für den Tag')+'</button>'+teamButton()+'</div>';
  }else if(step==='check'){
  const c=coverage(),full=c.some(p=>p.status==='full');
- html+='<p>Das ist deine (Wunschzeit). Möchtest du dir ansehen, wo noch Hilfe benötigt wird? Dann kannst du deine Zeit noch ändern. Klicke auf den Pfeil einer Kachel, um die Personenbesetzung zu sehen.</p><div class="sw-grid">'+c.map(p=>{const s=slotTeam(p);return '<details class="sw-covered"><summary><b>'+tm(p.start)+'–'+tm(p.end)+' (Wunschzeit)</b><span>Einsatzbereich '+zlabel(p.wishZone)+' · '+s.short+'</span><span>'+(p.status==='full'?'Bereits besetzt: '+p.count+' / '+p.needed:p.status==='gap'?'Noch '+(p.needed-p.count)+' gesucht':'Bedarf unbekannt')+'</span></summary>'+s.html+'<button class="ux-btn secondary" data-help="'+p.index+'">Hilfebedarf ansehen</button></details>';}).join('')+'</div>';
+ html+='<section class="ux-goodbox" id="swOwnWish"><h2>Deine eigene Wunschzeit</h2>'+ (times.length?times.map(t=>'<p><strong>'+tm(t.start)+'–'+tm(t.end)+' Uhr (Wunschzeit)</strong><br>Einsatzbereich '+esc(zlabel(t.wishZone))+'</p>').join(''):'<p>Keine (Wunschzeit) angegeben.</p>')+'</section><p>Hier siehst du die Besetzung innerhalb deiner (Wunschzeit). Möchtest du dir ansehen, wo noch Hilfe benötigt wird? Dann kannst du deine Zeit noch ändern. Klicke auf den Pfeil einer Kachel, um die Personenbesetzung zu sehen.</p><div class="sw-grid">'+c.map(p=>{const s=slotTeam(p);return '<details class="sw-covered"><summary><b>'+tm(p.start)+'–'+tm(p.end)+' Uhr · Besetzung</b><span>Einsatzbereich '+zlabel(p.wishZone)+' · '+s.short+'</span><span>'+(p.status==='full'?'Bereits besetzt: '+p.count+' / '+p.needed:p.status==='gap'?'Noch '+(p.needed-p.count)+' gesucht':'Bedarf unbekannt')+'</span></summary>'+s.html+'<button class="ux-btn secondary" data-help="'+p.index+'">Hilfebedarf ansehen</button></details>';}).join('')+'</div>';
  if(!c.length)html+='<p>Deine (Kann-Zeit) wird ohne zusätzlichen Wunsch gespeichert.</p>';
  html+='<p>Wünsche sind noch keine feste Einteilung. Öffne eine Kachel, um Namen und Zeiten zu sehen.</p>';
  if(!full&&times.length)html+='<div class="sw-grid"><button class="ux-btn secondary" id="swAlternatives">Hilfebedarf ansehen</button><button class="ux-btn secondary" id="swOwn">Wunschzeit ändern</button></div>';
@@ -186,7 +187,7 @@ function bind(){
  if(!can.some(t=>!t.reserve&&t.start<=g.start&&t.end>=g.end&&(t.wishZone==='B'||t.wishZone===g.wishZone)))can.push({start:g.start,end:g.end,wishZone:g.wishZone});
  times[alternativeIndex]={start:g.start,end:g.end,wishZone:g.wishZone};changed();acceptOrCheck();
  });
- $('swBack').onclick=()=>{if(busy)return;if(step==='blocks'){if(!dirty||confirm('Ungespeicherte Angaben verwerfen?'))start();}else{step=step==='can'?'blocks':step==='wish'?'can':step==='review'?(blockMode==='day'?'blocks':'check'):'wish';render();}};
+ $('swBack').onclick=()=>{if(busy)return;if(history.length){step=history.pop();lastStep=step;render();}else if(!dirty||confirm('Ungespeicherte Angaben verwerfen?'))start();};
  if($('swNext'))$('swNext').onclick=()=>{
  if(busy)return;if(!editable())return error('Die Anmeldung oder Wunschphase hat sich geändert.');
  if(step==='blocks'){const errors=blockErrors();if(errors.length)return error(errors.join(' '));step=blockMode==='day'?'review':'can';render();}
@@ -197,13 +198,14 @@ function bind(){
  };
 }
 function dayFinished(){
- step='done';
- shell('<h1>Dein Tag ist gespeichert</h1><p>'+dateLabel(date)+'</p><p>Bist du fertig oder möchtest du weitere Zeiten erfassen?</p><div class="sw-grid"><button class="ux-btn secondary" id="swMore">Weitere Zeiten erfassen</button><button class="ux-btn primary" id="swFinish">Fertig</button></div>','Dein Tag ist gespeichert. Wie möchtest du weitermachen?');
- $('swMore').onclick=()=>start();$('swFinish').onclick=()=>finishOverview(false);
+ step='done';lastStep=null;history=[];
+ shell('<button class="ux-btn secondary" id="swDoneBack">Zurück</button><h1>Dein Tag ist gespeichert</h1><p>'+dateLabel(date)+'</p><p>Bist du fertig oder möchtest du weitere Zeiten erfassen?</p><div class="sw-grid"><button class="ux-btn secondary" id="swMore">Weitere Zeiten erfassen</button><button class="ux-btn primary" id="swFinish">Fertig</button></div>','Dein Tag ist gespeichert. Wie möchtest du weitermachen?');
+ $('swDoneBack').onclick=()=>{history=blockMode==='day'?['blocks']:['blocks','can','wish','check'];step='review';lastStep='review';render();};$('swMore').onclick=()=>start();$('swFinish').onclick=()=>finishOverview(false);
 }
 function finishOverview(show){
  step='finish';
- shell('<h1>'+(show?'Deine Gesamtübersicht':'Möchtest du deine Gesamtübersicht ansehen?')+'</h1>'+(show?'<p>Gespeicherte Angaben für alle Tage im ausgewählten Planungszeitraum.</p>'+K.days.map(d=>'<section><h2>'+dateLabel(d.date)+'</h2>'+entrySummary(M().rows(owner,d.date))+'</section>').join('')+stats(false):'<p>Alle Tage mit deinen Zeiten, Tagesstunden, Gesamtstunden und dem bisherigen Durchschnitt.</p>')+'<div class="sw-grid">'+(show?'<button class="ux-btn secondary" id="swMore">Weitere Zeiten erfassen</button>':'<button class="ux-btn secondary" id="swOverview">Gesamtübersicht anzeigen</button>')+'<button class="ux-btn primary" id="swLeave">'+(show?'Fertig · Assistent verlassen':'Ohne Übersicht beenden')+'</button></div>','Deine Angaben sind gespeichert. Vor dem Beenden kannst du alle Tage zusammen ansehen.');
+ shell('<button class="ux-btn secondary" id="swFinishBack">Zurück</button><h1>'+(show?'Deine Gesamtübersicht':'Möchtest du deine Gesamtübersicht ansehen?')+'</h1>'+(show?'<p>Gespeicherte Angaben für alle Tage im ausgewählten Planungszeitraum.</p>'+K.days.map(d=>'<section><h2>'+dateLabel(d.date)+'</h2>'+entrySummary(M().rows(owner,d.date))+'</section>').join('')+stats(false):'<p>Alle Tage mit deinen Zeiten, Tagesstunden, Gesamtstunden und dem bisherigen Durchschnitt.</p>')+'<div class="sw-grid">'+(show?'<button class="ux-btn secondary" id="swMore">Weitere Zeiten erfassen</button>':'<button class="ux-btn secondary" id="swOverview">Gesamtübersicht anzeigen</button>')+'<button class="ux-btn primary" id="swLeave">'+(show?'Fertig · Assistent verlassen':'Ohne Übersicht beenden')+'</button></div>','Deine Angaben sind gespeichert. Vor dem Beenden kannst du alle Tage zusammen ansehen.');
+ $('swFinishBack').onclick=()=>show?finishOverview(false):dayFinished();
  if($('swOverview'))$('swOverview').onclick=()=>finishOverview(true);if($('swMore'))$('swMore').onclick=()=>start();$('swLeave').onclick=()=>{dirty=false;K.roleUx.openTimes();};
 }
 async function save(){
@@ -211,7 +213,7 @@ async function save(){
  const errors=timeErrors();if(errors.length)return error(errors.join(' '));
  if(blockMode!=='day'&&coverage().some(p=>p.status==='full')&&accepted!==fingerprint()){step='check';render();return error('Die Besetzung hat sich geändert. Bitte erneut entscheiden.');}
  busy=true;$('swNext').disabled=true;
- try{await M().save(owner,[date],rows(),baseline,{reviewedDemand:true});busy=false;dirty=false;dayFinished();}catch(e){busy=false;error(e.message);$('swNext').disabled=false;}
+ try{await M().save(owner,[date],rows(),baseline,{reviewedDemand:true});busy=false;dirty=false;stored=clone(M().rows(owner,date));baseline=JSON.stringify(stored);dayFinished();}catch(e){busy=false;error(e.message);$('swNext').disabled=false;}
 }
 document.addEventListener('click',e=>{if(!document.querySelector('.sw-root')||!e.target.closest?.('[data-nav],#uxUserMenu'))return;if(busy||(dirty&&!confirm('Ungespeicherte Angaben verwerfen?'))){e.preventDefault();e.stopImmediatePropagation();}else dirty=false;},true);
 K.simpleWishAssistant={start,open};K.wishAssistant={...detail,start,open};
