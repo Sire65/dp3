@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';import {createRequire} from 'node:module';
+const {chromium}=createRequire(import.meta.url)(process.env.PLAYWRIGHT_MODULE),b=await chromium.launch({headless:true,channel:'chrome'});
+try{const p=await b.newPage({viewport:{width:390,height:844}}),errors=[];p.on('pageerror',e=>errors.push(e.message));await p.goto('http://127.0.0.1:8774/twinkey-test.html?kc_update=228');await p.locator('[data-tw-mode=guided]').click();await p.locator('[data-tw-task=wish]').click();await p.locator('[data-day]').first().click();await p.locator('#swNext').click();await p.locator('#swNext').click();await p.locator('#swSame').click();
+assert.match(await p.locator('.sw-root').innerText(),/Pfeil.*Personenbesetzung/);
+await p.locator('#swAlternatives').click();assert.match(await p.locator('h1').innerText(),/Hilfe/);await p.locator('#swBack').click();await p.locator('#swNext').click();await p.locator('#swNext').click();await p.locator('#swNext').click();
+await p.locator('#swMore').click();assert.match(await p.locator('h1').innerText(),/Wähle deinen Tag/);
+await p.locator('[data-day]').nth(1).click();await p.locator('#swDayBlock').check();await p.locator('#swNext').click();await p.locator('#swNext').click();await p.locator('#swFinish').click();assert(await p.locator('#swOverview').isVisible());await p.locator('#swOverview').click();assert.match(await p.locator('.sw-root').innerText(),/Sperrtag/);assert.match(await p.locator('.sw-hours').innerText(),/6 h \(Wunschzeit\)/);assert.match(await p.locator('.sw-root').innerText(),/Durchschnitt/);
+for(const width of [320,390,768]){await p.setViewportSize({width,height:844});assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));}
+await p.locator('#swLeave').click();assert.equal(await p.locator('#swLeave').count(),0);assert.deepEqual(errors,[]);console.log('Build228 OK: optional help, continued day selection, saved multi-day overview, hours, mobile widths and exit.');
+}finally{await b.close();}

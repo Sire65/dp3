@@ -145,12 +145,13 @@ function render(){
  html+='<div class="sw-grid"><button class="ux-btn secondary" id="swAddTime">'+(step==='wish'&&!times.length?'Eigene Wunschzeit eingeben':'Weitere Zeit für den Tag')+'</button>'+teamButton()+'</div>';
  }else if(step==='check'){
  const c=coverage(),full=c.some(p=>p.status==='full');
- html+='<div class="sw-grid">'+c.map(p=>{const s=slotTeam(p);return '<details class="sw-covered"><summary><b>'+tm(p.start)+'–'+tm(p.end)+' (Wunschzeit)</b><span>Einsatzbereich '+zlabel(p.wishZone)+' · '+s.short+'</span><span>'+(p.status==='full'?'Bereits besetzt: '+p.count+' / '+p.needed:p.status==='gap'?'Noch '+(p.needed-p.count)+' gesucht':'Bedarf unbekannt')+'</span></summary>'+s.html+'</details>';}).join('')+'</div>';
+ html+='<p>Das ist deine (Wunschzeit). Möchtest du dir ansehen, wo noch Hilfe benötigt wird? Dann kannst du deine Zeit noch ändern. Klicke auf den Pfeil einer Kachel, um die Personenbesetzung zu sehen.</p><div class="sw-grid">'+c.map(p=>{const s=slotTeam(p);return '<details class="sw-covered"><summary><b>'+tm(p.start)+'–'+tm(p.end)+' (Wunschzeit)</b><span>Einsatzbereich '+zlabel(p.wishZone)+' · '+s.short+'</span><span>'+(p.status==='full'?'Bereits besetzt: '+p.count+' / '+p.needed:p.status==='gap'?'Noch '+(p.needed-p.count)+' gesucht':'Bedarf unbekannt')+'</span></summary>'+s.html+'<button class="ux-btn secondary" data-help="'+p.index+'">Hilfebedarf ansehen</button></details>';}).join('')+'</div>';
  if(!c.length)html+='<p>Deine (Kann-Zeit) wird ohne zusätzlichen Wunsch gespeichert.</p>';
  html+='<p>Wünsche sind noch keine feste Einteilung. Öffne eine Kachel, um Namen und Zeiten zu sehen.</p>';
+ if(!full&&times.length)html+='<div class="sw-grid"><button class="ux-btn secondary" id="swAlternatives">Hilfebedarf ansehen</button><button class="ux-btn secondary" id="swOwn">Wunschzeit ändern</button></div>';
  if(full)html+='<p>Möchtest du deine (Wunschzeit) trotzdem eintragen?</p><div class="sw-grid"><button class="ux-btn primary" id="swKeep">Ja, Wunsch behalten · Fertig</button><button class="ux-btn secondary" id="swAlternatives">Alternativen anzeigen</button></div>';
  }else if(step==='alternatives'){
- html+=(alternatives(alternativeIndex).length?'':'<p>Keine passende freie Alternative gefunden. Du kannst deine eigene Zeit ändern oder zurückgehen und den Wunsch behalten.</p>')+'<p>Öffne eine Zeitkachel und prüfe, ob die Zeit für dich passt.</p><div class="sw-grid">'+alternatives(alternativeIndex).map((g,i)=>{const s=slotTeam(g);return '<details class="sw-covered"><summary><b>'+tm(g.start)+'–'+tm(g.end)+' (Wunschzeit)</b><span>Einsatzbereich '+zlabel(g.wishZone)+' · '+s.short+'</span><span>'+g.missing+' gesucht</span></summary>'+s.html+'<p>Möchtest du lieber diese Zeit übernehmen?</p><p>Falls sie außerhalb deiner (Kann-Zeit) liegt, wird diese dafür ergänzt.</p><button class="ux-btn primary" data-alt="'+i+'">Ja, Zeit übernehmen</button></details>';}).join('')+'</div><button class="ux-btn secondary" id="swOwn">Eigene Zeit ändern</button>';
+ html+=(alternatives(alternativeIndex).length?'':'<p>Keine passende freie Alternative gefunden. Du kannst deine eigene Zeit ändern oder zurückgehen und den Wunsch behalten.</p>')+(times.length>1?'<label>Welche (Wunschzeit) möchtest du ändern?<select id="swAlternativeTime">'+times.map((t,i)=>'<option value="'+i+'" '+(i===alternativeIndex?'selected':'')+'>'+tm(t.start)+'–'+tm(t.end)+' · '+zlabel(t.wishZone)+'</option>').join('')+'</select></label>':'')+'<p>Öffne eine Zeitkachel und prüfe, ob die Zeit für dich passt.</p><div class="sw-grid">'+alternatives(alternativeIndex).map((g,i)=>{const s=slotTeam(g);return '<details class="sw-covered"><summary><b>'+tm(g.start)+'–'+tm(g.end)+' (Wunschzeit)</b><span>Einsatzbereich '+zlabel(g.wishZone)+' · '+s.short+'</span><span>'+g.missing+' gesucht</span></summary>'+s.html+'<p>Möchtest du lieber diese Zeit übernehmen?</p><p>Falls sie außerhalb deiner (Kann-Zeit) liegt, wird diese dafür ergänzt.</p><button class="ux-btn primary" data-alt="'+i+'">Ja, Zeit übernehmen</button></details>';}).join('')+'</div><button class="ux-btn secondary" id="swOwn">Eigene Zeit ändern</button>';
  }else html+=(blockMode==='day'&&stored.some(w=>w.wishType!=='unavailable')?'<p class="ux-warningbox">Die Tagessperre ersetzt deine bisherigen Zeitangaben für diesen Tag.</p>':'')+entrySummary(rows())+stats()+'<p>Erst mit „Angaben speichern“ werden die Änderungen übernommen.</p>';
  html+=(['wish','check','review'].includes(step)?plannedNotice():'');
  html+='<div id="swError" role="alert"></div>'+(step==='can'||step==='wish'?'':teamButton())+team()+'<div class="wa-actions"><button class="ux-btn secondary" id="swBack">Zurück</button>'+(!(step==='check'&&coverage().some(p=>p.status==='full'))&&step!=='alternatives'?'<button class="ux-btn primary" id="swNext">'+(step==='review'?'Angaben speichern':step==='check'?'Fertig':'Weiter')+'</button>':'')+'</div>';
@@ -173,8 +174,10 @@ function bind(){
  if($('swSame'))$('swSame').onclick=()=>{times=can.filter(t=>!t.reserve).map(t=>({start:t.start,end:t.end,wishZone:t.wishZone}));changed();acceptOrCheck();};
  if($('swNone'))$('swNone').onclick=()=>{times=[];changed();acceptOrCheck();};
  if($('swKeep'))$('swKeep').onclick=()=>{accepted=fingerprint();step='review';render();};
- if($('swAlternatives'))$('swAlternatives').onclick=()=>{alternativeIndex=coverage().find(p=>p.status==='full').index;step='alternatives';render();};
+ if($('swAlternatives'))$('swAlternatives').onclick=()=>{alternativeIndex=coverage().find(p=>p.status==='full')?.index||0;step='alternatives';render();};
  if($('swOwn'))$('swOwn').onclick=()=>{step='wish';render();};
+ document.querySelectorAll('[data-help]').forEach(b=>b.onclick=()=>{alternativeIndex=Number(b.dataset.help);step='alternatives';render();});
+ if($('swAlternativeTime'))$('swAlternativeTime').onchange=e=>{alternativeIndex=Number(e.target.value);render();};
  const offers=step==='alternatives'?alternatives(alternativeIndex):[];
  document.querySelectorAll('[data-alt]').forEach(b=>b.onclick=()=>{
  if(!editable())return error('Die Anmeldung oder Wunschphase hat sich geändert.');
@@ -193,12 +196,22 @@ function bind(){
  else save();
  };
 }
+function dayFinished(){
+ step='done';
+ shell('<h1>Dein Tag ist gespeichert</h1><p>'+dateLabel(date)+'</p><p>Bist du fertig oder möchtest du weitere Zeiten erfassen?</p><div class="sw-grid"><button class="ux-btn secondary" id="swMore">Weitere Zeiten erfassen</button><button class="ux-btn primary" id="swFinish">Fertig</button></div>','Dein Tag ist gespeichert. Wie möchtest du weitermachen?');
+ $('swMore').onclick=()=>start();$('swFinish').onclick=()=>finishOverview(false);
+}
+function finishOverview(show){
+ step='finish';
+ shell('<h1>'+(show?'Deine Gesamtübersicht':'Möchtest du deine Gesamtübersicht ansehen?')+'</h1>'+(show?'<p>Gespeicherte Angaben für alle Tage im ausgewählten Planungszeitraum.</p>'+K.days.map(d=>'<section><h2>'+dateLabel(d.date)+'</h2>'+entrySummary(M().rows(owner,d.date))+'</section>').join('')+stats(false):'<p>Alle Tage mit deinen Zeiten, Tagesstunden, Gesamtstunden und dem bisherigen Durchschnitt.</p>')+'<div class="sw-grid">'+(show?'<button class="ux-btn secondary" id="swMore">Weitere Zeiten erfassen</button>':'<button class="ux-btn secondary" id="swOverview">Gesamtübersicht anzeigen</button>')+'<button class="ux-btn primary" id="swLeave">'+(show?'Fertig · Assistent verlassen':'Ohne Übersicht beenden')+'</button></div>','Deine Angaben sind gespeichert. Vor dem Beenden kannst du alle Tage zusammen ansehen.');
+ if($('swOverview'))$('swOverview').onclick=()=>finishOverview(true);if($('swMore'))$('swMore').onclick=()=>start();$('swLeave').onclick=()=>{dirty=false;K.roleUx.openTimes();};
+}
 async function save(){
  if(!editable())return error('Die Anmeldung oder Wunschphase hat sich geändert.');
  const errors=timeErrors();if(errors.length)return error(errors.join(' '));
  if(blockMode!=='day'&&coverage().some(p=>p.status==='full')&&accepted!==fingerprint()){step='check';render();return error('Die Besetzung hat sich geändert. Bitte erneut entscheiden.');}
  busy=true;$('swNext').disabled=true;
- try{await M().save(owner,[date],rows(),baseline,{reviewedDemand:true});busy=false;start('Deine Angaben sind gespeichert.');}catch(e){busy=false;error(e.message);$('swNext').disabled=false;}
+ try{await M().save(owner,[date],rows(),baseline,{reviewedDemand:true});busy=false;dirty=false;dayFinished();}catch(e){busy=false;error(e.message);$('swNext').disabled=false;}
 }
 document.addEventListener('click',e=>{if(!document.querySelector('.sw-root')||!e.target.closest?.('[data-nav],#uxUserMenu'))return;if(busy||(dirty&&!confirm('Ungespeicherte Angaben verwerfen?'))){e.preventDefault();e.stopImmediatePropagation();}else dirty=false;},true);
 K.simpleWishAssistant={start,open};K.wishAssistant={...detail,start,open};
