@@ -1,6 +1,6 @@
 (function(){
 'use strict';const K=window.KCDP;
-K.days=[{date:'2026-12-04',start:11,end:23,type:'market',label:'Freitag'},{date:'2026-12-05',start:11,end:23,type:'market',label:'Samstag'},{date:'2026-12-06',start:11,end:23,type:'market',label:'Sonntag'}];
+K.days=JSON.parse(JSON.stringify(K.days));
 K.people=[{personId:'TW-DEMO-1',name:'Hans Beispiel',active:true,personType:'member',skills:'Vorne Hinten',maxHours:12},{personId:'TW-DEMO-2',name:'Anna Beispiel',active:true,personType:'member',skills:'Vorne Hinten',maxHours:12}];
 K.currentUser={personId:'TW-DEMO-1',displayName:'Hans Beispiel',role:'employee'};
 K.state={...K.state,wishPhase:'open',date:K.days[0].date,dayIndex:0,view:'day',layer:'wish'};K.day=()=>K.days[0];K.person=id=>K.people.find(p=>p.personId===id);

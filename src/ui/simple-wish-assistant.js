@@ -3,7 +3,7 @@
 const K=window.KCDP,detail=K.wishAssistant,M=()=>K.mobileWishMatrix,$=id=>document.getElementById(id),clone=x=>JSON.parse(JSON.stringify(x));
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const tm=h=>Number.isFinite(h)?String(Math.floor(h)).padStart(2,'0')+':'+String(Math.round(h%1*60)).padStart(2,'0'):'';
-const zlabel=z=>({V:'Vorne',H:'Hinten',B:'Beides',Z:'Vorbereitung zuhause / außerhalb des Stands',special:'Vorbereitung außerhalb des Stands',front:'Vorne',back:'Hinten',total:'Gesamt'}[z]||z);
+const zlabel=z=>({V:'Vorne',H:'Hinten',B:date&&K.days.find(d=>d.date===date)?.type!=='market'?'Gesamt':'Beides',Z:'Vorbereitung zuhause / außerhalb des Stands',special:'Vorbereitung außerhalb des Stands',front:'Vorne',back:'Hinten',total:'Gesamt'}[z]||z);
 const valid=r=>Number.isFinite(r.start)&&Number.isFinite(r.end)&&r.start>=0&&r.end<=24&&r.end>r.start;
 const active=r=>!['deleted','cancelled','failed','absent'].includes(r.status);
 const overlap=(a,b)=>a.start<b.end&&a.end>b.start;
@@ -17,10 +17,14 @@ function shell(html,tip){
 }
 function start(message=''){
  history=[];lastStep=null;owner=self();date=null;step='days';dirty=false;busy=false;
- shell('<h1>Wähle deinen Tag</h1>'+(message?'<p role="status" class="ux-goodbox">'+esc(message)+'</p>':'')+
- '<div class="wa-daygrid">'+K.days.map(d=>'<button class="wa-day" data-day="'+d.date+'"><b>'+dateLabel(d.date)+'</b>'+entrySummary(M().rows(owner,d.date))+'</button>').join('')+'</div><button class="ux-btn secondary" id="swExit">Zurück</button>',
- 'Wähle einen Tag. Wir prüfen zuerst deine Sperren, dann deine Verfügbarkeit (Kann-Zeit) und deine bevorzugte Zeit (Wunschzeit).');
- document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>open(b.dataset.day));$('swExit').onclick=()=>K.roleUx.openTimes();
+ shell('<h1>Wähle deinen Tag</h1><div class="sw-calendar">'+K.days.map(d=>'<button class="ux-btn secondary" data-day="'+d.date+'" aria-pressed="false"><b>'+dateLabel(d.date)+'</b><span>'+(d.type==='prep'?'Aufbau':d.type==='after'?'Nachbereitung':'Standdienst')+'</span><small>'+(M().rows(owner,d.date).length?'✓ Angaben vorhanden':'Noch offen')+'</small></button>').join('')+'</div><section id="swTimeline" aria-live="polite"><p>Wähle einen Tag für deine Zeitübersicht.</p></section><button class="ux-btn secondary" id="swExit">Zurück</button>','Wähle einen Tag. Darunter siehst du deine gespeicherten Zeiten.');
+ document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{const d=K.days.find(d=>d.date===b.dataset.day);document.querySelectorAll('[data-day]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('swTimeline').innerHTML=timeline(d)+'<button class="ux-btn primary" id="swEditDay">Angaben bearbeiten</button>';$('swEditDay').onclick=()=>open(d.date);});$('swExit').onclick=()=>K.roleUx.openTimes();
+}
+function timeline(d){
+ const rows=M().rows(owner,d.date).filter(active),ready=detail.standbyFor(owner,d.date);
+ const groups=[['Kann-Zeit','can',rows.filter(r=>['available','if_needed'].includes(r.wishType))],['Wunschzeit','wish',rows.filter(r=>r.wishType==='preferred')],['Geplant','planned',(K.shifts||[]).filter(r=>active(r)&&r.personId===owner&&r.date===d.date&&r.layer==='planned')],['Bereitschaft','ready',ready.answer==='yes'?ready.slots:[]],['Sperren','blocked',rows.filter(r=>r.wishType==='unavailable')]];
+ const all=groups.flatMap(g=>g[2]).filter(valid),lo=Math.min(d.start,...all.map(r=>r.start)),hi=Math.max(d.end,...all.map(r=>r.end)),span=hi-lo||1;
+ return '<h2>'+dateLabel(d.date)+'</h2><p>Gespeicherte Zeiten · Tagesrahmen '+tm(d.start)+'–'+tm(d.end)+'</p><div class="sw-axis"><span>'+tm(lo)+'</span><span>'+tm(lo+span/2)+'</span><span>'+tm(hi)+'</span></div>'+groups.map(([name,cls,list])=>'<div class="sw-timeline-row"><b>'+name+'</b>'+(!list.length?'<span>Keine Angabe</span>':list.filter(valid).map(r=>'<div class="sw-timeline-track"><span class="sw-timeline-bar '+cls+'" style="left:'+((r.start-lo)/span*100)+'%;width:'+((r.end-r.start)/span*100)+'%"></span></div><small>'+ (r.scope==='day'?'Ganzer Tag gesperrt':tm(r.start)+'–'+tm(r.end)+' Uhr · '+(r.end-r.start).toLocaleString('de-DE')+' h')+(r.wishZone==='Z'||r.zone==='special'?' · Vorbereitung außerhalb':d.type==='market'&&r.wishZone?' · '+esc(zlabel(r.wishZone)):'')+'</small>').join(''))+'</div>').join('')+'<p><small>Kann- und Wunschzeit werden nicht addiert. Bereitschaft ist noch keine Einteilung.</small></p>';
 }
 function open(value){
  history=[];lastStep=null;owner=self();date=value;stored=clone(M().rows(owner,date));baseline=JSON.stringify(stored);
@@ -104,7 +108,7 @@ function slotTeam(g){
   for(const r of x.records)if(!people.get(key).records.some(a=>a.start===r.start&&a.end===r.end))people.get(key).records.push(r);
  }
  const count=z=>{const n=parts.map(p=>p.areas.find(a=>a.zone===z)?.count||0);return !n.length?'0':Math.min(...n)===Math.max(...n)?String(n[0]):Math.min(...n)+'–'+Math.max(...n);};
- return {short:count('front')+' V / '+count('back')+' H',html:[...people.values()].map(x=>'<p><b>'+esc(K.person(x.personId)?.pseudoName||K.person(x.personId)?.name||x.personId)+'</b> · '+zlabel(x.zone)+'<br>'+x.records.map(r=>tm(r.start)+'–'+tm(r.end)).join(', ')+' Uhr · '+(x.kind==='planned'?'geplant':'Wunsch')+'</p>').join('')||'<p>Noch niemand eingetragen.</p>'};
+ return {short:day().type==='market'?count('front')+' V / '+count('back')+' H':count('total')+' insgesamt',html:[...people.values()].map(x=>'<p><b>'+esc(K.person(x.personId)?.pseudoName||K.person(x.personId)?.name||x.personId)+'</b> · '+zlabel(x.zone)+'<br>'+x.records.map(r=>tm(r.start)+'–'+tm(r.end)).join(', ')+' Uhr · '+(x.kind==='planned'?'geplant':'Wunsch')+'</p>').join('')||'<p>Noch niemand eingetragen.</p>'};
 }
 function timeFields(r,i,kind,disabled=false){
  const options=field=>{
@@ -122,7 +126,7 @@ function canErrors(){
 }
 function inputRows(list,kind){
  const name=kind==='can'?'(Kann-Zeit)':'(Wunschzeit)';
- return '<div class="sw-grid">'+list.map((t,i)=>'<article class="wa-slot"><b>Zeitraum '+(i+1)+' '+name+'</b>'+timeFields(t,i,kind)+'<label>Einsatzbereich<select data-zone="'+i+'" data-kind="'+kind+'">'+['B','V','H','Z'].map(z=>'<option value="'+z+'" '+(t.wishZone===z?'selected':'')+'>'+zlabel(z)+'</option>').join('')+'</select></label>'+(t.reserve?'<p>Nur wenn nötig (Kann-Zeit)</p>':'')+'<p data-time-error="'+kind+'-'+i+'" role="status"></p>'+(list.length>1?'<button class="wa-remove" data-remove="'+kind+'" data-i="'+i+'">Zeitraum entfernen</button>':'')+'</article>').join('')+'</div>';
+ return '<div class="sw-grid">'+list.map((t,i)=>'<article class="wa-slot"><b>Zeitraum '+(i+1)+' '+name+'</b>'+timeFields(t,i,kind)+'<label>Einsatzbereich<select data-zone="'+i+'" data-kind="'+kind+'">'+(day().type==='market'?['B','V','H','Z']:['B','Z']).map(z=>'<option value="'+z+'" '+(t.wishZone===z?'selected':'')+'>'+zlabel(z)+'</option>').join('')+'</select></label>'+(t.reserve?'<p>Nur wenn nötig (Kann-Zeit)</p>':'')+'<p data-time-error="'+kind+'-'+i+'" role="status"></p>'+(list.length>1?'<button class="wa-remove" data-remove="'+kind+'" data-i="'+i+'">Zeitraum entfernen</button>':'')+'</article>').join('')+'</div>';
 }
 
 function team(){
