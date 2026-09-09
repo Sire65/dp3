@@ -44,7 +44,7 @@
   async function toWireOperation(op){
     const key=await ensureRemoteKey();
     const envelope=await KCSecureSync.encryptEnvelope(op,{secret:key.secret,projectId:key.namespace,aad:'KC_DP_REMOTE_SYNC_V2'});
-    return {contract:'KC_DP_SYNC_V1',operationId:op.operationId,entity:op.entity,entityId:op.payload?.id||op.payload?.date||op.entityId||op.operationId,operation:op.operation,baseVersion:op.baseVersion??null,localVersion:op.localVersion??null,syncNamespace:key.namespace,envelope};
+    return {contract:'KC_DP_SYNC_V1',operationId:op.operationId,entity:op.entity,entityId:op.payload?.id||(op.entity==='person_rules'?op.payload?.personId:null)||op.payload?.date||op.entityId||op.operationId,operation:op.operation,baseVersion:op.baseVersion??null,localVersion:op.localVersion??null,syncNamespace:key.namespace,envelope};
   }
   function transportAuthenticated(){
     if(!K.memberAccess?.configured?.())return true;
@@ -84,6 +84,15 @@
 
   function collectionFor(entity){if(entity==='shift')return K.shifts;if(entity==='wish')return K.wishes;if(entity==='standby')return K.standby;if(entity==='member_shift_offer')return K.memberShiftOffers;return null;}
   function applyRemote(op){
+    if(op.entity==='person_rules'){
+      const id=op.payload?.personId||op.entityId;if(!id)return;
+      K.personRules=K.personRules||{};
+      if(K.syncOutbox.some(x=>x.status!=='sent'&&x.entity==='person_rules'&&x.payload?.personId===id)){
+        if(!K.syncConflicts.some(x=>x.status==='open'&&x.operationId===op.operationId&&x.entity==='person_rules'))K.syncConflicts.push({id:'CON-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),operationId:op.operationId,entity:'person_rules',local:K.personRules[id]||null,remote:op.payload,detectedAt:new Date().toISOString(),status:'open',source:'pull'});
+        return;
+      }
+      K.personRules[id]=JSON.parse(JSON.stringify(op.payload));return;
+    }
     if(op.entity==='day_config'){const date=op.payload?.date||op.entityId;if(date)K.daySettings[date]=JSON.parse(JSON.stringify(op.payload));return;}
     if(op.entity==='demand_matrix'){if(op.payload?.date&&Array.isArray(op.payload.rows))K.demandMatrix[op.payload.date]=JSON.parse(JSON.stringify(op.payload.rows));return;}
     if(op.entity==='plan_day'&&Array.isArray(op.payload?.shifts)){K.shifts=K.shifts.filter(s=>!(s.date===op.payload.date&&s.layer==='planned'));K.shifts.push(...op.payload.shifts.map(x=>({...x})));return;}
@@ -104,6 +113,7 @@
     const key=await ensureRemoteKey(),remote=await provider({action:'health',contract:'KC_DP_SYNC_V1',syncNamespace:key.namespace});
     if(Number(remote?.rows||0)>0)throw new Error('Die sichere Cloud-Generation enthält bereits Daten und wird nicht überschrieben.');
     let staged=0;
+    for(const [personId,rules] of Object.entries(K.personRules||{})){enqueue({entity:'person_rules',operation:'baseline',payload:{...JSON.parse(JSON.stringify(rules)),personId},baseVersion:null});staged++;}
     for(const wish of K.wishes||[]){enqueue({entity:'wish',operation:'baseline',payload:JSON.parse(JSON.stringify(wish)),baseVersion:null});staged++;}
     for(const shift of K.shifts||[]){enqueue({entity:'shift',operation:'baseline',payload:JSON.parse(JSON.stringify(shift)),baseVersion:null});staged++;}
     for(const standby of K.standby||[]){enqueue({entity:'standby',operation:'baseline',payload:JSON.parse(JSON.stringify(standby)),baseVersion:null});staged++;}

@@ -122,6 +122,7 @@
 
   K.publishPlan=function({publishedBy='Planer',reason=''}={}){
     K.auth?.require?.('roster.plan.publish','Sie dürfen keinen Sollplan veröffentlichen.');
+    if(K.state)K.state.wishPhase='closed';
     const check=K.planPublicationCheck();
     if(!check.canPublish)throw new Error(`Veröffentlichung blockiert: ${check.pauseErrors} Pausenregel-Fehler.`);
     if(check.critical>0&&!String(reason||'').trim())throw new Error(`Veröffentlichung enthält ${check.critical} kritische Besetzungsabweichungen. Bitte begründen Sie die bewusste Freigabe.`);

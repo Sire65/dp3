@@ -59,7 +59,7 @@
     if(!qualified(person,zone))blocked.push({code:'qualification',detail:`Qualifikation für ${zone==='front'?'Vorne':zone==='back'?'Hinten':zone} fehlt`});
     if(overlaps(proposal,person.personId,start,end))blocked.push({code:'proposal_overlap',detail:'Im Vorschlag bereits zeitgleich eingesetzt'});
     const r=K.staffing?.rulesFor?.(person.personId)||{};
-    if((r.forbiddenDates||[]).includes(day.date))blocked.push({code:'forbidden_date',detail:'Persönliche Einsatzsperre für diesen Tag'});
+    if(((r.forbiddenDates||[]).includes(day.date)||K.staffing?.isBlockedDate?.(r.personId,day.date)))blocked.push({code:'forbidden_date',detail:'Persönliche Einsatzsperre für diesen Tag'});
     if(r.earliestStart!=null&&start+EPS<Number(r.earliestStart))blocked.push({code:'earliest_start',detail:'Beginn liegt vor der persönlichen Freigabe'});
     if(r.latestEnd!=null&&end>Number(r.latestEnd)+EPS)blocked.push({code:'latest_end',detail:'Ende liegt nach der persönlichen Freigabe'});
     if(Array.isArray(r.allowedZones)&&r.allowedZones.length&&!r.allowedZones.includes(zone))blocked.push({code:'zone_restricted',detail:'Dienstklasse laut Einsatzregel nicht erlaubt'});

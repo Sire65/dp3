@@ -17,6 +17,7 @@
       earliestStart:null,
       latestEnd:null,
       forbiddenDates:[],
+      forbiddenWeekdays:[],
       allowedZones:['front','back','special','neutral'],
       allowedAreas:[],
       enforceAllowedAreas:false,
@@ -34,6 +35,12 @@
     const p=K.person(personId);if(!p)return null;
     return {...defaults(p),...(K.personRules[personId]||{}),personId};
   }
+  function isBlockedDate(personId,date){
+    const r=rulesFor(personId);if(!r)return false;
+    if((r.forbiddenDates||[]).includes(date))return true;
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(String(date)))return false;
+    return (r.forbiddenWeekdays||[]).includes(new Date(date+'T12:00:00Z').getUTCDay());
+  }
   function canViewRules(personId){return K.auth?.has?.('roster.rules.view')||K.auth?.has?.('*')||(K.auth?.has?.('roster.rules.view_own')&&K.auth?.own?.(personId));}
   function setRules(personId,patch,{reason='Einsatzregeln geändert'}={}){
     K.auth?.require?.('roster.rules.edit','Sie dürfen persönliche Einsatzregeln nicht bearbeiten.');
@@ -43,6 +50,8 @@
     if(next.maxEventHours!=null&&Number(next.maxEventHours)<=0)throw new Error('Maximale Veranstaltungsstunden müssen größer als 0 sein.');
     if(next.earliestStart!=null&&next.latestEnd!=null&&Number(next.latestEnd)<=Number(next.earliestStart))throw new Error('Spätestes Ende muss nach dem frühesten Beginn liegen.');
     if(next.preferredZone!=null&&!['front','back','special','neutral'].includes(next.preferredZone))throw new Error('Unbekannte Standard-Dienstklasse.');
+    if(!Array.isArray(next.forbiddenWeekdays)||next.forbiddenWeekdays.some(d=>!Number.isInteger(d)||d<0||d>6))throw new Error('Ungültiger Wochentag für eine wiederkehrende Sperre.');
+    next.forbiddenWeekdays=[...new Set(next.forbiddenWeekdays)].sort();
     K.personRules[personId]=next;
     K.recordAudit?.('person.rules.update',{entity:'person_rules',entityId:personId,before,after:next,reason});
     K.sync?.enqueue?.({entity:'person_rules',operation:'update',payload:next,baseVersion:null});
@@ -78,7 +87,7 @@
     if(r.maxEventHours!=null&&eventTotal>Number(r.maxEventHours)+1e-9&&(!sameOwner||eventTotal>oldEventTotal+1e-9))issues.push({level:'error',code:'max_event',text:`Persönliche Höchstzeit für die Veranstaltung: maximal ${r.maxEventHours} Std. Nach dieser Änderung wären ${eventTotal.toFixed(1)} Std. geplant. Bitte den Balken verkürzen oder andere Dienste dieser Person anpassen.`});
     if(r.earliestStart!=null&&candidate.start<Number(r.earliestStart))issues.push({level:'error',code:'earliest_start',text:`Darf laut Einsatzregel nicht vor ${fmtTime(Number(r.earliestStart))} Uhr beginnen.`});
     if(r.latestEnd!=null&&candidate.end>Number(r.latestEnd))issues.push({level:'error',code:'latest_end',text:`Darf laut Einsatzregel nicht nach ${fmtTime(Number(r.latestEnd))} Uhr eingesetzt werden.`});
-    if((r.forbiddenDates||[]).includes(candidate.date))issues.push({level:'error',code:'forbidden_date',text:'Für diesen Tag ist eine persönliche Einsatzsperre hinterlegt.'});
+    if(isBlockedDate(candidate.personId,candidate.date))issues.push({level:'error',code:'forbidden_date',text:'Für diesen Tag ist eine persönliche Einsatzsperre hinterlegt.'});
     if(Array.isArray(r.allowedZones)&&r.allowedZones.length&&!r.allowedZones.includes(candidate.zone))issues.push({level:'error',code:'zone_restricted',text:'Diese Dienstklasse ist laut persönlicher Einsatzregel nicht erlaubt.'});
     if(Array.isArray(r.allowedAreas)&&r.allowedAreas.length&&!r.allowedAreas.includes(candidate.area))issues.push({level:r.enforceAllowedAreas?'error':'warn',code:'area_restricted',text:`Bereich „${candidate.area}“ liegt außerhalb der persönlichen Bereichsregel.`});
     issues.push(...restIssues(candidate.personId,candidate,r));
@@ -93,6 +102,7 @@
     if(r.earliestStart!=null)parts.push(`ab ${fmtTime(Number(r.earliestStart))}`);
     if(r.latestEnd!=null)parts.push(`bis ${fmtTime(Number(r.latestEnd))}`);
     if(r.minRestHours!=null)parts.push(`${r.minRestHours} h Ruhezeit`);
+    if((r.forbiddenWeekdays||[]).length)parts.push('Gesperrt: '+r.forbiddenWeekdays.map(d=>['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'][d]).join(', '));
     if((r.forbiddenDates||[]).length)parts.push(`${r.forbiddenDates.length} Sperrtag(e)`);
     if((r.preferredAreas||[]).length)parts.push(`bevorzugt ${r.preferredAreas.join(', ')}`);
     if(r.preferredZone)parts.push(`Standard ${r.preferredZone==='special'?'Z':r.preferredZone==='front'?'V':r.preferredZone==='back'?'H':'Vor-/Nachbereitung'}${r.preferredArea?' · '+r.preferredArea:''}`);
@@ -112,7 +122,7 @@
       if(!K.helperAvailable(p,date,start,end)){blocked.push({personId:p.personId,name:p.name,reason:'Aushilfe außerhalb Zeitmatrix'});continue;}
       const wp=wishPoints(p.personId,date,start,end);if(wp.blocked){blocked.push({personId:p.personId,name:p.name,reason:'Wunsch: nicht verfügbar'});continue;}
       let errors=[];if(mode!=='standby')errors=ruleIssues(candidate,{includeSoft:false}).filter(i=>i.level==='error');
-      else{const r=rulesFor(p.personId);if((r.forbiddenDates||[]).includes(date))errors.push({text:'persönliche Einsatzsperre'});if(r.earliestStart!=null&&start<Number(r.earliestStart))errors.push({text:'vor frühestem Beginn'});if(r.latestEnd!=null&&end>Number(r.latestEnd))errors.push({text:'nach spätestem Ende'});}
+      else{const r=rulesFor(p.personId);if(isBlockedDate(p.personId,date))errors.push({text:'persönliche Einsatzsperre'});if(r.earliestStart!=null&&start<Number(r.earliestStart))errors.push({text:'vor frühestem Beginn'});if(r.latestEnd!=null&&end>Number(r.latestEnd))errors.push({text:'nach spätestem Ende'});}
       if(errors.length){blocked.push({personId:p.personId,name:p.name,reason:errors[0].text});continue;}
       let score=100+wp.points;reasons.push(wp.label);
       if(mode!=='standby'){
@@ -171,8 +181,12 @@
     K.auth?.require?.('roster.replacement.respond','Sie dürfen auf Vertretungsanfragen nicht antworten.');const r=K.replacementRequests.find(x=>x.id===id);if(!r)throw new Error('Vertretungsanfrage nicht gefunden.');if(r.personId!==personId||personId!==K.currentUser?.personId)throw new Error('Sie dürfen nur Ihre eigene Vertretungsanfrage beantworten.');if(r.status!=='open')throw new Error('Vertretungsanfrage ist bereits beantwortet.');const before=clone(r),baseVersion=Number(r.version||1);r.status=accept?'accepted':'declined';r.response={accept:!!accept,note:String(note||''),at:new Date().toISOString()};r.version=baseVersion+1;K.recordAudit?.('replacement.respond',{entity:'replacement_request',entityId:r.id,before,after:r});K.sync?.enqueue?.({entity:'replacement_request',operation:'update',payload:clone(r),baseVersion});return clone(r);
   }
 
+  for(const name of ['validateWish','validateStandby']){
+    const base=K[name];if(typeof base!=='function')continue;
+    K[name]=function(candidate){const issues=base(candidate);if(candidate.wishType!=='unavailable'&&isBlockedDate(candidate.personId,candidate.date))issues.push({level:'error',code:'forbidden_date',text:'Für diesen Tag ist eine persönliche Einsatzsperre hinterlegt. Bitte wähle einen anderen Tag.'});return issues;};
+  }
   const baseValidate=K.validateShift;
   K.validateShift=function(candidate){const issues=baseValidate(candidate);for(const i of ruleIssues(candidate))if(!issues.some(x=>x.code===i.code&&x.text===i.text))issues.push(i);return issues;};
 
-  K.staffing={version:'0.11.3',activeStatus,rulesFor,canViewRules,setRules,ruleIssues,ruleSummary,qualificationOk,dailyHours,eventHours,replacementSearch,markShiftAbsent,assignReplacement,activateStandby,createReplacementRequest,respondReplacementRequest,standbyCover};
+  K.staffing={version:'0.11.3',activeStatus,isBlockedDate,rulesFor,canViewRules,setRules,ruleIssues,ruleSummary,qualificationOk,dailyHours,eventHours,replacementSearch,markShiftAbsent,assignReplacement,activateStandby,createReplacementRequest,respondReplacementRequest,standbyCover};
 })();

@@ -97,6 +97,7 @@
       candidate=K.wishContract?.normalize?.(candidate)||candidate;
       const issues=K.validateWish(candidate);if(issues.some(i=>i.level==='error'))throw new Error(issues.find(i=>i.level==='error').text);
       let target=existingId?K.wishes.find(w=>w.id===existingId):null;const before=target?{...target}:null;
+      if(!target){const duplicate=K.wishes.find(w=>w.status!=='deleted'&&w.personId===candidate.personId&&w.date===candidate.date&&Number(w.start)===Number(candidate.start)&&Number(w.end)===Number(candidate.end)&&w.wishType===candidate.wishType&&String(w.wishZone||'B')===String(candidate.wishZone||'B')&&String(w.scope||'time')===String(candidate.scope||'time'));if(duplicate)return {record:duplicate,issues:[...issues,{level:'info',text:'Identische Angabe ist bereits vorhanden.'}],duplicate:true};}
       if(target)Object.assign(target,candidate,{id:target.id});else{target={...candidate,id:candidate.id||`W-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,status:candidate.status||'confirmed'};K.wishes.push(target);}
       const baseVersion=Number(target.version||0);target.version=baseVersion+1;audit(before?'wish.update':'wish.create',{entity:'wish',entityId:target.id,before,after:target,reason});queue('wish',before?'update':'create',target,baseVersion);return {record:target,issues};
     },

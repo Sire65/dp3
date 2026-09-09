@@ -70,6 +70,17 @@
  }
  async function updatePassword(password){await ensureSession();try{const {data}=await api('/auth/v1/user',{method:'PUT',body:JSON.stringify({password:String(password)})});return {ok:true,user:data};}catch(e){if(e?.code==='same_password'||/new password should be different/i.test(e?.message||''))throw new Error('Das neue Passwort muss sich vom bisherigen Passwort unterscheiden.');throw e;}}
  async function currentMembership(){await ensureSession();const c=validateConfig(),uid=state.userId;if(!uid)throw new Error('Supabase Benutzer-ID fehlt.');const {data}=await api(`/rest/v1/kc_dp_memberships?select=org_id,user_id,role,active,person_id,display_name,email,phone&org_id=eq.${encodeURIComponent(c.orgId)}&user_id=eq.${encodeURIComponent(uid)}&active=is.true&limit=1`,{method:'GET'});const row=Array.isArray(data)?data[0]:null;if(!row)throw new Error('Keine aktive KC-DP-Mitgliedschaft gefunden.');return row;}
+ async function readPlanSharing(){
+  await ensureSession();const c=validateConfig();
+  const {data}=await api('/rest/v1/kc_dp_plan_sharing?select=person_id,plan_kind,allow_view,allow_copy&org_id=eq.'+encodeURIComponent(c.orgId),{method:'GET'});
+  return data||[];
+ }
+ async function savePlanSharing(preferences){
+  const m=await currentMembership();if(!m.person_id)throw Error('Dem Zugang ist kein Mitglied zugeordnet.');
+  const rows=['can','wish','standby'].map(plan_kind=>({org_id:m.org_id,person_id:m.person_id,plan_kind,allow_view:!!preferences[plan_kind]?.view||!!preferences[plan_kind]?.copy,allow_copy:!!preferences[plan_kind]?.copy}));
+  const {data}=await api('/rest/v1/kc_dp_plan_sharing?on_conflict=org_id,person_id,plan_kind',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(rows)});
+  if(!Array.isArray(data)||data.length!==3)throw Error('Freigaben wurden nicht vollständig bestätigt.');return data;
+ }
  async function getSyncKey(){
    await ensureSession();
    if(syncKeyCache?.secret&&syncKeyCache?.namespace)return {...syncKeyCache};
@@ -139,6 +150,6 @@
  async function updateSyncTest(id,patch){return rest('kc_dp_sync_test_runs',{method:'PATCH',query:`?id=eq.${encodeURIComponent(id)}`,body:{...patch,updated_at:new Date().toISOString()}});}
  async function listServerConflicts(){const c=validateConfig();return rest('kc_dp_sync_conflicts',{query:`?select=id,entity,entity_id,operation_id,device_id,base_version,remote_version,status,detected_at,resolved_at&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(c.projectId)}&order=detected_at.desc&limit=50`});}
  async function resolveServerConflict(id,status,resolution={}){return rest('kc_dp_sync_conflicts',{method:'PATCH',query:`?id=eq.${encodeURIComponent(id)}`,body:{status,resolution,resolved_at:new Date().toISOString()}});}
- K.supabaseConnection={version:'0.20.0-sync-g2',contract:'KC_DP_SUPABASE_SYNC_V1',state,configure,configureIfPossible,setAccessToken,restoreSession,persistSession:saveSession,sessionSnapshot:()=>session?JSON.parse(JSON.stringify(session)):null,clearSession,hasAccessToken:()=>!!session?.access_token,signInAnonymously,signInWithPassword,sendOtp,verifyOtp,requestPasswordReset,updatePassword,currentMembership,memberProvisioningTargets,listMemberAccess,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,sendClientReport,getSyncKey,signOut,refreshSession,ensureSession,test,testProject,probeDatabase,probeRls,probeRoundtrip,registerDevice,listDevices,createSyncTest,listSyncTests,updateSyncTest,listServerConflicts,resolveServerConflict,transportDiagnosis,provider,validateConfig};
+ K.supabaseConnection={version:'0.20.0-sync-g2',contract:'KC_DP_SUPABASE_SYNC_V1',state,configure,configureIfPossible,setAccessToken,restoreSession,persistSession:saveSession,sessionSnapshot:()=>session?JSON.parse(JSON.stringify(session)):null,clearSession,hasAccessToken:()=>!!session?.access_token,signInAnonymously,signInWithPassword,sendOtp,verifyOtp,requestPasswordReset,updatePassword,readPlanSharing,savePlanSharing,currentMembership,memberProvisioningTargets,listMemberAccess,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,sendClientReport,getSyncKey,signOut,refreshSession,ensureSession,test,testProject,probeDatabase,probeRls,probeRoundtrip,registerDevice,listDevices,createSyncTest,listSyncTests,updateSyncTest,listServerConflicts,resolveServerConflict,transportDiagnosis,provider,validateConfig};
  configureIfPossible();
 })();

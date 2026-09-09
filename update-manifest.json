@@ -116,8 +116,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-08T17:31:32.162Z",
-  "totalRuntimeBytes": 36663683,
+  "generatedAt": "2026-09-09T15:15:44.544Z",
+  "totalRuntimeBytes": 36693009,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -297,8 +297,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 21478,
-      "sha256": "507400713509002de1ee6549d8bad7133acdec0e10ab0f93f4c9687d2b90e946",
+      "bytes": 21499,
+      "sha256": "2d7e1782b7cbdc245c427609ae225bbd24f18246cea589774a1d509a18eb63a5",
       "runtime": true,
       "forceRefresh": true
     },
@@ -506,15 +506,15 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 23372,
-      "sha256": "5c78054ff30fe8b2381eaab6695cc673349c69e8f015df6c0377648729860b50",
+      "bytes": 24378,
+      "sha256": "7256dcf1aff1fce8775ed9a718360a81fa78b31b4b34ec5196ff6a91ffba28b5",
       "runtime": true
     },
     {
       "path": "src/adapters/sync.js",
       "installPath": "src/adapters/sync.js",
-      "bytes": 12778,
-      "sha256": "c31a69be365fea6350ca3b87a1c0be36a18981f64ba0e960c13decc48d24a3d2",
+      "bytes": 13748,
+      "sha256": "64b14c29433d161f19759b84ef6d6c0bfe953f98aa2296ffd3224d747d299d2b",
       "runtime": true
     },
     {
@@ -555,8 +555,8 @@
     {
       "path": "src/core/auth.js",
       "installPath": "src/core/auth.js",
-      "bytes": 11534,
-      "sha256": "0299a0d60535eb2c115873d3b857a314ce85ec60a80471de4279a03ca60ec3fc",
+      "bytes": 12036,
+      "sha256": "27b3ff3d1b0ec9a63048ed01024915fc9ce20926b45ce187fe5c2330f3cbb679",
       "runtime": true
     },
     {
@@ -590,8 +590,8 @@
     {
       "path": "src/core/day-availability.js",
       "installPath": "src/core/day-availability.js",
-      "bytes": 4754,
-      "sha256": "2337e9d9cfd9c1b2d4d6c76e35ff984e98861f552f398f668b511effa1a6f897",
+      "bytes": 4806,
+      "sha256": "b252dd2e3c708985202464980c01a07eccde8ff06995bb686c9e79bc886df41c",
       "runtime": true
     },
     {
@@ -737,8 +737,8 @@
     {
       "path": "src/core/mobile-wish-matrix.js",
       "installPath": "src/core/mobile-wish-matrix.js",
-      "bytes": 5336,
-      "sha256": "01d05079057211ee50b7c20bbfe1f65a24290f818de80d0106aabcdc3096ed50",
+      "bytes": 5499,
+      "sha256": "694e9b20083458d157c8f4279144ef9dbe645da5e0c6a9dfb013f2881fca1471",
       "runtime": true
     },
     {
@@ -779,8 +779,8 @@
     {
       "path": "src/core/personalized-forms.js",
       "installPath": "src/core/personalized-forms.js",
-      "bytes": 12068,
-      "sha256": "f2c0367c358715166d7004ff50948c609fefde083cee47b6d9f40ea429305d33",
+      "bytes": 12074,
+      "sha256": "e51f2fa0ea8e0b8056a7ab42dfb422d3b28e839070360465aa4f836a4f9747a8",
       "runtime": true
     },
     {
@@ -807,8 +807,8 @@
     {
       "path": "src/core/planner-engine.js",
       "installPath": "src/core/planner-engine.js",
-      "bytes": 15644,
-      "sha256": "ebc6399bf2265cfd76e21bfe052424ac1aebb8d534046abdb1e25f191da697b1",
+      "bytes": 15696,
+      "sha256": "210cf1bfa2a6e721511a25dde16cbdd9ef5a499f83a7d0f625b15c9ed1487ff3",
       "runtime": true
     },
     {
@@ -870,8 +870,8 @@
     {
       "path": "src/core/staffing.js",
       "installPath": "src/core/staffing.js",
-      "bytes": 19842,
-      "sha256": "a14ff4b53bbeec2b60f6b3513a811b206feeaf99bdcb544a0f5b7d9bbdf145ec",
+      "bytes": 21066,
+      "sha256": "531503c3c3d98e94d484631bfbed2f250f533c41f67ad65c6e2710d8f2eb9970",
       "runtime": true
     },
     {
@@ -926,8 +926,8 @@
     {
       "path": "src/core/workflow.js",
       "installPath": "src/core/workflow.js",
-      "bytes": 13710,
-      "sha256": "c5960a641784c24ecd43f695c70fd117eb237db0ef1d68af6bbe613a8fa76eb6",
+      "bytes": 13753,
+      "sha256": "c847ab923e52ae1c895061d94630270d7c6a3416aa3d417b92a16a6f5fffb2c9",
       "runtime": true
     },
     {
@@ -996,15 +996,15 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 260834,
-      "sha256": "f925bf4e782412a6c5484a86a53fbffa0629d02d96188310ffadf7f0fbc8cf03",
+      "bytes": 261123,
+      "sha256": "ee05f5b844cb27381b2c077e4489ab120faa88437cebab01a4946fe0554c22da",
       "runtime": true
     },
     {
       "path": "src/ui/assistant-hours.js",
       "installPath": "src/ui/assistant-hours.js",
-      "bytes": 1810,
-      "sha256": "661782568786e91cefb9b6cb69235b41f8526202678759e401c0e99c4a20dc4d",
+      "bytes": 1858,
+      "sha256": "027b586672f43aa8e834d8f36133d5b8e61ed9f89646788bdc4a0bb2c8c36ebe",
       "runtime": true
     },
     {
@@ -1283,8 +1283,8 @@
     {
       "path": "src/ui/member-access-setup.js",
       "installPath": "src/ui/member-access-setup.js",
-      "bytes": 2466,
-      "sha256": "ef9fffc6498da2d8aca2d77962e1adefb31c5b1c56bafda4c657aadae9140db3",
+      "bytes": 4712,
+      "sha256": "137c53501a913093c1877bd38b56e6a1c86742b3d6ac2379fd1a7059fae59682",
       "runtime": true
     },
     {
@@ -1346,8 +1346,8 @@
     {
       "path": "src/ui/mobile-wish-matrix.js",
       "installPath": "src/ui/mobile-wish-matrix.js",
-      "bytes": 15228,
-      "sha256": "ffbf01c7e9c2c7fb1f0cff6ad0fa4a03f0b817255c97d7dd856d8b7546e31daf",
+      "bytes": 15240,
+      "sha256": "9b1882def6f17cfb44a270bfdc6d1ec2b534d6fe17c585be27b8da10c5f0f455",
       "runtime": true
     },
     {
@@ -1507,8 +1507,8 @@
     {
       "path": "src/ui/person-sort.js",
       "installPath": "src/ui/person-sort.js",
-      "bytes": 7255,
-      "sha256": "cc361b8939a6d28b21ce380a0e23d1dd3001e4f266b9132f54e3f480e7d5178b",
+      "bytes": 7261,
+      "sha256": "e1a2d4d5c79b3e9a8ea77e49f067a423bde4ae808a45c947756e30aebd28ef63",
       "runtime": true
     },
     {
@@ -1731,8 +1731,8 @@
     {
       "path": "src/ui/role-ux.js",
       "installPath": "src/ui/role-ux.js",
-      "bytes": 92296,
-      "sha256": "bfba17698e6e9542ba15821799b0317465b4f952d9855bf648005ede10687693",
+      "bytes": 94939,
+      "sha256": "2a17691f76a0224493ed790e9ff1921948f409231f58b1c68d9d5e9aedfbfac5",
       "runtime": true
     },
     {
@@ -1773,8 +1773,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 33491,
-      "sha256": "2b55fb991ea4d3ba9de141bd0ca80f3caa11e5c2cd798a3a4f212a808ff64b06",
+      "bytes": 45423,
+      "sha256": "3763a7bbd6217b615900a40f3c20db746c1661417ee8bedd254e4660115715aa",
       "runtime": true
     },
     {
@@ -1871,8 +1871,8 @@
     {
       "path": "src/ui/twinkey.js",
       "installPath": "src/ui/twinkey.js",
-      "bytes": 12919,
-      "sha256": "8dbd73afc493986ec0004a66885b47d996c4ba44b66a7214eb1b08c23ec11e37",
+      "bytes": 17560,
+      "sha256": "2710586e2634dd8d7cba48cb55c383bfdd0f3d9b01206df1bfa44226d8bce9e1",
       "runtime": true
     },
     {
@@ -1885,8 +1885,8 @@
     {
       "path": "src/ui/update-ui.js",
       "installPath": "src/ui/update-ui.js",
-      "bytes": 19070,
-      "sha256": "4d35b71a539b3c6a3ebb3f53c9eed030a7f7009538f3ff7ff367ef7fc93ca5ec",
+      "bytes": 19410,
+      "sha256": "01e434b4fa25e8c81bdf7178229b86b2546da4714a1a1fd9f3efaf42a2ffdd20",
       "runtime": true
     },
     {
@@ -1927,8 +1927,8 @@
     {
       "path": "src/ui/wish-assistant.js",
       "installPath": "src/ui/wish-assistant.js",
-      "bytes": 29140,
-      "sha256": "d2566307b3d6d2b4d5aab10355761f93d74bb64f7ffa14da3e3481eabcef97af",
+      "bytes": 29253,
+      "sha256": "84892f48c928e929fb79e0a6bec416a879d2099bf72d29aff0497887a0263704",
       "runtime": true
     },
     {
@@ -1948,8 +1948,8 @@
     {
       "path": "src/ui/wish-demand.css",
       "installPath": "src/ui/wish-demand.css",
-      "bytes": 7050,
-      "sha256": "0d4bd7ddf74d38b1d3ed891d755d5c74020d646d91f4d7fd112d0704849dac20",
+      "bytes": 10039,
+      "sha256": "0d02b9b4802332f3227464a06ff65d4ef0a9fc940404d55dfa4a28b9bfeb5234",
       "runtime": true
     },
     {
@@ -2123,8 +2123,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 5888,
-      "sha256": "7fbc1fb3071caa9ad8791d185eabf928855fdfc8ce1122e2a6d013beeb8b9c46",
+      "bytes": 5916,
+      "sha256": "6b30d59eb48d0994adc08b92043ca171689f2e8fef98ad8e9f2b11c8be1fc49d",
       "runtime": true,
       "forceRefresh": true
     }

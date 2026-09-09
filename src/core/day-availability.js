@@ -64,7 +64,7 @@
     if(person&&!helperHasWindow(person,day.date,Number(day.start),Number(day.end)))reasons.push('Aushilfe hat an diesem Tag kein Zeitfenster');
     if(person){
       const rw=ruleWindow(person.personId,day),r=rw.rules;
-      if((r.forbiddenDates||[]).includes(day.date))reasons.push('Persönliche Einsatzsperre für diesen Tag');
+      if(((r.forbiddenDates||[]).includes(day.date)||K.staffing?.isBlockedDate?.(r.personId,day.date)))reasons.push('Persönliche Einsatzsperre für diesen Tag');
       if(!rw.hasWindow)reasons.push('Kein zulässiges Einsatzfenster innerhalb des Tages');
       const daily=activePlannedHours(person.personId,day.date);
       if(r.maxDailyHours!=null&&daily>=Number(r.maxDailyHours)-EPS)reasons.push('Maximale Tagesstunden bereits ausgeschöpft');

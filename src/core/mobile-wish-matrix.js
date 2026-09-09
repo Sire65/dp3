@@ -12,15 +12,17 @@ function assertEditable(personId){
 function validate(list){
  list=list.map(w=>({...w,scope:K.wishContract?.normalize(w).scope||w.scope}));
  const errors=[];
+ const canRows=list.filter(w=>['available','if_needed'].includes(w.wishType));
+ if(canRows.some((w,i)=>canRows.some((other,j)=>j>i&&overlap(w,other))))errors.push('Zwei Kann-Zeiten dürfen sich nicht überschneiden. Bitte die Zeiträume trennen oder dazwischen eine Sperrzeit eintragen.');
  for(const w of list){
   errors.push(...(K.validateWish?.(w)||[]).filter(x=>x.level==='error').map(x=>x.text));
   if(!K.days.some(d=>d.date===w.date)||!Number.isFinite(w.start)||!Number.isFinite(w.end)||w.start<0||w.end>24||w.start>=w.end)errors.push('Bitte vollständige, gültige Von-/Bis-Zeiten eingeben.');
   if(!['V','H','B','Z'].includes(w.wishZone||'B'))errors.push('Bitte einen gültigen Einsatzbereich wählen.');
   if(w.wishType==='preferred'){
-   const covers=list.filter(x=>x.date===w.date&&x.wishType==='available'&&(w.wishZone==='Z'||x.wishZone!=='Z')).sort((a,b)=>a.start-b.start);
+   const covers=list.filter(x=>x.date===w.date&&['available','if_needed'].includes(x.wishType)&&(w.wishZone==='Z'||x.wishZone!=='Z')).sort((a,b)=>a.start-b.start);
    let end=w.start;for(const c of covers)if(c.start<=end&&c.end>end)end=c.end;
    if(end<w.end)errors.push('Die Wunschzeit muss vollständig innerhalb Ihrer Kann-Zeit liegen.');
-   if(list.some(x=>x.wishType==='if_needed'&&overlap(x,w)))errors.push('Wunschzeit und „Nur wenn notwendig“ dürfen sich nicht überschneiden.');
+
    if(list.some(x=>x.wishType==='unavailable'&&overlap(x,w)))errors.push('Die Wunschzeit überschneidet sich mit einer Sperre. Bitte die Zeiten anpassen.');
   }
   if(w.wishType!=='unavailable'&&list.some(x=>x.date===w.date&&x.wishType==='unavailable'&&x.scope==='day'))errors.push('Ein Sperrtag kann keine Kann- oder Wunschzeiten enthalten.');
