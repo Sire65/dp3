@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 234,
-  "cacheName": "kc-dp-release-0.20.0-b234",
+  "build": 235,
+  "cacheName": "kc-dp-release-0.20.0-b235",
   "releaseNotes": [
+    "Build 235: Anmeldebildschirm-Hinweis zur Erstanmeldung, laufender Ladebalken und Ladebildschirm beim Start, Push-Angebot nach dem Login und Abbrechen-Link im Einrichtungsassistenten",
     "Build 234: Original-Kochmütze und sichere Einrichtung vereinbarter Mitgliedszugänge über die bestehende Adminanmeldung",
     "Build 233: Druckausgabe für Tageszusammenfassung und Gesamtübersicht",
     "Build 232: Kompakte Tagesauswahl mit persönlichem Zeitstrahl und vollständigem Beispielzeitraum",
@@ -116,8 +117,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-09T15:15:44.544Z",
-  "totalRuntimeBytes": 36693009,
+  "generatedAt": "2026-09-09T16:30:17.948Z",
+  "totalRuntimeBytes": 36712774,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -297,8 +298,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 21499,
-      "sha256": "2d7e1782b7cbdc245c427609ae225bbd24f18246cea589774a1d509a18eb63a5",
+      "bytes": 35976,
+      "sha256": "8b5ba0fe50a1afb8c0acc838335af6f132a7d9dcf358e3987aa4e30ba8606ff9",
       "runtime": true,
       "forceRefresh": true
     },
@@ -400,8 +401,8 @@
     {
       "path": "setup/index.html",
       "installPath": "setup/index.html",
-      "bytes": 5540,
-      "sha256": "78e1cd758c325cb4efeefe12637d734ae386fdbe0ac663f8ece21e3138c5e822",
+      "bytes": 6376,
+      "sha256": "3c66ba2d0e2fa91b6fa7611d481a52f0bddce0510599d53a5a5fa903a11ade74",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1645,6 +1646,13 @@
       "runtime": true
     },
     {
+      "path": "src/ui/push-permission-offer.js",
+      "installPath": "src/ui/push-permission-offer.js",
+      "bytes": 4218,
+      "sha256": "d7b8940cdeb756a971bd8e71304cbf0f3b534a1cb002e98b2873a3ac6e59b211",
+      "runtime": true
+    },
+    {
       "path": "src/ui/quick-plan-recommendations.css",
       "installPath": "src/ui/quick-plan-recommendations.css",
       "bytes": 1123,
@@ -1731,8 +1739,8 @@
     {
       "path": "src/ui/role-ux.js",
       "installPath": "src/ui/role-ux.js",
-      "bytes": 94939,
-      "sha256": "2a17691f76a0224493ed790e9ff1921948f409231f58b1c68d9d5e9aedfbfac5",
+      "bytes": 95173,
+      "sha256": "b09838337b671706fe0336d43ae7319c5905d6a1ba0bcf67de52e6a951e9eedd",
       "runtime": true
     },
     {
