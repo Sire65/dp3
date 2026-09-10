@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=238;
+const build=239;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -45,6 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 239: persönliche Twinkey-Begrüßung mit dem Vornamen des angemeldeten Mitglieds',
     'Build 238: vollständiges Formularpaket mit personalisierter Excel-Matrix und QR-Identifikationsblatt',
     'Build 237: repariertes Ist-Abgleich-Protokoll und geschützte Stechuhr-Übergabe vom PC-Manager über Supabase',
     'Build 236: geschützte Supabase-Übernahme von PC-Manager-Istzeiten mit Prüfvorschau, Übernahmebestätigung und Überschneidungssperre',
