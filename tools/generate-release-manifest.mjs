@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=235;
+const build=236;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -45,6 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 236: geschützte Supabase-Übernahme von PC-Manager-Istzeiten mit Prüfvorschau, Übernahmebestätigung und Überschneidungssperre',
     'Build 235: Anmeldebildschirm-Hinweis zur Erstanmeldung, laufender Ladebalken und Ladebildschirm beim Start, Push-Angebot nach dem Login und Abbrechen-Link im Einrichtungsassistenten',
     'Build 234: Original-Kochmütze und sichere Einrichtung vereinbarter Mitgliedszugänge über die bestehende Adminanmeldung',
     'Build 233: Druckausgabe für Tageszusammenfassung und Gesamtübersicht',

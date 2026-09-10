@@ -33,7 +33,7 @@
       if(personId&&!K.person(String(personId).trim()))personId=null;
       if(!personId&&name){const p=uniquePersonByName(name);if(p){personId=p.personId;matchSource='unique_name';}}
     }
-    const out={rowNumber,memberNo:memberNo?String(memberNo).trim():'',personId:personId?String(personId).trim():'',name:String(name||''),date:parseDate(date),start:parseTime(start),end:parseTime(end),breakMinutes:parseBreak(breakMinutes),source:'file_import',matchSource};
+    const out={rowNumber,sourceRecordId:raw.sourceRecordId||raw.source_record_id||null,memberNo:memberNo?String(memberNo).trim():'',personId:personId?String(personId).trim():'',name:String(name||''),date:parseDate(date),start:parseTime(start),end:parseTime(end),breakMinutes:parseBreak(breakMinutes),source:'file_import',matchSource};
     out.issues=[];if(!out.personId)out.issues.push('Person nicht eindeutig zugeordnet');if(!out.date)out.issues.push('Datum fehlt/ungültig');if(out.start==null)out.issues.push('Kommen fehlt/ungültig');if(out.end==null)out.issues.push('Gehen fehlt/ungültig');if(out.start!=null&&out.end!=null&&out.end<=out.start)out.issues.push('Gehen liegt nicht nach Kommen');out.valid=out.issues.length===0;return out;
   }
   function parseCsv(text){const lines=String(text||'').split(/\r?\n/).filter(l=>l.trim());if(lines.length<2)throw new Error('CSV enthält keine Datenzeilen.');const delimiter=delimiterFor(lines[0]),headers=splitCsvLine(lines[0],delimiter),map=mapHeaders(headers);if(map.date==null||map.start==null||map.end==null||(map.memberNo==null&&map.personId==null&&map.name==null))throw new Error('Benötigte Spalten nicht erkannt: Person/ID, Datum, Kommen, Gehen.');return lines.slice(1).map((l,i)=>normalizeRow(splitCsvLine(l,delimiter),{map,rowNumber:i+2}));}
