@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 236,
-  "cacheName": "kc-dp-release-0.20.0-b236",
+  "build": 237,
+  "cacheName": "kc-dp-release-0.20.0-b237",
   "releaseNotes": [
+    "Build 237: repariertes Ist-Abgleich-Protokoll und geschützte Stechuhr-Übergabe vom PC-Manager über Supabase",
     "Build 236: geschützte Supabase-Übernahme von PC-Manager-Istzeiten mit Prüfvorschau, Übernahmebestätigung und Überschneidungssperre",
     "Build 235: Anmeldebildschirm-Hinweis zur Erstanmeldung, laufender Ladebalken und Ladebildschirm beim Start, Push-Angebot nach dem Login und Abbrechen-Link im Einrichtungsassistenten",
     "Build 234: Original-Kochmütze und sichere Einrichtung vereinbarter Mitgliedszugänge über die bestehende Adminanmeldung",
@@ -118,8 +119,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-10T09:20:27.643Z",
-  "totalRuntimeBytes": 36718086,
+  "generatedAt": "2026-09-10T10:13:02.893Z",
+  "totalRuntimeBytes": 36718046,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -300,7 +301,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 36048,
-      "sha256": "cb85ae5049902855aaac308c79374c67693074586b93d5df4bed8b04ad6ba4bc",
+      "sha256": "a51cda2ba24507c8156d96c6a347b4f4439220479127eed34f578e4dd2e6035e",
       "runtime": true,
       "forceRefresh": true
     },
@@ -963,8 +964,8 @@
     {
       "path": "src/ui/actual-reconciliation.js",
       "installPath": "src/ui/actual-reconciliation.js",
-      "bytes": 16054,
-      "sha256": "f76a1a82a7af62a7fea3be5531c26fe42690969c4d2e65c55a627277c89cbd7e",
+      "bytes": 16014,
+      "sha256": "0b68537877fc5b0fb58f931ea8c040bbf10b11fcdaf05b2b09ad4bdeb81463ff",
       "runtime": true
     },
     {

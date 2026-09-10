@@ -7,3 +7,4 @@ Pflichtfelder je abgeschlossener Buchung: `org_id`, `project_id`, `event_id`, `s
 DP2 zeigt neue Datensätze Planern und Administratoren zunächst als Prüfvorschau. Unvollständige oder überschneidende Zeiten werden nicht übernommen. Nach erfolgreicher oder als identisches Duplikat erkannter Übernahme schreibt DP2 einen Beleg in `public.kc_dp_timeclock_receipts`. Dadurch wird derselbe Datensatz nicht erneut angeboten.
 
 Manuelle CSV-/JSON- und Dateiimporte bleiben unabhängig davon erhalten. Das Ereignis wird über `KCDP.eventConfig.eventId` zugeordnet; ohne Konfiguration gilt `WM-2026`.
+Der PC-Manager schreibt ausschließlich über die authentifizierte Funktion `kc_dp_timeclock_publish`. Sie akzeptiert nur aktive Manager-Admins, höchstens 5000 Zeilen je Aufruf und verwendet Quellen-IDs zur doppelten sicheren Übertragung.

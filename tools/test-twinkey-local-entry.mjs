@@ -7,6 +7,8 @@ try{
  await page.locator('[data-tw-task=wish]').click();
  assert.match(await page.locator('.sw-root h1').innerText(),/Wähle deinen Tag/);
  await page.locator('[data-day]').first().click();
+ assert(await page.locator('#swTimeline').isVisible());
+ await page.locator('#swEditDay').click();
  assert(await page.locator('.sw-root').isVisible());
  assert(await page.locator('#swDayBlock').isVisible());await page.locator('#swNext').click();assert(await page.locator('[data-list=can]').first().isVisible());assert(await page.locator('#swTeamToggle').isVisible());
  console.log('Real local Twinkey entry OK: direct selection, staffing overview, enabled Next on the served local page.');

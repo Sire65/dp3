@@ -1,0 +1,1 @@
+create index if not exists kc_dp_timeclock_receipts_source_actual_idx on public.kc_dp_timeclock_receipts(source_actual_id);

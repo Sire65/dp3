@@ -11,12 +11,12 @@ const document={getElementById(){return null},querySelector(){return null},query
 const context={window:{KCDP:K,addEventListener(type,fn){events.push({type,fn})},dispatchEvent(){}},document,Intl,Date,Math,Number,String,Set,Map,Array,Object,JSON,CSS:{escape:x=>x},CustomEvent:class{},queueMicrotask,clearTimeout,setTimeout,prompt:()=>null};
 vm.runInNewContext(source,context);
 const result=K.actualReconciliation.buildItems();
-assert.equal(result.items.length,2,'Buchung und fehlende Istbuchung mssen beide erscheinen');
+assert.equal(result.items.length,2,'Buchung und fehlende Istbuchung mï¿½ssen beide erscheinen');
 const booked=result.items.find(x=>x.actual);
-assert.equal(booked.wish.id,'W1','Wunschbezug muss ber sourceWishId erhalten bleiben');
+assert.equal(booked.wish.id,'W1','Wunschbezug muss ï¿½ber sourceWishId erhalten bleiben');
 assert.equal(booked.planned.id,'S1','Sollbezug muss aus dem Istvergleich stammen');
-assert.equal(booked.severity,'critical','75 Minuten Abweichung mssen kritisch sein');
+assert.equal(booked.severity,'critical','75 Minuten Abweichung mï¿½ssen kritisch sein');
 assert(result.items.some(x=>x.kind==='missing'&&x.severity==='critical'),'Fehlende Istbuchung muss als Handlungsbedarf erscheinen');
 assert(events.some(x=>x.type==='kc-actual-import-complete'),'Automatischer Scan muss an erfolgreiche Importe angebunden sein');
-assert.match(await readFile(new URL('../index.html',import.meta.url),'utf8'),/actual-reconciliation\.js\?v=0\.20\.0-b192/,'Modul muss im Release geladen werden');
+assert.match(await readFile(new URL('../index.html',import.meta.url),'utf8'),/actual-reconciliation\.js\?v=0\.20\.0-b237/,'Modul muss im Release geladen werden');
 console.log('Ist-Abgleich-Smoke-Test OK: Wunsch, Soll, Ist, Abweichung, fehlende Buchung und Import-Hook');
