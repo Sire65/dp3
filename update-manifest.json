@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 237,
-  "cacheName": "kc-dp-release-0.20.0-b237",
+  "build": 238,
+  "cacheName": "kc-dp-release-0.20.0-b238",
   "releaseNotes": [
+    "Build 238: vollständiges Formularpaket mit personalisierter Excel-Matrix und QR-Identifikationsblatt",
     "Build 237: repariertes Ist-Abgleich-Protokoll und geschützte Stechuhr-Übergabe vom PC-Manager über Supabase",
     "Build 236: geschützte Supabase-Übernahme von PC-Manager-Istzeiten mit Prüfvorschau, Übernahmebestätigung und Überschneidungssperre",
     "Build 235: Anmeldebildschirm-Hinweis zur Erstanmeldung, laufender Ladebalken und Ladebildschirm beim Start, Push-Angebot nach dem Login und Abbrechen-Link im Einrichtungsassistenten",
@@ -119,8 +120,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-10T10:13:02.893Z",
-  "totalRuntimeBytes": 36718046,
+  "generatedAt": "2026-09-10T11:45:37.857Z",
+  "totalRuntimeBytes": 36819328,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -300,8 +301,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 36048,
-      "sha256": "a51cda2ba24507c8156d96c6a347b4f4439220479127eed34f578e4dd2e6035e",
+      "bytes": 36104,
+      "sha256": "b4e53c7e9c357461cf314716967728a375375e5d180a38cb72d120fe7a607780",
       "runtime": true,
       "forceRefresh": true
     },
@@ -789,8 +790,8 @@
     {
       "path": "src/core/personalized-forms.js",
       "installPath": "src/core/personalized-forms.js",
-      "bytes": 12074,
-      "sha256": "e51f2fa0ea8e0b8056a7ab42dfb422d3b28e839070360465aa4f836a4f9747a8",
+      "bytes": 15670,
+      "sha256": "9791bc106fbf537322461cdc889aca0d392164985a8fa6799ec6cad338e0f6f4",
       "runtime": true
     },
     {
@@ -2030,6 +2031,13 @@
       "installPath": "src/vendor/jsQR.js",
       "bytes": 256885,
       "sha256": "bc40c8a15196236b2314db0856f72ca0b49980cd5413b8c852a7349f5fee0859",
+      "runtime": true
+    },
+    {
+      "path": "src/vendor/jszip.min.js",
+      "installPath": "src/vendor/jszip.min.js",
+      "bytes": 97630,
+      "sha256": "acc7e41455a80765b5fd9c7ee1b8078a6d160bbbca455aeae854de65c947d59e",
       "runtime": true
     },
     {
