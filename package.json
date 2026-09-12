@@ -1,0 +1,17 @@
+{
+  "name": "kc-dp2",
+  "version": "0.20.0-build239",
+  "private": true,
+  "description": "KC DP2 Dienstplan und reproduzierbare Testumgebung",
+  "scripts": {
+    "test": "npm run test:smoke",
+    "test:smoke": "node tools/smoke-core.mjs && node tools/smoke-ui-contracts.mjs && node tools/smoke-plan-transfer.mjs && node tools/smoke-actual-reconciliation.mjs && node tools/smoke-timeclock-supabase.mjs && node tools/verify-release.mjs",
+    "test:browser": "node tools/test-twinkey.mjs && node tools/test-mobile-wish-matrix.mjs && node tools/test-wish-assistant.mjs && node tools/test-assistant-staffing.mjs",
+    "test:install-browser": "playwright install chromium",
+    "test:all": "npm run test:smoke && npm run test:browser",
+    "test:browser:extended": "node tools/test-twinkey-admin.mjs && node tools/test-leon-setup.mjs && node tools/test-wish-demand.mjs"
+  },
+  "devDependencies": {
+    "playwright": "1.63.0"
+  }
+}

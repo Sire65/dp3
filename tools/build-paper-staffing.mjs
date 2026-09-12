@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';import {readFile,writeFile} from 'node:fs/promises';import vm from 'node:vm';import path from 'node:path';import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE),K={},ctx=vm.createContext({window:{KCDP:K},console});
+const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),K={},ctx=vm.createContext({window:{KCDP:K},console});
 for(const f of ['src/core/model.js','src/core/configuration.js','src/core/wish-demand.js','src/ui/paper-staffing.js'])vm.runInContext(await readFile(f,'utf8'),ctx);
 K.eventConfig.name+=' · Grundkonfiguration';const html=K.paperStaffing.html();await writeFile('tmp/paper-staffing.html',html);
 const browser=await chromium.launch({channel:'chrome',headless:true});try{const page=await browser.newPage();await page.setContent(html);await page.emulateMedia({media:'print'});const sections=await page.locator('section').count();assert.equal(sections,K.days.length);await page.pdf({path:'../../outputs/KC-DP2-Besetzungsmatrix-Papierplanung.pdf',preferCSSPageSize:true,printBackground:true});await page.screenshot({path:'tmp/paper-staffing-preview.png',fullPage:false});console.log('Paper matrix generated:',sections,'day sheets');}finally{await browser.close()}

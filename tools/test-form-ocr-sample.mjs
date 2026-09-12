@@ -1,5 +1,5 @@
 import {readFile} from 'node:fs/promises';
-import {chromium} from 'file:///C:/Users/Koch/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright/index.mjs';
+import {chromium} from 'playwright';
 
 const source=process.argv[2];
 if(!source)throw Error('Bildpfad fehlt.');

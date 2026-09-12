@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import {readFile,writeFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import {createRequire} from 'node:module';
-const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE),K={},ctx=vm.createContext({window:{KCDP:K,addEventListener(){}},console});
+const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright'),K={},ctx=vm.createContext({window:{KCDP:K,addEventListener(){}},console});
 for(const f of ['src/core/model.js','src/core/configuration.js','src/ui/demand-view.js'])vm.runInContext(await readFile(f,'utf8'),ctx);
 K.eventConfig.name+=' · Grundkonfiguration (Muster)';
 K.demandView.state.editing=true;
