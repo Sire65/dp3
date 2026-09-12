@@ -110,7 +110,7 @@ assert.equal((matrixForm.html.match(/class="doc-page"/g)||[]).length,2,'Personal
 for(const field of ['Tag / Bereich','Rahmenzeit','Kann von','Kann bis','Wunsch von','Wunsch bis','Sperrzeit von','Sperrzeit bis','Sperrtag','Nur wenn nötig','V/H/B','Bemerkung','Bereitschaft von'])assert(matrixForm.html.includes(field),`V12-Matrixfeld fehlt: ${field}`);
 
 const ocrContext={window:{KCDP:{}}};ocrContext.window.window=ocrContext.window;vm.runInNewContext(formOcr,ocrContext);const ocr=ocrContext.window.KCDP.formOcr;
-assert.equal(ocr.parseTime('11'),11,'OCR muss handschriftliche volle Stunden lesen');assert.equal(ocr.parseTime('14.30'),14.5,'OCR muss Punktzeiten normalisieren');
+assert.equal(ocr._test.otsu(Uint8Array.from([0,0,20,220,255,255]))>=20,true,'OCR braucht adaptive Schwellenwerte');assert.equal(ocr.parseTime('11'),11,'OCR muss handschriftliche volle Stunden lesen');assert.equal(ocr.parseTime('14.30'),14.5,'OCR muss Punktzeiten normalisieren');
 assert.equal(ocr.resolveProfileId('{"schema":"KCDP-FORM-PROFILE-1","profileId":"HP-ABCDEFGH"}'),'HP-ABCDEFGH','OCR muss personalisierte QR-Profile erkennen');
 const ocrWishes=ocr.wishesFromRecord({canStart:13,canEnd:20,wishStart:15,wishEnd:19,blockStart:11,blockEnd:12,zone:'H',fields:{},canConfidence:.9,wishConfidence:.8,blockConfidence:.8},'p1',{date:'2026-12-04',start:11,end:23});
 assert.equal(ocrWishes.map(x=>x.wishType).join(','),'unavailable,available,preferred','OCR muss Sperre, Kann und Wunsch getrennt abbilden');assert(ocrWishes.every(x=>x.wishZone==='H'),'OCR muss V/H/B erhalten');

@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 240,
-  "cacheName": "kc-dp-release-0.20.0-b240",
+  "build": 241,
+  "cacheName": "kc-dp-release-0.20.0-b241",
   "releaseNotes": [
+    "Build 241: verbesserte Handschrifterkennung mit Fotoqualitätsprüfung, adaptiver Bildaufbereitung und regelgestützter Uhrzeitenwahl",
     "Build 240: schnellerer Programmstart durch gebündelte Stylesheets und paralleles Laden der Skripte",
     "Build 239: persönliche Twinkey-Begrüßung mit dem Vornamen des angemeldeten Mitglieds",
     "Build 238: vollständiges Formularpaket mit personalisierter Excel-Matrix und QR-Identifikationsblatt",
@@ -122,8 +123,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-12T10:26:41.820Z",
-  "totalRuntimeBytes": 37066815,
+  "generatedAt": "2026-09-12T10:47:05.150Z",
+  "totalRuntimeBytes": 37069591,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -304,7 +305,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 33252,
-      "sha256": "5646d9c8331709c3fef50c5c8101eb3ff3b14c7a67c866ee605486eff3037019",
+      "sha256": "177ed9cb5ea6f9e827812fb0708918587a8b5c287084a1cf2bef22319e671ac9",
       "runtime": true,
       "forceRefresh": true
     },
@@ -449,8 +450,8 @@
     {
       "path": "src/adapters/form-ocr.js",
       "installPath": "src/adapters/form-ocr.js",
-      "bytes": 17268,
-      "sha256": "48c6a9a8fe70c19e3d1cafbc06308834cb61cb133085c5e5177ac3eb2fa91cc4",
+      "bytes": 19884,
+      "sha256": "dae21fad1c69ea2c07168b70419449552449ee78b8af9a2ee2a7f9ffaf42be97",
       "runtime": true
     },
     {
@@ -1009,8 +1010,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 261426,
-      "sha256": "6e032b83068be5c0cc564f7df52c2accee5c89fcde73315d3b601a9d49d05483",
+      "bytes": 261586,
+      "sha256": "0bef47e421c502cd860d6dac2a36f80ed456715d471ba572fa440fe3e2d731b7",
       "runtime": true
     },
     {

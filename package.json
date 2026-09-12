@@ -1,6 +1,6 @@
 {
   "name": "kc-dp2",
-  "version": "0.20.0-build240",
+  "version": "0.20.0-build241",
   "private": true,
   "description": "KC DP2 Dienstplan und reproduzierbare Testumgebung",
   "scripts": {
@@ -9,7 +9,7 @@
     "test:browser": "node tools/test-twinkey.mjs && node tools/test-mobile-wish-matrix.mjs && node tools/test-wish-assistant.mjs && node tools/test-assistant-staffing.mjs",
     "test:install-browser": "playwright install chromium",
     "test:all": "npm run test:smoke && npm run test:browser",
-    "test:browser:extended": "node tools/test-twinkey-admin.mjs && node tools/test-leon-setup.mjs && node tools/test-wish-demand.mjs",
+    "test:browser:extended": "node tools/test-twinkey-admin.mjs && node tools/test-leon-setup.mjs && node tools/test-wish-demand.mjs && node tools/test-ocr-quality.mjs",
     "test:tuev:syntax": "node tools/tuev-syntax.mjs",
     "test:tuev:web": "node tools/web-tuev-smoke.mjs",
     "test:a11y": "node tools/axe-accessibility.mjs",
