@@ -40,8 +40,12 @@ jobs:
         continue-on-error: true
         run: npx lighthouse http://127.0.0.1:4173/ --only-categories=performance,accessibility,best-practices --output=html --output=json --output-path=./lighthouse-report --chrome-flags='--headless --no-sandbox'
       - name: OWASP ZAP passive baseline
-        continue-on-error: true
-        run: docker run --network=host -v "$PWD:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://127.0.0.1:4173/ -I -m 2 -r zap-report.html -J zap-report.json
+        run: |
+          mkdir -p zap-output
+          chmod 777 zap-output
+          docker run --network=host -v "$PWD/zap-output:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://127.0.0.1:4173/ -I -m 2 -r zap-report.html -J zap-report.json
+          test -s zap-output/zap-report.html
+          test -s zap-output/zap-report.json
       - name: Upload TÜV reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -50,7 +54,7 @@ jobs:
           path: |
             lighthouse-report*
             axe-report.json
-            zap-report.*
+            zap-output/zap-report.*
             /tmp/kc-web.log
           if-no-files-found: ignore
           retention-days: 21
