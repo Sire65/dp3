@@ -1,6 +1,6 @@
 {
   "name": "kc-dp2",
-  "version": "0.20.0-build239",
+  "version": "0.20.0-build240",
   "private": true,
   "description": "KC DP2 Dienstplan und reproduzierbare Testumgebung",
   "scripts": {
@@ -15,7 +15,8 @@
     "test:a11y": "node tools/axe-accessibility.mjs",
     "test:supabase:contract": "node tools/supabase-security-contract.mjs",
     "test:supabase:lint": "supabase db lint --local --level warning --fail-on error",
-    "test:supabase:db": "supabase test db --local supabase/tests/database"
+    "test:supabase:db": "supabase test db --local supabase/tests/database",
+    "build:startup-css": "node tools/build-startup-css.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",

@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=239;
+const build=240;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -16,7 +16,7 @@ async function walk(dir=''){
   for(const entry of entries){
     const rel=path.posix.join(dir.replaceAll('\\','/'),entry.name);
     if(entry.isDirectory()){
-      if(['tools','tmp','output','.git','.chrome-dump-test'].includes(entry.name)||entry.name.includes('-backup-build'))continue;
+      if(['tools','tmp','output','.git','node_modules','.chrome-dump-test'].includes(entry.name)||entry.name.includes('-backup-build'))continue;
       out.push(...await walk(rel));
     }else if(allowed.has(path.extname(entry.name).toLowerCase())&&!excluded.has(rel))out.push(rel);
   }
@@ -45,6 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 240: schnellerer Programmstart durch gebündelte Stylesheets und paralleles Laden der Skripte',
     'Build 239: persönliche Twinkey-Begrüßung mit dem Vornamen des angemeldeten Mitglieds',
     'Build 238: vollständiges Formularpaket mit personalisierter Excel-Matrix und QR-Identifikationsblatt',
     'Build 237: repariertes Ist-Abgleich-Protokoll und geschützte Stechuhr-Übergabe vom PC-Manager über Supabase',

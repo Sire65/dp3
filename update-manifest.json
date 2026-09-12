@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 239,
-  "cacheName": "kc-dp-release-0.20.0-b239",
+  "build": 240,
+  "cacheName": "kc-dp-release-0.20.0-b240",
   "releaseNotes": [
+    "Build 240: schnellerer Programmstart durch gebündelte Stylesheets und paralleles Laden der Skripte",
     "Build 239: persönliche Twinkey-Begrüßung mit dem Vornamen des angemeldeten Mitglieds",
     "Build 238: vollständiges Formularpaket mit personalisierter Excel-Matrix und QR-Identifikationsblatt",
     "Build 237: repariertes Ist-Abgleich-Protokoll und geschützte Stechuhr-Übergabe vom PC-Manager über Supabase",
@@ -121,8 +122,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-10T12:01:47.080Z",
-  "totalRuntimeBytes": 36819506,
+  "generatedAt": "2026-09-12T10:26:41.820Z",
+  "totalRuntimeBytes": 37066815,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -302,8 +303,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 36104,
-      "sha256": "eae56c99458619729f4ece582eb317aa1fba5a0ce91dd2a96d4e2cac90e29c13",
+      "bytes": 33252,
+      "sha256": "5646d9c8331709c3fef50c5c8101eb3ff3b14c7a67c866ee605486eff3037019",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1829,6 +1830,13 @@
       "installPath": "src/ui/start-protocol-copy.js",
       "bytes": 6505,
       "sha256": "ff8f7c66107990eda52cfda7dc1edaa41efbc582d7290199de084dd062767b64",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/startup.css",
+      "installPath": "src/ui/startup.css",
+      "bytes": 250161,
+      "sha256": "b8572db35a7a77581edc6d53ed5e1074e77745280d7d1403c2272f81c9d6d4e3",
       "runtime": true
     },
     {

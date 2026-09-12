@@ -11,6 +11,7 @@ const [index,app,hour,picker,transfer,composite,deviations,forms,manifest,shell,
   read('src/ui/deviations-view.js'),read('src/ui/forms-center.js'),read('update-manifest.json'),
   read('src/ui/v020-shell.js'),read('src/ui/v020-shell.css'),read('src/ui/demand-view.js'),read('src/ui/regression-fixes.css'),read('src/ui/mobile-colleague-search.js'),read('src/core/import-review.js'),read('src/core/personalized-forms.js'),read('src/adapters/pdf.js'),read('src/vendor/qrcode-generator.js'),read('src/ui/wish-submission-check.js'),read('src/ui/global-history.js'),read('src/core/history.js'),read('src/adapters/form-ocr.js'),read('src/ui/occupancy-view.js'),read('src/ui/occupancy-view.css'),read('src/ui/batch-planning.js'),read('src/ui/batch-planning.css')
 ]);
+const startupCss=await read('src/ui/startup.css');
 const planningFocus=await read('src/ui/planning-focus.js'),planningFocusCss=await read('src/ui/planning-focus.css'),documents=await read('src/core/documents.js');
 const wishGuideControls=await read('src/ui/wish-guide-controls.js'),wishCompositeCss=await read('src/ui/wish-bar-composite.css');
 assert(index.includes('src/ui/wish-guide-controls.js')&&wishGuideControls.includes('plan-wish-guide-handle')&&wishGuideControls.includes('plan-wish-guide-reveal')&&wishGuideControls.includes("mode==='move'")&&wishGuideControls.includes('Kann-Zeit per Drag/Resize geändert')&&wishCompositeCss.includes('.plan-wish-guide[data-direct-control]'),'Kann-Zeit muss vollhoch hinter dem Soll liegen sowie direkt verschieb- und an beiden Rändern skalierbar sein.');
@@ -33,7 +34,7 @@ assert(index.indexOf('src/ui/day-picker.js')<index.indexOf('src/ui/hour-matrix.j
 assert(picker.includes("weekend")&&picker.includes("striped"), 'Tagesliste muss Wochenende und Auf-/Nachbereitung markieren');
 assert(hour.includes("Bedarf V / H")&&hour.includes("Soll V / H")&&hour.includes("Ist V / H"), 'Stundenmatrix muss V/H getrennt zeigen');
 assert(shell.includes("id:'matrix',label:'Stundenmatrix'")&&index.includes('src/ui/hour-matrix.js'), 'Register Stundenmatrix muss sichtbar und geladen bleiben');
-assert(!shell.includes("id:'occupancy',label:'Besetzung'")&&index.includes('src/ui/occupancy-view.js')&&index.includes('src/ui/occupancy-view.css')&&hour.includes('K.occupancyView?.embed?.(host)'),'Grafische Besetzung muss ohne doppelte Registerkarte einklappbar in der Stundenmatrix liegen');
+assert(!shell.includes("id:'occupancy',label:'Besetzung'")&&index.includes('src/ui/occupancy-view.js')&&index.includes('src/ui/startup.css')&&startupCss.includes('/* src/ui/occupancy-view.css */')&&hour.includes('K.occupancyView?.embed?.(host)'),'Grafische Besetzung muss ohne doppelte Registerkarte einklappbar in der Stundenmatrix liegen');
 assert(occupancy.includes("['day','T','Tagesansicht']")&&occupancy.includes("['week','W','Wochenansicht']")&&occupancy.includes("['all','Z','Gesamter Zeitraum']"),'Besetzungsansicht muss das gemeinsame T/W/Z-Muster verwenden');
 assert(occupancy.includes("pref==='B'")&&occupancy.includes("people.length")&&occupancy.includes("x.zone==='front'")&&occupancy.includes("x.zone==='back'"),'B-Personen müssen einmal gezählt und vom tatsächlichen Einsatzort getrennt bleiben');
 assert(occupancyCss.includes('.occ-level.back')&&occupancyCss.includes('.occ-level.front')&&occupancyCss.includes('.occ-person.t4'),'Besetzung braucht kompakte Vorder-/Hinterebenen und leicht variierte neutrale Personenicons');
@@ -68,7 +69,7 @@ assert(app.includes('function expandedPersonRows')&&app.includes("label:'Wunschz
 assert(index.indexOf('id="exitBtn"')<index.indexOf('id="settingsBtn"'), 'Zahnrad muss rechts neben der Tür stehen');
 assert(colleague.indexOf('.kc-mobile-colleague-backdrop{')<colleague.indexOf('@media(max-width:600px)'), 'Kollegensuche braucht eine Gestaltung für alle Fenstergrößen');
 assert(hour.includes('K.dayPicker?.open'), 'Stundenmatrix muss gemeinsame Tagesauswahl verwenden');
-assert(demand.includes("current?'current-day'")&&hour.includes("current?'current-day'")&&index.includes('src/ui/active-day.js')&&index.includes('src/ui/active-day.css'), 'Aktiver Tag muss in Bedarf, Stundenmatrix und weiteren Mehrtagesansichten markiert werden');
+assert(demand.includes("current?'current-day'")&&hour.includes("current?'current-day'")&&index.includes('src/ui/active-day.js')&&index.includes('src/ui/startup.css')&&startupCss.includes('/* src/ui/active-day.css */'), 'Aktiver Tag muss in Bedarf, Stundenmatrix und weiteren Mehrtagesansichten markiert werden');
 assert(app.includes('Letzte technische Fehlerursache')&&app.includes('Warteschlange synchronisieren')&&app.includes('Neu anmelden')&&app.includes('Anmeldung, Provider und Datenbank erreichbar'), 'Supabase-Diagnose muss Ursache, lokalen Datenstatus und nächsten Schritt verständlich anzeigen');
 assert(app.includes('K.planTransfer?.matrixEditor'), 'Wunschbalken-Doppelklick muss vollständige Matrix öffnen');
 assert(transfer.includes('Wunschplan in den Sollplan')&&transfer.includes('Sollplan in den Istplan'), 'Beide Planübergaben müssen vorhanden sein');
