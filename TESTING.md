@@ -36,3 +36,13 @@ Die historischen KC-TÜV-Regeln sind in `.github/workflows/kc-tuev-baseline.yml`
 - **Zeitplan:** Baseline dienstags, Web-Tiefenprüfung donnerstags sowie zusätzlich bei Push, Pull Request und manuellem Start.
 
 Lighthouse ist versionsfest in `package-lock.json` hinterlegt. OWASP ZAP läuft isoliert als Docker-Image in GitHub Actions und wird nicht in das DP2-Programm oder Installations-ZIP eingebaut.
+## Zusätzliche Sicherheitsprüfungen
+
+```powershell
+npm run test:a11y               # axe-core: automatisch erkennbare WCAG-A/AA-Probleme
+npm run test:supabase:contract  # RLS-, Rollen- und RPC-Vertrag aus den Migrationen
+npm run test:supabase:lint      # benötigt eine laufende lokale Supabase-Umgebung
+npm run test:supabase:db        # pgTAP-Rechteprüfungen gegen die lokale Testdatenbank
+```
+
+GitHub führt zusätzlich **CodeQL** und **Gitleaks** aus. Der Workflow `KC Supabase TÜV` führt die statische Prüfung immer aus. Für echte verbundene Datenbankprüfungen werden die Repository-Secrets `SUPABASE_ACCESS_TOKEN`, `SUPABASE_PROJECT_ID` und `SUPABASE_DB_PASSWORD` benötigt. Ohne diese Zugangswerte wird der verbundene Teil nachvollziehbar übersprungen; es werden keine Zugangsdaten in Git gespeichert.

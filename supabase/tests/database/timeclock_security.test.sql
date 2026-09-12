@@ -1,0 +1,16 @@
+begin;
+select plan(12);
+select has_table('public','kc_dp_timeclock_actuals','Istzeiten-Eingang existiert');
+select has_table('public','kc_dp_timeclock_receipts','Importquittungen existieren');
+select ok((select relrowsecurity from pg_class where oid='public.kc_dp_timeclock_actuals'::regclass),'RLS ist für Istzeiten aktiv');
+select ok((select relrowsecurity from pg_class where oid='public.kc_dp_timeclock_receipts'::regclass),'RLS ist für Quittungen aktiv');
+select has_function('public','kc_dp_timeclock_publish',array['text','text','jsonb'],'Geschützte Veröffentlichungsfunktion existiert');
+select ok(not has_table_privilege('anon','public.kc_dp_timeclock_actuals','SELECT'),'anon darf Istzeiten nicht lesen');
+select ok(not has_table_privilege('anon','public.kc_dp_timeclock_receipts','SELECT'),'anon darf Quittungen nicht lesen');
+select ok(has_table_privilege('authenticated','public.kc_dp_timeclock_actuals','SELECT'),'authenticated besitzt SELECT; RLS begrenzt Zeilen');
+select ok(not has_table_privilege('authenticated','public.kc_dp_timeclock_actuals','INSERT'),'authenticated darf nicht direkt veröffentlichen');
+select ok(has_table_privilege('authenticated','public.kc_dp_timeclock_receipts','INSERT'),'authenticated darf mit RLS quittieren');
+select ok(not has_function_privilege('anon','public.kc_dp_timeclock_publish(text,text,jsonb)','EXECUTE'),'anon darf RPC nicht aufrufen');
+select ok(has_function_privilege('authenticated','public.kc_dp_timeclock_publish(text,text,jsonb)','EXECUTE'),'authenticated darf RPC aufrufen; Funktion prüft Managerrolle');
+select * from finish();
+rollback;

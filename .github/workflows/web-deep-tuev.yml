@@ -34,6 +34,8 @@ jobs:
         run: node tools/web-tuev-smoke.mjs
       - name: DP2 browser tests
         run: npm run test:browser
+      - name: axe WCAG accessibility test
+        run: npm run test:a11y
       - name: Lighthouse diagnostic report
         continue-on-error: true
         run: npx lighthouse http://127.0.0.1:4173/ --only-categories=performance,accessibility,best-practices --output=html --output=json --output-path=./lighthouse-report --chrome-flags='--headless --no-sandbox'
@@ -47,6 +49,7 @@ jobs:
           name: web-deep-tuev-reports
           path: |
             lighthouse-report*
+            axe-report.json
             zap-report.*
             /tmp/kc-web.log
           if-no-files-found: ignore

@@ -11,10 +11,16 @@
     "test:all": "npm run test:smoke && npm run test:browser",
     "test:browser:extended": "node tools/test-twinkey-admin.mjs && node tools/test-leon-setup.mjs && node tools/test-wish-demand.mjs",
     "test:tuev:syntax": "node tools/tuev-syntax.mjs",
-    "test:tuev:web": "node tools/web-tuev-smoke.mjs"
+    "test:tuev:web": "node tools/web-tuev-smoke.mjs",
+    "test:a11y": "node tools/axe-accessibility.mjs",
+    "test:supabase:contract": "node tools/supabase-security-contract.mjs",
+    "test:supabase:lint": "supabase db lint --local --level warning --fail-on error",
+    "test:supabase:db": "supabase test db --local supabase/tests/database"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "lighthouse": "13.4.1",
-    "playwright": "1.63.0"
+    "playwright": "1.63.0",
+    "supabase": "2.117.0"
   }
 }

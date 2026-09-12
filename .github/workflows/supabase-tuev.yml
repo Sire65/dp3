@@ -1,0 +1,55 @@
+name: KC Supabase TÜV
+on:
+  push:
+    branches: [main, twinkey-member-flow]
+    paths:
+      - 'supabase/**'
+      - 'tools/supabase-security-contract.mjs'
+      - '.github/workflows/supabase-tuev.yml'
+  pull_request:
+    paths:
+      - 'supabase/**'
+      - 'tools/supabase-security-contract.mjs'
+      - '.github/workflows/supabase-tuev.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Static migration and RLS contract
+        run: npm run test:supabase:contract
+  linked-database:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_PROJECT_ID: ${{ secrets.SUPABASE_PROJECT_ID }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Explain missing database connection
+        if: env.SUPABASE_ACCESS_TOKEN == '' || env.SUPABASE_PROJECT_ID == '' || env.SUPABASE_DB_PASSWORD == ''
+        run: echo 'Linked Supabase lint and pgTAP skipped until the three repository secrets are configured.'
+      - name: Link protected Supabase project
+        if: env.SUPABASE_ACCESS_TOKEN != '' && env.SUPABASE_PROJECT_ID != '' && env.SUPABASE_DB_PASSWORD != ''
+        run: npx supabase link --project-ref "$SUPABASE_PROJECT_ID" --password "$SUPABASE_DB_PASSWORD"
+      - name: Supabase database lint
+        if: env.SUPABASE_ACCESS_TOKEN != '' && env.SUPABASE_PROJECT_ID != '' && env.SUPABASE_DB_PASSWORD != ''
+        run: npx supabase db lint --linked --level warning --fail-on error
+      - name: pgTAP RLS and permission tests
+        if: env.SUPABASE_ACCESS_TOKEN != '' && env.SUPABASE_PROJECT_ID != '' && env.SUPABASE_DB_PASSWORD != ''
+        run: npx supabase test db --linked supabase/tests/database

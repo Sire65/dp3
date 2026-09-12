@@ -1,0 +1,1 @@
+-- Absichtlich leer: produktive KC-Daten werden nie in lokale Tests kopiert.
