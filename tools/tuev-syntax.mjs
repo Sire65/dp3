@@ -1,0 +1,4 @@
+import {readdir} from 'node:fs/promises';import {spawnSync} from 'node:child_process';import path from 'node:path';
+const root=path.resolve(import.meta.dirname,'..'),skip=new Set(['.git','node_modules','tmp','supabase','.chrome-dump-test']),files=[];
+async function walk(dir){for(const e of await readdir(dir,{withFileTypes:true})){if(e.isDirectory()){if(!skip.has(e.name)&&e.name!=='vendor')await walk(path.join(dir,e.name));}else if(/\.(?:js|mjs|cjs)$/.test(e.name))files.push(path.join(dir,e.name));}}
+await walk(root);for(const file of files){const r=spawnSync(process.execPath,['--check',file],{stdio:'inherit'});if(r.status)process.exit(r.status);}console.log(`TÜV-Syntax OK: ${files.length} JavaScript-Dateien.`);

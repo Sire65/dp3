@@ -27,3 +27,12 @@ node tools/test-form-ocr-sample.mjs "C:\Pfad\zum\Formularbild.png"
 ```
 
 Aktuell benötigte externe Testsoftware: Node.js/npm und Playwright mit Chromium. Weitere Bibliotheken werden ergänzt, sobald ein Test sie tatsächlich benötigt.
+## KC TÜV
+
+Die historischen KC-TÜV-Regeln sind in `.github/workflows/kc-tuev-baseline.yml` und `.github/workflows/web-deep-tuev.yml` umgesetzt.
+
+- **Pflichtprüfungen:** JavaScript-/Python-Syntax, `npm audit`, optionale Python-Abhängigkeitsprüfung, Geheimnissuche, DP2-Smoke-Tests und Playwright-Browsertests.
+- **Diagnoseberichte:** Lighthouse prüft Leistung, Barrierefreiheit und Web-Best-Practices. OWASP ZAP führt einen passiven Sicherheitsscan aus.
+- **Zeitplan:** Baseline dienstags, Web-Tiefenprüfung donnerstags sowie zusätzlich bei Push, Pull Request und manuellem Start.
+
+Lighthouse ist versionsfest in `package-lock.json` hinterlegt. OWASP ZAP läuft isoliert als Docker-Image in GitHub Actions und wird nicht in das DP2-Programm oder Installations-ZIP eingebaut.

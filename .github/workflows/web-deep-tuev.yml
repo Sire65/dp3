@@ -1,0 +1,53 @@
+name: KC Web Deep TÜV
+
+on:
+  push:
+    branches: [main, twinkey-member-flow]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '41 3 * * 4'
+
+permissions:
+  contents: read
+
+jobs:
+  web-deep-tuev:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked test tools
+        run: npm ci
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Start local read-only web server
+        run: |
+          node tools/static-server.mjs 4173 > /tmp/kc-web.log 2>&1 &
+          for i in {1..20}; do curl --fail http://127.0.0.1:4173/ >/dev/null && exit 0; sleep 1; done
+          exit 1
+      - name: Playwright runtime smoke
+        run: node tools/web-tuev-smoke.mjs
+      - name: DP2 browser tests
+        run: npm run test:browser
+      - name: Lighthouse diagnostic report
+        continue-on-error: true
+        run: npx lighthouse http://127.0.0.1:4173/ --only-categories=performance,accessibility,best-practices --output=html --output=json --output-path=./lighthouse-report --chrome-flags='--headless --no-sandbox'
+      - name: OWASP ZAP passive baseline
+        continue-on-error: true
+        run: docker run --network=host -v "$PWD:/zap/wrk/:rw" -t ghcr.io/zaproxy/zaproxy:stable zap-baseline.py -t http://127.0.0.1:4173/ -I -m 2 -r zap-report.html -J zap-report.json
+      - name: Upload TÜV reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-deep-tuev-reports
+          path: |
+            lighthouse-report*
+            zap-report.*
+            /tmp/kc-web.log
+          if-no-files-found: ignore
+          retention-days: 21

@@ -1,0 +1,40 @@
+name: KC TÜV Baseline
+
+on:
+  push:
+    branches: [main, twinkey-member-flow]
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    - cron: '23 3 * * 2'
+
+permissions:
+  contents: read
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install locked test tools
+        run: npm ci
+      - name: JavaScript syntax
+        run: npm run test:tuev:syntax
+      - name: Dependency audit
+        run: npm audit --audit-level=high
+      - name: DP2 smoke and release integrity
+        run: npm run test:smoke
+      - name: Python syntax
+        run: |
+          if find . -type f -name '*.py' -not -path './.git/*' | grep -q .; then python -m compileall -q -x '(^|/)(\.git|node_modules)/' .; else echo 'No Python files'; fi
+      - name: Python dependency audit when requirements exist
+        run: |
+          if [ -f requirements.txt ]; then python -m pip install --disable-pip-version-check -q pip-audit && pip-audit -r requirements.txt; else echo 'No requirements.txt; pip-audit skipped'; fi
+      - name: Block obvious committed secrets
+        run: |
+          if git grep -I -n -E '(BEGIN (RSA|OPENSSH|EC) PRIVATE KEY|SUPABASE_SERVICE_ROLE_KEY[[:space:]]*=|DATABASE_URL[[:space:]]*=[[:space:]]*postgres)' -- ':!*.md' ':!*.example' ':!*.sample'; then echo 'Potential committed secret found'; exit 1; else echo 'No obvious committed secret pattern found'; fi

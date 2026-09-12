@@ -9,9 +9,12 @@
     "test:browser": "node tools/test-twinkey.mjs && node tools/test-mobile-wish-matrix.mjs && node tools/test-wish-assistant.mjs && node tools/test-assistant-staffing.mjs",
     "test:install-browser": "playwright install chromium",
     "test:all": "npm run test:smoke && npm run test:browser",
-    "test:browser:extended": "node tools/test-twinkey-admin.mjs && node tools/test-leon-setup.mjs && node tools/test-wish-demand.mjs"
+    "test:browser:extended": "node tools/test-twinkey-admin.mjs && node tools/test-leon-setup.mjs && node tools/test-wish-demand.mjs",
+    "test:tuev:syntax": "node tools/tuev-syntax.mjs",
+    "test:tuev:web": "node tools/web-tuev-smoke.mjs"
   },
   "devDependencies": {
+    "lighthouse": "13.4.1",
     "playwright": "1.63.0"
   }
 }
