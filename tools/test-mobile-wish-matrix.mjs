@@ -40,6 +40,9 @@ try{
  await page.evaluate(()=>KCDP.mobileMatrixUi.friend('friend','2026-12-04'));
  assert.match(await page.locator('.mm-compare').innerText(),/12:00–18:00/);
  await page.screenshot({path:path.join(out,'handy-freundesvorschau.png'),fullPage:true});
+ assert.equal(await page.locator('#mmCopyApply').isDisabled(),true,'Conflicting preselection must not be copied');
+ await page.locator('[data-copy-id=f1]').uncheck();await page.locator('[data-copy-id=f2]').uncheck();await page.locator('[data-copy-id=f4]').check();
+ assert.equal(await page.locator('#mmCopyApply').isEnabled(),true,'Non-conflicting reserve time can be copied');
  await page.locator('#mmCopyApply').click();
  assert.equal(await page.evaluate(()=>KCDP.mobileWishMatrix.rows('friend').length),5,'Friend unchanged');
  await page.evaluate(()=>KCDP.mobileMatrixUi.entry('2026-12-05'));
@@ -57,7 +60,7 @@ try{
  const extra=await page.evaluate(async()=>{
  const K=KCDP,M=K.mobileWishMatrix,day='2026-12-04',base={personId:'me',date:day,start:11,end:21,wishType:'available',scope:'time',wishZone:'B',comment:'',status:'confirmed'};
  const tests={};
- tests.reserveConflict=M.validate([base,{...base,wishType:'if_needed'},{...base,start:12,end:16,wishType:'preferred'}]).some(x=>x.includes('notwendig'));
+ tests.reserveConflict=M.validate([base,{...base,wishType:'if_needed'},{...base,start:12,end:16,wishType:'preferred'}]).some(x=>x.includes('Kann-Zeiten'));
  tests.blockConflict=M.validate([base,{...base,start:12,end:16,wishType:'preferred'},{...base,start:15,end:17,wishType:'unavailable'}]).some(x=>x.includes('Sperre'));
  tests.multipleWindows=M.validate([base,{...base,start:22,end:24},{...base,start:22,end:24,wishType:'preferred'}]).length===0;
  tests.missingEnd=M.validate([{...base,end:null}]).length>0;

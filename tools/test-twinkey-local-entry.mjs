@@ -5,6 +5,7 @@ try{
  await page.goto('http://127.0.0.1:8774/twinkey-test.html?kc_update=226');
  await page.locator('[data-tw-mode=guided]').click();
  await page.locator('[data-tw-task=wish]').click();
+ await page.locator('[data-tw-entry=manual]').click();
  assert.match(await page.locator('.sw-root h1').innerText(),/Wähle deinen Tag/);
  await page.locator('[data-day]').first().click();
  assert(await page.locator('#swTimeline').isVisible());
