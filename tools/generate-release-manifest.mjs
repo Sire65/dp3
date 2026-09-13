@@ -4,7 +4,7 @@ import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
 const version='0.20.0';
-const build=241;
+const build=242;
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -45,6 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 242: direkter Eingabeweg mit einfacher Uhrzeitauswahl und Bereitschaft',
     'Build 241: verbesserte Handschrifterkennung mit Fotoqualitätsprüfung, adaptiver Bildaufbereitung und regelgestützter Uhrzeitenwahl',
     'Build 240: schnellerer Programmstart durch gebündelte Stylesheets und paralleles Laden der Skripte',
     'Build 239: persönliche Twinkey-Begrüßung mit dem Vornamen des angemeldeten Mitglieds',

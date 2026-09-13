@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 241,
-  "cacheName": "kc-dp-release-0.20.0-b241",
+  "build": 242,
+  "cacheName": "kc-dp-release-0.20.0-b242",
   "releaseNotes": [
+    "Build 242: direkter Eingabeweg mit einfacher Uhrzeitauswahl und Bereitschaft",
     "Build 241: verbesserte Handschrifterkennung mit Fotoqualitätsprüfung, adaptiver Bildaufbereitung und regelgestützter Uhrzeitenwahl",
     "Build 240: schnellerer Programmstart durch gebündelte Stylesheets und paralleles Laden der Skripte",
     "Build 239: persönliche Twinkey-Begrüßung mit dem Vornamen des angemeldeten Mitglieds",
@@ -123,8 +124,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-12T10:47:05.150Z",
-  "totalRuntimeBytes": 37069591,
+  "generatedAt": "2026-09-13T11:53:18.430Z",
+  "totalRuntimeBytes": 37071554,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -305,7 +306,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 33252,
-      "sha256": "177ed9cb5ea6f9e827812fb0708918587a8b5c287084a1cf2bef22319e671ac9",
+      "sha256": "dfb18d1ae45a3218dece3c37dcbdd03299174aded7f0b16a53dda145dcc26282",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1360,8 +1361,8 @@
     {
       "path": "src/ui/mobile-wish-matrix.js",
       "installPath": "src/ui/mobile-wish-matrix.js",
-      "bytes": 15240,
-      "sha256": "9b1882def6f17cfb44a270bfdc6d1ec2b534d6fe17c585be27b8da10c5f0f455",
+      "bytes": 17203,
+      "sha256": "2340f30ccc9135ec5c18435d46d0358439d83100013aaf08e21ee6d4899d3ae6",
       "runtime": true
     },
     {

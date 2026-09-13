@@ -1,1 +1,4 @@
+KC-DP2 0.20.0 Build 242
+- Direkter Eingabeweg: einfache Uhrzeitauswahl und Bereitschaft mit Überschneidungsprüfung.
+
 KC-DP2 0.20.0 Build 234
