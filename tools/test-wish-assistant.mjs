@@ -18,7 +18,7 @@ try{
  for(const file of ['src/core/wish-contract.js','src/core/auth.js','src/core/mobile-wish-matrix.js','src/ui/role-ux.js','src/ui/mobile-wish-matrix.js','src/ui/wish-assistant.js','src/ui/chef-companion.js','src/core/wish-demand.js','src/ui/wish-demand.js','src/ui/assistant-staffing.js'])await page.addScriptTag({content:await readFile(path.join(root,file),'utf8')});
  await page.evaluate(()=>{const K=KCDP;K.validateWish=w=>K.wishContract.validate(w);const mk=(id,type,start,end,extra={})=>({id,personId:'friend',date:'2026-12-04',start,end,wishType:type,status:'confirmed',scope:'time',wishZone:'H',comment:'',...extra});K.wishes.push(mk('f1','available',11,21),mk('f2','preferred',12,18),mk('f3','unavailable',19,20),mk('f4','if_needed',21,23),mk('f5','unavailable',11,23,{date:'2026-12-05',scope:'day'}));K.roleUx.employeeHome();});
  await page.evaluate(()=>{KCDP.testQueue=[];KCDP.sync={enqueue:op=>KCDP.testQueue.push(JSON.parse(JSON.stringify(op))),snapshot:()=>({outbox:KCDP.testQueue})};KCDP.persistAll=async()=>{KCDP.testSaved=JSON.stringify(KCDP.wishes)};});
- await page.locator('#uxStartTimes').click();assert.equal(await page.locator('.ux-methods>button').count(),5);
+ await page.locator('#uxStartTimes').click();await page.locator('#twShareContinue').click();assert.equal(await page.locator('.ux-methods>button').count(),5);
  await page.locator('#uxAssistant').click();await page.locator('[data-wa-day="2026-12-04"]').click();
  const screenshot=async name=>{await page.evaluate(()=>{document.body.scrollTo({top:0,behavior:'instant'});scrollTo({top:0,behavior:'instant'})});await page.screenshot({path:path.join(out,name),fullPage:true})};
  await screenshot('handy-assistent-start.png');

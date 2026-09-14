@@ -17,7 +17,7 @@ try{
  });
  for(const file of ['src/core/wish-contract.js','src/core/auth.js','src/core/mobile-wish-matrix.js','src/ui/role-ux.js','src/ui/mobile-wish-matrix.js','src/ui/wish-assistant.js','src/ui/chef-companion.js'])await page.addScriptTag({content:await readFile(path.join(root,file),'utf8')});
  await page.evaluate(()=>{const K=KCDP;K.validateWish=w=>K.wishContract.validate(w);const mk=(id,type,start,end,extra={})=>({id,personId:'friend',date:'2026-12-04',start,end,wishType:type,status:'confirmed',scope:'time',wishZone:'H',comment:'',...extra});K.wishes.push(mk('f1','available',11,21),mk('f2','preferred',12,18),mk('f3','unavailable',19,20),mk('f4','if_needed',21,23),mk('f5','unavailable',11,23,{date:'2026-12-05',scope:'day'}));K.planSharing=['can','wish','standby'].map(plan_kind=>({person_id:'friend',plan_kind,allow_view:true,allow_copy:true}));K.roleUx.employeeHome();});
- await page.locator('#uxStartTimes').click();await page.locator('#uxManual').click();
+ await page.locator('#uxStartTimes').click();await page.locator('#twShareContinue').click();await page.locator('#uxManual').click();
  await page.locator('#mmFriend').selectOption('friend');
  assert.match(await page.locator('.mm-day').first().innerText(),/11:00–21:00/);
  await page.evaluate(()=>{document.body.scrollTo({top:0,behavior:"instant"});scrollTo({top:0,behavior:"instant"})});await page.screenshot({path:path.join(out,'handy-tagesuebersicht.png'),fullPage:true});

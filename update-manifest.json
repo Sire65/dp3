@@ -305,8 +305,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33317,
-      "sha256": "876725d7a4f6bf1cf6cb3bc523f7f75df67fe5815c8f0810043858fa677f0979",
+      "bytes": 33297,
+      "sha256": "df3cbfabadca369e1f606a9cb7060284b375566cd82bd2e26d4ea1d15860bfd9",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1053,8 +1053,8 @@
     {
       "path": "src/ui/chef-companion.js",
       "installPath": "src/ui/chef-companion.js",
-      "bytes": 11924,
-      "sha256": "463fc233ffbbed768a29c97981f951d8e9f000a0f84d3e0a797d94b7d4133477",
+      "bytes": 13985,
+      "sha256": "a318381f4fe1e43d1c204e9e080a2d8b04fdeff050428196ba6a4dc42fe375d3",
       "runtime": true
     },
     {
@@ -1312,8 +1312,8 @@
     {
       "path": "src/ui/member-opportunities.js",
       "installPath": "src/ui/member-opportunities.js",
-      "bytes": 9756,
-      "sha256": "6915fcca52abb971c89798f2b65f1dd0f26dcd7e597ae9763613861d2a9005a9",
+      "bytes": 10160,
+      "sha256": "1d76b542fc0639eb4dd7861d783edf7ef0bd07dfa9a4ae6d9ec3c93153bb635e",
       "runtime": true
     },
     {
@@ -1361,8 +1361,8 @@
     {
       "path": "src/ui/mobile-wish-matrix.js",
       "installPath": "src/ui/mobile-wish-matrix.js",
-      "bytes": 18062,
-      "sha256": "5b53d36d6495b43af96feba61ac3b333e5f202a836cb2eb3a23644e4ada3a673",
+      "bytes": 18330,
+      "sha256": "21a7b3c483696ff3a8d8937628088140d0f9ad19c3de216cb14d358fe9464d70",
       "runtime": true
     },
     {
@@ -1753,8 +1753,8 @@
     {
       "path": "src/ui/role-ux.js",
       "installPath": "src/ui/role-ux.js",
-      "bytes": 95173,
-      "sha256": "b09838337b671706fe0336d43ae7319c5905d6a1ba0bcf67de52e6a951e9eedd",
+      "bytes": 95223,
+      "sha256": "55d647c375bc4435927acae95a2275e4d88d9023d6bc826b725161b382b05494",
       "runtime": true
     },
     {
@@ -1900,8 +1900,8 @@
     {
       "path": "src/ui/twinkey.js",
       "installPath": "src/ui/twinkey.js",
-      "bytes": 19602,
-      "sha256": "74fdf6c8fb0b6478fa0eee4b2ca1423fc7eaefc8d8a4cd35b17c5a57a901800b",
+      "bytes": 17121,
+      "sha256": "591552ac41b7356d7b3f75e84a7ea8b44a96c634459e9ebea05b3c675f8b142e",
       "runtime": true
     },
     {
