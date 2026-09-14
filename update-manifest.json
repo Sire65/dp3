@@ -305,8 +305,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33296,
-      "sha256": "7ca5cfe9f528224c4bbcfd33381560a34bbbdf52713529d512f3bd9c7967b74e",
+      "bytes": 33317,
+      "sha256": "876725d7a4f6bf1cf6cb3bc523f7f75df67fe5815c8f0810043858fa677f0979",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1053,8 +1053,8 @@
     {
       "path": "src/ui/chef-companion.js",
       "installPath": "src/ui/chef-companion.js",
-      "bytes": 12910,
-      "sha256": "d2e6e750e2753f0c24c5f7c18de9a5ea4d4793ae10407446c25deb9a7bf2c511",
+      "bytes": 11924,
+      "sha256": "463fc233ffbbed768a29c97981f951d8e9f000a0f84d3e0a797d94b7d4133477",
       "runtime": true
     },
     {
@@ -1900,8 +1900,8 @@
     {
       "path": "src/ui/twinkey.js",
       "installPath": "src/ui/twinkey.js",
-      "bytes": 17738,
-      "sha256": "da38f61d40e2d402c5f682cb4bed4755dca99fa6cadb5e0e130d6008a85bfd4a",
+      "bytes": 19602,
+      "sha256": "74fdf6c8fb0b6478fa0eee4b2ca1423fc7eaefc8d8a4cd35b17c5a57a901800b",
       "runtime": true
     },
     {
