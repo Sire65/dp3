@@ -16,7 +16,7 @@ try{
   window.KCDP={days:[{date:'2026-12-04',start:11,end:23,type:'market'},{date:'2026-12-05',start:11,end:23,type:'market'},{date:'2026-12-06',start:11,end:23,type:'market'}],people:[{personId:'me',name:'Anna Beispiel',active:true,personType:'member'},{personId:'friend',name:'Bernd Beispiel',active:true,personType:'member'}],currentUser:{personId:'me',displayName:'Anna Beispiel',role:'employee'},state:{wishPhase:'open'},workflow:{status:'draft'},wishes:[],eventConfig:{name:'Weihnachtsmarkt 2026'},memberUxData:{},persistAll:async()=>{},requirementFor:()=>({total:2}),person(id){return this.people.find(p=>p.personId===id)}};
  });
  for(const file of ['src/core/wish-contract.js','src/core/auth.js','src/core/mobile-wish-matrix.js','src/ui/role-ux.js','src/ui/mobile-wish-matrix.js','src/ui/wish-assistant.js','src/ui/chef-companion.js'])await page.addScriptTag({content:await readFile(path.join(root,file),'utf8')});
- await page.evaluate(()=>{const K=KCDP;K.validateWish=w=>K.wishContract.validate(w);const mk=(id,type,start,end,extra={})=>({id,personId:'friend',date:'2026-12-04',start,end,wishType:type,status:'confirmed',scope:'time',wishZone:'H',comment:'',...extra});K.wishes.push(mk('f1','available',11,21),mk('f2','preferred',12,18),mk('f3','unavailable',19,20),mk('f4','if_needed',21,23),mk('f5','unavailable',11,23,{date:'2026-12-05',scope:'day'}));K.roleUx.employeeHome();});
+ await page.evaluate(()=>{const K=KCDP;K.validateWish=w=>K.wishContract.validate(w);const mk=(id,type,start,end,extra={})=>({id,personId:'friend',date:'2026-12-04',start,end,wishType:type,status:'confirmed',scope:'time',wishZone:'H',comment:'',...extra});K.wishes.push(mk('f1','available',11,21),mk('f2','preferred',12,18),mk('f3','unavailable',19,20),mk('f4','if_needed',21,23),mk('f5','unavailable',11,23,{date:'2026-12-05',scope:'day'}));K.planSharing=['can','wish','standby'].map(plan_kind=>({person_id:'friend',plan_kind,allow_view:true,allow_copy:true}));K.roleUx.employeeHome();});
  await page.locator('#uxStartTimes').click();await page.locator('#uxManual').click();
  await page.locator('#mmFriend').selectOption('friend');
  assert.match(await page.locator('.mm-day').first().innerText(),/11:00–21:00/);
@@ -53,10 +53,12 @@ try{
  await page.evaluate(()=>{KCDP.state.wishPhase='closed';KCDP.mobileMatrixUi.entry('2026-12-04')});
  assert.equal(await page.locator('#mmSave').count(),0);
  assert.equal(await page.locator('[data-add=available]').isDisabled(),true);
+ await page.evaluate(()=>{KCDP.state.wishPhase='open';KCDP.planSharing=[];KCDP.mobileMatrixUi.friend('friend','2026-12-04')});assert.match(await page.locator('.ux-card').innerText(),/weder angesehen noch übernommen/);assert.equal(await page.locator('[data-copy-id]').count(),0,'Locked colleague times must not be rendered');
  const locked=await page.evaluate(async()=>{try{await KCDP.mobileWishMatrix.copy('friend',['f1']);return false}catch{return true}});assert.equal(locked,true);
  await page.evaluate(()=>{KCDP.state.wishPhase='open';KCDP.mobileMatrixUi.overview()});
  for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:900});assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,`Overflow at ${width}`);}
  await page.screenshot({path:path.join(out,'desktop-tagesuebersicht.png'),fullPage:true});
+ await page.evaluate(()=>{KCDP.planSharing=['can','wish','standby'].map(plan_kind=>({person_id:'friend',plan_kind,allow_view:true,allow_copy:true}))});
  const extra=await page.evaluate(async()=>{
  const K=KCDP,M=K.mobileWishMatrix,day='2026-12-04',base={personId:'me',date:day,start:11,end:21,wishType:'available',scope:'time',wishZone:'B',comment:'',status:'confirmed'};
  const tests={};

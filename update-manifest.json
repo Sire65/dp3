@@ -305,8 +305,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33252,
-      "sha256": "dfb18d1ae45a3218dece3c37dcbdd03299174aded7f0b16a53dda145dcc26282",
+      "bytes": 33296,
+      "sha256": "7ca5cfe9f528224c4bbcfd33381560a34bbbdf52713529d512f3bd9c7967b74e",
       "runtime": true,
       "forceRefresh": true
     },
@@ -752,8 +752,8 @@
     {
       "path": "src/core/mobile-wish-matrix.js",
       "installPath": "src/core/mobile-wish-matrix.js",
-      "bytes": 5499,
-      "sha256": "694e9b20083458d157c8f4279144ef9dbe645da5e0c6a9dfb013f2881fca1471",
+      "bytes": 6061,
+      "sha256": "82646fac19db5a2e0e209d3f550031701c9bd0f56b839e8ee41459d7ddf712a8",
       "runtime": true
     },
     {
@@ -1053,8 +1053,8 @@
     {
       "path": "src/ui/chef-companion.js",
       "installPath": "src/ui/chef-companion.js",
-      "bytes": 11924,
-      "sha256": "463fc233ffbbed768a29c97981f951d8e9f000a0f84d3e0a797d94b7d4133477",
+      "bytes": 12910,
+      "sha256": "d2e6e750e2753f0c24c5f7c18de9a5ea4d4793ae10407446c25deb9a7bf2c511",
       "runtime": true
     },
     {
@@ -1361,8 +1361,8 @@
     {
       "path": "src/ui/mobile-wish-matrix.js",
       "installPath": "src/ui/mobile-wish-matrix.js",
-      "bytes": 17203,
-      "sha256": "2340f30ccc9135ec5c18435d46d0358439d83100013aaf08e21ee6d4899d3ae6",
+      "bytes": 18062,
+      "sha256": "5b53d36d6495b43af96feba61ac3b333e5f202a836cb2eb3a23644e4ada3a673",
       "runtime": true
     },
     {
@@ -1795,8 +1795,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 45423,
-      "sha256": "3763a7bbd6217b615900a40f3c20db746c1661417ee8bedd254e4660115715aa",
+      "bytes": 45877,
+      "sha256": "894def1ccfd34cd1b6567d45990448cb6665deabd4973f88f166a57eeb67dc5f",
       "runtime": true
     },
     {

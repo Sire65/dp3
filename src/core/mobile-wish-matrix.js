@@ -4,6 +4,8 @@ const K=window.KCDP,active=w=>!['deleted','cancelled'].includes(w.status);
 const rows=(personId,date)=>K.wishes.filter(w=>active(w)&&w.personId===personId&&(!date||w.date===date));
 const overlap=(a,b)=>a.date===b.date&&Math.max(a.start,b.start)<Math.min(a.end,b.end);
 const same=(a,b)=>a.date===b.date&&a.start===b.start&&a.end===b.end&&a.wishType===b.wishType&&(a.wishType==='unavailable'||(a.wishZone||'B')===(b.wishZone||'B'))&&(a.scope||'time')===(b.scope||'time');
+function colleagueCopyAllowed(personId){if(!personId||personId===K.currentUser?.personId)return false;const list=Array.isArray(K.planSharing)?K.planSharing:[];return ['can','wish'].some(kind=>list.some(r=>String(r.person_id)===String(personId)&&r.plan_kind===kind&&r.allow_view===true&&r.allow_copy===true));}
+function assertColleagueCopyAllowed(personId){if(!colleagueCopyAllowed(personId))throw Error('🔒 Diese Person hat ihre Zeiten nicht für Kollegen freigegeben.');}
 function assertEditable(personId){
  if(!personId||personId!==K.currentUser?.personId)throw Error('Bitte mit Ihrem eigenen Zugang anmelden.');
  if(K.state.wishPhase!=='open'||K.workflow?.status==='published')throw Error('Die Wunschphase ist geschlossen.');
@@ -30,6 +32,7 @@ function validate(list){
  return [...new Set(errors)];
 }
 function copyPreview(sourceId,ids){
+ assertColleagueCopyAllowed(sourceId);
  const own=rows(K.currentUser?.personId),source=rows(sourceId).filter(w=>ids.includes(w.id)),add=[];
  for(const w of source)if(!own.concat(add).some(x=>same(x,w)))add.push({date:w.date,start:w.start,end:w.end,wishType:w.wishType,scope:w.scope||K.wishContract?.inferScope(w)||'time',wishZone:w.wishZone||'B',personId:K.currentUser?.personId,source:'colleague_copy',sourcePersonId:sourceId,sourceWishId:w.id,comment:`Vorlage von ${K.person(sourceId)?.name||'Freund'}`,status:'confirmed',confidence:1});
  const dates=new Set(add.map(w=>w.date));
@@ -65,5 +68,5 @@ async function copy(sourceId,ids){
  const personId=K.currentUser.personId,dates=[...new Set(preview.add.map(w=>w.date))],own=rows(personId).filter(w=>dates.includes(w.date));
  if(preview.add.length)await save(personId,dates,own.concat(preview.add),JSON.stringify(own));return preview;
 }
-K.mobileWishMatrix={rows,validate,save,copy,copyPreview,same,assertEditable};
+K.mobileWishMatrix={rows,validate,save,copy,copyPreview,same,assertEditable,colleagueCopyAllowed,assertColleagueCopyAllowed};
 })();
