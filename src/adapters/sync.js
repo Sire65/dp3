@@ -83,28 +83,65 @@
   }
 
   function collectionFor(entity){if(entity==='shift')return K.shifts;if(entity==='wish')return K.wishes;if(entity==='standby')return K.standby;if(entity==='member_shift_offer')return K.memberShiftOffers;return null;}
+  function entityIdFor(op){
+    if(op.entity==='person_rules')return op.payload?.personId||op.entityId||null;
+    if(op.entity==='day_config'||op.entity==='demand_matrix'||op.entity==='plan_day')return op.payload?.date||op.entityId||null;
+    return op.payload?.id||op.entityId||null;
+  }
+  function matchingPending(op){
+    const id=entityIdFor(op);
+    return K.syncOutbox.filter(x=>x.status!=='sent'&&x.entity===op.entity&&entityIdFor(x)===id);
+  }
+  function holdForRemoteConflict(op,local){
+    const pending=matchingPending(op);
+    if(!pending.length)return false;
+    pending.forEach(x=>{x.status='conflict';x.lastError='Remote-Stand zuerst geladen; lokale Änderung wartet auf Konfliktentscheidung.';});
+    const already=K.syncConflicts.some(x=>x.status==='open'&&x.entity===op.entity&&entityIdFor({entity:x.entity,payload:x.local||{},entityId:x.entityId})===entityIdFor(op));
+    if(!already)K.syncConflicts.push({
+      id:`CON-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
+      operationId:op.operationId||null,entity:op.entity,entityId:entityIdFor(op),
+      local:local==null?null:JSON.parse(JSON.stringify(local)),remote:op.payload||null,
+      detectedAt:new Date().toISOString(),status:'open',source:'pull-first'
+    });
+    return true;
+  }
   function applyRemote(op){
     if(op.entity==='person_rules'){
       const id=op.payload?.personId||op.entityId;if(!id)return;
       K.personRules=K.personRules||{};
-      if(K.syncOutbox.some(x=>x.status!=='sent'&&x.entity==='person_rules'&&x.payload?.personId===id)){
-        if(!K.syncConflicts.some(x=>x.status==='open'&&x.operationId===op.operationId&&x.entity==='person_rules'))K.syncConflicts.push({id:'CON-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),operationId:op.operationId,entity:'person_rules',local:K.personRules[id]||null,remote:op.payload,detectedAt:new Date().toISOString(),status:'open',source:'pull'});
-        return;
-      }
+      if(holdForRemoteConflict(op,K.personRules[id]||null))return;
       K.personRules[id]=JSON.parse(JSON.stringify(op.payload));return;
     }
-    if(op.entity==='day_config'){const date=op.payload?.date||op.entityId;if(date)K.daySettings[date]=JSON.parse(JSON.stringify(op.payload));return;}
-    if(op.entity==='demand_matrix'){if(op.payload?.date&&Array.isArray(op.payload.rows))K.demandMatrix[op.payload.date]=JSON.parse(JSON.stringify(op.payload.rows));return;}
-    if(op.entity==='plan_day'&&Array.isArray(op.payload?.shifts)){K.shifts=K.shifts.filter(s=>!(s.date===op.payload.date&&s.layer==='planned'));K.shifts.push(...op.payload.shifts.map(x=>({...x})));return;}
-    const list=collectionFor(op.entity);if(!list)return;const payload=op.payload||{},id=payload.id||op.entityId;if(!id)return;let local=list.find(x=>x.id===id);
-    const pending=K.syncOutbox.some(x=>x.status!=='sent'&&x.entity===op.entity&&(x.payload?.id===id));if(pending){K.syncConflicts.push({id:`CON-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,operationId:op.operationId||null,entity:op.entity,local:local?JSON.parse(JSON.stringify(local)):null,remote:payload,detectedAt:new Date().toISOString(),status:'open',source:'pull'});return;}
-    if(op.operation==='delete'||payload.status==='deleted'){if(local)Object.assign(local,payload,{status:'deleted'});else list.push({...payload,id,status:'deleted'});return;}
+    if(op.entity==='day_config'){
+      const date=op.payload?.date||op.entityId;if(!date)return;
+      if(holdForRemoteConflict(op,K.daySettings?.[date]||null))return;
+      K.daySettings[date]=JSON.parse(JSON.stringify(op.payload));return;
+    }
+    if(op.entity==='demand_matrix'){
+      const date=op.payload?.date||op.entityId;if(!date||!Array.isArray(op.payload?.rows))return;
+      if(holdForRemoteConflict(op,K.demandMatrix?.[date]||null))return;
+      K.demandMatrix[date]=JSON.parse(JSON.stringify(op.payload.rows));return;
+    }
+    if(op.entity==='plan_day'&&Array.isArray(op.payload?.shifts)){
+      const date=op.payload?.date||op.entityId;if(!date)return;
+      const localDay=(K.shifts||[]).filter(s=>s.date===date&&s.layer==='planned');
+      if(holdForRemoteConflict(op,localDay))return;
+      K.shifts=K.shifts.filter(s=>!(s.date===date&&s.layer==='planned'));
+      K.shifts.push(...op.payload.shifts.map(x=>({...x})));return;
+    }
+    const list=collectionFor(op.entity);if(!list)return;
+    const payload=op.payload||{},id=payload.id||op.entityId;if(!id)return;
+    let local=list.find(x=>x.id===id);
+    if(holdForRemoteConflict(op,local||null))return;
+    if(op.operation==='delete'||payload.status==='deleted'){
+      if(local)Object.assign(local,payload,{status:'deleted'});else list.push({...payload,id,status:'deleted'});return;
+    }
     if(local)Object.assign(local,payload);else list.push({...payload,id});
   }
   async function pull(){
     await requireTransport();if(!provider)throw new Error('Supabase-Provider ist nicht verbunden.');
     const key=await ensureRemoteKey();setStatus('syncing');emit('traffic',{direction:'tx'});
-    try{const res=await provider({action:'pull',contract:'KC_DP_SYNC_V1',cursor:state.cursor,syncNamespace:key.namespace});emit('traffic',{direction:'rx'});let applied=0;for(const wire of res?.wireOperations||[]){const op=wire.envelope?await KCSecureSync.decryptEnvelope(wire.envelope,{secret:key.secret,projectId:key.namespace}):wire.operation;if(op){applyRemote(op);applied++;}}state.cursor=res?.cursor??state.cursor;state.lastSyncAt=new Date().toISOString();setStatus(state.maintenance?'maintenance':'ready');K.recordAudit?.('sync.pull',{entity:'sync',after:{applied,cursor:state.cursor,generation:key.generation}});return {applied,cursor:state.cursor,conflicts:K.syncConflicts.filter(x=>x.status==='open').length,generation:key.generation};}catch(e){setStatus('error',e.message);throw e;}
+    try{const res=await provider({action:'pull',contract:'KC_DP_SYNC_V1',cursor:state.cursor,syncNamespace:key.namespace});emit('traffic',{direction:'rx'});let applied=0;for(const wire of res?.wireOperations||[]){const op=wire.envelope?await KCSecureSync.decryptEnvelope(wire.envelope,{secret:key.secret,projectId:key.namespace}):wire.operation;if(op){applyRemote(op);applied++;}}state.cursor=res?.cursor??state.cursor;state.lastSyncAt=new Date().toISOString();await persistQueue();setStatus(state.maintenance?'maintenance':'ready');K.recordAudit?.('sync.pull',{entity:'sync',after:{applied,cursor:state.cursor,generation:key.generation}});return {applied,cursor:state.cursor,conflicts:K.syncConflicts.filter(x=>x.status==='open').length,generation:key.generation};}catch(e){setStatus('error',e.message);throw e;}
   }
   async function publishBaseline({confirmed=false}={}){
     K.auth?.require?.('roster.sync.run','Sie dürfen keinen Cloud-Ausgangsstand veröffentlichen.');
@@ -121,9 +158,9 @@
     for(const [date,rows] of Object.entries(K.demandMatrix||{})){enqueue({entity:'demand_matrix',operation:'baseline',payload:{date,rows:JSON.parse(JSON.stringify(rows))},baseVersion:null});staged++;}
     await persistQueue();const pushed=await flush(),pulled=await pull();K.recordAudit?.('sync.baseline.publish',{entity:'sync',after:{staged,sent:pushed.sent,generation:key.generation,namespace:key.namespace}});return {staged,pushed,pulled,generation:key.generation};
   }
-  async function syncBoth(){const pushed=await flush();const pulled=await pull();return {pushed,pulled};}
+  async function syncBoth(){const pulledBefore=await pull();const pushed=await flush();const pulled=await pull();return {pulledBefore,pushed,pulled};}
   K.sync={
-    version:'0.16.0',state,
+    version:'0.16.1-cloud-first',state,
     setProvider(fn){provider=typeof fn==='function'?fn:null;setStatus(provider?'ready':'offline');},setSecretProvider(fn){secretProvider=typeof fn==='function'?fn:secretProvider;},resetRemoteKey(){remoteKeyContext=null;remoteKeyPromise=null;},hasProvider(){return !!provider;},
     publishBaseline,on(fn){if(typeof fn==='function')listeners.add(fn);return()=>listeners.delete(fn);},enqueue,healthCheck,flush,pull,syncBoth,resolveConflict,persistQueue,whenDurable:()=>durableWrite,
     restore({outbox=[],conflicts=[],meta={}}={}){K.syncOutbox=Array.isArray(outbox)?outbox:[];K.syncConflicts=Array.isArray(conflicts)?conflicts:[];Object.assign(state,meta||{});if(!provider&&state.status!=='maintenance')state.status='offline';emit('status');},
