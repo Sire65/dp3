@@ -2,6 +2,8 @@
   const K=window.KCDP=window.KCDP||{};
   const CURRENT_RELEASE='0.20.0';
   const MANIFEST_URL='update-manifest.json';
+  const REMOTE_MANIFEST_URL='https://raw.githubusercontent.com/Sire65/dp3/main/update-manifest.json';
+  const LOCAL_REPO_HOST=/^(?:127\.0\.0\.1|localhost)$/i.test(location.hostname)||location.protocol==='file:';
   const SNOOZE_MS=12*60*60*1000;
   const REPORT_QUEUE_KEY='kc_dp_pending_update_reports_v1';
   const state={status:'idle',manifest:null,lastCheckAt:null,lastError:null,phase:'idle',downloadedBytes:0,totalBytes:0};
@@ -25,7 +27,8 @@
 
   async function fetchManifest(){
     if(!/^https?:$/.test(location.protocol))throw new Error('Updateprüfung benötigt die Web-Version über HTTPS/HTTP.');
-    const r=await fetch(`${MANIFEST_URL}?t=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'}});
+    const source=LOCAL_REPO_HOST?REMOTE_MANIFEST_URL:MANIFEST_URL;
+    const r=await fetch(`${source}?t=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'}});
     if(!r.ok)throw new Error(`Update-Manifest nicht erreichbar (HTTP ${r.status}).`);
     const m=await r.json();
     if(!m||!m.version||!Array.isArray(m.files))throw new Error('Update-Manifest ist unvollständig.');
@@ -118,6 +121,7 @@
   async function flushQueuedReports(){const q=safeStoreGet(REPORT_QUEUE_KEY,[]);if(!q.length||!navigator.onLine||!K.supabaseConnection?.hasAccessToken?.())return {sent:0};const left=[];let sent=0;for(const r of q){try{await sendReport(r);sent++;}catch(_){left.push(r);}}safeStoreSet(REPORT_QUEUE_KEY,left);return {sent};}
   async function install(manifest=state.manifest){
     if(!manifest)throw new Error('Kein Update ausgewählt.');
+    if(LOCAL_REPO_HOST){const error=new Error('Lokale KC-DP2-Installation erkannt. Bitte GitHub Desktop öffnen, Repository dp3 auswählen, „Pull origin“ ausführen und KC DP2 neu laden. Dienstplandaten bleiben unverändert.');state.status='failed';state.lastError=error.message;const report=makeErrorReport(error,manifest,'git-pull-required');state.lastReport=report;window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_FAILED',{detail:{error,report,version:manifest.version}}));return {ok:false,error,report};}
     try{await stage(manifest);await activate(manifest);state.status='installed';state.phase='done';window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_SUCCESS',{detail:{version:manifest.version}}));return {ok:true,version:manifest.version};}
     catch(error){state.status='failed';state.lastError=error.message;const report=makeErrorReport(error,manifest,state.phase);state.lastReport=report;window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_FAILED',{detail:{error,report,version:manifest.version}}));return {ok:false,error,report};}
   }
@@ -127,6 +131,6 @@
   function confirmBoot(){try{const c=navigator.serviceWorker?.controller;if(c)c.postMessage({type:'KC_DP_BOOT_OK',version:CURRENT_RELEASE});}catch(_){}}
   function schedule(){ensureEngine();setTimeout(confirmBoot,5000);setTimeout(()=>{flushQueuedReports();check();},1500);setInterval(()=>flushQueuedReports(),15*60*1000);setInterval(()=>check(),5*60*1000);window.addEventListener('online',()=>{flushQueuedReports();check();});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){const last=Date.parse(state.lastCheckAt||0)||0;if(Date.now()-last>60000)check();}});}
 
-  K.updateManager={version:'0.19.45',CURRENT_RELEASE,state,check,install,snooze,reportFailure,downloadReport,flushQueuedReports,bytesText,etaText};
+  K.updateManager={LOCAL_REPO_HOST,REMOTE_MANIFEST_URL,version:'0.19.45',CURRENT_RELEASE,state,check,install,snooze,reportFailure,downloadReport,flushQueuedReports,bytesText,etaText};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
 })();
