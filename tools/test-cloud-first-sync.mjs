@@ -1,0 +1,15 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const root=path.resolve(__dirname,'..');
+const code=fs.readFileSync(path.join(root,'src/adapters/sync.js'),'utf8');
+assert.match(code,/version:'0\.16\.1-cloud-first'/);
+assert.match(code,/function holdForRemoteConflict/);
+assert.match(code,/x\.status='conflict'/);
+assert.match(code,/source:'pull-first'/);
+assert.match(code,/if\(holdForRemoteConflict\(op,K\.daySettings\?\.\[date\]/);
+assert.match(code,/if\(holdForRemoteConflict\(op,K\.demandMatrix\?\.\[date\]/);
+assert.match(code,/if\(holdForRemoteConflict\(op,localDay\)\)return/);
+assert.match(code,/async function syncBoth\(\)\{const pulledBefore=await pull\(\);const pushed=await flush\(\);const pulled=await pull\(\)/);
+assert.match(code,/state\.lastSyncAt=new Date\(\)\.toISOString\(\);await persistQueue\(\)/);
+console.log('KC DP Cloud-first: Pull vor Push, lokale Pending werden bei Remote-Konflikt nicht gesendet.');
