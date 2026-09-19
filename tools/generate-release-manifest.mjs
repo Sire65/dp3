@@ -45,6 +45,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey',
     'Build 242: direkter Eingabeweg mit einfacher Uhrzeitauswahl und Bereitschaft',
     'Build 241: verbesserte Handschrifterkennung mit Fotoqualitätsprüfung, adaptiver Bildaufbereitung und regelgestützter Uhrzeitenwahl',
     'Build 240: schnellerer Programmstart durch gebündelte Stylesheets und paralleles Laden der Skripte',

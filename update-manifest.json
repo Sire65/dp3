@@ -5,6 +5,7 @@
   "build": 242,
   "cacheName": "kc-dp-release-0.20.0-b242",
   "releaseNotes": [
+    "Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey",
     "Build 242: direkter Eingabeweg mit einfacher Uhrzeitauswahl und Bereitschaft",
     "Build 241: verbesserte Handschrifterkennung mit Fotoqualitätsprüfung, adaptiver Bildaufbereitung und regelgestützter Uhrzeitenwahl",
     "Build 240: schnellerer Programmstart durch gebündelte Stylesheets und paralleles Laden der Skripte",
@@ -124,8 +125,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-13T11:53:18.430Z",
-  "totalRuntimeBytes": 37071554,
+  "generatedAt": "2026-09-19T15:51:22.301Z",
+  "totalRuntimeBytes": 37080712,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -305,8 +306,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33297,
-      "sha256": "df3cbfabadca369e1f606a9cb7060284b375566cd82bd2e26d4ea1d15860bfd9",
+      "bytes": 33306,
+      "sha256": "28c24ff70f7e6a3ebe98c3b70fbd46276dda477dfc4488db1ff2fccf922ece51",
       "runtime": true,
       "forceRefresh": true
     },
@@ -521,8 +522,8 @@
     {
       "path": "src/adapters/sync.js",
       "installPath": "src/adapters/sync.js",
-      "bytes": 13748,
-      "sha256": "64b14c29433d161f19759b84ef6d6c0bfe953f98aa2296ffd3224d747d299d2b",
+      "bytes": 14782,
+      "sha256": "099b186e1f03729e25c6d246b27684d963a049d4123c12d96cdf6b92572911b9",
       "runtime": true
     },
     {
@@ -913,8 +914,8 @@
     {
       "path": "src/core/update-manager.js",
       "installPath": "src/core/update-manager.js",
-      "bytes": 13512,
-      "sha256": "d4070884d25d6c9e5a522ab1ff6da31d28fae0e733c92511cc3f147090c5a844",
+      "bytes": 14336,
+      "sha256": "4777a1693e0356af239aeada2b3d5f4b899eabd47e24aea78766afded0918152",
       "runtime": true
     },
     {
@@ -1494,8 +1495,8 @@
     {
       "path": "src/ui/person-account-print.js",
       "installPath": "src/ui/person-account-print.js",
-      "bytes": 19234,
-      "sha256": "c3a6b807038ae6fcaae2360dd0c795e39a6bb24e2d3649763d6d2505ee40a854",
+      "bytes": 20421,
+      "sha256": "0464e1093603d8d8c4e3e4314f594afb3072c6fba3ae8fb81452b51fdd81892e",
       "runtime": true
     },
     {
@@ -1900,8 +1901,8 @@
     {
       "path": "src/ui/twinkey.js",
       "installPath": "src/ui/twinkey.js",
-      "bytes": 17121,
-      "sha256": "591552ac41b7356d7b3f75e84a7ea8b44a96c634459e9ebea05b3c675f8b142e",
+      "bytes": 19139,
+      "sha256": "5f7d3192fc8de1ae7c1a656d82f1fb7517eee087008949dc2ce3f272d63aa3e0",
       "runtime": true
     },
     {
