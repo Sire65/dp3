@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 242,
-  "cacheName": "kc-dp-release-0.20.0-b242",
+  "build": 243,
+  "cacheName": "kc-dp-release-0.20.0-b243",
   "releaseNotes": [
+    "Build 243: Personenkonto-Kontoauszug deutlich größere Schrift zum Lesen; Präsentationsbeispiel auf wenige realistische Tage verkürzt",
     "Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey",
     "Build 242: direkter Eingabeweg mit einfacher Uhrzeitauswahl und Bereitschaft",
     "Build 241: verbesserte Handschrifterkennung mit Fotoqualitätsprüfung, adaptiver Bildaufbereitung und regelgestützter Uhrzeitenwahl",
@@ -125,8 +126,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-19T15:51:22.301Z",
-  "totalRuntimeBytes": 37080712,
+  "generatedAt": "2026-09-21T07:16:20.005Z",
+  "totalRuntimeBytes": 37080606,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -306,8 +307,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33306,
-      "sha256": "28c24ff70f7e6a3ebe98c3b70fbd46276dda477dfc4488db1ff2fccf922ece51",
+      "bytes": 33313,
+      "sha256": "a45432b1335e8407d06c18c91adf5e3f70c0b6173cab93d98b3a35396e4d1a66",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1495,8 +1496,8 @@
     {
       "path": "src/ui/person-account-print.js",
       "installPath": "src/ui/person-account-print.js",
-      "bytes": 20421,
-      "sha256": "0464e1093603d8d8c4e3e4314f594afb3072c6fba3ae8fb81452b51fdd81892e",
+      "bytes": 20308,
+      "sha256": "b2da7781090cb885626fc60c4fcda33cefcde6c89cc91ec2d8966856b4df16c5",
       "runtime": true
     },
     {
