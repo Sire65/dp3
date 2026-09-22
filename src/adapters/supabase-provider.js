@@ -125,6 +125,14 @@
    throw new Error('Keine gültige Supabase-Auth-Sitzung. Bitte anmelden oder Auth-Token übernehmen.');
  }
  async function api(path,opt={}){await ensureSession();return raw(path,opt,true);}
+ // Sollplan an den PC-Manager veroeffentlichen (Gegenrichtung zu den bereits bestehenden
+ // Ist-Zeiten, die der Manager per kc_dp_timeclock_publish HIER hereinschreibt). Rein additiv,
+ // ruft nur die neue Datenbankfunktion auf - siehe plan-manager-bridge.js fuer den Aufrufer.
+ async function publishPlan({eventId,rows}){
+  const c=validateConfig();
+  const {data}=await api('/rest/v1/rpc/kc_dp_plan_publish',{method:'POST',body:JSON.stringify({p_org_id:c.orgId,p_event_id:String(eventId||c.projectId||'KC_DP'),p_rows:rows})});
+  return data;
+ }
  async function provider(req){const c=validateConfig();try{
    const syncProjectId=String(req.syncNamespace||req.wireOperation?.syncNamespace||c.projectId);
    if(req.action==='health'){state.status='checking';const {data}=await api(`/rest/v1/kc_dp_sync_operations?select=seq,operation_id&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(syncProjectId)}&limit=1`,{method:'GET'});state.status='ready';state.lastHealthAt=new Date().toISOString();state.lastError=null;return {ok:true,rows:Array.isArray(data)?data.length:0,userId:state.userId};}
@@ -150,6 +158,6 @@
  async function updateSyncTest(id,patch){return rest('kc_dp_sync_test_runs',{method:'PATCH',query:`?id=eq.${encodeURIComponent(id)}`,body:{...patch,updated_at:new Date().toISOString()}});}
  async function listServerConflicts(){const c=validateConfig();return rest('kc_dp_sync_conflicts',{query:`?select=id,entity,entity_id,operation_id,device_id,base_version,remote_version,status,detected_at,resolved_at&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(c.projectId)}&order=detected_at.desc&limit=50`});}
  async function resolveServerConflict(id,status,resolution={}){return rest('kc_dp_sync_conflicts',{method:'PATCH',query:`?id=eq.${encodeURIComponent(id)}`,body:{status,resolution,resolved_at:new Date().toISOString()}});}
- K.supabaseConnection={version:'0.20.0-sync-g2',contract:'KC_DP_SUPABASE_SYNC_V1',state,configure,configureIfPossible,setAccessToken,restoreSession,persistSession:saveSession,sessionSnapshot:()=>session?JSON.parse(JSON.stringify(session)):null,clearSession,hasAccessToken:()=>!!session?.access_token,signInAnonymously,signInWithPassword,sendOtp,verifyOtp,requestPasswordReset,updatePassword,readPlanSharing,savePlanSharing,currentMembership,memberProvisioningTargets,listMemberAccess,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,sendClientReport,getSyncKey,signOut,refreshSession,ensureSession,test,testProject,probeDatabase,probeRls,probeRoundtrip,registerDevice,listDevices,createSyncTest,listSyncTests,updateSyncTest,listServerConflicts,resolveServerConflict,transportDiagnosis,provider,validateConfig};
+ K.supabaseConnection={version:'0.20.0-sync-g2',contract:'KC_DP_SUPABASE_SYNC_V1',state,configure,configureIfPossible,setAccessToken,restoreSession,persistSession:saveSession,sessionSnapshot:()=>session?JSON.parse(JSON.stringify(session)):null,clearSession,hasAccessToken:()=>!!session?.access_token,signInAnonymously,signInWithPassword,sendOtp,verifyOtp,requestPasswordReset,updatePassword,readPlanSharing,savePlanSharing,publishPlan,currentMembership,memberProvisioningTargets,listMemberAccess,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,sendClientReport,getSyncKey,signOut,refreshSession,ensureSession,test,testProject,probeDatabase,probeRls,probeRoundtrip,registerDevice,listDevices,createSyncTest,listSyncTests,updateSyncTest,listServerConflicts,resolveServerConflict,transportDiagnosis,provider,validateConfig};
  configureIfPossible();
 })();
