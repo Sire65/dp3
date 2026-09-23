@@ -129,8 +129,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-23T05:31:00.000Z",
-  "totalRuntimeBytes": 37085086,
+  "generatedAt": "2026-09-23T05:34:00.000Z",
+  "totalRuntimeBytes": 37085260,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -813,8 +813,8 @@
     {
       "path": "src/core/plan-manager-bridge.js",
       "installPath": "src/core/plan-manager-bridge.js",
-      "bytes": 3441,
-      "sha256": "f11adafe9cce62d340479bb7c4bf2678063c7a002dd2997fb427dd130829559f",
+      "bytes": 3615,
+      "sha256": "b723a2429a7c0793030e5e7cac59df5162994839a8b75a740812ffd8ada55741",
       "runtime": true
     },
     {
