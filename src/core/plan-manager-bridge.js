@@ -13,7 +13,7 @@
 (function () {
   'use strict';
   const K = (window.KCDP = window.KCDP || {});
-  const VERSION = '0.1.0';
+  const VERSION = '0.2.0';
   const VORSCHAU_TAGE = 30; // "die naechsten Tage" - genug fuer mehrere Wochen Blaetterpfeil,
                              // ohne bei jedem Takt unnoetig viel zu uebertragen
 
@@ -27,13 +27,23 @@
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }
 
+  function lokalesIsoDatum(datum = new Date()) {
+    const y = datum.getFullYear();
+    const m = String(datum.getMonth() + 1).padStart(2, '0');
+    const d = String(datum.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
+  }
+
   function heute() {
-    return new Date().toISOString().slice(0, 10);
+    return lokalesIsoDatum();
   }
 
   function baueZeilen() {
-    const start = heute();
-    const ende = new Date(Date.now() + VORSCHAU_TAGE * 86400000).toISOString().slice(0, 10);
+    const startDatum = new Date();
+    const endeDatum = new Date(startDatum);
+    endeDatum.setDate(endeDatum.getDate() + VORSCHAU_TAGE);
+    const start = lokalesIsoDatum(startDatum);
+    const ende = lokalesIsoDatum(endeDatum);
     return (K.shifts || [])
       .filter((s) => s.layer === 'planned' && s.date >= start && s.date <= ende && !INAKTIV.has(s.status))
       .filter((s) => K.personPlanningAllowed ? K.personPlanningAllowed(s.personId) : true)
