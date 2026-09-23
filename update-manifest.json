@@ -5,6 +5,7 @@
   "build": 243,
   "cacheName": "kc-dp-release-0.20.0-b243",
   "releaseNotes": [
+    "Build 243: Dienstplan-Brücke zu PC-Manager/Kasse im Laufzeitmanifest registriert und lokale Datumsgrenzen abgesichert",
     "Build 243: Personenkonto-Kontoauszug deutlich größere Schrift zum Lesen; Präsentationsbeispiel auf wenige realistische Tage verkürzt",
     "Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey",
     "Build 242: direkter Eingabeweg mit einfacher Uhrzeitauswahl und Bereitschaft",
@@ -126,8 +127,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-21T07:16:20.005Z",
-  "totalRuntimeBytes": 37080606,
+  "generatedAt": "2026-09-23T05:20:00.000Z",
+  "totalRuntimeBytes": 37083783,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -805,6 +806,13 @@
       "installPath": "src/core/pilot-onboarding.js",
       "bytes": 3095,
       "sha256": "c2e57a56c0020cf842db4c8e8b71356052ff53f91e12dd931d26f43b49851421",
+      "runtime": true
+    },
+    {
+      "path": "src/core/plan-manager-bridge.js",
+      "installPath": "src/core/plan-manager-bridge.js",
+      "bytes": 3177,
+      "sha256": "8dc517efd878c52568135ac19b1583f85e7a4037c5535b0600e7c812a441f82ccbbb9d5d629a292a9159015a152fecd8673326678eb44a87db0c2e0d47b5481dae5f9156cf6c85d32f73477d6d1826ca8b43d457e360b5961c4560026f196331d94ebeb10cc4a611261dc1f25815a7be70b7ed67a1513c6944f93635720dcdfdb467369eca320b7534e0d42e49c7d9bd87abb9f2c463a2fcec3fc3f327277f6d610bebf27420b49ed1fd8a33e4773594092197f61b530c95869d6342eee52e4f1107668921fba37b43ab9fb675a9f91d86305019d7cd817307fe00ff379f513f66b651a8764ab842a4b06be1c3578c15d2962a531e039f40857b7beea29bf2de",
       "runtime": true
     },
     {
