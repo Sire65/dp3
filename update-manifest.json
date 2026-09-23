@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 248,
-  "cacheName": "kc-dp-release-0.20.0-b248",
+  "build": 249,
+  "cacheName": "kc-dp-release-0.20.0-b249",
   "releaseNotes": [
+    "Build 249: manuellen Kassen-Dienstplan-Minitest mit sicherer Start-/Aufräumroutine vorbereitet",
     "Build 248: Dienstplan-Snapshot auch bei leerem veröffentlichten Sollplan zuverlässig bereinigt",
     "Build 247: Dienstplan-Brücke final geprüft – KC-WM-2026, Europe/Berlin, Offline-Cache und Release-Sicherung",
     "Build 246: Dienstplan-Veranstaltung KC-WM-2026, Europe-Berlin-Datumslogik und vollständiger Kassen-Datenweg abgesichert",
@@ -132,7 +133,7 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-23T05:45:00.000Z",
+  "generatedAt": "2026-09-23T05:51:00.000Z",
   "totalRuntimeBytes": 37085260,
   "files": [
     {
