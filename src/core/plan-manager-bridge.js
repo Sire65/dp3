@@ -20,6 +20,7 @@
   // Dieselbe Filterung wie im bestehenden Sollplan-Dokument-Export (documents.js,
   // plannedDocument): gestrichene/ausgefallene Schichten gehoeren nicht in den Plan.
   const INAKTIV = new Set(['cancelled', 'absent', 'failed', 'deleted']);
+  const state = { lastPublishedAt: null, lastError: null, lastCount: null, eventId: null };
 
   function stunden2Uhrzeit(stunden) {
     const h = Math.max(0, Math.floor(Number(stunden) || 0));
@@ -56,7 +57,13 @@
         breakMinutes: Number(s.breakMinutes || 0),
         zone: s.zone || null,
         area: s.area || null,
-      }));
+      }))
+      .sort((a, b) =>
+        String(a.date).localeCompare(String(b.date)) ||
+        String(a.start).localeCompare(String(b.start)) ||
+        String(a.personId).localeCompare(String(b.personId)) ||
+        String(a.sourceShiftId).localeCompare(String(b.sourceShiftId))
+      );
   }
 
   async function veroeffentlicheJetzt() {
@@ -64,9 +71,19 @@
     const rows = baueZeilen();
     // Auch ein LEERER Plan wird veroeffentlicht (z.B. ausserhalb der Saison) - sonst wuerde
     // die Kasse einfach den letzten, inzwischen veralteten Stand weiter anzeigen.
-    const eventId = (K.integrationConfig?.supabase?.projectId) || 'KC_DP';
-    return K.supabaseConnection.publishPlan({ eventId, rows });
+    const eventId = K.eventConfig?.eventId || 'KC-WM-2026';
+    state.eventId = eventId;
+    try {
+      const result = await K.supabaseConnection.publishPlan({ eventId, rows });
+      state.lastPublishedAt = new Date().toISOString();
+      state.lastCount = rows.length;
+      state.lastError = null;
+      return result;
+    } catch (e) {
+      state.lastError = e?.message || String(e);
+      throw e;
+    }
   }
 
-  K.planManagerBridge = { version: VERSION, publishNow: veroeffentlicheJetzt, buildRows: baueZeilen };
+  K.planManagerBridge = { version: VERSION, state, publishNow: veroeffentlicheJetzt, buildRows: baueZeilen, today: heute };
 })();
