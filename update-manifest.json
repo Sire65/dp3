@@ -128,8 +128,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-23T05:26:00.000Z",
-  "totalRuntimeBytes": 37084795,
+  "generatedAt": "2026-09-23T05:23:51.434Z",
+  "totalRuntimeBytes": 37085086,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -309,8 +309,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33382,
-      "sha256": "e13af645a6b4d2026c38372ae129f7568a61f44c3f4f53d80cb007f0ad413b8c",
+      "bytes": 33409,
+      "sha256": "c966c8afdca3a92259aaa71b001cbe2fc4e32317edf065659898160a80516efc",
       "runtime": true,
       "forceRefresh": true
     },
@@ -812,8 +812,8 @@
     {
       "path": "src/core/plan-manager-bridge.js",
       "installPath": "src/core/plan-manager-bridge.js",
-      "bytes": 3177,
-      "sha256": "8dc517efd878c52568135ac19b1583f85e7a4037c5535b0600e7c812a441f82c",
+      "bytes": 3441,
+      "sha256": "f11adafe9cce62d340479bb7c4bf2678063c7a002dd2997fb427dd130829559f",
       "runtime": true
     },
     {
