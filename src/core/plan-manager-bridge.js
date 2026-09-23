@@ -27,23 +27,27 @@
     return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
   }
 
-  function lokalesIsoDatum(datum = new Date()) {
-    const y = datum.getFullYear();
-    const m = String(datum.getMonth() + 1).padStart(2, '0');
-    const d = String(datum.getDate()).padStart(2, '0');
-    return `${y}-${m}-${d}`;
+  function berlinIsoDatum(datum = new Date()) {
+    const zeitzone = K.eventConfig?.timezone || 'Europe/Berlin';
+    const teile = new Intl.DateTimeFormat('de-DE', {
+      timeZone: zeitzone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(datum);
+    const wert = (typ) => teile.find((t) => t.type === typ)?.value;
+    return `${wert('year')}-${wert('month')}-${wert('day')}`;
   }
 
   function heute() {
-    return lokalesIsoDatum();
+    return berlinIsoDatum();
   }
 
   function baueZeilen() {
-    const startDatum = new Date();
-    const endeDatum = new Date(startDatum);
-    endeDatum.setDate(endeDatum.getDate() + VORSCHAU_TAGE);
-    const start = lokalesIsoDatum(startDatum);
-    const ende = lokalesIsoDatum(endeDatum);
+    const start = heute();
+    const mittagUtc = new Date(start + 'T12:00:00Z');
+    mittagUtc.setUTCDate(mittagUtc.getUTCDate() + VORSCHAU_TAGE);
+    const ende = mittagUtc.toISOString().slice(0, 10);
     return (K.shifts || [])
       .filter((s) => s.layer === 'planned' && s.date >= start && s.date <= ende && !INAKTIV.has(s.status))
       .filter((s) => K.personPlanningAllowed ? K.personPlanningAllowed(s.personId) : true)
@@ -74,5 +78,5 @@
     return K.supabaseConnection.publishPlan({ eventId, rows });
   }
 
-  K.planManagerBridge = { version: VERSION, publishNow: veroeffentlicheJetzt, buildRows: baueZeilen };
+  K.planManagerBridge = { version: VERSION, publishNow: veroeffentlicheJetzt, buildRows: baueZeilen, today: heute };
 })();
