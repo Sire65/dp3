@@ -1,0 +1,37 @@
+name: Dienstplan Bridge Regression
+
+on:
+  pull_request:
+    paths:
+      - 'src/core/plan-manager-bridge.js'
+      - 'src/core/auto-sync.js'
+      - 'src/adapters/supabase-provider.js'
+      - 'supabase/migrations/**'
+      - 'tools/test-plan-manager-bridge.mjs'
+      - 'index.html'
+      - 'update-manifest.json'
+      - '.github/workflows/dienstplan-bridge-regression.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'src/core/plan-manager-bridge.js'
+      - 'src/core/auto-sync.js'
+      - 'src/adapters/supabase-provider.js'
+      - 'supabase/migrations/**'
+      - 'tools/test-plan-manager-bridge.mjs'
+      - 'index.html'
+      - 'update-manifest.json'
+      - '.github/workflows/dienstplan-bridge-regression.yml'
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Sollplan-Bruecke testen
+        run: node tools/test-plan-manager-bridge.mjs
+      - name: Release-Manifest pruefen
+        run: node tools/verify-release.mjs
