@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 243,
-  "cacheName": "kc-dp-release-0.20.0-b243",
+  "build": 244,
+  "cacheName": "kc-dp-release-0.20.0-b244",
   "releaseNotes": [
+    "Build 244: Dienstplan-Brücke zu PC-Manager/Kasse mit lokalem Kalendertag und vollständigem Release-Manifest",
     "Build 243: Dienstplan-Brücke zu PC-Manager/Kasse im Laufzeitmanifest registriert und lokale Datumsgrenzen abgesichert",
     "Build 243: Personenkonto-Kontoauszug deutlich größere Schrift zum Lesen; Präsentationsbeispiel auf wenige realistische Tage verkürzt",
     "Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey",
@@ -127,7 +128,7 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-23T05:23:00.000Z",
+  "generatedAt": "2026-09-23T05:26:00.000Z",
   "totalRuntimeBytes": 37084795,
   "files": [
     {
