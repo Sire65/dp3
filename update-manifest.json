@@ -126,8 +126,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-21T07:16:20.005Z",
-  "totalRuntimeBytes": 37080606,
+  "generatedAt": "2026-09-23T05:12:57.163Z",
+  "totalRuntimeBytes": 37085668,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -307,8 +307,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33313,
-      "sha256": "a45432b1335e8407d06c18c91adf5e3f70c0b6173cab93d98b3a35396e4d1a66",
+      "bytes": 33409,
+      "sha256": "c966c8afdca3a92259aaa71b001cbe2fc4e32317edf065659898160a80516efc",
       "runtime": true,
       "forceRefresh": true
     },
@@ -516,8 +516,8 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 24378,
-      "sha256": "7256dcf1aff1fce8775ed9a718360a81fa78b31b4b34ec5196ff6a91ffba28b5",
+      "bytes": 24939,
+      "sha256": "0f34b642187891657a294b303368610e670910e7c16135674a2fd5af2ecd2865",
       "runtime": true
     },
     {
@@ -579,8 +579,8 @@
     {
       "path": "src/core/auto-sync.js",
       "installPath": "src/core/auto-sync.js",
-      "bytes": 2003,
-      "sha256": "9d282da3a18ec9b663ff659eff4d0afe1eef6bcff7ad88e9490b24ca9f2f6125",
+      "bytes": 2385,
+      "sha256": "ab5933aadfa0ff59976296b66a6ce3106c0f06c7cb392d4f7529f933c46c410f",
       "runtime": true
     },
     {
@@ -805,6 +805,13 @@
       "installPath": "src/core/pilot-onboarding.js",
       "bytes": 3095,
       "sha256": "c2e57a56c0020cf842db4c8e8b71356052ff53f91e12dd931d26f43b49851421",
+      "runtime": true
+    },
+    {
+      "path": "src/core/plan-manager-bridge.js",
+      "installPath": "src/core/plan-manager-bridge.js",
+      "bytes": 4023,
+      "sha256": "93b0446fdbd0cfa5f843bea8ac23f1dbdd3bd5d60d6ce250f7f23dbc93e34175",
       "runtime": true
     },
     {
