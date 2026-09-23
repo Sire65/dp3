@@ -56,7 +56,13 @@
         breakMinutes: Number(s.breakMinutes || 0),
         zone: s.zone || null,
         area: s.area || null,
-      }));
+      }))
+      .sort((a, b) =>
+        String(a.date).localeCompare(String(b.date)) ||
+        String(a.start).localeCompare(String(b.start)) ||
+        String(a.personId).localeCompare(String(b.personId)) ||
+        String(a.sourceShiftId).localeCompare(String(b.sourceShiftId))
+      );
   }
 
   async function veroeffentlicheJetzt() {
@@ -64,7 +70,7 @@
     const rows = baueZeilen();
     // Auch ein LEERER Plan wird veroeffentlicht (z.B. ausserhalb der Saison) - sonst wuerde
     // die Kasse einfach den letzten, inzwischen veralteten Stand weiter anzeigen.
-    const eventId = (K.integrationConfig?.supabase?.projectId) || 'KC_DP';
+    const eventId = K.eventConfig?.eventId || 'KC-WM-2026';
     return K.supabaseConnection.publishPlan({ eventId, rows });
   }
 
