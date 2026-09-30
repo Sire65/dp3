@@ -1,4 +1,4 @@
-KC-DP2 0.20.0 Build 242
-- Direkter Eingabeweg: einfache Uhrzeitauswahl und Bereitschaft mit Überschneidungsprüfung.
-
-KC-DP2 0.20.0 Build 234
+KC-DP2 0.20.0 Build 250 RC
+Club-App-Schnittstelle: Tage/Bedarfe veröffentlichen, Wünsche mit Prüfung übernehmen, Bereitschaft/Freigaben/Twinkey-Status erhalten.
+Istzeiten: Event-Fallback KC-WM-2026.
+Automatisierte Prüfungen siehe docs/BUILD-250-CLUB-APP.md. FINAL erst nach Hansi-Handtest.

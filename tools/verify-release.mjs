@@ -7,6 +7,10 @@ const manifest=JSON.parse(await readFile(path.join(root,'update-manifest.json'),
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
 function canonicalData(relative,data){return canonicalTextExtensions.has(path.extname(relative).toLowerCase())?Buffer.from(data.toString('utf8').replace(/\r\n?/g,'\n'),'utf8'):data;}
 const failures=[];
+const canonical=JSON.parse(await readFile(path.join(root,'release-version.json'),'utf8'));
+const pkg=JSON.parse(await readFile(path.join(root,'package.json'),'utf8'));
+if(manifest.version!==canonical.version||manifest.build!==canonical.build||manifest.stage!==canonical.stage)failures.push('Manifest weicht vom zentralen Versionsvertrag ab.');
+if(pkg.version!==`${canonical.version}-build${canonical.build}`)failures.push('Paketversion weicht vom zentralen Versionsvertrag ab.');
 const seen=new Set();
 for(const file of manifest.files||[]){
   if(!file.path||seen.has(file.path)){failures.push(`Ungültiger/doppelter Pfad: ${file.path}`);continue;}
@@ -16,6 +20,7 @@ for(const file of manifest.files||[]){
   try{await access(absolute);const raw=await readFile(absolute);const data=canonicalData(file.path,raw);const hash=createHash('sha256').update(data).digest('hex');if(data.byteLength!==file.bytes)failures.push(`Größe: ${file.path}`);if(hash!==file.sha256)failures.push(`SHA-256: ${file.path}`);}catch{failures.push(`Fehlt: ${file.path}`);}
 }
 const index=await readFile(path.join(root,'index.html'),'utf8');
+if(!index.includes('window.KC_DP_BUILD='+canonical.build))failures.push('Laufzeit-Build weicht vom zentralen Versionsvertrag ab.');
 const referenced=[...index.matchAll(/(?:src|href)="([^"?#]+\.(?:js|css|webmanifest|png|svg|webp))/g)].map(x=>x[1]);
 for(const file of referenced)if(!seen.has(file))failures.push(`In index.html geladen, aber nicht manifestiert: ${file}`);
 const manifestBuild=Number(manifest.build);if(!Number.isInteger(manifestBuild)||manifestBuild<1)failures.push(`Ungueltiger Build im Manifest: ${manifest.build}`);

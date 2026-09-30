@@ -2,16 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 249,
-  "cacheName": "kc-dp-release-0.20.0-b249",
+  "build": 250,
+  "stage": "RC",
+  "cacheName": "kc-dp-release-0.20.0-b250",
   "releaseNotes": [
-    "Build 249: manuellen Kassen-Dienstplan-Minitest mit sicherer Start-/Aufräumroutine vorbereitet",
-    "Build 248: Dienstplan-Snapshot auch bei leerem veröffentlichten Sollplan zuverlässig bereinigt",
-    "Build 247: Dienstplan-Brücke final geprüft – KC-WM-2026, Europe/Berlin, Offline-Cache und Release-Sicherung",
-    "Build 246: Dienstplan-Veranstaltung KC-WM-2026, Europe-Berlin-Datumslogik und vollständiger Kassen-Datenweg abgesichert",
-    "Build 245: Dienstplan-Brücke vollständig freigegeben; Snapshot-Bereinigung, lokale Datumsgrenzen und Kassen-Offlineweg abgesichert",
-    "Build 244: Dienstplan-Brücke zu PC-Manager/Kasse mit lokalem Kalendertag und vollständigem Release-Manifest",
-    "Build 243: Dienstplan-Brücke zu PC-Manager/Kasse im Laufzeitmanifest registriert und lokale Datumsgrenzen abgesichert",
+    "Build 250 RC: Club-App-Tage, geprüfter Wunscheingang mit Ersetzen, Bereitschaft und Twinkey-Status; einheitliche Istzeit-Event-ID. Live-Handtest ausstehend.",
     "Build 243: Personenkonto-Kontoauszug deutlich größere Schrift zum Lesen; Präsentationsbeispiel auf wenige realistische Tage verkürzt",
     "Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey",
     "Build 242: direkter Eingabeweg mit einfacher Uhrzeitauswahl und Bereitschaft",
@@ -133,8 +128,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-23T05:51:00.000Z",
-  "totalRuntimeBytes": 37085260,
+  "generatedAt": "2026-09-30T17:19:20.111Z",
+  "totalRuntimeBytes": 37107295,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -314,8 +309,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33409,
-      "sha256": "c966c8afdca3a92259aaa71b001cbe2fc4e32317edf065659898160a80516efc",
+      "bytes": 33567,
+      "sha256": "5e0d92a5bc78ee2d09f5475ff916a4799335938f9afefed672830e1e91bfb8c3",
       "runtime": true,
       "forceRefresh": true
     },
@@ -523,15 +518,15 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 24939,
-      "sha256": "0f34b642187891657a294b303368610e670910e7c16135674a2fd5af2ecd2865",
+      "bytes": 26049,
+      "sha256": "1b39ef1a5f0a71acdf8e2d3da83365273b9ad135f551b4c9c5ead3d8b3fae32e",
       "runtime": true
     },
     {
       "path": "src/adapters/sync.js",
       "installPath": "src/adapters/sync.js",
-      "bytes": 14782,
-      "sha256": "099b186e1f03729e25c6d246b27684d963a049d4123c12d96cdf6b92572911b9",
+      "bytes": 15440,
+      "sha256": "5f4eebd436e2ec968ea0577a22461dac40c576b4ac2e8f738c72403d70406540",
       "runtime": true
     },
     {
@@ -544,8 +539,8 @@
     {
       "path": "src/adapters/timeclock-supabase.js",
       "installPath": "src/adapters/timeclock-supabase.js",
-      "bytes": 4603,
-      "sha256": "a09870cd3b6613fb92f1e568ba49420954ac17b4caacd203d5d951a313843a9a",
+      "bytes": 4606,
+      "sha256": "9f65b55763f1ead4e67966e1450bf1040927caa3547b68358cccf9900a1458ac",
       "runtime": true
     },
     {
@@ -579,15 +574,15 @@
     {
       "path": "src/core/auth.js",
       "installPath": "src/core/auth.js",
-      "bytes": 12036,
-      "sha256": "27b3ff3d1b0ec9a63048ed01024915fc9ce20926b45ce187fe5c2330f3cbb679",
+      "bytes": 12349,
+      "sha256": "d04dab8b66efb62f9ac7d9e1da071e2eed88f1a0ee14f9135da41a78d6c39a65",
       "runtime": true
     },
     {
       "path": "src/core/auto-sync.js",
       "installPath": "src/core/auto-sync.js",
-      "bytes": 2385,
-      "sha256": "ab5933aadfa0ff59976296b66a6ce3106c0f06c7cb392d4f7529f933c46c410f",
+      "bytes": 2575,
+      "sha256": "5823baaa64c5fa90949831a356825721e63d59c696e69c3ba99bf527160e2a57",
       "runtime": true
     },
     {
@@ -598,10 +593,17 @@
       "runtime": true
     },
     {
+      "path": "src/core/club-wish-inbox.js",
+      "installPath": "src/core/club-wish-inbox.js",
+      "bytes": 15892,
+      "sha256": "e031a09d5af9616b7a386727049f9fa219268f8e203870c86dff173a1d37ba97",
+      "runtime": true
+    },
+    {
       "path": "src/core/configuration.js",
       "installPath": "src/core/configuration.js",
-      "bytes": 6397,
-      "sha256": "1730e4ee8c19a951df8f4972ee6c827454032427046db7143388d79920fd4800",
+      "bytes": 6414,
+      "sha256": "9cfbc237f181045c10fcbc0eecab75050f26ac4d235f2913dd9b933fb6ed4113",
       "runtime": true
     },
     {
@@ -616,6 +618,13 @@
       "installPath": "src/core/day-availability.js",
       "bytes": 4806,
       "sha256": "b252dd2e3c708985202464980c01a07eccde8ff06995bb686c9e79bc886df41c",
+      "runtime": true
+    },
+    {
+      "path": "src/core/days-publish-bridge.js",
+      "installPath": "src/core/days-publish-bridge.js",
+      "bytes": 2522,
+      "sha256": "e1c24cc7518600ca840b72448cff7b999f043e7efaaa08ed7740e128d88d6b97",
       "runtime": true
     },
     {
@@ -684,8 +693,8 @@
     {
       "path": "src/core/history.js",
       "installPath": "src/core/history.js",
-      "bytes": 1862,
-      "sha256": "806296f402ed1097ce38b3af353fa824e3f64f780bd11f1b47b1bcc0d7fb9282",
+      "bytes": 2054,
+      "sha256": "02c4e9895132b6902ed0195e2e9ad105c821b490f2121ebf33647cfb5f598c1c",
       "runtime": true
     },
     {
@@ -1188,15 +1197,15 @@
     {
       "path": "src/ui/email-center.css",
       "installPath": "src/ui/email-center.css",
-      "bytes": 5159,
-      "sha256": "c1fe4fdda542c7b99636cf45d7b9e23bfe25a4cfd6dbab7347519e6c8b4fb014",
+      "bytes": 5408,
+      "sha256": "4263cd656565347ce92580fbda71e47e3da9bb627ca5b958a814e2fe333f8474",
       "runtime": true
     },
     {
       "path": "src/ui/email-center.js",
       "installPath": "src/ui/email-center.js",
-      "bytes": 8305,
-      "sha256": "e630788864396cff8fe797494c2ed623862ada878488670f70d3c193d57b1f3a",
+      "bytes": 9036,
+      "sha256": "41b692a569f39e70381a04998839e519545cd79833a66b6dcbda85d9b85222c3",
       "runtime": true
     },
     {
@@ -1308,7 +1317,7 @@
       "path": "src/ui/kc-ux-polish.js",
       "installPath": "src/ui/kc-ux-polish.js",
       "bytes": 9722,
-      "sha256": "b21fb0bc295c52d7fb69942e31270aa1d050f9e57d79ca17b2809407b1d7d448",
+      "sha256": "09ca7f0018685f1d0c936e63c22696fba743e9517d7c3967e69163029f591bdc",
       "runtime": true
     },
     {
@@ -1826,7 +1835,7 @@
       "path": "src/ui/source-health-ui.js",
       "installPath": "src/ui/source-health-ui.js",
       "bytes": 5978,
-      "sha256": "dbde84e8aa2e35808f0d5fcb3573dcc993a9788c4b726bdaf2a9ee718775764f",
+      "sha256": "743dd4c6b309eb9a053b5a18971e2a2612387c5ede16f7ab825272b860f57f96",
       "runtime": true
     },
     {

@@ -17,6 +17,8 @@
      // eingebunden in dessen Erfolg/Fehler: ein Problem hierbei darf den normalen Sync nicht
      // ruecktroegen oder als fehlgeschlagen markieren (siehe plan-manager-bridge.js).
      try{await K.planManagerBridge?.publishNow?.();}catch(e){/* naechster Takt versucht es erneut */}
+     try{await K.daysPublishBridge?.publishNow?.();}catch(e){/* eigener Status, nächster Takt */}
+     try{await K.clubWishInbox?.runNow?.();}catch(e){/* eigener Status, nächster Takt */}
      return result;}
    catch(e){state.lastError=e.message;if(c.offlineAllowed!==false)return {failed:true,offlineFallback:true,error:e.message};throw e;}
    finally{state.inFlight=false;}

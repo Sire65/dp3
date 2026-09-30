@@ -92,17 +92,18 @@
       const added=(newShifts||[]).map(s=>({...s,id:s.id&&String(s.id).startsWith('S-')?s.id:`S-${Date.now()}-${Math.random().toString(36).slice(2,7)}`,date,layer:'planned',status:'draft',version:Number(s.version||0)+1}));
       K.shifts.push(...added);audit('plan.day.replace',{entity:'plan_day',entityId:date,before,after:added,reason});queue('plan_day','replace',{date,shifts:added},null);K.refreshWorkflowState?.();return {before,added};
     },
-    saveWish(candidate,{existingId=candidate?.id||null,reason=''}={}){
-      requireWish(candidate.personId);
+    saveWish(candidate,{existingId=candidate?.id||null,reason='',clubImport=null}={}){
+      K.clubWishInbox?.assertWritable?.(candidate.personId,clubImport);
+      if(!K.clubWishInbox?.authorizes?.(clubImport,candidate))requireWish(candidate.personId);
       candidate=K.wishContract?.normalize?.(candidate)||candidate;
       const issues=K.validateWish(candidate);if(issues.some(i=>i.level==='error'))throw new Error(issues.find(i=>i.level==='error').text);
       let target=existingId?K.wishes.find(w=>w.id===existingId):null;const before=target?{...target}:null;
-      if(!target){const duplicate=K.wishes.find(w=>w.status!=='deleted'&&w.personId===candidate.personId&&w.date===candidate.date&&Number(w.start)===Number(candidate.start)&&Number(w.end)===Number(candidate.end)&&w.wishType===candidate.wishType&&String(w.wishZone||'B')===String(candidate.wishZone||'B')&&String(w.scope||'time')===String(candidate.scope||'time'));if(duplicate)return {record:duplicate,issues:[...issues,{level:'info',text:'Identische Angabe ist bereits vorhanden.'}],duplicate:true};}
+      if(!target){const duplicate=K.wishes.find(w=>(!clubImport||w.source==='club_app')&&w.status!=='deleted'&&w.personId===candidate.personId&&w.date===candidate.date&&Number(w.start)===Number(candidate.start)&&Number(w.end)===Number(candidate.end)&&w.wishType===candidate.wishType&&String(w.wishZone||'B')===String(candidate.wishZone||'B')&&String(w.scope||'time')===String(candidate.scope||'time'));if(duplicate)return {record:duplicate,issues:[...issues,{level:'info',text:'Identische Angabe ist bereits vorhanden.'}],duplicate:true};}
       if(target)Object.assign(target,candidate,{id:target.id});else{target={...candidate,id:candidate.id||`W-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,status:candidate.status||'confirmed'};K.wishes.push(target);}
       const baseVersion=Number(target.version||0);target.version=baseVersion+1;audit(before?'wish.update':'wish.create',{entity:'wish',entityId:target.id,before,after:target,reason});queue('wish',before?'update':'create',target,baseVersion);return {record:target,issues};
     },
-    deleteWish(id,{reason=''}={}){
-      const target=K.wishes.find(w=>w.id===id);if(!target)throw new Error('Wunsch nicht gefunden.');const before={...target};requireWish(before.personId);target.status='deleted';target.deletedAt=new Date().toISOString();target.version=Number(target.version||0)+1;
+    deleteWish(id,{reason='',clubImport=null}={}){
+      const target=K.wishes.find(w=>w.id===id);if(!target)throw new Error('Wunsch nicht gefunden.');const before={...target};K.clubWishInbox?.assertWritable?.(before.personId,clubImport);if(!K.clubWishInbox?.authorizes?.(clubImport,before))requireWish(before.personId);target.status='deleted';target.deletedAt=new Date().toISOString();target.version=Number(target.version||0)+1;
       audit('wish.delete',{entity:'wish',entityId:id,before,after:target,reason});queue('wish','delete',target,before.version||null);return before;
     },
     saveStandby(candidate,{existingId=candidate?.id||null,reason=''}={}){

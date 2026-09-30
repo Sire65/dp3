@@ -5,7 +5,7 @@
   let remoteKeyContext=null,remoteKeyPromise=null;
   const listeners=new Set();
   const state={status:provider?'ready':'offline',lastSyncAt:null,lastCheckAt:null,lastError:null,cursor:null,maintenance:false,syncGeneration:null,syncNamespace:null,keyFingerprint:null,legacyPacketsArchived:0};
-  let durableWrite=Promise.resolve();
+  let durableWrite=Promise.resolve(),localBatch=null;
   K.syncOutbox=K.syncOutbox||[];K.syncConflicts=K.syncConflicts||[];
 
   function emit(type,detail={}){for(const fn of listeners){try{fn({type,state:{...state},...detail})}catch(_){}}}
@@ -20,7 +20,9 @@
     durableWrite=durableWrite.catch(()=>{}).then(()=>K.storage.putMany([['syncOutbox',snapshot],['syncConflicts',conflicts],['syncMeta',meta]],{force:true})).catch(e=>{state.lastError=`Lokale Warteschlange konnte nicht gesichert werden: ${e.message}`;emit('status');throw e;});
     return durableWrite;
   }
-  function enqueue(input){const op=makeOp(input);K.syncOutbox.push(op);emit('queue',{operation:op});persistQueue().catch(()=>{});return op;}
+  function enqueue(input){const op=makeOp(input);if(localBatch){op.clubInboxBatch=localBatch;op.status='club_pending';}K.syncOutbox.push(op);if(!localBatch){emit('queue',{operation:op});persistQueue().catch(()=>{});}return op;}
+  function stageLocalBatch(tag,fn){if(localBatch)throw Error('Eine lokale Transaktion läuft bereits.');localBatch=tag;try{return fn();}finally{localBatch=null;}}
+  function settleLocalBatch(tag,commit){K.syncOutbox=K.syncOutbox.filter(op=>{if(op.clubInboxBatch!==tag)return true;if(!commit)return false;delete op.clubInboxBatch;if(op.status!=='conflict')op.status='pending';return true;});}
   function due(op){return op.status==='pending'&&(!op.nextAttemptAt||new Date(op.nextAttemptAt).getTime()<=Date.now());}
   async function ensureRemoteKey(){
     if(remoteKeyContext?.secret)return remoteKeyContext;
@@ -106,6 +108,8 @@
     return true;
   }
   function applyRemote(op){
+    if(op.entity==='club_wish_meta'){K.clubWishInbox?.applyMetadata?.(op.payload);return;}
+
     if(op.entity==='person_rules'){
       const id=op.payload?.personId||op.entityId;if(!id)return;
       K.personRules=K.personRules||{};
@@ -115,7 +119,7 @@
     if(op.entity==='day_config'){
       const date=op.payload?.date||op.entityId;if(!date)return;
       if(holdForRemoteConflict(op,K.daySettings?.[date]||null))return;
-      K.daySettings[date]=JSON.parse(JSON.stringify(op.payload));return;
+      K.daySettings[date]=JSON.parse(JSON.stringify(op.payload));K.configuration?.applyDaySettings?.();return;
     }
     if(op.entity==='demand_matrix'){
       const date=op.payload?.date||op.entityId;if(!date||!Array.isArray(op.payload?.rows))return;
@@ -162,7 +166,7 @@
   K.sync={
     version:'0.16.1-cloud-first',state,
     setProvider(fn){provider=typeof fn==='function'?fn:null;setStatus(provider?'ready':'offline');},setSecretProvider(fn){secretProvider=typeof fn==='function'?fn:secretProvider;},resetRemoteKey(){remoteKeyContext=null;remoteKeyPromise=null;},hasProvider(){return !!provider;},
-    publishBaseline,on(fn){if(typeof fn==='function')listeners.add(fn);return()=>listeners.delete(fn);},enqueue,healthCheck,flush,pull,syncBoth,resolveConflict,persistQueue,whenDurable:()=>durableWrite,
+    stageLocalBatch,settleLocalBatch,publishBaseline,on(fn){if(typeof fn==='function')listeners.add(fn);return()=>listeners.delete(fn);},enqueue,healthCheck,flush,pull,syncBoth,resolveConflict,persistQueue,whenDurable:()=>durableWrite,
     restore({outbox=[],conflicts=[],meta={}}={}){K.syncOutbox=Array.isArray(outbox)?outbox:[];K.syncConflicts=Array.isArray(conflicts)?conflicts:[];Object.assign(state,meta||{});if(!provider&&state.status!=='maintenance')state.status='offline';emit('status');},
     snapshot(){return {outbox:K.syncOutbox,conflicts:K.syncConflicts,meta:{...state}};},
     pending(){return K.syncOutbox.filter(x=>x.status==='pending'||x.status==='sending').length;},openConflicts(){return K.syncConflicts.filter(x=>x.status==='open').length;}

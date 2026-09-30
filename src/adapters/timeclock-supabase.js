@@ -9,7 +9,7 @@
    const text=await r.text();let data=[];try{data=text?JSON.parse(text):[]}catch(_){}
    if(!r.ok)throw new Error(data?.message||data?.hint||('Supabase HTTP '+r.status));return data;
  }
- function eventId(){return K.eventConfig?.eventId||'WM-2026'}
+ function eventId(){return K.eventConfig?.eventId||'KC-WM-2026'}
  function row(x){const clock=v=>{if(!v)return null;const m=String(v).match(/^(\d{1,2}):(\d{2})/);return m?Number(m[1])+Number(m[2])/60:null};return {sourceRecordId:x.id,memberNo:x.member_no||'',personId:x.person_id||'',name:x.display_name||'',date:x.work_date,start:clock(x.start_time),end:clock(x.end_time),breakMinutes:Number(x.break_minutes||0),source:'timeclock',sourceStatus:x.status,publishedAt:x.published_at}}
  async function pendingRows(){
    const c=cfg(),base='?org_id=eq.'+enc(c.orgId)+'&project_id=eq.'+enc(c.projectId);

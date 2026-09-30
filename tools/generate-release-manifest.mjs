@@ -3,8 +3,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
-const version='0.20.0';
-const build=243;
+const {version,build,stage}=JSON.parse(await readFile(path.join(root,'release-version.json'),'utf8'));
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -42,9 +41,10 @@ for(const relative of paths){
 }
 
 const manifest={
-  schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
+  schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,stage,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 250 RC: Club-App-Tage, geprüfter Wunscheingang mit Ersetzen, Bereitschaft und Twinkey-Status; einheitliche Istzeit-Event-ID. Live-Handtest ausstehend.',
     'Build 243: Personenkonto-Kontoauszug deutlich größere Schrift zum Lesen; Präsentationsbeispiel auf wenige realistische Tage verkürzt',
     'Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey',
     'Build 242: direkter Eingabeweg mit einfacher Uhrzeitauswahl und Bereitschaft',

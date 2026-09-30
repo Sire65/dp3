@@ -1,11 +1,11 @@
 {
   "name": "kc-dp2",
-  "version": "0.20.0-build247",
+  "version": "0.20.0-build250",
   "private": true,
   "description": "KC DP2 Dienstplan und reproduzierbare Testumgebung",
   "scripts": {
     "test": "npm run test:smoke",
-    "test:smoke": "node tools/smoke-core.mjs && node tools/smoke-ui-contracts.mjs && node tools/smoke-plan-transfer.mjs && node tools/smoke-actual-reconciliation.mjs && node tools/smoke-timeclock-supabase.mjs && node tools/verify-release.mjs",
+    "test:smoke": "node tools/smoke-club-interface.mjs && node tools/smoke-core.mjs && node tools/smoke-ui-contracts.mjs && node tools/smoke-plan-transfer.mjs && node tools/smoke-actual-reconciliation.mjs && node tools/smoke-timeclock-supabase.mjs && node tools/verify-release.mjs",
     "test:browser": "node tools/test-twinkey.mjs && node tools/test-mobile-wish-matrix.mjs && node tools/test-wish-assistant.mjs && node tools/test-assistant-staffing.mjs",
     "test:install-browser": "playwright install chromium",
     "test:all": "npm run test:smoke && npm run test:browser",
@@ -16,7 +16,9 @@
     "test:supabase:contract": "node tools/supabase-security-contract.mjs",
     "test:supabase:lint": "supabase db lint --local --level warning --fail-on error",
     "test:supabase:db": "supabase test db --local supabase/tests/database",
-    "build:startup-css": "node tools/build-startup-css.mjs"
+    "build:startup-css": "node tools/build-startup-css.mjs",
+    "test:club-interface": "node tools/smoke-club-interface.mjs",
+    "test:club-interface:browser": "node tools/test-club-interface.mjs"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
