@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 249,
-  "cacheName": "kc-dp-release-0.20.0-b249",
+  "build": 250,
+  "cacheName": "kc-dp-release-0.20.0-b250",
   "releaseNotes": [
+    "Build 250: Papierunterlagen mit Original-Kochmütze, echten Ankreuzkästchen und Anführungszeichen statt „?“ sowie größerem QR-Code oben rechts",
     "Build 249: manuellen Kassen-Dienstplan-Minitest mit sicherer Start-/Aufräumroutine vorbereitet",
     "Build 248: Dienstplan-Snapshot auch bei leerem veröffentlichten Sollplan zuverlässig bereinigt",
     "Build 247: Dienstplan-Brücke final geprüft – KC-WM-2026, Europe/Berlin, Offline-Cache und Release-Sicherung",
@@ -133,8 +134,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-23T05:51:00.000Z",
-  "totalRuntimeBytes": 37085260,
+  "generatedAt": "2026-10-01T06:25:49.000Z",
+  "totalRuntimeBytes": 37087646,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -488,8 +489,8 @@
     {
       "path": "src/adapters/pdf.js",
       "installPath": "src/adapters/pdf.js",
-      "bytes": 10671,
-      "sha256": "cf651e7d200ccff309d1418ed478376d5c7993d7c4321d8624176632416c54da",
+      "bytes": 13057,
+      "sha256": "84ab8652abe75d7f21a3f83e371571e61bba09595c1e7d3e65a35bc80b7628f5",
       "runtime": true
     },
     {
