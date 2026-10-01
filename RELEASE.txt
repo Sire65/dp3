@@ -1,5 +1,3 @@
-KC-DP2 0.20.0 Build 251 RC
-Mitglieder-Buttons: Datenabhängige Ansichten, Eingabeprüfung und sichtbare Sperrgründe. Siehe docs/BUILD-251-BUTTONS.md.
-Club-App-Schnittstelle: Tage/Bedarfe veröffentlichen, Wünsche mit Prüfung übernehmen, Bereitschaft/Freigaben/Twinkey-Status erhalten.
-Istzeiten: Event-Fallback KC-WM-2026.
-Automatisierte Prüfungen siehe docs/BUILD-250-CLUB-APP.md. FINAL erst nach Hansi-Handtest.
+KC-DP2 0.20.0 Build 252 RC
+Konfliktprüfung je Tag vor Club-App-Übernahme. Siehe docs/BUILD-252-KONFLIKTPRUEFUNG.md.
+Live-Handtest und zentrale Kollegenfreigabe bleiben offen.

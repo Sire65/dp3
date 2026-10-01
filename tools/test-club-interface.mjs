@@ -17,7 +17,20 @@ try{
   K.memberUxData={clubWishInbox:{'["KC_WERNE","KC-WM-2026"]':{receipts:{},metadata:{},lastRunAt:'2026-09-30T12:00:00Z',lastResult:{added:3,problems:[{date:'2026-12-04',text:'Die Wunschzeit muss innerhalb der Kann-Zeit liegen. <img src=x onerror="window.injected=true">'}]}}}};
   K.emailCenter.open();
  });
- assert.match(await page.locator('[data-club-status]').innerText(),/Club-App: 3 Wünsche übernommen/);assert.match(await page.locator('[data-club-status]').innerText(),/innerhalb der Kann-Zeit/);assert.equal(await page.locator('[data-club-status] img').count(),0,'Inbox problem text must be escaped');
+ assert.match(await page.locator('[data-club-status]').innerText(),/3 Wünsche zuletzt übernommen/);assert.match(await page.locator('[data-club-status]').innerText(),/innerhalb der Kann-Zeit/);assert.equal(await page.locator('[data-club-status] img').count(),0,'Inbox problem text must be escaped');
+ await page.addScriptTag({content:await readFile(path.join(root,'src/adapters/sync.js'),'utf8')});
+ await page.evaluate(async()=>{
+  const K=KCDP;K.memberUxData={};K.auditLog=[];K.persistAll=async()=>{};K.sync.stageLocalBatch=(tag,fn)=>fn();K.sync.settleLocalBatch=()=>{};K.sync.enqueue=()=>{};
+  const personId=K.people[0].personId,entry={date:'2026-12-04',start:11,end:17,wishType:'available',wishZone:'B',scope:'time',comment:'<img src=x onerror="window.injected=true">'};
+  K.wishes=[{...entry,id:'direct',personId,source:'assistant',status:'confirmed'}];
+  const input={id:'test-inbox',personId,eventId:'KC-WM-2026',source:'club_app',revision:2,entries:[{...entry,start:14,end:20}],standby:{}};
+  K.supabaseConnection={state:{userId:'admin'},currentMembership:async()=>({role:'admin',active:true}),wishInboxPending:async()=>[input],wishInboxAck:async()=>({ok:true})};
+  await K.clubWishInbox.runNow();
+ });
+ assert.match(await page.locator('.club-conflict').innerText(),/11:00–17:00/);assert.match(await page.locator('.club-conflict').innerText(),/14:00–20:00/);
+ assert.equal(await page.locator('.club-conflict img').count(),0);assert(await page.locator('[data-club-apply]').isDisabled());
  for(const width of [320,390,768,1280]){await page.setViewportSize({width,height:900});const box=await page.locator('[data-club-status]').boundingBox();assert(box.width>200&&box.x>=0&&box.x+box.width<=width+1,'Club status fits viewport '+width);assert(await page.locator('[data-club-status]').evaluate(e=>e.scrollHeight<=e.clientHeight+1),'Problem list must not be clipped '+width);await page.screenshot({path:path.join(out,'club-status-'+width+'.png'),fullPage:true});}
- assert.deepEqual(errors,[]);console.log('Club-App browser PASS: visible counts/date/problems, safe text rendering, status fits 320/390/768/1280px.');
+ await page.locator('[data-club-day]').selectOption('keep');assert(await page.locator('[data-club-apply]').isEnabled());await page.locator('[data-club-apply]').click();await page.waitForFunction(()=>!document.querySelector('.club-conflict'));
+ assert.equal(await page.evaluate(()=>KCDP.wishes.find(w=>w.id==='direct').status),'confirmed');
+ assert.deepEqual(errors,[]);console.log('Club-App browser PASS: real conflict preview/keep decision, visible times, safe text rendering, status fits 320/390/768/1280px.');
 }finally{await browser.close();}

@@ -3,3 +3,9 @@
 .email-center [data-club-status]{padding:12px 14px;overflow-wrap:anywhere;line-height:1.45}
 .email-center [data-club-status] ul{margin:8px 0 0;padding-left:22px}
 .email-center [data-club-status] li+li{margin-top:6px}
+/* Day-by-day conflict review remains usable with touch and narrow screens. */
+.club-conflict{border:2px solid #ad681d;border-radius:12px;padding:16px;margin-top:16px;overflow-wrap:anywhere}
+.club-conflict fieldset{min-width:0;margin:14px 0;padding:12px;border:1px solid #c8b9a8;border-radius:8px}
+.club-conflict label{display:block;font-weight:600}
+[data-club-load]{min-height:48px;padding:10px 16px;font:inherit;border:1px solid #8a172a;border-radius:8px;background:#fff;cursor:pointer}
+.club-conflict select,.club-conflict button{display:block;min-height:48px;width:100%;max-width:100%;margin-top:8px;font-size:16px}

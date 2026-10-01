@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 const K=window.KCDP=window.KCDP||{},clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
-const state={inFlight:false,lastRunAt:null,lastError:null,lastResult:null};
+const state={inFlight:false,lastRunAt:null,lastError:null,lastResult:null,reviews:[]};
 let capability=null;
 const active=w=>!['deleted','cancelled'].includes(w.status);
 const eventId=()=>K.eventConfig?.eventId||'KC-WM-2026';
@@ -27,7 +27,7 @@ function assertWritable(personId,token){
  if(token&&token===capability)return;
  if(Object.values(store().receipts).some(r=>r.personId===personId&&r.phase==='awaiting_ack'))throw Error('Club-App-Angaben werden gerade gesichert. Bitte nach dem nächsten Abgleich erneut versuchen.');
 }
-function authorizes(token,row){return !!token&&token===capability&&row.source==='club_app'&&row.personId===token.personId&&['admin','planner','duty_manager'].includes(K.currentUser?.role);}
+function authorizes(token,row){return !!token&&token===capability&&(row.source==='club_app'||token.replaceIds?.includes(row.id))&&row.personId===token.personId&&['admin','planner','duty_manager'].includes(K.currentUser?.role);}
 function phaseOpen(){return K.state?.wishPhase==='open'&&K.workflow?.status!=='published';}
 function validateEntry(e,personId){
  if(!e||!['available','preferred','if_needed','unavailable'].includes(e.wishType))return ['Unbekannte Zeitart.'];
@@ -37,8 +37,8 @@ function validateEntry(e,personId){
  if(!K.days.some(d=>d.date===e.date))return ['Datum liegt außerhalb der Veranstaltung.'];
  return (K.wishContract.validate({...e,personId})||[]).filter(x=>x.level==='error').map(x=>x.text);
 }
-function prepare(input){
- const problems=[],accepted=[],direct=K.wishes.filter(w=>active(w)&&w.personId===input.personId&&w.source!=='club_app');let skipped=0;
+function prepare(input,replaceDates=[]){
+ const problems=[],accepted=[],direct=K.wishes.filter(w=>active(w)&&w.personId===input.personId&&w.source!=='club_app'&&!replaceDates.includes(w.date));let skipped=0;
  const indexed=input.entries.map((value,index)=>({value,index}));
  // Validate covering Kann windows before Wunsch windows, regardless of JSON array order.
  indexed.sort((a,b)=>({available:0,if_needed:0,unavailable:1,preferred:2}[a.value?.wishType]??3)-({available:0,if_needed:0,unavailable:1,preferred:2}[b.value?.wishType]??3));
@@ -91,10 +91,17 @@ function applyMetadata(meta){
  }
  K.planSharing=mergeSharing(K.planSharing);
 }
-function snapshot(input){return {wishes:clone(K.wishes.filter(w=>w.personId===input.personId&&w.source==='club_app'&&K.days.some(d=>d.date===w.date))),standby:clone(K.memberUxData?.assistantStandby?.[input.personId]),sharing:clone((K.planSharing||[]).filter(r=>r.person_id===input.personId)),consent:clone(K.memberUxData?.colleagueSharing?.[input.personId]),metadata:clone(store().metadata[input.id])};}
+function snapshot(input){return {wishes:clone(K.wishes.filter(w=>w.personId===input.personId&&K.days.some(d=>d.date===w.date))),standby:clone(K.memberUxData?.assistantStandby?.[input.personId]),sharing:clone((K.planSharing||[]).filter(r=>r.person_id===input.personId)),consent:clone(K.memberUxData?.colleagueSharing?.[input.personId]),metadata:clone(store().metadata[input.id])};}
+function comparisonRows(rows){return rows.map(w=>canonical({date:w.date,start:w.start,end:w.end,wishType:w.wishType,wishZone:w.wishZone||'B',scope:w.scope||'time',onlyIfNeeded:!!w.onlyIfNeeded,comment:w.comment||'',assistantDay:w.assistantDay||null})).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));}
+function reviewFor(input){
+ const before=snapshot(input),current=before.wishes.filter(active),dates=[...new Set([...input.entries.map(w=>w.date),...current.filter(w=>w.source==='club_app').map(w=>w.date),...Object.keys(input.standby||{}),...Object.keys(before.metadata?.standby||{})])].sort();
+ const days=dates.map(date=>{const existing=current.filter(w=>w.date===date),incoming=input.entries.filter(w=>w.date===date),standby=before.standby?.[date],nextStandby=input.standby?.[date];return {date,existing,incoming,standby,nextStandby,conflict:!!(existing.length||standby)&&(!equal(comparisonRows(existing),comparisonRows(incoming))||!equal(standby||null,nextStandby||null))};}).filter(d=>d.conflict);
+ return {id:input.id,personId:input.personId,revision:input.revision,submittedAt:input.submittedAt,days,fingerprint:JSON.stringify(canonical({input,before})),context:scopeKey(),user:K.supabaseConnection.state?.userId};
+}
+function holdReview(review,problems=[]){state.reviews=state.reviews.filter(r=>r.id!==review.id);state.reviews.push({...review,problems});return {needsReview:true,id:review.id,revision:review.revision,problems};}
 async function rollback(receipt){
  const s=store(),before=receipt.before;
- K.wishes=K.wishes.filter(w=>!(w.source==='club_app'&&w.personId===receipt.personId&&receipt.dates.includes(w.date))).concat(clone(before.wishes));
+ K.wishes=K.wishes.filter(w=>!(w.personId===receipt.personId&&receipt.dates.includes(w.date)&&(receipt.allSources||w.source==='club_app'))).concat(clone(before.wishes));
  K.sync.settleLocalBatch(receipt.tag,false);
  K.auditLog=(K.auditLog||[]).filter(r=>!receipt.auditIds.includes(r.id));
  K.memberUxData.assistantStandby=K.memberUxData.assistantStandby||{};
@@ -122,7 +129,7 @@ async function acknowledge(receipt){
  if(reply?.ok!==true)throw Error('Club-App-Bestätigung fehlt. Der gesicherte Eingang wird erneut geprüft.');
  return complete(receipt);
 }
-async function importOne(input,context){
+async function importOne(input,context,decision=null){
  if(context!==scopeKey()||!phaseOpen())return reject(input,'wunschphase_geschlossen');
  const person=K.people.find(p=>p.personId===input.personId);
  if(!person?.active||(K.personPlanningAllowed&&!K.personPlanningAllowed(input.personId)))return reject(input,'person_unbekannt');
@@ -130,14 +137,24 @@ async function importOne(input,context){
  const prior=store().receipts[input.id];
  if(prior?.revision===input.revision&&prior.phase==='awaiting_ack')return acknowledge(prior);
  if(prior?.revision>=input.revision&&prior.phase==='done')return K.supabaseConnection.wishInboxAck({id:input.id,revision:input.revision,status:'uebernommen',result:prior.result});
- const prepared=prepare(input),before=snapshot(input),tag=`club:${input.id}:${input.revision}`,auditStart=K.auditLog.length;
+ const review=reviewFor(input);
+ if(decision&&(decision.fingerprint!==review.fingerprint||decision.context!==context||decision.user!==K.supabaseConnection.state?.userId))return holdReview(review,[{text:'Die Daten wurden inzwischen geändert. Bitte erneut vergleichen und auswählen.'}]);
+ if(review.days.length&&(!decision||review.days.some(d=>!['keep','replace'].includes(decision.choices?.[d.date]))))return holdReview(review);
+ const keepDates=review.days.filter(d=>decision?.choices[d.date]==='keep').map(d=>d.date),replaceDates=review.days.filter(d=>decision?.choices[d.date]==='replace').map(d=>d.date);
+ const selected={...input,entries:input.entries.filter(w=>!keepDates.includes(w.date)),standby:Object.fromEntries(Object.entries(input.standby).filter(([date])=>!keepDates.includes(date)))};
+ const prepared=prepare(selected,replaceDates),before=snapshot(input),tag=`club:${input.id}:${input.revision}`,auditStart=K.auditLog.length;
+ if(prepared.problems.length)return holdReview(review,prepared.problems);
+ // Keep the complete existing day, including direct Twinkey readiness, when selected.
+ for(const date of keepDates)if(before.standby?.[date])prepared.standby[date]=clone(before.standby[date]);
  if(typeof input.shareWithColleagues==='boolean'&&['can','wish','standby'].some(kind=>{const row=(K.planSharing||[]).find(r=>r.person_id===input.personId&&r.plan_kind===kind);return !!row?.allow_view!==input.shareWithColleagues||!!row?.allow_copy!==input.shareWithColleagues;}))prepared.problems.push({text:'Kollegenfreigabe vorgemerkt. Die zentrale Freigabe kann mit der vorhandenen Schnittstelle nur das Mitglied selbst in DP2 speichern; keine stellvertretende Änderung durch den Planer.'});
- const receipt={id:input.id,personId:input.personId,revision:input.revision,phase:'awaiting_ack',context,tag,before,dates:K.days.map(d=>d.date),auditIds:[],result:{added:0,replaced:0,skipped:prepared.skipped,standbyDays:Object.keys(prepared.standby).length,problems:prepared.problems,dp2Version:K.VERSION}};
+ const receipt={id:input.id,personId:input.personId,revision:input.revision,phase:'awaiting_ack',context,tag,before,allSources:true,dates:K.days.map(d=>d.date),auditIds:[],result:{added:0,replaced:0,skipped:prepared.skipped,keptDays:keepDates,replacedDays:replaceDates,standbyDays:Object.keys(prepared.standby).length,problems:prepared.problems,dp2Version:K.VERSION}};
  store().receipts[input.id]=receipt;
  try{
-  capability={personId:input.personId};
+  capability={personId:input.personId,replaceIds:before.wishes.filter(w=>replaceDates.includes(w.date)).map(w=>w.id)};
   K.sync.stageLocalBatch(tag,()=>{
-   for(const row of before.wishes.filter(active)){K.mutations.deleteWish(row.id,{reason:'Club-App-Wunscheingang',clubImport:capability});receipt.result.replaced++;}
+   for(const row of before.wishes.filter(w=>active(w)&&!keepDates.includes(w.date)&&(w.source==='club_app'||replaceDates.includes(w.date)))){K.mutations.deleteWish(row.id,{reason:'Club-App-Wunscheingang: geprüfte Tagesentscheidung',clubImport:capability});receipt.result.replaced++;}
+   const readiness=K.memberUxData?.assistantStandby?.[input.personId];
+   if(readiness)for(const date of replaceDates)delete readiness[date];
    for(const row of prepared.accepted){const saved=K.mutations.saveWish(row,{reason:'Club-App-Wunscheingang',clubImport:capability});if(saved.duplicate)receipt.result.skipped++;else receipt.result.added++;}
    const meta={id:input.id,personId:input.personId,orgId:orgId(),eventId:input.eventId,revision:input.revision,standby:prepared.standby,shareWithColleagues:input.shareWithColleagues??before.metadata?.shareWithColleagues??null,submittedAt:input.submittedAt||new Date().toISOString()};
    applyMetadata(meta);K.sync.enqueue({entity:'club_wish_meta',operation:'update',payload:meta,baseVersion:null});
@@ -147,6 +164,7 @@ async function importOne(input,context){
   await K.persistAll();
  }catch(e){receipt.auditIds=K.auditLog.slice(auditStart).map(r=>r.id);await rollback(receipt);throw e;}finally{capability=null;}
  // Network failures after persistence leave a recoverable, held batch, never a partial reimport.
+ state.reviews=state.reviews.filter(r=>r.id!==input.id);
  return acknowledge(receipt);
 }
 async function reject(input,reason){
@@ -163,6 +181,7 @@ async function runNow(){
   if(!await K.daysPublishBridge.planningMembership())return {skipped:true,reason:'role'};
   const context=scopeKey(),user=K.supabaseConnection.state?.userId,inputs=await K.supabaseConnection.wishInboxPending({eventId:eventId()});
   if(context!==scopeKey()||user!==K.supabaseConnection.state?.userId)throw Error('Die Anmeldung oder Veranstaltung wurde geändert.');
+  state.reviews=state.reviews.filter(r=>r.context===context&&r.user===user&&inputs.some(i=>i.id===r.id));
   if(inputs.length&&K.supabaseConnection.readPlanSharing)K.planSharing=await K.supabaseConnection.readPlanSharing({raw:true});
   // A crash before the first full persistence can leave a queue-only staged batch.
   // Never release it: there is no durable receipt proving the wishes were saved.
@@ -183,6 +202,20 @@ async function runNow(){
   state.lastError=null;return {processed:results.length,results};
  }catch(e){state.lastError=e.message;throw e;}finally{state.inFlight=false;K.emailCenter?.refreshClubStatus?.();}
 }
-function summary(){const s=store();return {lastRunAt:s.lastRunAt,lastResult:s.lastResult,lastError:state.lastError,pending:Object.values(s.receipts).filter(r=>r.phase==='awaiting_ack').length};}
-K.clubWishInbox={state,runNow,summary,mergeSharing,sharingSavedByMember,applyMetadata,assertWritable,authorizes,restoreOrder};
+async function resolve(id,choices){
+ if(state.inFlight)throw Error('Ein Abgleich läuft bereits. Bitte kurz warten.');
+ const decision=clone(state.reviews.find(r=>r.id===id));if(!decision)throw Error('Bitte den Eingang neu laden.');
+ state.inFlight=true;
+ try{
+  if(!await K.daysPublishBridge.planningMembership())throw Error('Nur berechtigte Planer dürfen diesen Eingang übernehmen.');
+  if(decision.context!==scopeKey()||decision.user!==K.supabaseConnection.state?.userId)throw Error('Anmeldung oder Veranstaltung geändert. Bitte neu laden.');
+  if(K.sync?.hasProvider?.()){const pulled=await K.sync.pull();if(pulled?.conflicts)throw Error('Es gibt offene Synchronisationskonflikte. Bitte diese zuerst klären.');}
+  const inputs=await K.supabaseConnection.wishInboxPending({eventId:eventId()}),input=inputs.find(i=>i.id===id);
+  if(!input){state.reviews=state.reviews.filter(r=>r.id!==id);throw Error('Dieser Eingang ist nicht mehr offen. Bitte synchronisieren.');}
+  if(decision.context!==scopeKey()||decision.user!==K.supabaseConnection.state?.userId)throw Error('Anmeldung oder Veranstaltung geändert. Bitte neu laden.');
+  return await importOne(input,scopeKey(),{...decision,choices});
+ }finally{state.inFlight=false;K.emailCenter?.refreshClubStatus?.();}
+}
+function summary(){const s=store();return {lastRunAt:s.lastRunAt,lastResult:s.lastResult,lastError:state.lastError,reviews:clone(state.reviews.filter(r=>r.context===scopeKey()&&r.user===K.supabaseConnection.state?.userId)),pending:Object.values(s.receipts).filter(r=>r.phase==='awaiting_ack').length};}
+K.clubWishInbox={state,runNow,resolve,summary,mergeSharing,sharingSavedByMember,applyMetadata,assertWritable,authorizes,restoreOrder};
 })();

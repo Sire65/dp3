@@ -16,7 +16,7 @@ async function fixture(){
  K.persistAll=async()=>{calls.persist++;};
  const input={id:'receipt-1',eventId:'KC-WM-2026',source:'club_app',revision:1,personId:K.people[0].personId,entries:[],standby:{},shareWithColleagues:null,submittedAt:'2026-09-30T10:00:00Z'};
  const entry=(patch={})=>({date:'2026-12-04',start:11,end:17,wishType:'available',wishZone:'V',scope:'time',comment:'',...patch});
- const run=async e=>{inbox.splice(0,inbox.length,{...input,...e});return K.clubWishInbox.runNow();};
+ const run=async e=>{inbox.splice(0,inbox.length,{...input,...e});const out=await K.clubWishInbox.runNow();const review=K.clubWishInbox.summary().reviews[0];if(review?.days.length&&!review.problems.length)out.results[0]=await K.clubWishInbox.resolve(review.id,Object.fromEntries(review.days.map(d=>[d.date,'replace'])));return out;};
  return {K,ctx,calls,inbox,input,entry,run};
 }
 {
@@ -33,9 +33,9 @@ async function fixture(){
  K.wishes=[{...entry({date:'2026-12-05'}),id:'direct',personId:input.personId,source:'direct',status:'confirmed'},{...entry({start:12,end:15}),id:'old-club',personId:input.personId,source:'club_app',status:'confirmed'}];
  const original=copy(K.wishes[0]);
  K.planSharing=['can','wish','standby'].map(plan_kind=>({person_id:input.personId,plan_kind,allow_view:true,allow_copy:true}));
- const res=await run({entries:[entry({wishType:'preferred',start:12,end:15}),entry(),entry({date:'2030-01-01'}),entry({start:16,end:20})],standby:{'2026-12-05':{answer:'yes',slots:[{start:17,end:20,wishZone:'B',reserve:false}]}},shareWithColleagues:true});
- assert.equal(res.results[0].added,2);assert.equal(res.results[0].replaced,1);assert.equal(res.results[0].skipped,2);assert.equal(res.results[0].problems.length,2);
- assert.deepEqual(copy(K.wishes.find(w=>w.id==='direct')),original);assert.equal(K.wishes.find(w=>w.id==='old-club').status,'deleted');assert.equal(K.memberUxData.assistantStandby[input.personId]['2026-12-05'].answer,'yes');assert.equal(K.planSharing.length,3);assert(K.planSharing.every(r=>r.person_id===input.personId&&r.allow_copy));assert.equal(calls.ack[0].status,'uebernommen');assert(calls.persist>=2);assert(K.syncOutbox.every(o=>o.status==='pending'));
+ const res=await run({entries:[entry({wishType:'preferred',start:12,end:15}),entry()],standby:{'2026-12-06':{answer:'yes',slots:[{start:17,end:20,wishZone:'B',reserve:false}]}},shareWithColleagues:true});
+ assert.equal(res.results[0].added,2);assert.equal(res.results[0].replaced,1);assert.equal(res.results[0].skipped,0);assert.equal(res.results[0].problems.length,0);
+ assert.deepEqual(copy(K.wishes.find(w=>w.id==='direct')),original);assert.equal(K.wishes.find(w=>w.id==='old-club').status,'deleted');assert.equal(K.memberUxData.assistantStandby[input.personId]['2026-12-06'].answer,'yes');assert.equal(K.planSharing.length,3);assert(K.planSharing.every(r=>r.person_id===input.personId&&r.allow_copy));assert.equal(calls.ack[0].status,'uebernommen');assert(calls.persist>=2);assert(K.syncOutbox.every(o=>o.status==='pending'));
  const before=copy(K.wishes);await K.clubWishInbox.runNow();assert.deepEqual(copy(K.wishes),before,'same revision does not import twice');
  await run({revision:2,entries:[],standby:{},shareWithColleagues:false});assert.equal(K.wishes.filter(w=>w.source==='club_app'&&w.status!=='deleted').length,0);assert.deepEqual(copy(K.memberUxData.assistantStandby[input.personId]),{});assert(K.planSharing.every(r=>!r.allow_copy));
 }
@@ -84,7 +84,7 @@ for(const failure of ['mutation','persist']){
 }
 {
  const {K,entry,run}=await fixture();await run({entries:[entry({wishType:'unavailable',scope:'day',start:11,end:23}),entry({wishType:'unavailable',start:12,end:13}),entry({date:'2026-12-05',wishType:'preferred'}),entry({date:'2026-12-06',wishType:'wrong'}),entry({date:'2026-12-07',end:null})]});
- assert.equal(K.wishes.length,1);assert.equal(K.wishes[0].scope,'day');assert.equal(K.clubWishInbox.summary().lastResult.skipped,4);
+ assert.equal(K.wishes.length,0);assert.equal(K.clubWishInbox.summary().reviews[0].problems.length,4);
 }
 {
  const {K,entry,run,input}=await fixture();K.wishes=[{...entry(),id:'direct',personId:input.personId,source:'direct',status:'confirmed'}];await run({entries:[entry()]});assert.equal(K.wishes.length,1);assert.equal(K.wishes[0].source,'direct');
@@ -109,4 +109,46 @@ assert(!(await read('src/adapters/timeclock-supabase.js')).includes("||'WM-2026'
  assert.deepEqual(requests[0].body,{p_org_id:'TEST_ORG',p_event_id:'KC-WM-2026',p_days:[]});assert.equal(requests[1].body.p_event_id,'CUSTOM');assert.deepEqual(requests[2].body,{p_id:'receipt',p_revision:3,p_status:'uebernommen',p_result:{added:2}});assert(requests.every(r=>r.headers.Authorization==='Bearer test-session'&&r.method==='POST'));await assert.rejects(P.wishInboxAck({status:'wrong'}));
 }
 const version=JSON.parse(await read('release-version.json')),html=await read('index.html');assert(html.includes('window.KC_DP_BUILD='+version.build));assert.equal(JSON.parse(await read('package.json')).version,version.version+'-build'+version.build);
-console.log('PASS Club-App: publication, shared day overrides, replace, dedup, validation, roles, rollback, stale, ACK recovery/restart, standby, sharing, Twinkey signature, auto-sync isolation, version and event ID.');
+// Explicit conflict decisions: never resolve these through the legacy helper.
+{
+ const {K,input,entry,inbox,calls}=await fixture();K.wishes=[{...entry(),id:'direct',personId:input.personId,source:'manual',status:'confirmed'}];inbox.push({...input,entries:[entry({end:18})]});await K.clubWishInbox.runNow();
+ K.sync.hasProvider=()=>true;K.sync.pull=async()=>({conflicts:1});await assert.rejects(K.clubWishInbox.resolve(input.id,{'2026-12-04':'replace'}),/Synchronisationskonflikte/);assert.equal(calls.ack.length,0);
+ K.sync.pull=async()=>{K.wishes[0].end=15;return {conflicts:0};};assert((await K.clubWishInbox.resolve(input.id,{'2026-12-04':'replace'})).needsReview);assert.equal(calls.ack.length,0);
+}
+{
+ const {K,input,entry,inbox}=await fixture();K.wishes=['2026-12-04','2026-12-05'].map((date,i)=>({...entry({date}),id:'direct'+i,personId:input.personId,source:'manual',status:'confirmed'}));inbox.push({...input,entries:[entry({end:18}),entry({date:'2026-12-05',end:19})]});await K.clubWishInbox.runNow();await K.clubWishInbox.resolve(input.id,{'2026-12-04':'keep','2026-12-05':'replace'});const active=K.wishes.filter(w=>w.status!=='deleted');assert.equal(active.find(w=>w.date==='2026-12-04').end,17);assert.equal(active.find(w=>w.date==='2026-12-05').end,19);
+}
+for(const choice of ['keep','replace']){
+ const {K,input,entry,inbox,calls}=await fixture();
+ K.wishes=[{...entry(),id:'twinkey-direct',personId:input.personId,source:'assistant',status:'confirmed'}];
+ K.memberUxData.assistantStandby={[input.personId]:{'2026-12-04':{answer:'yes',slots:[{start:19,end:21,wishZone:'B'}]}}};
+ inbox.push({...input,entries:[entry({start:13,end:18})]});const before=copy(K.wishes);
+ const out=await K.clubWishInbox.runNow();assert(out.results[0].needsReview);assert.equal(calls.ack.length,0);assert.deepEqual(copy(K.wishes),before);
+ await K.clubWishInbox.resolve(input.id,{});assert.equal(calls.ack.length,0,'missing decision must not import');
+ const result=await K.clubWishInbox.resolve(input.id,{'2026-12-04':choice});assert.equal(calls.ack.length,1);
+ const active=K.wishes.filter(w=>w.status!=='deleted');assert.equal(active.length,1);assert.equal(active[0].start,choice==='keep'?11:13);
+ assert.equal(!!K.memberUxData.assistantStandby[input.personId]['2026-12-04'],choice==='keep');
+ assert.equal(result[choice==='keep'?'keptDays':'replacedDays'][0],'2026-12-04');
+}
+for(const changed of ['phone','dp2','standby']){
+ const {K,input,entry,inbox,calls}=await fixture();K.wishes=[{...entry(),id:'direct',personId:input.personId,source:'manual',status:'confirmed'}];
+ inbox.push({...input,entries:[entry({end:18})]});await K.clubWishInbox.runNow();
+ if(changed==='phone'){inbox[0].revision=2;inbox[0].entries[0].end=20;}
+ if(changed==='dp2')K.wishes[0].end=16;
+ if(changed==='standby')K.memberUxData.assistantStandby={[input.personId]:{'2026-12-04':{answer:'no',slots:[]}}};
+ const before=copy(K.wishes),out=await K.clubWishInbox.resolve(input.id,{'2026-12-04':'replace'});
+ assert(out.needsReview,changed);assert.equal(calls.ack.length,0);assert.deepEqual(copy(K.wishes),before);
+ assert(K.clubWishInbox.summary().reviews[0].problems[0].text.includes('inzwischen'));
+}
+{
+ const {K,input,entry,inbox,calls}=await fixture();
+ K.wishes=[{...entry(),id:'direct',personId:input.personId,source:'assistant',status:'confirmed'}];inbox.push({...input,entries:[entry({end:18})]});
+ await K.clubWishInbox.runNow();const before=copy(K.wishes);K.supabaseConnection.wishInboxAck=async()=>({stale:true});
+ await K.clubWishInbox.resolve(input.id,{'2026-12-04':'replace'});assert.deepEqual(copy(K.wishes),before,'stale acknowledgement restores direct Twinkey data');assert.equal(K.syncOutbox.length,0);
+}
+{
+ const {K,input,entry,inbox,calls}=await fixture();inbox.push({...input,entries:[entry()]});await K.clubWishInbox.runNow();
+ inbox[0]={...input,revision:2,entries:[]};await K.clubWishInbox.runNow();assert.equal(calls.ack.length,1,'empty newer snapshot must not silently delete');
+ assert.equal(K.wishes.filter(w=>w.status!=='deleted').length,1);await K.clubWishInbox.resolve(input.id,{'2026-12-04':'replace'});assert.equal(K.wishes.filter(w=>w.status!=='deleted').length,0);
+}
+console.log('PASS Club-App: publication, conflict keep/replace, missing decisions, changed phone/DP2/readiness, explicit deletion, rollback including direct data, dedup, validation, roles, ACK recovery/restart, standby, sharing, Twinkey signature, auto-sync isolation, version and event ID.');

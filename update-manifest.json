@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 251,
+  "build": 252,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b251",
+  "cacheName": "kc-dp-release-0.20.0-b252",
   "releaseNotes": [
+    "Build 252 RC: Tagesvergleich vor Überschreiben durch Club-App, bewusste Auswahl, erneute Versionsprüfung und vollständiger Abbruch bei ungültigen Angaben.",
     "Build 251 RC: Mitglieder-Buttons berücksichtigen eigene Daten, Wunschphase, gültige Zeiten und freie Zeitfenster; gesperrte Aktionen zeigen den Grund.",
     "Build 250 RC: Club-App-Tage, geprüfter Wunscheingang mit Ersetzen, Bereitschaft und Twinkey-Status; einheitliche Istzeit-Event-ID. Live-Handtest ausstehend.",
     "Build 243: Personenkonto-Kontoauszug deutlich größere Schrift zum Lesen; Präsentationsbeispiel auf wenige realistische Tage verkürzt",
@@ -129,8 +130,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-01T11:59:47.757Z",
-  "totalRuntimeBytes": 37117678,
+  "generatedAt": "2026-10-01T13:12:57.149Z",
+  "totalRuntimeBytes": 37126238,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -311,7 +312,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 33607,
-      "sha256": "586ca0dcf2e029bc9eaba7796f5154a05b3c800cd6ed2ce8db98b197e0925cc8",
+      "sha256": "d345942af6ab7376b42c57605568086262bb0809e425e90e8547f34053998604",
       "runtime": true,
       "forceRefresh": true
     },
@@ -596,8 +597,8 @@
     {
       "path": "src/core/club-wish-inbox.js",
       "installPath": "src/core/club-wish-inbox.js",
-      "bytes": 15892,
-      "sha256": "e031a09d5af9616b7a386727049f9fa219268f8e203870c86dff173a1d37ba97",
+      "bytes": 20491,
+      "sha256": "59c480aae85a8120c2dcda25e7edc396d1c551c268a1b5fd1db712d87aa0fc0a",
       "runtime": true
     },
     {
@@ -1198,15 +1199,15 @@
     {
       "path": "src/ui/email-center.css",
       "installPath": "src/ui/email-center.css",
-      "bytes": 5408,
-      "sha256": "4263cd656565347ce92580fbda71e47e3da9bb627ca5b958a814e2fe333f8474",
+      "bytes": 6028,
+      "sha256": "9db0c03112b669bf35dfc3bde2a0671dde72ca5da724e86c9a33f7f39a4eb556",
       "runtime": true
     },
     {
       "path": "src/ui/email-center.js",
       "installPath": "src/ui/email-center.js",
-      "bytes": 9036,
-      "sha256": "41b692a569f39e70381a04998839e519545cd79833a66b6dcbda85d9b85222c3",
+      "bytes": 12377,
+      "sha256": "7c3d753be10d056334e37b9ebe0ccb321fc95d5461903603c961c9154a0c5dad",
       "runtime": true
     },
     {
@@ -1318,7 +1319,7 @@
       "path": "src/ui/kc-ux-polish.js",
       "installPath": "src/ui/kc-ux-polish.js",
       "bytes": 9722,
-      "sha256": "09ca7f0018685f1d0c936e63c22696fba743e9517d7c3967e69163029f591bdc",
+      "sha256": "d0848b4b15476aeea800d49b2ca8fad2c7c90d6315e6ffb08ec5575527e7f3fa",
       "runtime": true
     },
     {
@@ -1843,7 +1844,7 @@
       "path": "src/ui/source-health-ui.js",
       "installPath": "src/ui/source-health-ui.js",
       "bytes": 5978,
-      "sha256": "743dd4c6b309eb9a053b5a18971e2a2612387c5ede16f7ab825272b860f57f96",
+      "sha256": "d4e2168ed93d3fb76a1db511cde79ab1726ccf8737269e6d985e08d5d44eb195",
       "runtime": true
     },
     {
