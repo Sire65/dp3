@@ -33,6 +33,11 @@ function set(button,message){
 function bind(button,check){if(button){rules.set(button,check);set(button,check());}}
 function refresh(){
  const root=document.getElementById('kcdpUxRoot');if(!root)return;
+ const next=root.querySelector('#twNext');
+ if(next){
+  const task=root.querySelector('[data-tw-task]'),mode=root.querySelector('[data-tw-mode]');
+  if(task||mode){const selector=task?'[data-tw-task][aria-pressed="true"]':'[data-tw-mode][aria-pressed="true"]';set(next,root.querySelector(selector)?'':task?'Bitte zuerst eine Aufgabe wählen.':'Bitte mit oder ohne Twinkey wählen.');}
+ }
  const map={'[data-tw-task="wish"]':'write','[data-tw-task="plan"],#uxMyPlan':'plan','[data-tw-task="change"],#twAnother':'change','[data-tw-task="actual"]':'actual','[data-tw-entry="manual"],[data-tw-entry="excel"],[data-tw-entry="photo"],#uxAssistant,#uxManual,#uxExcel,#uxPhoto':'write','[data-tw-entry="colleague"],#uxColleague':'colleague','[data-tw-entry="overview"]':'overview','#uxOwnList,#waSummary,#waOverview':'own','#uxStartTimes':'times','#twDocAccount':'account'};
  for(const [selector,key] of Object.entries(map))root.querySelectorAll(selector).forEach(b=>set(b,reason(key)));
  if(K.currentUser?.role==='employee')root.querySelectorAll('[data-nav="plan"]').forEach(b=>set(b,reason('plan')));

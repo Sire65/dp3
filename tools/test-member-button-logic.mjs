@@ -13,6 +13,7 @@ try{
  await page.evaluate(()=>{const K=KCDP;K.days=K.days.filter(d=>['2026-12-04','2026-12-05'].includes(d.date));K.wishes=[];K.shifts=[];K.actualShifts=[];K.planSharing=[];K.memberUxData={};K.currentUser={personId:K.people[0].personId,displayName:K.people[0].name,role:'employee'};K.persistAll=async()=>{};K.latestPublishedVersion=()=>K.testPublished||null;K.requirementFor=()=>({total:20,front:10,back:10});K.personalizedForms={downloadPdf:async()=>{},downloadExcel:async()=>{}};K.personAccountPrint={open(){}};K.twinkey.start();});
  const disabled=async(selector)=>assert(await page.locator(selector).isDisabled(),selector+' must be disabled');
  const enabled=async(selector)=>assert(await page.locator(selector).isEnabled(),selector+' must be enabled');
+ await disabled('#twNext');assert.match(await page.locator('#twNext').innerText(),/Bitte zuerst eine Aufgabe wählen/);
  for(const key of ['plan','change','actual'])await disabled('[data-tw-task='+key+']');await enabled('[data-tw-task=wish]');
  await page.locator('[data-tw-task=documents]').click();await disabled('#twDocAccount');for(const id of ['twDocMatrix','twDocExcel','twDocWriting'])await enabled('#'+id);await page.locator('#twTasks').click();
  await page.locator('[data-tw-task=wish]').click();await page.locator('#twShareContinue').click();await disabled('[data-tw-entry=overview]');await disabled('[data-tw-entry=colleague]');await enabled('[data-tw-entry=manual]');

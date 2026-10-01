@@ -129,8 +129,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-01T11:27:29.672Z",
-  "totalRuntimeBytes": 37117290,
+  "generatedAt": "2026-10-01T11:59:47.757Z",
+  "totalRuntimeBytes": 37117678,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -1331,8 +1331,8 @@
     {
       "path": "src/ui/member-button-logic.js",
       "installPath": "src/ui/member-button-logic.js",
-      "bytes": 5494,
-      "sha256": "b2a9aa8805d9100df7d7f4a39ede54af38932921b6f2e1ec68823967318eaf26",
+      "bytes": 5882,
+      "sha256": "20d1b14b587afd0b40ab048f9415033912e5acae0aef37fc66c676fdf56f6865",
       "runtime": true
     },
     {
