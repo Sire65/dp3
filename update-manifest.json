@@ -2,13 +2,22 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 252,
+  "build": 253,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b252",
+  "cacheName": "kc-dp-release-0.20.0-b253",
   "releaseNotes": [
+    "Build 253 RC: Zusammenführung der Club-App-Schnittstelle (250–252 RC) mit den PDF-/QR-Korrekturen aus Build 250/251 des Hauptzweigs; Live-Handtest und serverseitige Claim-/Versionsprüfung offen.",
     "Build 252 RC: Tagesvergleich vor Überschreiben durch Club-App, bewusste Auswahl, erneute Versionsprüfung und vollständiger Abbruch bei ungültigen Angaben.",
     "Build 251 RC: Mitglieder-Buttons berücksichtigen eigene Daten, Wunschphase, gültige Zeiten und freie Zeitfenster; gesperrte Aktionen zeigen den Grund.",
+    "Build 251 (Hauptzweig): „Meine Unterlagen“ in der Twinkey-Seite (auch Club-App) erzeugt Papiermatrix und Handschriftprobe; PDF-Baustein mit neuer Versionskennung geladen",
     "Build 250 RC: Club-App-Tage, geprüfter Wunscheingang mit Ersetzen, Bereitschaft und Twinkey-Status; einheitliche Istzeit-Event-ID. Live-Handtest ausstehend.",
+    "Build 250 (Hauptzweig): Papierunterlagen mit Original-Kochmütze, echten Ankreuzkästchen und Anführungszeichen statt „?“ sowie größerem QR-Code oben rechts",
+    "Build 249: manuellen Kassen-Dienstplan-Minitest mit sicherer Start-/Aufräumroutine vorbereitet",
+    "Build 248: Dienstplan-Snapshot auch bei leerem veröffentlichten Sollplan zuverlässig bereinigt",
+    "Build 247: Dienstplan-Brücke final geprüft – KC-WM-2026, Europe/Berlin, Offline-Cache und Release-Sicherung",
+    "Build 246: Dienstplan-Veranstaltung KC-WM-2026, Europe-Berlin-Datumslogik und vollständiger Kassen-Datenweg abgesichert",
+    "Build 245: Dienstplan-Brücke vollständig freigegeben; Snapshot-Bereinigung, lokale Datumsgrenzen und Kassen-Offlineweg abgesichert",
+    "Build 244: Dienstplan-Brücke zu PC-Manager/Kasse mit lokalem Kalendertag und vollständigem Release-Manifest",
     "Build 243: Personenkonto-Kontoauszug deutlich größere Schrift zum Lesen; Präsentationsbeispiel auf wenige realistische Tage verkürzt",
     "Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey",
     "Build 242: direkter Eingabeweg mit einfacher Uhrzeitauswahl und Bereitschaft",
@@ -130,8 +139,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-01T13:12:57.149Z",
-  "totalRuntimeBytes": 37126238,
+  "generatedAt": "2026-10-01T13:26:03.918Z",
+  "totalRuntimeBytes": 37129034,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -312,7 +321,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 33607,
-      "sha256": "d345942af6ab7376b42c57605568086262bb0809e425e90e8547f34053998604",
+      "sha256": "df6a36d8db2df5e5355a16ff5ad842dccf9e77d8ab6dfb61238f8358e46f1cbe",
       "runtime": true,
       "forceRefresh": true
     },
@@ -485,8 +494,8 @@
     {
       "path": "src/adapters/pdf.js",
       "installPath": "src/adapters/pdf.js",
-      "bytes": 10671,
-      "sha256": "cf651e7d200ccff309d1418ed478376d5c7993d7c4321d8624176632416c54da",
+      "bytes": 13057,
+      "sha256": "84ab8652abe75d7f21a3f83e371571e61bba09595c1e7d3e65a35bc80b7628f5",
       "runtime": true
     },
     {
@@ -2193,8 +2202,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 5983,
-      "sha256": "92470e5eee4d19bc7294fc57b54f3609f7ba8dca489b1d09f3f743b5ee6fb793",
+      "bytes": 6393,
+      "sha256": "5a7af8cc13234a83a36fe27dc1809f7b5588de49039c746d917528c73e9d4730",
       "runtime": true,
       "forceRefresh": true
     }
