@@ -1,9 +1,10 @@
 {
   "name": "kc-dp2",
-  "version": "0.20.0-build250",
+  "version": "0.20.0-build251",
   "private": true,
   "description": "KC DP2 Dienstplan und reproduzierbare Testumgebung",
   "scripts": {
+    "test:member-buttons": "node tools/test-member-button-logic.mjs",
     "test": "npm run test:smoke",
     "test:smoke": "node tools/smoke-club-interface.mjs && node tools/smoke-core.mjs && node tools/smoke-ui-contracts.mjs && node tools/smoke-plan-transfer.mjs && node tools/smoke-actual-reconciliation.mjs && node tools/smoke-timeclock-supabase.mjs && node tools/verify-release.mjs",
     "test:browser": "node tools/test-twinkey.mjs && node tools/test-mobile-wish-matrix.mjs && node tools/test-wish-assistant.mjs && node tools/test-assistant-staffing.mjs",

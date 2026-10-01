@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 250,
+  "build": 251,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b250",
+  "cacheName": "kc-dp-release-0.20.0-b251",
   "releaseNotes": [
+    "Build 251 RC: Mitglieder-Buttons berücksichtigen eigene Daten, Wunschphase, gültige Zeiten und freie Zeitfenster; gesperrte Aktionen zeigen den Grund.",
     "Build 250 RC: Club-App-Tage, geprüfter Wunscheingang mit Ersetzen, Bereitschaft und Twinkey-Status; einheitliche Istzeit-Event-ID. Live-Handtest ausstehend.",
     "Build 243: Personenkonto-Kontoauszug deutlich größere Schrift zum Lesen; Präsentationsbeispiel auf wenige realistische Tage verkürzt",
     "Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey",
@@ -128,8 +129,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-09-30T17:19:20.111Z",
-  "totalRuntimeBytes": 37107295,
+  "generatedAt": "2026-10-01T11:27:29.672Z",
+  "totalRuntimeBytes": 37117290,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -309,8 +310,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33567,
-      "sha256": "5e0d92a5bc78ee2d09f5475ff916a4799335938f9afefed672830e1e91bfb8c3",
+      "bytes": 33607,
+      "sha256": "586ca0dcf2e029bc9eaba7796f5154a05b3c800cd6ed2ce8db98b197e0925cc8",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1328,6 +1329,13 @@
       "runtime": true
     },
     {
+      "path": "src/ui/member-button-logic.js",
+      "installPath": "src/ui/member-button-logic.js",
+      "bytes": 5494,
+      "sha256": "b2a9aa8805d9100df7d7f4a39ede54af38932921b6f2e1ec68823967318eaf26",
+      "runtime": true
+    },
+    {
       "path": "src/ui/member-opportunities.css",
       "installPath": "src/ui/member-opportunities.css",
       "bytes": 2206,
@@ -1386,8 +1394,8 @@
     {
       "path": "src/ui/mobile-wish-matrix.js",
       "installPath": "src/ui/mobile-wish-matrix.js",
-      "bytes": 18330,
-      "sha256": "21a7b3c483696ff3a8d8937628088140d0f9ad19c3de216cb14d358fe9464d70",
+      "bytes": 19577,
+      "sha256": "7dd05d6eef5dae7b822df6d05fb8a85fe346fbc9d44e81d8a3450c1cb45e9467",
       "runtime": true
     },
     {
@@ -1778,8 +1786,8 @@
     {
       "path": "src/ui/role-ux.js",
       "installPath": "src/ui/role-ux.js",
-      "bytes": 95223,
-      "sha256": "55d647c375bc4435927acae95a2275e4d88d9023d6bc826b725161b382b05494",
+      "bytes": 95367,
+      "sha256": "06231e608a6ca7f7a2cf2bc2624b54bbd5f9da61fc2776e1a4a9164073ad5f00",
       "runtime": true
     },
     {
@@ -1820,8 +1828,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 45877,
-      "sha256": "894def1ccfd34cd1b6567d45990448cb6665deabd4973f88f166a57eeb67dc5f",
+      "bytes": 47617,
+      "sha256": "9f979ca6c68d3fcb3206dce7eb6ff279b13a3de12f82b309a1b3362c4f31bab9",
       "runtime": true
     },
     {
@@ -1981,8 +1989,8 @@
     {
       "path": "src/ui/wish-assistant.js",
       "installPath": "src/ui/wish-assistant.js",
-      "bytes": 29253,
-      "sha256": "84892f48c928e929fb79e0a6bec416a879d2099bf72d29aff0497887a0263704",
+      "bytes": 30516,
+      "sha256": "aef206a3d4b931f1fad3203a7294bded44f23a2e7a7278fe90fdf08d36243e46",
       "runtime": true
     },
     {
@@ -2184,8 +2192,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 5916,
-      "sha256": "6b30d59eb48d0994adc08b92043ca171689f2e8fef98ad8e9f2b11c8be1fc49d",
+      "bytes": 5983,
+      "sha256": "92470e5eee4d19bc7294fc57b54f3609f7ba8dca489b1d09f3f743b5ee6fb793",
       "runtime": true,
       "forceRefresh": true
     }

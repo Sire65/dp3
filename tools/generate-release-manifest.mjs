@@ -44,6 +44,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,stage,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 251 RC: Mitglieder-Buttons berücksichtigen eigene Daten, Wunschphase, gültige Zeiten und freie Zeitfenster; gesperrte Aktionen zeigen den Grund.',
     'Build 250 RC: Club-App-Tage, geprüfter Wunscheingang mit Ersetzen, Bereitschaft und Twinkey-Status; einheitliche Istzeit-Event-ID. Live-Handtest ausstehend.',
     'Build 243: Personenkonto-Kontoauszug deutlich größere Schrift zum Lesen; Präsentationsbeispiel auf wenige realistische Tage verkürzt',
     'Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey',

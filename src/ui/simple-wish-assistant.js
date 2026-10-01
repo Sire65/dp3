@@ -23,7 +23,7 @@ function shell(html,tip){
 function start(message=''){
  returnToTeam=false;history=[];lastStep=null;owner=self();date=null;step='days';dirty=false;busy=false;
  shell('<button class="ux-btn secondary" id="swExitTop">← Zurück</button><h1>Wähle deinen Tag</h1><div class="sw-calendar">'+K.days.map(d=>'<button class="ux-btn secondary sw-status-'+statusFor(d.date).key+'" data-day="'+d.date+'" aria-pressed="false"><b>'+dateLabel(d.date)+'</b><span>'+(d.type==='prep'?'Aufbau':d.type==='after'?'Nachbereitung':'Standdienst')+'</span><span>'+ruleTime(d)+'</span><small>'+statusFor(d.date).label+'</small></button>').join('')+'</div><section id="swTimeline" aria-live="polite"><p>Wähle einen Tag für deine Zeitübersicht.</p></section>','Wähle einen Tag. Darunter siehst du deine gespeicherten Zeiten.');
- document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{const d=K.days.find(d=>d.date===b.dataset.day);document.querySelectorAll('[data-day]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('swTimeline').innerHTML=timeline(d)+'<button class="ux-btn primary" id="swEditDay">Angaben bearbeiten</button>';$('swEditDay').onclick=()=>open(d.date);});const exitDays=()=>K.roleUx.openTimes();$('swExitTop').onclick=exitDays;
+ document.querySelectorAll('[data-day]').forEach(b=>b.onclick=()=>{const d=K.days.find(d=>d.date===b.dataset.day);document.querySelectorAll('[data-day]').forEach(x=>x.setAttribute('aria-pressed',String(x===b)));$('swTimeline').innerHTML=timeline(d)+'<button class="ux-btn primary" id="swEditDay">Angaben bearbeiten</button>';$('swEditDay').onclick=()=>open(d.date);K.memberButtons?.bind($('swEditDay'),()=>editable()?'':'Die Wunschphase ist geschlossen.');});const exitDays=()=>K.roleUx.openTimes();$('swExitTop').onclick=exitDays;
 }
 function timeline(d){
  const rows=M().rows(owner,d.date).filter(active),ready=detail.standbyFor(owner,d.date);
@@ -38,6 +38,7 @@ function open(value,fromTeam=false){
  blockMode=stored.some(w=>w.wishType==='unavailable'&&w.scope==='day')?'day':blocks.length?'time':'none';
  can=stored.filter(w=>['available','if_needed'].includes(w.wishType)).map(w=>({start:w.start,end:w.end,wishZone:w.wishZone||'B',reserve:w.wishType==='if_needed'}));
  times=stored.filter(w=>w.wishType==='preferred').map(w=>({start:w.start,end:w.end,wishZone:w.wishZone||'B'}));
+ if(!day())return start();
  if(!can.length)can=[{start:day().start,end:day().end,wishZone:'B'}];
  step='blocks';dirty=false;busy=false;accepted='';render();
 }
@@ -220,6 +221,17 @@ function copyDialog(b){if(!['can','wish','ready'].includes(b.dataset.copyKind))r
 function bindTeamDays(){document.querySelectorAll('[data-team-day]').forEach(b=>b.onclick=()=>{date=b.dataset.teamDay;const host=$('swTeamGraphic');if(host){host.innerHTML=teamGraphic(date);bindTeamDays();}});document.querySelectorAll('[data-copy-person]').forEach(b=>b.onclick=()=>copyDialog(b));}
 function changed(){dirty=true;accepted='';}
 function bind(){
+ const lock=()=>!editable()?'Die Wunschphase ist geschlossen.':busy?'Angaben werden gespeichert.':'';
+ const bindButton=(id,check)=>K.memberButtons?.bind(document.getElementById(id),()=>lock()||check());
+ bindButton('swNext',()=>{const errors=step==='blocks'?blockErrors():step==='can'?canErrors():step==='wish'?timeErrors():step==='standby'?standbyErrors():step==='review'?timeErrors().concat(standbyErrors()):[];return errors[0]||'';});
+ bindButton('swAddTime',()=>{const list=step==='can'?can:times;return list.some(t=>!valid(t))?'Bitte zuerst den begonnenen Zeitraum vervollständigen.':!allowedWindows(step,list.length).length?'Kein weiterer freier Zeitraum vorhanden.':'';});
+ bindButton('swAddBlock',()=>blocks.some(t=>!valid(t))?'Bitte zuerst die Sperrzeit vervollständigen.':!allowedWindows('blocks',blocks.length).length?'Der ganze Tag ist bereits gesperrt.':'');
+ bindButton('swYesStandby',()=>!allowedWindows('standby',standby.slots.length).length&&standby.answer!=='yes'?'Kein freier Zeitraum für zusätzliche Bereitschaft.':'');
+ bindButton('swAddStandby',()=>standby.slots.some(t=>!valid(t))?'Bitte zuerst die Bereitschaftszeit vervollständigen.':!allowedWindows('standby',standby.slots.length).length?'Kein weiterer freier Bereitschaftszeitraum.':'');
+ bindButton('swSame',()=>canErrors()[0]||'');
+ bindButton('swAlternatives',()=>!times.some((t,i)=>alternatives(i).length)?'Keine passende freie Alternative vorhanden.':'');
+ document.querySelectorAll('[data-help]').forEach(b=>K.memberButtons?.bind(b,()=>alternatives(Number(b.dataset.help)).length?'':'Keine passende freie Alternative vorhanden.'));
+
  if($('swPrint'))$('swPrint').onclick=()=>printSummary(false);
  if($('swNoStandby'))$('swNoStandby').onclick=()=>{standby={answer:'no',slots:[]};changed();step='check';render();};
  if($('swYesStandby'))$('swYesStandby').onclick=()=>{standby.answer='yes';if(!standby.slots.length)standby.slots.push({start:null,end:null});changed();render();};
