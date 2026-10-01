@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 250,
-  "cacheName": "kc-dp-release-0.20.0-b250",
+  "build": 251,
+  "cacheName": "kc-dp-release-0.20.0-b251",
   "releaseNotes": [
+    "Build 251: „Meine Unterlagen“ in der Twinkey-Seite (auch Club-App) erzeugt Papiermatrix und Handschriftprobe; PDF-Baustein mit neuer Versionskennung geladen",
     "Build 250: Papierunterlagen mit Original-Kochmütze, echten Ankreuzkästchen und Anführungszeichen statt „?“ sowie größerem QR-Code oben rechts",
     "Build 249: manuellen Kassen-Dienstplan-Minitest mit sicherer Start-/Aufräumroutine vorbereitet",
     "Build 248: Dienstplan-Snapshot auch bei leerem veröffentlichten Sollplan zuverlässig bereinigt",
@@ -134,8 +135,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-01T06:25:49.000Z",
-  "totalRuntimeBytes": 37087646,
+  "generatedAt": "2026-10-01T13:15:40.000Z",
+  "totalRuntimeBytes": 37088026,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -316,7 +317,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 33409,
-      "sha256": "c966c8afdca3a92259aaa71b001cbe2fc4e32317edf065659898160a80516efc",
+      "sha256": "d1bb32e865a017bbb4d18ee057aa5168e2b111a6e477da37ac75defbf780cfa9",
       "runtime": true,
       "forceRefresh": true
     },
@@ -2176,8 +2177,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 5916,
-      "sha256": "6b30d59eb48d0994adc08b92043ca171689f2e8fef98ad8e9f2b11c8be1fc49d",
+      "bytes": 6296,
+      "sha256": "27c1a31f4f83a57d12e7146106b5e843f4c05f875dc2513513e284a54ff63764",
       "runtime": true,
       "forceRefresh": true
     }
