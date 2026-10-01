@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 253,
+  "build": 254,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b253",
+  "cacheName": "kc-dp-release-0.20.0-b254",
   "releaseNotes": [
+    "Build 254 RC: „Meine Angaben ausdrucken“ mit Sicherheitsabfrage, PDF-Vorschau und QR oben rechts am Ende von Matrix, Twinkey-Auswertung und einfachem Assistenten; Papierimport übernimmt am ganzen Sperrtag kein V/H/B und keine Zeiten (sichtbar zur Prüfung).",
     "Build 253 RC: Zusammenführung der Club-App-Schnittstelle (250–252 RC) mit den PDF-/QR-Korrekturen aus Build 250/251 des Hauptzweigs; Live-Handtest und serverseitige Claim-/Versionsprüfung offen.",
     "Build 252 RC: Tagesvergleich vor Überschreiben durch Club-App, bewusste Auswahl, erneute Versionsprüfung und vollständiger Abbruch bei ungültigen Angaben.",
     "Build 251 RC: Mitglieder-Buttons berücksichtigen eigene Daten, Wunschphase, gültige Zeiten und freie Zeitfenster; gesperrte Aktionen zeigen den Grund.",
@@ -139,8 +140,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-01T13:26:03.918Z",
-  "totalRuntimeBytes": 37129034,
+  "generatedAt": "2026-10-01T13:47:51.159Z",
+  "totalRuntimeBytes": 37142411,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -320,8 +321,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33607,
-      "sha256": "df6a36d8db2df5e5355a16ff5ad842dccf9e77d8ab6dfb61238f8358e46f1cbe",
+      "bytes": 33726,
+      "sha256": "336e60214fe0f7fe556003d5502a3e17cecbfe3e7c486809e3cf0a274adede48",
       "runtime": true,
       "forceRefresh": true
     },
@@ -466,8 +467,8 @@
     {
       "path": "src/adapters/form-ocr.js",
       "installPath": "src/adapters/form-ocr.js",
-      "bytes": 19884,
-      "sha256": "dae21fad1c69ea2c07168b70419449552449ee78b8af9a2ee2a7f9ffaf42be97",
+      "bytes": 21311,
+      "sha256": "7fb76a945ba0768ef031dfe3905052bfb2ab8fbe0715db8e7fcd33e5c3a74155",
       "runtime": true
     },
     {
@@ -823,8 +824,8 @@
     {
       "path": "src/core/personalized-forms.js",
       "installPath": "src/core/personalized-forms.js",
-      "bytes": 15670,
-      "sha256": "9791bc106fbf537322461cdc889aca0d392164985a8fa6799ec6cad338e0f6f4",
+      "bytes": 21300,
+      "sha256": "85760065a6cddd2bcdb378e849170d010f54f2b0754d87ba5664b9366f6b23d8",
       "runtime": true
     },
     {
@@ -1089,8 +1090,8 @@
     {
       "path": "src/ui/chef-companion.js",
       "installPath": "src/ui/chef-companion.js",
-      "bytes": 13985,
-      "sha256": "a318381f4fe1e43d1c204e9e080a2d8b04fdeff050428196ba6a4dc42fe375d3",
+      "bytes": 14071,
+      "sha256": "c2832bc68734e0114e9245ea824d9f15b992931298f61d683d7fa966e60431ae",
       "runtime": true
     },
     {
@@ -1404,8 +1405,8 @@
     {
       "path": "src/ui/mobile-wish-matrix.js",
       "installPath": "src/ui/mobile-wish-matrix.js",
-      "bytes": 19577,
-      "sha256": "7dd05d6eef5dae7b822df6d05fb8a85fe346fbc9d44e81d8a3450c1cb45e9467",
+      "bytes": 19728,
+      "sha256": "884b0113573bc78dd8c73d8b55c730f58f55ffe4308daca4b367e4c4c34a4aa7",
       "runtime": true
     },
     {
@@ -1838,8 +1839,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 47617,
-      "sha256": "9f979ca6c68d3fcb3206dce7eb6ff279b13a3de12f82b309a1b3362c4f31bab9",
+      "bytes": 47746,
+      "sha256": "8ee880ffeaa0c230308c997457fdeb067ed340497c28a9a0481ccc8dcfa58087",
       "runtime": true
     },
     {
@@ -2060,6 +2061,20 @@
       "runtime": true
     },
     {
+      "path": "src/ui/wish-print.css",
+      "installPath": "src/ui/wish-print.css",
+      "bytes": 908,
+      "sha256": "6caece8316b8e4d5a48d27d68d2b8b04c0d180f4f0b3b558152aa527d3852085",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/wish-print.js",
+      "installPath": "src/ui/wish-print.js",
+      "bytes": 4804,
+      "sha256": "7f3f6ffa65702167bc1541d4b7b0dbc87db9c6ef85317c510ff12fabbe5886b2",
+      "runtime": true
+    },
+    {
       "path": "src/ui/wish-sprint.js",
       "installPath": "src/ui/wish-sprint.js",
       "bytes": 8752,
@@ -2202,8 +2217,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 6393,
-      "sha256": "5a7af8cc13234a83a36fe27dc1809f7b5588de49039c746d917528c73e9d4730",
+      "bytes": 6516,
+      "sha256": "85e6baa7313fdd88ccc217dba6ff13663d0c9956ce1b18a7a7d12bcf7bd6d569",
       "runtime": true,
       "forceRefresh": true
     }

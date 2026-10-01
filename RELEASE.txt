@@ -1,3 +1,3 @@
-KC-DP2 0.20.0 Build 253 RC
-Zusammenführung: Club-App-Schnittstelle (Builds 250–252 RC) mit den PDF-/QR-Korrekturen des Hauptzweigs (Builds 250/251). Siehe docs/BUILD-253-ZUSAMMENFUEHRUNG.md.
+KC-DP2 0.20.0 Build 254 RC
+„Meine Angaben ausdrucken“ (ausgefüllter V12-Bogen mit QR, Sicherheitsabfrage, PDF-Vorschau vor dem Drucken) an allen drei Abschlüssen; ganzer Sperrtag ohne V/H/B auch beim Papierimport. Siehe docs/BUILD-254-AUSDRUCK-SPERRTAG.md.
 Live-Handtest, zentrale Kollegenfreigabe und serverseitige Claim-/Versionsprüfung bleiben offen.
