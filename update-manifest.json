@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 258,
+  "build": 259,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b258",
+  "cacheName": "kc-dp-release-0.20.0-b259",
   "releaseNotes": [
+    "Build 259 RC: vollständiger Auftrag abgeglichen (KC-DP-TWINKEY-SPERRTAG-OHNE-BEREITSCHAFT, KC-DP-TWINKEY-VERSANDMELDUNG). Bereitschaft an Sperrtagen ausblenden und beim Speichern bereinigen; bestätigter Versand am endgültigen Ausstieg mit genauem Fehlertext.",
     "Build 258 RC: Ganzer Sperrtag entfernt Bereitschaft mit Hinweis. Abschluss bestätigt den tatsächlichen Versand mit OK; Fehler behalten die Angaben für einen erneuten Versuch.",
     "Build 257 RC: Twinkey übersichtlicher (KC-DP-TWINKEY-EINFACH): Sperren als drei klare Antworten, ein Zurück je Schritt, Besetzung nur bei Wunschzeit, kurze Tageszusammenfassung, Tageskacheln mit Statusfarbe, doppeltes „Überspringen“ entfernt.",
     "Build 256 RC: Twinkey-Weg vereinfacht (KC-DP-TWINKEY-EINFACH): Fortschritt und nächster offener Tag, Rückfrage vor „Fertig“ bei offenen Tagen, Kann-Zeit nicht mehr vorausgefüllt, Wunschzeit erst nach Wahl, Bearbeiten-Knopf sofort sichtbar.",
@@ -144,8 +145,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-02T17:05:03.109Z",
-  "totalRuntimeBytes": 37160802,
+  "generatedAt": "2026-10-02T17:13:31.520Z",
+  "totalRuntimeBytes": 37162115,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -325,8 +326,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33716,
-      "sha256": "0ea97cfddcf7408d67ce787be8923bb7906fd3d74c84ab9d9e0d5b8720c1d3a1",
+      "bytes": 33705,
+      "sha256": "876b3e5b1b9abb02e063a7f05287257bdf1b443c6be078e773be992c11d37394",
       "runtime": true,
       "forceRefresh": true
     },
@@ -786,8 +787,8 @@
     {
       "path": "src/core/mobile-wish-matrix.js",
       "installPath": "src/core/mobile-wish-matrix.js",
-      "bytes": 6061,
-      "sha256": "82646fac19db5a2e0e209d3f550031701c9bd0f56b839e8ee41459d7ddf712a8",
+      "bytes": 6976,
+      "sha256": "62755809aee58446d722c562a62fe5e17fcc09b14fb0d6ab0b9e6a1008845e51",
       "runtime": true
     },
     {
@@ -1059,8 +1060,8 @@
     {
       "path": "src/ui/assistant-hours.js",
       "installPath": "src/ui/assistant-hours.js",
-      "bytes": 1858,
-      "sha256": "027b586672f43aa8e834d8f36133d5b8e61ed9f89646788bdc4a0bb2c8c36ebe",
+      "bytes": 1921,
+      "sha256": "a599f26ae27231fbc35987fdd78f523fad1dfc94e055eb00f355b4f589892ea5",
       "runtime": true
     },
     {
@@ -1843,8 +1844,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 55596,
-      "sha256": "e99413f5697ea35c1c3ce49a2b642cc4beef9d42eb6ff87a82cf02b907fb838e",
+      "bytes": 55942,
+      "sha256": "e4cd81f5c1273a619b53ef29b0424a8aad4f400977761f492468794a2902b058",
       "runtime": true
     },
     {
@@ -2222,7 +2223,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 6516,
-      "sha256": "9e2004c27d698ea11fde49c0ee914781e4dee632733e9010865b0c875286a607",
+      "sha256": "64a77d414905dd634048cdafbaa514e4fbe039040c3ff75b2759cb0879c18b1a",
       "runtime": true,
       "forceRefresh": true
     }

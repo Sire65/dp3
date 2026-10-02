@@ -27,7 +27,7 @@ try{
  // Build 256: the wish step needs an explicit choice before „Weiter“.
  await disabled('#swNext');await page.locator('#swNone').click();await disabled('#swYesStandby');await disabled('#swNext');await page.locator('#swNoStandby').click();await page.locator('#swNext').click();await page.locator('#swNext').click();await page.waitForSelector('#swFinish');
  assert.ok(await page.locator('#swNextDay').isVisible(),'next open day offered');assert.match(await page.locator('#swProgress').innerText(),/1 von \d+ Tagen fertig/);
- let asked='';page.once('dialog',d=>{asked=d.message();d.accept();});await page.locator('#swFinish').click();await page.locator('#swSendOk').click();await page.locator('#swOverview').click();assert.match(asked,/ohne fertige Angabe/);assert.match(await page.locator('.sw-hours').innerText(),/Kann-Zeit/);await page.locator('#swLeave').click();await enabled('#uxOwnList');
+ let asked='';page.once('dialog',d=>{asked=d.message();d.accept();});await page.locator('#swFinish').click();await page.locator('#swOverview').click();assert.match(asked,/ohne fertige Angabe/);assert.match(await page.locator('.sw-hours').innerText(),/Kann-Zeit/);await page.locator('#swLeave').click();await page.locator('#swSendOk').click();await enabled('#uxOwnList');
  // Read-only pages retain viewing for saved data, but never enable empty days.
  await page.evaluate(()=>{KCDP.state.wishPhase='closed';KCDP.roleUx.openTimes();});await enabled('#uxOwnList');await page.locator('#uxOwnList').click();await enabled('[data-mm-day="2026-12-04"]');await disabled('[data-mm-day="2026-12-05"]');
  await page.evaluate(()=>{const K=KCDP;K.state.wishPhase='open';K.workflow.status='published';K.twinkey.tasks();});await disabled('[data-tw-task=wish]');

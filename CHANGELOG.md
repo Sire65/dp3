@@ -1,3 +1,7 @@
+## Build 259 RC – 02.10.2026
+
+Abgleich mit dem vollständigen Auftrag: KC-DP-TWINKEY-SPERRTAG-OHNE-BEREITSCHAFT und KC-DP-TWINKEY-VERSANDMELDUNG. Sperrtage ohne Bereitschaftszeile und mit zentraler Bereinigung alter Daten beim Speichern. Versanddialog erst am endgültigen Ausstieg; genauer Fehlertext. Details: docs/BUILD-259-AUFTRAGSABGLEICH.md.
+
 ## Build 258 RC – 02.10.2026
 
 Ganzer Sperrtag entfernt Bereitschaft mit Hinweis. Erfolgsmeldung beim Abschluss nur nach bestätigtem Versand, bleibt bis OK stehen; bei Fehlern bleiben Angaben erhalten und der Abschluss kann erneut versucht werden. Details: docs/BUILD-258-TWINKEY-VERSAND.md.

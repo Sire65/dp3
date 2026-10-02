@@ -11,7 +11,12 @@ const ruleTime=value=>{const d=typeof value==='string'?K.days.find(x=>x.date===v
 const dateLabel=d=>new Intl.DateTimeFormat('de-DE',{weekday:'long',day:'numeric',month:'long'}).format(new Date(d+'T12:00:00'));
 let owner=null,date=null,stored=[],baseline='',blocks=[],can=[],times=[],blockMode='none',step='days',dirty=false,busy=false,accepted='',alternativeIndex=0,history=[],lastStep=null,standby={answer:null,slots:[]},sharing=[],returnToTeam=false,wishChosen=false,blockChosen=false;
 const self=()=>K.currentUser?.personId,day=()=>K.days.find(d=>d.date===date);
-const standbyEnabled=d=>d?.standbyEnabled??!['prep','after'].includes(d?.type);
+const standbyEnabled=(d,personId=owner||self())=>{
+ if(!d)return false;
+ const draft=personId===owner&&d.date===date&&!['days','done','finish'].includes(step);
+ const blocked=draft?blockMode==='day':M().rows(personId,d.date).some(w=>active(w)&&w.wishType==='unavailable'&&w.scope==='day');
+ return !blocked&&(d.standbyEnabled??!['prep','after'].includes(d.type));
+};
 const daySignature=list=>JSON.stringify(list.filter(active).map(r=>[r.wishType,!!r.onlyIfNeeded,r.scope||'time',r.start,r.end,r.wishZone||'B',r.assistantDay?.standby||null]).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))));
 function statusFor(value,list=M().rows(owner,value)){list=list.filter(active);if(!list.length)return {key:'empty',label:'Noch kein Eintrag'};const sig=daySignature(list);return list.every(r=>r.assistantDay?.completed===true&&r.assistantDay?.completedSignature===sig)?{key:'complete',label:'Fertig'}:{key:'draft',label:'In Bearbeitung'};}
 function badge(value,list){const s=statusFor(value,list);return '<span class="sw-status sw-status-'+s.key+'">'+s.label+'</span>';}
@@ -49,7 +54,7 @@ async function finishSubmission(next){
   await new Promise(resolve=>{dialog.querySelector('button').onclick=resolve;});dialog.remove();
   if(person===self()&&root.isConnected)next();
  }catch(e){
-  if(root.isConnected){const box=document.createElement('p');box.id='swSendError';box.className='ux-warningbox';box.setAttribute('role','alert');box.textContent='Deine Dienstzeiten konnten gerade nicht verschickt werden – bitte noch einmal „Fertig“. Deine Angaben bleiben gespeichert.';root.querySelector('.wa-question').append(box);const retry=root.querySelector('#swFinish,#swLeave');if(retry)retry.textContent='Fertig';}
+  if(root.isConnected){const box=document.createElement('p');box.id='swSendError';box.className='ux-warningbox';box.setAttribute('role','alert');box.textContent='Deine Dienstzeiten konnten gerade nicht verschickt werden. Bitte prüfe die Internetverbindung und tippe noch einmal auf ‚Fertig‘.';root.querySelector('.wa-question').append(box);const retry=root.querySelector('#swLeave');if(retry)retry.textContent='Fertig';}
  }finally{busy=false;buttons.forEach(([b,disabled])=>{if(b.isConnected)b.disabled=disabled;});}
 }
 function clearDayStandby(){if(standby.answer==='yes'||standby.slots?.length)removedStandby=true;standby={answer:'no',slots:[]};}
@@ -146,7 +151,7 @@ function alternatives(index){
 
 function entrySummary(list){
  if(!list.length)return '<span>Noch keine Angaben</span>';
- return '<span class="sw-entry-grid">'+list.map(w=>'<span class="sw-entry">'+(w.onlyIfNeeded?'<b>Nur wenn nötig</b>':'')+(w.scope==='day'&&w.wishType==='unavailable'?'Sperrtag':tm(w.start)+'–'+tm(w.end)+' Uhr = '+(w.end-w.start).toLocaleString('de-DE')+' Stunden <b>'+({available:'(Kann-Zeit)',preferred:'(Wunschzeit)',if_needed:'(Kann-Zeit · nur wenn nötig)',unavailable:'(Sperrzeit)'}[w.wishType]||'')+'</b>'+(w.wishType!=='unavailable'?' · '+esc(zlabel(w.wishZone||'B')):''))+'</span>').join('')+'</span>'+((list[0]?.assistantDay?.standby?.answer==='yes')?'<p>'+esc(detail.standbyText(list[0].assistantDay.standby))+'</p>':'');
+ return '<span class="sw-entry-grid">'+list.map(w=>'<span class="sw-entry">'+(w.onlyIfNeeded?'<b>Nur wenn nötig</b>':'')+(w.scope==='day'&&w.wishType==='unavailable'?'Sperrtag':tm(w.start)+'–'+tm(w.end)+' Uhr = '+(w.end-w.start).toLocaleString('de-DE')+' Stunden <b>'+({available:'(Kann-Zeit)',preferred:'(Wunschzeit)',if_needed:'(Kann-Zeit · nur wenn nötig)',unavailable:'(Sperrzeit)'}[w.wishType]||'')+'</b>'+(w.wishType!=='unavailable'?' · '+esc(zlabel(w.wishZone||'B')):''))+'</span>').join('')+'</span>'+((list[0]?.assistantDay?.standby?.answer==='yes'&&!list.some(w=>w.wishType==='unavailable'&&w.scope==='day'))?'<p>'+esc(detail.standbyText(list[0].assistantDay.standby))+'</p>':'');
 }
 function stats(preview=true,showEntries=false){
  const s=K.assistantHours.calculate(owner,preview?date:null,preview?rows():null),fmt=n=>n.toLocaleString('de-DE',{maximumFractionDigits:2});
@@ -203,7 +208,7 @@ function teamGraphic(value){
   const wish=allWishes.filter(r=>r.personId===p.personId),ready=standbyOf(p.personId),lines=[
    ['Kann','can',wish.filter(r=>['available','if_needed'].includes(r.wishType))],
    ['Wunsch','wish',wish.filter(r=>r.wishType==='preferred')],
-   ['Bereitschaft','ready',standbyEnabled(d)&&ready.answer==='yes'?(ready.slots||[]):[]],
+   ['Bereitschaft','ready',standbyEnabled(d,p.personId)&&ready.answer==='yes'?(ready.slots||[]):[]],
    ['Geplant','planned',allShifts.filter(r=>r.personId===p.personId)],
    ['Sperre','blocked',wish.filter(r=>r.wishType==='unavailable'&&r.scope!=='day')]
   ],has=lines.some(x=>x[2].some(valid));return {...p,lines,has};
@@ -232,7 +237,7 @@ function render(){
  html+='<div class="sw-block-choices"><button type="button" class="ux-btn '+(blockChosen&&blockMode==='none'?'primary':'secondary')+' sw-block-choice" id="swNoBlock" aria-pressed="'+(blockChosen&&blockMode==='none')+'">✓ Ich kann an diesem Tag<small>keine Sperre</small></button><label class="ux-btn secondary sw-block-choice'+(blockMode==='day'?' chosen':'')+'"><input type="checkbox" id="swDayBlock" '+(blockMode==='day'?'checked':'')+'>Ganzer Tag gesperrt<small>an diesem Tag gar nicht</small></label><label class="ux-btn secondary sw-block-choice'+(blockMode==='time'?' chosen':'')+'"><input type="checkbox" id="swTimeBlock" '+(blockMode==='time'?'checked':'')+' '+(blockMode==='day'?'disabled':'')+'>Nur zeitweise gesperrt<small>z. B. vormittags nicht</small></label></div>';
  if(blockMode==='time')html+=blocks.map((b,i)=>'<article class="wa-slot">'+timeFields(b,i,'blocks')+'<button data-remove-block="'+i+'">Sperrzeit entfernen</button></article>').join('')+'<button class="ux-btn secondary" id="swAddBlock">Weitere Sperrzeit</button>';
  if(blockMode==='day')html+='<p>Dieser Tag ist vollständig gesperrt.</p><fieldset disabled>'+timeFields({start:day().start,end:day().end},0,'disabled',true)+'</fieldset>';
- if(blockMode==='day'&&removedStandby)html+='<p class="ux-warningbox">Die bisherige Bereitschaft wird beim Speichern entfernt, weil der ganze Tag gesperrt ist.</p>';
+ if(blockMode==='day'&&removedStandby)html+='<p class="ux-warningbox">Am Sperrtag ist keine Bereitschaft möglich – die Bereitschaft für diesen Tag wurde entfernt.</p>';
  }else if(step==='can'||step==='wish'){
  html+=step==='can'?'<p>(Kann-Zeit): Das ist deine gesamte Verfügbarkeit. Deine Wunschzeit kannst du danach eintragen. Wähle Von und Bis'+(wholeWindow()?' – oder übernimm die ganze freie Zeit':'')+'.</p>'+(wholeWindow()?'<button class="ux-btn secondary" id="swWholeDay">Ganze freie Zeit übernehmen ('+tm(wholeWindow()[0])+'–'+tm(wholeWindow()[1])+' Uhr)</button>':'')+'<button class="ux-btn secondary" id="swEditBlocks">Sperren ändern</button>':'<p>(Wunschzeit): In diesem Teil deiner Kann-Zeit möchtest du bevorzugt eingesetzt werden.</p>'+entrySummary(can.map(t=>({...t,wishType:t.reserve?'if_needed':'available'})))+'<div class="sw-grid"><button class="ux-btn secondary" id="swSame">Kann-Zeit als Wunsch übernehmen</button><button class="ux-btn secondary" id="swNone">Ohne Wunschzeit weiter</button></div>';
  html+=inputRows(step==='can'?can:times,step==='can'?'can':'times');
@@ -253,7 +258,7 @@ function render(){
  }else html+=(blockMode==='day'&&stored.some(w=>w.wishType!=='unavailable')?'<p class="ux-warningbox">Die Tagessperre ersetzt deine bisherigen Zeitangaben für diesen Tag.</p>':'')+ '<h2>Das trägst du für diesen Tag ein</h2>'+entrySummary(rows())+'<label class="sw-check"><input type="checkbox" id="swComplete" checked> Diesen Tag als fertig markieren</label><p class="ux-goodbox">Alles richtig? Dann unten auf <b>„Angaben speichern“</b> tippen.</p><details class="sw-more"><summary>Mehr anzeigen: Stundenüberblick, Durchschnitt, Drucken</summary><button class="ux-btn secondary" id="swPrint">Zusammenfassung drucken</button>'+stats()+'</details>';
  html+=(['wish','check','review'].includes(step)?plannedNotice():'');
  html+='<div id="swError" role="alert"></div>'+(step==='wish'?team():'')+'<div class="wa-actions"><button class="ux-btn secondary" id="swBack">← Zurück</button>'+(!(step==='check'&&coverage().some(p=>p.status==='full'))&&step!=='alternatives'?'<button class="ux-btn primary" id="swNext">'+(step==='review'?'Angaben speichern':step==='check'?'Fertig':'Weiter')+'</button>':'')+'</div>';
- if(step==='review'&&blockMode==='day'&&removedStandby)html+='<p class="ux-warningbox">Die bisherige Bereitschaft wird beim Speichern entfernt, weil der ganze Tag gesperrt ist.</p>';
+ if(step==='review'&&blockMode==='day'&&removedStandby)html+='<p class="ux-warningbox">Am Sperrtag ist keine Bereitschaft möglich – die Bereitschaft für diesen Tag wurde entfernt.</p>';
  shell(html,titles[step]);bind();if(readinessIssue.length)error(readinessIssue.join(' '));
 }
 function teamButton(){return '<button type="button" class="sw-linkbtn" id="swTeamToggle" aria-expanded="false" aria-controls="swTeam">👥 Bisherige Besetzung anzeigen</button>';}
@@ -332,7 +337,7 @@ function dayFinished(){
  const next=nextOpen(date);
  shell('<button class="ux-btn secondary" id="swDoneBack">← Zurück</button><h1>Dein Tag ist gespeichert</h1><p>'+dateLabel(date)+' · '+ruleTime(date)+'</p>'+progress()+(next?'<button class="ux-btn primary" id="swNextDay">▶ Weiter mit '+esc(dateLabel(next))+'</button>':'')+'<div class="sw-grid"><button class="ux-btn secondary" id="swMore">Zur Tagesübersicht</button><button class="ux-btn '+(next?'secondary':'primary')+'" id="swFinish">Fertig</button></div>',next?'Dein Tag ist gespeichert. Weiter mit dem nächsten offenen Tag?':'Alle Tage sind eingetragen. Prima!');
  if($('swNextDay'))$('swNextDay').onclick=()=>open(next);
- $('swDoneBack').onclick=()=>{history=blockMode==='day'?['blocks']:['blocks','can','wish',...(standbyEnabled(day())?['standby']:[]),'check'];step='review';lastStep='review';render();};$('swMore').onclick=()=>start();$('swFinish').onclick=()=>{if(confirmOpenDays())finishSubmission(()=>finishOverview(false));};
+ $('swDoneBack').onclick=()=>{history=blockMode==='day'?['blocks']:['blocks','can','wish',...(standbyEnabled(day())?['standby']:[]),'check'];step='review';lastStep='review';render();};$('swMore').onclick=()=>start();$('swFinish').onclick=()=>{if(confirmOpenDays())finishOverview(false);};
 }
 function finishOverview(show){
  step='finish';
