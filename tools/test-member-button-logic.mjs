@@ -19,7 +19,7 @@ try{
  await page.locator('[data-tw-task=wish]').click();await page.locator('#twShareContinue').click();await disabled('[data-tw-entry=overview]');await disabled('[data-tw-entry=colleague]');await enabled('[data-tw-entry=manual]');
  await page.locator('[data-tw-entry=manual]').click();assert.match(await page.locator('#swProgress').innerText(),/0 von \d+ Tagen fertig/);await enabled('#swNextOpen');await page.locator('[data-day="2026-12-04"]').click();assert.equal((await page.locator('#swEditDay').innerText()).trim(),'Diesen Tag eintragen');await page.locator('#swEditDay').click();
  // A started but incomplete block cannot advance or spawn another empty block.
- await page.locator('#swTimeBlock').check();await disabled('#swNext');await disabled('#swAddBlock');await page.locator('#swTimeBlock').uncheck();await enabled('#swNext');await page.locator('#swNext').click();
+ await disabled('#swNext');assert.equal(await page.locator('#swBackTop').count(),0);assert.equal(await page.locator('#swTeamToggle').count(),0);await page.locator('#swTimeBlock').check();await disabled('#swNext');await disabled('#swAddBlock');await page.locator('#swTimeBlock').uncheck();await disabled('#swNext');await page.locator('#swNoBlock').click();
  // Build 256: no prefilled availability – a bare „Weiter“ never reports a whole day.
  await disabled('#swNext');await disabled('#swAddTime');assert.equal(await page.locator('[data-list=can][data-field=start]').inputValue(),'');await enabled('#swWholeDay');
  // Full-day availability leaves no second availability or standby window.
