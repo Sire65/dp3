@@ -14,6 +14,11 @@ async function fixture(){
  const calls={ack:[],publish:[],persist:0},inbox=[];
  K.supabaseConnection={state:{userId:'test-admin'},currentMembership:async()=>({role:K.currentUser.role,active:true}),publishDays:async p=>{calls.publish.push(copy(p));return {ok:true};},wishInboxPending:async()=>copy(inbox),wishInboxAck:async p=>{calls.ack.push(copy(p));return {ok:true};}};
  K.persistAll=async()=>{calls.persist++;};
+ K.multiDeviceTest={identity:async()=>({deviceId:'test-device'})};
+ K.supabaseConnection.wishInboxClaim=async()=>({ok:true,claimToken:'test-claim'});
+ K.supabaseConnection.wishInboxAckClaimed=args=>K.supabaseConnection.wishInboxAck(args);
+ K.supabaseConnection.wishInboxRelease=async()=>({ok:true,released:true});
+ K.supabaseConnection.wishInboxReceipt=async({id})=>{const row=inbox.find(i=>i.id===id);return row?{found:true,status:'offen',revision:row.revision}:{found:true,status:'uebernommen',takenRevision:1,takenClaim:'test-claim'};};
  const input={id:'receipt-1',eventId:'KC-WM-2026',source:'club_app',revision:1,personId:K.people[0].personId,entries:[],standby:{},shareWithColleagues:null,submittedAt:'2026-09-30T10:00:00Z'};
  const entry=(patch={})=>({date:'2026-12-04',start:11,end:17,wishType:'available',wishZone:'V',scope:'time',comment:'',...patch});
  const run=async e=>{inbox.splice(0,inbox.length,{...input,...e});const out=await K.clubWishInbox.runNow();const review=K.clubWishInbox.summary().reviews[0];if(review?.days.length&&!review.problems.length)out.results[0]=await K.clubWishInbox.resolve(review.id,Object.fromEntries(review.days.map(d=>[d.date,'replace'])));return out;};
@@ -37,7 +42,7 @@ async function fixture(){
  assert.equal(res.results[0].added,2);assert.equal(res.results[0].replaced,1);assert.equal(res.results[0].skipped,0);assert.equal(res.results[0].problems.length,0);
  assert.deepEqual(copy(K.wishes.find(w=>w.id==='direct')),original);assert.equal(K.wishes.find(w=>w.id==='old-club').status,'deleted');assert.equal(K.memberUxData.assistantStandby[input.personId]['2026-12-06'].answer,'yes');assert.equal(K.planSharing.length,3);assert(K.planSharing.every(r=>r.person_id===input.personId&&r.allow_copy));assert.equal(calls.ack[0].status,'uebernommen');assert(calls.persist>=2);assert(K.syncOutbox.every(o=>o.status==='pending'));
  const before=copy(K.wishes);await K.clubWishInbox.runNow();assert.deepEqual(copy(K.wishes),before,'same revision does not import twice');
- await run({revision:2,entries:[],standby:{},shareWithColleagues:false});assert.equal(K.wishes.filter(w=>w.source==='club_app'&&w.status!=='deleted').length,0);assert.deepEqual(copy(K.memberUxData.assistantStandby[input.personId]),{});assert(K.planSharing.every(r=>!r.allow_copy));
+ await run({revision:2,entries:[],standby:{},shareWithColleagues:false});assert.equal(K.wishes.filter(w=>w.source==='club_app'&&w.status!=='deleted').length,0);assert.deepEqual(copy(K.memberUxData.assistantStandby[input.personId]),{});assert(K.planSharing.every(r=>r.allow_copy),'Consent must not modify local permissions');
 }
 {
  const {K,entry,run,calls}=await fixture();K.currentUser.role='duty_manager';await run({entries:[entry()]});assert.equal(calls.ack[0].status,'uebernommen');assert.throws(()=>K.mutations.saveWish({...entry(),personId:K.people[0].personId}),/nur eigene/,'duty manager does not gain general edit-others');
@@ -70,7 +75,7 @@ for(const failure of ['mutation','persist']){
 }
 {
  const {K,entry,run,calls}=await fixture();let fail=true;K.supabaseConnection.wishInboxAck=async p=>{calls.ack.push(p);if(fail)throw Error('offline');return {ok:true};};
- await assert.rejects(run({entries:[entry()]}));fail=false;await run({revision:2,entries:[entry({end:20})]});assert.equal(K.wishes.filter(w=>w.status!=='deleted').length,1);assert.equal(K.wishes.find(w=>w.status!=='deleted').end,20);assert(K.syncOutbox.every(o=>!String(o.payload.id).includes('receipt-1-1-')));
+ await assert.rejects(run({entries:[entry()]}));fail=false;await run({revision:2,entries:[entry({end:20})]});await run({revision:2,entries:[entry({end:20})]});assert.equal(K.wishes.filter(w=>w.status!=='deleted').length,1);assert.equal(K.wishes.find(w=>w.status!=='deleted').end,20);assert(K.syncOutbox.every(o=>!String(o.payload.id).includes('receipt-1-1-')));
 }
 {
  const {K,input,entry,run}=await fixture();
@@ -93,8 +98,8 @@ for(const failure of ['mutation','persist']){
 {
  const {K,input,entry,run}=await fixture();
  const denied=['can','wish','standby'].map(plan_kind=>({person_id:input.personId,plan_kind,allow_view:false,allow_copy:false}));K.planSharing=copy(denied);
- await run({entries:[entry()],shareWithColleagues:true});assert(K.planSharing.every(r=>!r.allow_view&&!r.allow_copy),'Inbox must not widen authoritative server consent');assert(K.clubWishInbox.summary().lastResult.problems.some(p=>p.text.includes('vorgemerkt')));
- assert.equal(K.memberUxData.colleagueSharing[input.personId].allow,true,'Remember requested consent without falsely granting access');
+ await run({entries:[entry()],shareWithColleagues:true});assert(K.planSharing.every(r=>!r.allow_view&&!r.allow_copy),'Inbox must not widen authoritative server consent');assert.equal(K.clubWishInbox.summary().lastResult.problems.length,0);
+ assert.equal(K.memberUxData.colleagueSharing,undefined,'No local consent overlay');
 }
 {
  const {K,ctx}=await fixture(),order=[];K.integrationConfig.supabase.onlineSyncEnabled=true;K.sync.hasProvider=()=>true;K.supabaseConnection.ensureSession=async()=>{};K.sync.syncBoth=async()=>{order.push('sync');return {ok:true};};K.planManagerBridge={publishNow:async()=>{order.push('plan');throw Error('plan');}};K.daysPublishBridge.publishNow=async()=>{order.push('days');throw Error('days');};K.clubWishInbox.runNow=async()=>{order.push('inbox');};vm.runInContext(await read('src/core/auto-sync.js'),ctx);assert.equal((await K.autoSync.runNow()).ok,true);assert.deepEqual(order,['sync','plan','days','inbox']);
@@ -107,8 +112,62 @@ assert(!(await read('src/adapters/timeclock-supabase.js')).includes("||'WM-2026'
  const P=ctx.window.KCDP.supabaseConnection;P.restoreSession({access_token:'test-session',expires_at:Date.now()/1000+3600,user:{id:'test-admin'}});
  await P.publishDays({days:[]});await P.wishInboxPending({eventId:'CUSTOM'});await P.wishInboxAck({id:'receipt',revision:3,status:'uebernommen',result:{added:2}});
  assert.deepEqual(requests[0].body,{p_org_id:'TEST_ORG',p_event_id:'KC-WM-2026',p_days:[]});assert.equal(requests[1].body.p_event_id,'CUSTOM');assert.deepEqual(requests[2].body,{p_id:'receipt',p_revision:3,p_status:'uebernommen',p_result:{added:2}});assert(requests.every(r=>r.headers.Authorization==='Bearer test-session'&&r.method==='POST'));await assert.rejects(P.wishInboxAck({status:'wrong'}));
+ await P.wishInboxClaim({id:'receipt',revision:3,deviceId:'PC-A'});await P.wishInboxAckClaimed({id:'receipt',revision:3,status:'uebernommen',result:{added:2},claimToken:'claim-A'});await P.wishInboxRelease({id:'receipt',claimToken:'claim-A'});await P.wishInboxReceipt({id:'receipt'});
+ assert(requests[3].url.endsWith('/kc_dp_wish_inbox_claim'));assert.deepEqual(requests[3].body,{p_id:'receipt',p_revision:3,p_device_id:'PC-A',p_minutes:10});
+ assert(requests[4].url.endsWith('/kc_dp_wish_inbox_ack_claimed'));assert.deepEqual(requests[4].body,{p_id:'receipt',p_revision:3,p_status:'uebernommen',p_result:{added:2},p_claim_token:'claim-A'});
+ assert.deepEqual(requests[5].body,{p_id:'receipt',p_claim_token:'claim-A'});assert.deepEqual(requests[6].body,{p_id:'receipt'});await assert.rejects(P.wishInboxAckClaimed({status:'wrong'}));
 }
 const version=JSON.parse(await read('release-version.json')),html=await read('index.html');assert(html.includes('window.KC_DP_BUILD='+version.build));assert.equal(JSON.parse(await read('package.json')).version,version.version+'-build'+version.build);
+// A shared RPC simulator: different clients really compete for one server row.
+function claimServer(initial){
+ const row=copy(initial),stats={claims:0,acks:0,releases:0};let token=null,device=null,active=false,takenClaim=null,takenRevision=null,seq=0,status='offen';
+ function attach(f,id){const K=f.K;K.multiDeviceTest={identity:async()=>({deviceId:id})};Object.assign(K.supabaseConnection,{
+  wishInboxPending:async()=>status==='offen'?[copy(row)]:[],
+  wishInboxClaim:async a=>{stats.claims++;if(status!=='offen'||a.revision!==row.revision)return {ok:false,stale:true};if(active&&device!==a.deviceId)return {ok:false,reason:'claimed',claimedByMe:true,claimedUntil:'2026-10-01T20:00:00Z'};if(!active)token='claim-'+(++seq);active=true;device=a.deviceId;return {ok:true,claimToken:token};},
+  wishInboxAckClaimed:async a=>{stats.acks++;if(status!=='offen'||a.revision!==row.revision)return {ok:false,stale:true};if(a.claimToken!==token)return {ok:false,reason:'claim_lost'};status=a.status;takenClaim=token;takenRevision=a.revision;active=false;return {ok:true,sharingApplied:true,shareWithColleagues:true};},
+  wishInboxRelease:async a=>{stats.releases++;if(token===a.claimToken){active=false;token=null;}return {ok:true};},
+  wishInboxReceipt:async()=>({found:true,status,revision:row.revision,takenClaim,takenRevision})
+ });}
+ return {attach,stats,row,expire(){active=false;}};
+}
+{
+ const a=await fixture(),b=await fixture(),server=claimServer({...a.input,entries:[a.entry()]});server.attach(a,'PC-A');server.attach(b,'PC-B');
+ let unblock,entered;const ready=new Promise(r=>entered=r),gate=new Promise(r=>unblock=r);a.K.persistAll=async()=>{entered();await gate;};
+ const running=a.K.clubWishInbox.runNow();await ready;const out=await b.K.clubWishInbox.runNow();assert.equal(out.results[0].reason,'claimed');assert.equal(b.K.wishes.length,0);assert.equal(b.K.syncOutbox.length,0);assert.equal(server.stats.acks,0);unblock();await running;assert.equal(server.stats.acks,1);assert(a.K.clubWishInbox.summary().lastResult.sharingApplied);
+}
+for(const recovery of ['open','own-ack-lost','other-pc','claim-lost','deleted']){
+ const a=await fixture(),server=claimServer({...a.input,entries:[a.entry()]});server.attach(a,'PC-A');const realAck=a.K.supabaseConnection.wishInboxAckClaimed;
+ a.K.supabaseConnection.wishInboxAckClaimed=async args=>{if(recovery==='own-ack-lost')await realAck(args);throw Error('response lost');};
+ await assert.rejects(a.K.clubWishInbox.runNow());assert(a.K.syncOutbox.every(o=>o.status==='club_pending'));
+ const restart=await fixture();for(const key of ['wishes','memberUxData','syncOutbox','auditLog','planSharing'])restart.K[key]=copy(a.K[key]);server.attach(restart,'PC-A');
+ if(recovery==='other-pc'||recovery==='claim-lost'){server.expire();const b=await fixture();server.attach(b,'PC-B');if(recovery==='other-pc')await b.K.clubWishInbox.runNow();else await b.K.supabaseConnection.wishInboxClaim({id:b.input.id,revision:1,deviceId:'PC-B'});}
+ if(recovery==='deleted')restart.K.supabaseConnection.wishInboxReceipt=async()=>({found:false});
+ await restart.K.clubWishInbox.runNow();
+ if(['other-pc','claim-lost','deleted'].includes(recovery)){assert.equal(restart.K.wishes.length,0,recovery);assert.equal(restart.K.syncOutbox.length,0);assert(restart.K.clubWishInbox.summary().notices.some(n=>n.reason==='claim_lost'));}
+ else {assert.equal(restart.K.wishes.length,1);assert(restart.K.syncOutbox.every(o=>o.status==='pending'));assert.equal(server.stats.acks,1,'recovery does not import or acknowledge twice');}
+}
+{
+ const f=await fixture(),server=claimServer({...f.input,entries:[f.entry()]});server.attach(f,'PC-A');f.K.supabaseConnection.wishInboxAckClaimed=async()=>{throw Error('lost');};await assert.rejects(f.K.clubWishInbox.runNow());
+ const extra={...f.entry({date:'2026-12-05'}),id:'fresh-other-day',personId:f.input.personId,source:'manual',status:'confirmed'};f.K.wishes.push(extra);f.K.memberUxData.assistantStandby[f.input.personId]['2026-12-05']={answer:'no',slots:[]};f.K.planSharing=[{person_id:f.input.personId,plan_kind:'can',allow_view:true,allow_copy:false}];
+ server.expire();const b=await fixture();server.attach(b,'PC-B');await b.K.clubWishInbox.runNow();await f.K.clubWishInbox.runNow();
+ assert.deepEqual(copy(f.K.wishes),[extra],'rollback retains independent newer day');assert.equal(f.K.memberUxData.assistantStandby[f.input.personId]['2026-12-05'].answer,'no');assert.equal(f.K.planSharing[0].allow_view,true);
+}
+{
+ const f=await fixture();f.K.multiDeviceTest.identity=async()=>{f.K.supabaseConnection.state.userId='other-user';return {deviceId:'PC-A'};};await assert.rejects(f.run({entries:[f.entry()]}),/Anmeldung/);assert.equal(f.K.wishes.length,0);assert.equal(f.calls.ack.length,0);
+}
+{
+ const f=await fixture(),server=claimServer({...f.input,entries:[f.entry()]});server.attach(f,'PC-A');const ack=f.K.supabaseConnection.wishInboxAckClaimed;f.K.supabaseConnection.wishInboxAckClaimed=async a=>{server.row.revision++;return ack(a);};
+ await f.K.clubWishInbox.runNow();assert.equal(f.K.wishes.length,0);assert.equal(f.K.syncOutbox.length,0);
+}
+{
+ const f=await fixture(),server=claimServer({...f.input,entries:[f.entry()]});server.attach(f,'PC-A');f.K.mutations.saveWish=()=>{throw Error('local failure');};await assert.rejects(f.K.clubWishInbox.runNow());assert.equal(server.stats.releases,1);assert.equal(server.stats.acks,0);assert.equal(f.K.wishes.length,0);
+}
+{
+ const a=await fixture(),b=await fixture(),server=claimServer({...a.input,entries:[a.entry()]});server.attach(a,'PC-A');server.attach(b,'PC-B');await a.K.supabaseConnection.wishInboxClaim({id:a.input.id,revision:1,deviceId:'PC-A'});b.K.state.wishPhase='closed';await b.K.clubWishInbox.runNow();assert.equal(server.stats.acks,0);a.K.state.wishPhase='closed';await a.K.clubWishInbox.runNow();assert.equal(server.stats.acks,1);
+}
+{
+ const f=await fixture();f.K.multiDeviceTest.identity=async()=>null;await assert.rejects(f.run({entries:[f.entry()]}),/Gerätekennung/);assert.equal(f.K.wishes.length,0);
+}
 // Explicit conflict decisions: never resolve these through the legacy helper.
 {
  const {K,input,entry,inbox,calls}=await fixture();K.wishes=[{...entry(),id:'direct',personId:input.personId,source:'manual',status:'confirmed'}];inbox.push({...input,entries:[entry({end:18})]});await K.clubWishInbox.runNow();
@@ -151,4 +210,4 @@ for(const changed of ['phone','dp2','standby']){
  inbox[0]={...input,revision:2,entries:[]};await K.clubWishInbox.runNow();assert.equal(calls.ack.length,1,'empty newer snapshot must not silently delete');
  assert.equal(K.wishes.filter(w=>w.status!=='deleted').length,1);await K.clubWishInbox.resolve(input.id,{'2026-12-04':'replace'});assert.equal(K.wishes.filter(w=>w.status!=='deleted').length,0);
 }
-console.log('PASS Club-App: publication, conflict keep/replace, missing decisions, changed phone/DP2/readiness, explicit deletion, rollback including direct data, dedup, validation, roles, ACK recovery/restart, standby, sharing, Twinkey signature, auto-sync isolation, version and event ID.');
+console.log('PASS Club-App: two-PC claims, same-login devices, own-token recovery, claim loss/release, authoritative sharing, provider RPCs, publication, conflict keep/replace, missing decisions, changed phone/DP2/readiness, explicit deletion, rollback including direct data, dedup, validation, roles, ACK recovery/restart, standby, sharing, Twinkey signature, auto-sync isolation, version and event ID.');

@@ -1,7 +1,7 @@
 (function(){
 'use strict';
 const K=window.KCDP=window.KCDP||{},clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
-const state={inFlight:false,lastRunAt:null,lastError:null,lastResult:null,reviews:[]};
+const state={inFlight:false,lastRunAt:null,lastError:null,lastResult:null,reviews:[],notices:[]};
 let capability=null;
 const active=w=>!['deleted','cancelled'].includes(w.status);
 const eventId=()=>K.eventConfig?.eventId||'KC-WM-2026';
@@ -62,18 +62,8 @@ function prepare(input,replaceDates=[]){
  }
  return {accepted,standby,skipped,problems};
 }
-function mergeSharing(rows=[]){
- let merged=clone(rows||[]);
- for(const meta of Object.values(store().metadata)){
-  if(typeof meta.shareWithColleagues!=='boolean')continue;
-  // The server table has no timestamps and only the member may write it. Never
-  // widen server permissions from an inbox overlay; a saved refusal wins.
-  if(meta.shareWithColleagues)continue;
-  merged=merged.filter(r=>String(r.person_id)!==meta.personId);
-  for(const plan_kind of ['can','wish','standby'])merged.push({org_id:orgId(),person_id:meta.personId,plan_kind,allow_view:false,allow_copy:false,source:'club_app'});
- }
- return merged;
-}
+// Permissions are authoritative server data. Never overlay inbox consent locally.
+function mergeSharing(rows=[]){return clone(rows);}
 function sharingSavedByMember(personId){
  for(const meta of Object.values(store().metadata))if(meta.personId===personId)meta.shareWithColleagues=null;
 }
@@ -85,11 +75,6 @@ function applyMetadata(meta){
  const target=K.memberUxData.assistantStandby[meta.personId]=K.memberUxData.assistantStandby[meta.personId]||{};
  for(const date of Object.keys(previous?.standby||{}))if(!Object.hasOwn(meta.standby||{},date)&&equal(target[date],previous.standby[date]))delete target[date];
  Object.assign(target,clone(meta.standby||{}));
- if(typeof meta.shareWithColleagues==='boolean'){
-  K.memberUxData.colleagueSharing=K.memberUxData.colleagueSharing||{};
-  K.memberUxData.colleagueSharing[meta.personId]={allow:meta.shareWithColleagues,updatedAt:meta.submittedAt};
- }
- K.planSharing=mergeSharing(K.planSharing);
 }
 function snapshot(input){return {wishes:clone(K.wishes.filter(w=>w.personId===input.personId&&K.days.some(d=>d.date===w.date))),standby:clone(K.memberUxData?.assistantStandby?.[input.personId]),sharing:clone((K.planSharing||[]).filter(r=>r.person_id===input.personId)),consent:clone(K.memberUxData?.colleagueSharing?.[input.personId]),metadata:clone(store().metadata[input.id])};}
 function comparisonRows(rows){return rows.map(w=>canonical({date:w.date,start:w.start,end:w.end,wishType:w.wishType,wishZone:w.wishZone||'B',scope:w.scope||'time',onlyIfNeeded:!!w.onlyIfNeeded,comment:w.comment||'',assistantDay:w.assistantDay||null})).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));}
@@ -101,14 +86,24 @@ function reviewFor(input){
 function holdReview(review,problems=[]){state.reviews=state.reviews.filter(r=>r.id!==review.id);state.reviews.push({...review,problems});return {needsReview:true,id:review.id,revision:review.revision,problems};}
 async function rollback(receipt){
  const s=store(),before=receipt.before;
- K.wishes=K.wishes.filter(w=>!(w.personId===receipt.personId&&receipt.dates.includes(w.date)&&(receipt.allSources||w.source==='club_app'))).concat(clone(before.wishes));
+ if(Array.isArray(receipt.affectedIds)){
+  const ids=new Set(receipt.affectedIds);
+  K.wishes=K.wishes.filter(w=>!ids.has(w.id)).concat(clone(before.wishes.filter(w=>ids.has(w.id))));
+ }else K.wishes=K.wishes.filter(w=>!(w.personId===receipt.personId&&receipt.dates.includes(w.date)&&(receipt.allSources||w.source==='club_app'))).concat(clone(before.wishes));
  K.sync.settleLocalBatch(receipt.tag,false);
  K.auditLog=(K.auditLog||[]).filter(r=>!receipt.auditIds.includes(r.id));
  K.memberUxData.assistantStandby=K.memberUxData.assistantStandby||{};
- if(before.standby===undefined)delete K.memberUxData.assistantStandby[receipt.personId];else K.memberUxData.assistantStandby[receipt.personId]=clone(before.standby);
- K.memberUxData.colleagueSharing=K.memberUxData.colleagueSharing||{};
- if(before.consent===undefined)delete K.memberUxData.colleagueSharing[receipt.personId];else K.memberUxData.colleagueSharing[receipt.personId]=clone(before.consent);
- K.planSharing=(K.planSharing||[]).filter(r=>r.person_id!==receipt.personId).concat(clone(before.sharing));
+ if(Array.isArray(receipt.affectedStandbyDates)){
+  const target=K.memberUxData.assistantStandby[receipt.personId]||{};
+  for(const date of receipt.affectedStandbyDates){if(Object.hasOwn(before.standby||{},date))target[date]=clone(before.standby[date]);else delete target[date];}
+  if(before.standby!==undefined||Object.keys(target).length)K.memberUxData.assistantStandby[receipt.personId]=target;else delete K.memberUxData.assistantStandby[receipt.personId];
+ }else if(before.standby===undefined)delete K.memberUxData.assistantStandby[receipt.personId];else K.memberUxData.assistantStandby[receipt.personId]=clone(before.standby);
+ // Build 255 does not write permissions locally; rollback must retain fresh server reads.
+ if(!receipt.claimToken){
+  K.memberUxData.colleagueSharing=K.memberUxData.colleagueSharing||{};
+  if(before.consent===undefined)delete K.memberUxData.colleagueSharing[receipt.personId];else K.memberUxData.colleagueSharing[receipt.personId]=clone(before.consent);
+  K.planSharing=(K.planSharing||[]).filter(r=>r.person_id!==receipt.personId).concat(clone(before.sharing));
+ }
  if(before.metadata===undefined)delete s.metadata[receipt.id];else s.metadata[receipt.id]=clone(before.metadata);
  delete s.receipts[receipt.id];
  await K.persistAll();
@@ -116,27 +111,45 @@ async function rollback(receipt){
 async function complete(receipt){
  K.sync.settleLocalBatch(receipt.tag,true);
  // Keep a compact durable receipt across restarts; an ACK timeout never imports twice.
- store().receipts[receipt.id]={id:receipt.id,personId:receipt.personId,revision:receipt.revision,phase:'done',result:receipt.result};
+ store().receipts[receipt.id]={id:receipt.id,personId:receipt.personId,revision:receipt.revision,claimToken:receipt.claimToken,phase:'done',result:receipt.result};
  store().lastRunAt=state.lastRunAt=new Date().toISOString();store().lastResult=state.lastResult=receipt.result;
  await K.persistAll();return receipt.result;
 }
 async function acknowledge(receipt){
  if(receipt.context!==scopeKey())throw Error('Die Veranstaltung wurde während der Übernahme geändert.');
  const userId=K.supabaseConnection.state?.userId;
- const reply=await K.supabaseConnection.wishInboxAck({id:receipt.id,revision:receipt.revision,status:'uebernommen',result:receipt.result});
+ if(receipt.userId&&receipt.userId!==userId)throw Error('Bitte mit dem Konto anmelden, das die Übernahme begonnen hat.');
+ const args={id:receipt.id,revision:receipt.revision,status:'uebernommen',result:receipt.result,claimToken:receipt.claimToken};
+ // Only durable pre-255 receipts may use the legacy acknowledgement once.
+ const reply=await (receipt.claimToken?K.supabaseConnection.wishInboxAckClaimed(args):K.supabaseConnection.wishInboxAck(args));
  if(receipt.context!==scopeKey()||userId!==K.supabaseConnection.state?.userId)throw Error('Die Anmeldung oder Veranstaltung wurde während der Bestätigung geändert.');
- if(reply?.stale===true){await rollback(receipt);return {stale:true};}
+ if(reply?.stale===true||reply?.reason==='claim_lost'){await rollbackAndRelease(receipt);return notice({id:receipt.id,stale:!!reply.stale,reason:reply.reason||'stale'});}
  if(reply?.ok!==true)throw Error('Club-App-Bestätigung fehlt. Der gesicherte Eingang wird erneut geprüft.');
+ receipt.result.sharingApplied=reply.sharingApplied===true;receipt.result.shareWithColleagues=reply.shareWithColleagues??null;
  return complete(receipt);
 }
+function notice(value){state.notices=state.notices.filter(n=>n.id!==value.id);state.notices.push(value);return value;}
+async function release(receipt){if(receipt.claimToken)try{await K.supabaseConnection.wishInboxRelease({id:receipt.id,claimToken:receipt.claimToken});}catch(_){} }
+async function rollbackAndRelease(receipt){try{await rollback(receipt);}finally{await release(receipt);}}
+async function claim(input){
+ const context=scopeKey(),user=K.supabaseConnection.state?.userId;
+ const identity=await K.multiDeviceTest?.identity?.();
+ if(!identity?.deviceId)throw Error('Gerätekennung fehlt. Der Club-App-Eingang wird nicht übernommen.');
+ if(context!==scopeKey()||user!==K.supabaseConnection.state?.userId)throw Error('Anmeldung oder Veranstaltung während der Geräteprüfung geändert.');
+ const reply=await K.supabaseConnection.wishInboxClaim({id:input.id,revision:input.revision,deviceId:identity.deviceId});
+ if(reply?.reason==='claimed'||reply?.stale)return notice({...reply,id:input.id,ok:false});
+ if(reply?.ok!==true||!reply.claimToken)throw Error('Reservierung wurde nicht bestätigt. Es werden keine Angaben eingetragen.');
+ return reply;
+}
 async function importOne(input,context,decision=null){
- if(context!==scopeKey()||!phaseOpen())return reject(input,'wunschphase_geschlossen');
+ if(context!==scopeKey())throw Error('Die Veranstaltung wurde während der Übernahme geändert.');
+ if(!phaseOpen())return reject(input,'wunschphase_geschlossen');
  const person=K.people.find(p=>p.personId===input.personId);
  if(!person?.active||(K.personPlanningAllowed&&!K.personPlanningAllowed(input.personId)))return reject(input,'person_unbekannt');
  if(input.eventId!==eventId()||input.source!=='club_app'||!input.id||!Number.isInteger(input.revision)||input.revision<1||!Array.isArray(input.entries)||!input.standby||typeof input.standby!=='object'||Array.isArray(input.standby))throw Error('Ungültiger Club-App-Eingang.');
  const prior=store().receipts[input.id];
  if(prior?.revision===input.revision&&prior.phase==='awaiting_ack')return acknowledge(prior);
- if(prior?.revision>=input.revision&&prior.phase==='done')return K.supabaseConnection.wishInboxAck({id:input.id,revision:input.revision,status:'uebernommen',result:prior.result});
+ if(prior?.revision>=input.revision&&prior.phase==='done')return {skipped:true,reason:'already_processed'};
  const review=reviewFor(input);
  if(decision&&(decision.fingerprint!==review.fingerprint||decision.context!==context||decision.user!==K.supabaseConnection.state?.userId))return holdReview(review,[{text:'Die Daten wurden inzwischen geändert. Bitte erneut vergleichen und auswählen.'}]);
  if(review.days.length&&(!decision||review.days.some(d=>!['keep','replace'].includes(decision.choices?.[d.date]))))return holdReview(review);
@@ -146,8 +159,13 @@ async function importOne(input,context,decision=null){
  if(prepared.problems.length)return holdReview(review,prepared.problems);
  // Keep the complete existing day, including direct Twinkey readiness, when selected.
  for(const date of keepDates)if(before.standby?.[date])prepared.standby[date]=clone(before.standby[date]);
- if(typeof input.shareWithColleagues==='boolean'&&['can','wish','standby'].some(kind=>{const row=(K.planSharing||[]).find(r=>r.person_id===input.personId&&r.plan_kind===kind);return !!row?.allow_view!==input.shareWithColleagues||!!row?.allow_copy!==input.shareWithColleagues;}))prepared.problems.push({text:'Kollegenfreigabe vorgemerkt. Die zentrale Freigabe kann mit der vorhandenen Schnittstelle nur das Mitglied selbst in DP2 speichern; keine stellvertretende Änderung durch den Planer.'});
+ const reservation=await claim(input);if(reservation.ok!==true)return reservation;
+ if(context!==scopeKey()||review.user!==K.supabaseConnection.state?.userId){await release({id:input.id,claimToken:reservation.claimToken});throw Error('Anmeldung oder Veranstaltung während der Reservierung geändert.');}
+ if(!phaseOpen()||review.fingerprint!==reviewFor(input).fingerprint){await release({id:input.id,claimToken:reservation.claimToken});return holdReview(reviewFor(input),[{text:'Die Daten wurden während der Reservierung geändert. Bitte erneut prüfen.'}]);}
  const receipt={id:input.id,personId:input.personId,revision:input.revision,phase:'awaiting_ack',context,tag,before,allSources:true,dates:K.days.map(d=>d.date),auditIds:[],result:{added:0,replaced:0,skipped:prepared.skipped,keptDays:keepDates,replacedDays:replaceDates,standbyDays:Object.keys(prepared.standby).length,problems:prepared.problems,dp2Version:K.VERSION}};
+ receipt.claimToken=reservation.claimToken;receipt.claimedUntil=reservation.claimedUntil;receipt.userId=review.user;
+ receipt.affectedIds=[...new Set(before.wishes.filter(w=>active(w)&&!keepDates.includes(w.date)&&(w.source==='club_app'||replaceDates.includes(w.date))).map(w=>w.id).concat(prepared.accepted.map(w=>w.id)))];
+ receipt.affectedStandbyDates=[...new Set(Object.keys(before.metadata?.standby||{}).concat(Object.keys(prepared.standby),replaceDates))];
  store().receipts[input.id]=receipt;
  try{
   capability={personId:input.personId,replaceIds:before.wishes.filter(w=>replaceDates.includes(w.date)).map(w=>w.id)};
@@ -162,14 +180,18 @@ async function importOne(input,context,decision=null){
   });
   receipt.auditIds=K.auditLog.slice(auditStart).map(r=>r.id);
   await K.persistAll();
- }catch(e){receipt.auditIds=K.auditLog.slice(auditStart).map(r=>r.id);await rollback(receipt);throw e;}finally{capability=null;}
+ }catch(e){receipt.auditIds=K.auditLog.slice(auditStart).map(r=>r.id);try{await rollback(receipt);}finally{await release(receipt);}throw e;}finally{capability=null;}
  // Network failures after persistence leave a recoverable, held batch, never a partial reimport.
  state.reviews=state.reviews.filter(r=>r.id!==input.id);
  return acknowledge(receipt);
 }
 async function reject(input,reason){
  const result={reason,problems:[{text:reason==='person_unbekannt'?'Person ist nicht aktiv oder nicht planbar.':'Die Wunschphase ist geschlossen.'}],added:0};
- const response=await K.supabaseConnection.wishInboxAck({id:input.id,revision:input.revision,status:'abgelehnt',result});
+ const context=scopeKey(),user=K.supabaseConnection.state?.userId,reservation=await claim(input);if(reservation.ok!==true)return reservation;
+ if(context!==scopeKey()||user!==K.supabaseConnection.state?.userId){await release({id:input.id,claimToken:reservation.claimToken});throw Error('Anmeldung oder Veranstaltung geändert.');}
+ let response;try{response=await K.supabaseConnection.wishInboxAckClaimed({id:input.id,revision:input.revision,status:'abgelehnt',result,claimToken:reservation.claimToken});}finally{await release({id:input.id,claimToken:reservation.claimToken});}
+ if(context!==scopeKey()||user!==K.supabaseConnection.state?.userId)throw Error('Anmeldung oder Veranstaltung während der Ablehnung geändert.');
+ if(response?.reason==='claim_lost')return notice({id:input.id,reason:'claim_lost'});
  if(!response?.stale&&response?.ok!==true)throw Error('Ablehnung wurde nicht bestätigt.');
  if(response?.stale)return {stale:true};
  store().lastResult=state.lastResult=result;store().lastRunAt=state.lastRunAt=new Date().toISOString();await K.persistAll();return result;
@@ -183,19 +205,30 @@ async function runNow(){
   if(context!==scopeKey()||user!==K.supabaseConnection.state?.userId)throw Error('Die Anmeldung oder Veranstaltung wurde geändert.');
   state.reviews=state.reviews.filter(r=>r.context===context&&r.user===user&&inputs.some(i=>i.id===r.id));
   if(inputs.length&&K.supabaseConnection.readPlanSharing)K.planSharing=await K.supabaseConnection.readPlanSharing({raw:true});
+  if(context!==scopeKey()||user!==K.supabaseConnection.state?.userId)throw Error('Die Anmeldung oder Veranstaltung wurde geändert.');
   // A crash before the first full persistence can leave a queue-only staged batch.
   // Never release it: there is no durable receipt proving the wishes were saved.
   const durableTags=new Set(Object.values(K.memberUxData?.clubWishInbox||{}).flatMap(s=>Object.values(s.receipts||{})).filter(r=>r.phase==='awaiting_ack').map(r=>r.tag));
   K.syncOutbox=K.syncOutbox.filter(op=>!op.clubInboxBatch||durableTags.has(op.clubInboxBatch));
-  // Resume a durable batch before newer input. An absent row after an ACK timeout means it
-  // is no longer open; retain the saved wishes (the RPC cannot distinguish ACK by this/another PC).
+  state.notices=inputs.filter(i=>i.claimActive&&!i.claimedByMe).map(i=>({id:i.id,reason:'claimed',claimedUntil:i.claimedUntil}));const resumed=new Set(),results=[];
+  // Match the exact claim, not merely the login: two PCs may use the same account.
   for(const receipt of Object.values(store().receipts).filter(r=>r.phase==='awaiting_ack')){
+   if(receipt.userId&&receipt.userId!==user)throw Error('Bitte mit dem Konto anmelden, das die Übernahme begonnen hat.');
    const current=inputs.find(i=>i.id===receipt.id);
-   if(!current)await complete(receipt);
-   else if(current.revision!==receipt.revision)await rollback(receipt);
+   if(!receipt.claimToken){
+    if(!current){await complete(receipt);continue;}
+    if(current.revision!==receipt.revision){await rollback(receipt);continue;}
+    results.push(await acknowledge(receipt));resumed.add(receipt.id);continue;
+   }
+   const remote=await K.supabaseConnection.wishInboxReceipt({id:receipt.id});
+   if(context!==scopeKey()||user!==K.supabaseConnection.state?.userId)throw Error('Anmeldung oder Veranstaltung während der Belegprüfung geändert.');
+   if(!remote||typeof remote.found!=='boolean')throw Error('Übernahmebeleg konnte nicht eindeutig geprüft werden.');
+   if(remote.found===true&&remote.status!=='offen'&&remote.takenClaim===receipt.claimToken&&remote.takenRevision===receipt.revision){results.push(await complete(receipt));resumed.add(receipt.id);}
+   else if(remote.found===false||remote.status!=='offen'||remote.revision!==receipt.revision){await rollbackAndRelease(receipt);results.push(notice({id:receipt.id,reason:'claim_lost',stale:true}));resumed.add(receipt.id);}
+   else {results.push(await acknowledge(receipt));resumed.add(receipt.id);}
   }
-  const results=[];
   for(const input of inputs){
+   if(resumed.has(input.id))continue;
    if(context!==scopeKey()||user!==K.supabaseConnection.state?.userId)throw Error('Die Anmeldung oder Veranstaltung wurde geändert.');
    results.push(await importOne(input,context));
   }
@@ -216,6 +249,6 @@ async function resolve(id,choices){
   return await importOne(input,scopeKey(),{...decision,choices});
  }finally{state.inFlight=false;K.emailCenter?.refreshClubStatus?.();}
 }
-function summary(){const s=store();return {lastRunAt:s.lastRunAt,lastResult:s.lastResult,lastError:state.lastError,reviews:clone(state.reviews.filter(r=>r.context===scopeKey()&&r.user===K.supabaseConnection.state?.userId)),pending:Object.values(s.receipts).filter(r=>r.phase==='awaiting_ack').length};}
+function summary(){const s=store();return {lastRunAt:s.lastRunAt,lastResult:s.lastResult,lastError:state.lastError,notices:clone(state.notices),reviews:clone(state.reviews.filter(r=>r.context===scopeKey()&&r.user===K.supabaseConnection.state?.userId)),pending:Object.values(s.receipts).filter(r=>r.phase==='awaiting_ack').length};}
 K.clubWishInbox={state,runNow,resolve,summary,mergeSharing,sharingSavedByMember,applyMetadata,assertWritable,authorizes,restoreOrder};
 })();

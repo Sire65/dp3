@@ -133,7 +133,7 @@
     loadModule('src/core/document-identity.js?v=0.19.55-s0','KCDP_DOC_ID');
     loadModule('src/core/email-inbox.js?v=0.19.55-s1','KCDP_EMAIL_CORE');
     loadModule('src/core/inbound-wish-import.js?v=0.19.55-s2','KCDP_INBOUND_IMPORT');
-    loadModule('src/ui/email-center.js?v=0.20.0-b252','KCDP_EMAIL_CENTER');
+    loadModule('src/ui/email-center.js?v=0.20.0-b255','KCDP_EMAIL_CENTER');
     loadModule('src/ui/session-diagnostics-guard.js?v=0.19.69-close-only-2','KCDP_SESSION_DIAG_GUARD');
     loadModule('src/ui/supabase-session-guard.js?v=0.19.55-single-flight-led-2','KCDP_SUPABASE_SESSION_GUARD')
   }

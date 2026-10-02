@@ -1,3 +1,3 @@
-KC-DP2 0.20.0 Build 254 RC
-„Meine Angaben ausdrucken“ (ausgefüllter V12-Bogen mit QR, Sicherheitsabfrage, PDF-Vorschau vor dem Drucken) an allen drei Abschlüssen; ganzer Sperrtag ohne V/H/B auch beim Papierimport. Siehe docs/BUILD-254-AUSDRUCK-SPERRTAG.md.
-Live-Handtest, zentrale Kollegenfreigabe und serverseitige Claim-/Versionsprüfung bleiben offen.
+KC-DP2 0.20.0 Build 255 RC
+Reservierung je PC vor Club-App-Import, eindeutiger Übernahmebeleg nach Neustart und Rückrollen bei verlorener Reservierung. Kollegenfreigabe aus Serverbestätigung; keine lokale Erweiterung.
+Alle Planer-PCs vor paralleler Übernahme aktualisieren. Wiederherstellungsprüfung und Zwei-PC-Live-Handtest bleiben vor FINAL erforderlich. Siehe docs/BUILD-255-WUNSCH-SPERRE.md.
