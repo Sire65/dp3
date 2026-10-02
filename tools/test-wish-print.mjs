@@ -49,7 +49,7 @@ const dialoge=[];
 for(const width of [320,768]){const {page,errors}=await seite(width,{desktopPdf:false});
  await page.evaluate(()=>KCDP.chefCompanion.finish());assert.ok(await page.locator('#chefPrint').isVisible(),'Twinkey-Auswertung: Knopf fehlt');
  await page.evaluate(()=>KCDP.simpleWishAssistant.open('2026-12-05'));await page.locator('#swDayBlock').waitFor();
- if(!(await page.locator('#swDayBlock').isChecked()))await page.check('#swDayBlock');await page.click('#swNext');await page.click('#swNext');await page.locator('#swFinish').waitFor();await page.click('#swFinish');
+ if(!(await page.locator('#swDayBlock').isChecked()))await page.check('#swDayBlock');await page.click('#swNext');await page.click('#swNext');await page.locator('#swFinish').waitFor();page.once('dialog',d=>d.accept());await page.click('#swFinish');
  assert.ok(await page.locator('#swPrintPdf').isVisible(),'Einfacher Assistent: Knopf am Schluss fehlt');
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Abschluss zu breit');
  assert.deepEqual(errors,[]);await page.close();}

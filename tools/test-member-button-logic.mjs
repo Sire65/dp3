@@ -17,12 +17,17 @@ try{
  for(const key of ['plan','change','actual'])await disabled('[data-tw-task='+key+']');await enabled('[data-tw-task=wish]');
  await page.locator('[data-tw-task=documents]').click();await disabled('#twDocAccount');for(const id of ['twDocMatrix','twDocExcel','twDocWriting'])await enabled('#'+id);await page.locator('#twTasks').click();
  await page.locator('[data-tw-task=wish]').click();await page.locator('#twShareContinue').click();await disabled('[data-tw-entry=overview]');await disabled('[data-tw-entry=colleague]');await enabled('[data-tw-entry=manual]');
- await page.locator('[data-tw-entry=manual]').click();await page.locator('[data-day="2026-12-04"]').click();await page.locator('#swEditDay').click();
+ await page.locator('[data-tw-entry=manual]').click();assert.match(await page.locator('#swProgress').innerText(),/0 von \d+ Tagen fertig/);await enabled('#swNextOpen');await page.locator('[data-day="2026-12-04"]').click();assert.equal((await page.locator('#swEditDay').innerText()).trim(),'Diesen Tag eintragen');await page.locator('#swEditDay').click();
  // A started but incomplete block cannot advance or spawn another empty block.
  await page.locator('#swTimeBlock').check();await disabled('#swNext');await disabled('#swAddBlock');await page.locator('#swTimeBlock').uncheck();await enabled('#swNext');await page.locator('#swNext').click();
+ // Build 256: no prefilled availability – a bare „Weiter“ never reports a whole day.
+ await disabled('#swNext');await disabled('#swAddTime');assert.equal(await page.locator('[data-list=can][data-field=start]').inputValue(),'');await enabled('#swWholeDay');
  // Full-day availability leaves no second availability or standby window.
- await disabled('#swAddTime');await page.locator('[data-list=can][data-field=start]').selectOption('');await disabled('#swNext');await page.locator('[data-list=can][data-field=start]').selectOption('11');await enabled('#swNext');await page.locator('#swNext').click();await page.locator('#swNone').click();await disabled('#swYesStandby');await disabled('#swNext');await page.locator('#swNoStandby').click();await page.locator('#swNext').click();await page.locator('#swNext').click();await page.waitForSelector('#swFinish');
- await page.locator('#swFinish').click();await page.locator('#swOverview').click();assert.match(await page.locator('.sw-hours').innerText(),/Kann-Zeit/);await page.locator('#swLeave').click();await enabled('#uxOwnList');
+ await page.locator('[data-list=can][data-field=start]').selectOption('11');await disabled('#swNext');await page.locator('[data-list=can][data-field=end]').selectOption('23');await enabled('#swNext');await page.locator('#swNext').click();
+ // Build 256: the wish step needs an explicit choice before „Weiter“.
+ await disabled('#swNext');await page.locator('#swNone').click();await disabled('#swYesStandby');await disabled('#swNext');await page.locator('#swNoStandby').click();await page.locator('#swNext').click();await page.locator('#swNext').click();await page.waitForSelector('#swFinish');
+ assert.ok(await page.locator('#swNextDay').isVisible(),'next open day offered');assert.match(await page.locator('#swProgress').innerText(),/1 von \d+ Tagen fertig/);
+ let asked='';page.once('dialog',d=>{asked=d.message();d.accept();});await page.locator('#swFinish').click();await page.locator('#swOverview').click();assert.match(asked,/ohne fertige Angabe/);assert.match(await page.locator('.sw-hours').innerText(),/Kann-Zeit/);await page.locator('#swLeave').click();await enabled('#uxOwnList');
  // Read-only pages retain viewing for saved data, but never enable empty days.
  await page.evaluate(()=>{KCDP.state.wishPhase='closed';KCDP.roleUx.openTimes();});await enabled('#uxOwnList');await page.locator('#uxOwnList').click();await enabled('[data-mm-day="2026-12-04"]');await disabled('[data-mm-day="2026-12-05"]');
  await page.evaluate(()=>{const K=KCDP;K.state.wishPhase='open';K.workflow.status='published';K.twinkey.tasks();});await disabled('[data-tw-task=wish]');

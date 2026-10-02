@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 255,
+  "build": 256,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b255",
+  "cacheName": "kc-dp-release-0.20.0-b256",
   "releaseNotes": [
+    "Build 256 RC: Twinkey-Weg vereinfacht (KC-DP-TWINKEY-EINFACH): Fortschritt und nächster offener Tag, Rückfrage vor „Fertig“ bei offenen Tagen, Kann-Zeit nicht mehr vorausgefüllt, Wunschzeit erst nach Wahl, Bearbeiten-Knopf sofort sichtbar.",
     "Build 255 RC: Club-App-Eingang vor lokalem Import je PC reservieren, mit eigenem Token bestätigen und nach Neustart eindeutig prüfen; verlorene Reservierungen zurückrollen. Wiederherstellungs- und Zwei-PC-Liveprüfung vor FINAL offen.",
     "Build 254 RC: „Meine Angaben ausdrucken“ mit Sicherheitsabfrage, PDF-Vorschau und QR oben rechts am Ende von Matrix, Twinkey-Auswertung und einfachem Assistenten; Papierimport übernimmt am ganzen Sperrtag kein V/H/B und keine Zeiten (sichtbar zur Prüfung).",
     "Build 253 RC: Zusammenführung der Club-App-Schnittstelle (250–252 RC) mit den PDF-/QR-Korrekturen aus Build 250/251 des Hauptzweigs; Live-Handtest und serverseitige Claim-/Versionsprüfung offen.",
@@ -141,8 +142,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-02T09:30:33.750Z",
-  "totalRuntimeBytes": 37148927,
+  "generatedAt": "2026-10-02T10:32:34.230Z",
+  "totalRuntimeBytes": 37152181,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -323,7 +324,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 33726,
-      "sha256": "ed34750aef764f02f6ee415208bfd0f31be81c9bc2d2a18bd9784e5863408d4f",
+      "sha256": "82831a4eb49c0d8a70b308127c4cd7988814c201050a2b2c0f461b6bd6ea0107",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1840,8 +1841,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 47746,
-      "sha256": "8ee880ffeaa0c230308c997457fdeb067ed340497c28a9a0481ccc8dcfa58087",
+      "bytes": 51000,
+      "sha256": "fded3dc5ed949cefe54bf976d2d50ae3694dfbd56f8656162dc269efcc9d9540",
       "runtime": true
     },
     {
@@ -2219,7 +2220,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 6516,
-      "sha256": "85e6baa7313fdd88ccc217dba6ff13663d0c9956ce1b18a7a7d12bcf7bd6d569",
+      "sha256": "5b5323821ce320a85454104a7e8daaa1809f0bfe3225c9494e92ba8ba520eb3d",
       "runtime": true,
       "forceRefresh": true
     }

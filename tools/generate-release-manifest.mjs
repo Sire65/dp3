@@ -44,6 +44,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,stage,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 256 RC: Twinkey-Weg vereinfacht (KC-DP-TWINKEY-EINFACH): Fortschritt und nächster offener Tag, Rückfrage vor „Fertig“ bei offenen Tagen, Kann-Zeit nicht mehr vorausgefüllt, Wunschzeit erst nach Wahl, Bearbeiten-Knopf sofort sichtbar.',
     'Build 255 RC: Club-App-Eingang vor lokalem Import je PC reservieren, mit eigenem Token bestätigen und nach Neustart eindeutig prüfen; verlorene Reservierungen zurückrollen. Wiederherstellungs- und Zwei-PC-Liveprüfung vor FINAL offen.',
     'Build 254 RC: „Meine Angaben ausdrucken“ mit Sicherheitsabfrage, PDF-Vorschau und QR oben rechts am Ende von Matrix, Twinkey-Auswertung und einfachem Assistenten; Papierimport übernimmt am ganzen Sperrtag kein V/H/B und keine Zeiten (sichtbar zur Prüfung).',
     'Build 253 RC: Zusammenführung der Club-App-Schnittstelle (250–252 RC) mit den PDF-/QR-Korrekturen aus Build 250/251 des Hauptzweigs; Live-Handtest und serverseitige Claim-/Versionsprüfung offen.',
