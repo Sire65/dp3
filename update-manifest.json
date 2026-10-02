@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 257,
+  "build": 258,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b257",
+  "cacheName": "kc-dp-release-0.20.0-b258",
   "releaseNotes": [
+    "Build 258 RC: Ganzer Sperrtag entfernt Bereitschaft mit Hinweis. Abschluss bestätigt den tatsächlichen Versand mit OK; Fehler behalten die Angaben für einen erneuten Versuch.",
     "Build 257 RC: Twinkey übersichtlicher (KC-DP-TWINKEY-EINFACH): Sperren als drei klare Antworten, ein Zurück je Schritt, Besetzung nur bei Wunschzeit, kurze Tageszusammenfassung, Tageskacheln mit Statusfarbe, doppeltes „Überspringen“ entfernt.",
     "Build 256 RC: Twinkey-Weg vereinfacht (KC-DP-TWINKEY-EINFACH): Fortschritt und nächster offener Tag, Rückfrage vor „Fertig“ bei offenen Tagen, Kann-Zeit nicht mehr vorausgefüllt, Wunschzeit erst nach Wahl, Bearbeiten-Knopf sofort sichtbar.",
     "Build 255 RC: Club-App-Eingang vor lokalem Import je PC reservieren, mit eigenem Token bestätigen und nach Neustart eindeutig prüfen; verlorene Reservierungen zurückrollen. Wiederherstellungs- und Zwei-PC-Liveprüfung vor FINAL offen.",
@@ -143,8 +144,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-02T11:03:20.251Z",
-  "totalRuntimeBytes": 37156685,
+  "generatedAt": "2026-10-02T17:05:03.109Z",
+  "totalRuntimeBytes": 37160802,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -325,7 +326,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 33716,
-      "sha256": "1a4030e496cea3397ac4b8eb88ee5a714b274db0a3405497925853ed57f5f3e1",
+      "sha256": "0ea97cfddcf7408d67ce787be8923bb7906fd3d74c84ab9d9e0d5b8720c1d3a1",
       "runtime": true,
       "forceRefresh": true
     },
@@ -540,8 +541,8 @@
     {
       "path": "src/adapters/sync.js",
       "installPath": "src/adapters/sync.js",
-      "bytes": 15440,
-      "sha256": "5f4eebd436e2ec968ea0577a22461dac40c576b4ac2e8f738c72403d70406540",
+      "bytes": 15651,
+      "sha256": "35533ab50b9a1499d544ce024d699e015367957d9601a2ed683f9fea42858e67",
       "runtime": true
     },
     {
@@ -1842,8 +1843,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 52320,
-      "sha256": "3b3bbdfaf4885025c0ad15b530c4fb14684b919195ba316381c703c4b28c9138",
+      "bytes": 55596,
+      "sha256": "e99413f5697ea35c1c3ce49a2b642cc4beef9d42eb6ff87a82cf02b907fb838e",
       "runtime": true
     },
     {
@@ -1884,8 +1885,8 @@
     {
       "path": "src/ui/startup.css",
       "installPath": "src/ui/startup.css",
-      "bytes": 251750,
-      "sha256": "7ae8c361087dab430dad4509b3b08ea7a33e0eac419a935c0db03b417f84239b",
+      "bytes": 252065,
+      "sha256": "29e92a509498cbf99a86783408a2cf7ac0424f95ea450e3dd172a538003032d4",
       "runtime": true
     },
     {
@@ -2024,8 +2025,8 @@
     {
       "path": "src/ui/wish-demand.css",
       "installPath": "src/ui/wish-demand.css",
-      "bytes": 11628,
-      "sha256": "c7b0621b4d6a44dfabea3057742bcd7d7ef75a93c5e1f38e0142d015cd5d2762",
+      "bytes": 11943,
+      "sha256": "a810dbc39b327167c025d1338425136cb9a8a79f627b22a511e35e9d61af8c2c",
       "runtime": true
     },
     {
@@ -2221,7 +2222,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 6516,
-      "sha256": "24e3ae5e35d3b2d5e7f0f4bb97d2d5f62b5a86073d8ebb261245b519e31d38dc",
+      "sha256": "9e2004c27d698ea11fde49c0ee914781e4dee632733e9010865b0c875286a607",
       "runtime": true,
       "forceRefresh": true
     }

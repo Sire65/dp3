@@ -60,10 +60,10 @@
     try{const key=await ensureRemoteKey(),res=await provider({action:'health',contract:'KC_DP_SYNC_V1',syncNamespace:key.namespace});emit('traffic',{direction:'rx'});if(res?.ok===false)throw new Error(res.message||'Remote-Healthcheck fehlgeschlagen.');setStatus(state.maintenance?'maintenance':'ready');return {ok:true,response:res||{ok:true},syncGeneration:key.generation,syncNamespace:key.namespace};}
     catch(e){setStatus('error',e.message);throw e;}
   }
-  async function flush(){
+  async function flush({force=false}={}){
     await requireTransport();if(!provider)throw new Error('Supabase-Provider ist nicht verbunden.');
     setStatus('syncing');let sent=0,conflicts=0,failed=0;
-    for(const op of [...K.syncOutbox].filter(due)){
+    for(const op of [...K.syncOutbox].filter(op=>force?op.status==='pending':due(op))){
       op.status='sending';op.attempts=Number(op.attempts||0)+1;emit('traffic',{direction:'tx',operation:op});
       try{
         const wireOperation=await toWireOperation(op);
@@ -71,6 +71,7 @@
         if(res?.status==='conflict'){
           op.status='conflict';const c={id:`CON-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,operationId:op.operationId,entity:op.entity,local:op.payload,remote:res.remote||null,detectedAt:new Date().toISOString(),status:'open'};K.syncConflicts.push(c);conflicts++;continue;
         }
+        if(res?.ok===false||['error','failed','rejected'].includes(res?.status))throw new Error(res.message||'Server hat die Übertragung nicht bestätigt.');
         op.status='sent';op.sentAt=new Date().toISOString();op.remoteVersion=res?.remoteVersion??null;sent++;
       }catch(e){op.status='pending';op.lastError=e.message;op.nextAttemptAt=KCSecureSync.nextRetry(op.attempts);failed++;}
     }

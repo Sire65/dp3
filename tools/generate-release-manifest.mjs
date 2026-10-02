@@ -44,6 +44,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,stage,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 258 RC: Ganzer Sperrtag entfernt Bereitschaft mit Hinweis. Abschluss bestätigt den tatsächlichen Versand mit OK; Fehler behalten die Angaben für einen erneuten Versuch.',
     'Build 257 RC: Twinkey übersichtlicher (KC-DP-TWINKEY-EINFACH): Sperren als drei klare Antworten, ein Zurück je Schritt, Besetzung nur bei Wunschzeit, kurze Tageszusammenfassung, Tageskacheln mit Statusfarbe, doppeltes „Überspringen“ entfernt.',
     'Build 256 RC: Twinkey-Weg vereinfacht (KC-DP-TWINKEY-EINFACH): Fortschritt und nächster offener Tag, Rückfrage vor „Fertig“ bei offenen Tagen, Kann-Zeit nicht mehr vorausgefüllt, Wunschzeit erst nach Wahl, Bearbeiten-Knopf sofort sichtbar.',
     'Build 255 RC: Club-App-Eingang vor lokalem Import je PC reservieren, mit eigenem Token bestätigen und nach Neustart eindeutig prüfen; verlorene Reservierungen zurückrollen. Wiederherstellungs- und Zwei-PC-Liveprüfung vor FINAL offen.',

@@ -1,3 +1,7 @@
+## Build 258 RC – 02.10.2026
+
+Ganzer Sperrtag entfernt Bereitschaft mit Hinweis. Erfolgsmeldung beim Abschluss nur nach bestätigtem Versand, bleibt bis OK stehen; bei Fehlern bleiben Angaben erhalten und der Abschluss kann erneut versucht werden. Details: docs/BUILD-258-TWINKEY-VERSAND.md.
+
 # Build 257 RC – Twinkey übersichtlicher (02.10.2026)
 
 KC-DP-TWINKEY-EINFACH, zweiter Schritt (Wunsch Hansi vor Wilfrieds Live-Test): Sperr-Frage mit drei klaren Antworten („✓ Ich kann an diesem Tag“, „Ganzer Tag gesperrt“, „Nur zeitweise gesperrt“) – „Weiter“ ist ohne Antwort gesperrt; nur noch ein „Zurück“ je Schritt; „Bisherige Besetzung anzeigen“ nur noch bei der Wunschzeit als Link; Tageszusammenfassung zeigt zuerst die Einträge des Tages, Stundenüberblick/Durchschnitt/Drucken zugeklappt; Tageskacheln kompakt (Mi., 2.12. · Aufbau · 08:00–18:00) mit Statusfarbe grün/gelb/grau; „Überspringen“ auf dem Willkommensbildschirm entfällt (doppelt zu „Ohne Assistent“, das jetzt auch den Ton abschaltet); „Jetzt beenden“ statt überlaufendem „Ohne Übersicht beenden“. Begriffe (Kann-Zeit)/(Wunschzeit) bleiben wie auf Papiermatrix und Excel. Details: docs/BUILD-257-TWINKEY-UEBERSICHT.md.

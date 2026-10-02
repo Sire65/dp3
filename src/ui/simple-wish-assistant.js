@@ -21,6 +21,38 @@ function openDays(){return K.days.filter(d=>statusFor(d.date).key!=='complete');
 function nextOpen(after){const list=openDays();if(!list.length)return null;const i=K.days.findIndex(d=>d.date===after);return (list.find(d=>K.days.findIndex(x=>x.date===d.date)>i)||list[0]).date;}
 function progress(){const list=openDays(),done=K.days.length-list.length;return '<p class="'+(list.length?'ux-warningbox':'ux-goodbox')+'" id="swProgress"><b>'+done+' von '+K.days.length+' Tagen fertig</b>'+(!done?'<br>Noch kein Tag eingetragen. Ich führe dich Tag für Tag.':list.length>6?'<br>Noch '+list.length+' Tage offen.':list.length?'<br>Noch offen: '+list.map(d=>esc(shortLabel(d.date))).join(', '):' · Alle Tage sind eingetragen ✓')+'</p>';}
 function confirmOpenDays(){const list=openDays();return !list.length||confirm('Noch '+list.length+(list.length===1?' Tag':' Tage')+' ohne fertige Angabe: '+list.map(d=>shortLabel(d.date)).join(', ')+'.\n\nFür diese Tage weiß der Planer nicht, ob du kannst. Trotzdem beenden?');}
+let sentSignature=null,removedStandby=false;
+function submissionSignature(){return JSON.stringify([self(),K.eventConfig?.eventId,typeof window.KC_CLUB_DW_API==='function',M().rows(owner),K.memberUxData?.assistantStandby?.[owner],K.memberUxData?.colleagueSharing?.[owner]]);}
+async function finishSubmission(next){
+ if(busy)return;
+ const person=owner,signature=submissionSignature(),root=document.querySelector('.sw-root');
+ if(person!==self())return;
+ if(sentSignature===signature)return next();
+ busy=true;const buttons=[...root.querySelectorAll('button')].map(b=>[b,b.disabled]);buttons.forEach(([b])=>b.disabled=true);
+ root.querySelector('#swSendError')?.remove();
+ try{
+  if(typeof K.persistAll!=='function')throw Error('Speichern nicht verfügbar.');
+  const saved=await K.persistAll();
+  if(typeof window.KC_CLUB_DW_API==='function'){
+   if(saved!==true)throw Error('Versand nicht bestätigt.');
+  }else{
+   if(!K.sync?.flush||!K.sync?.healthCheck)throw Error('Keine Serververbindung.');
+   const health=await K.sync.healthCheck();if(health?.ok!==true)throw Error('Server nicht erreichbar.');
+   const result=await K.sync.flush({force:true}),snapshot=K.sync.snapshot();
+   if(!result||result.failed||result.conflicts||result.pending||snapshot.outbox?.length||snapshot.conflicts?.some(c=>c.status==='open'))throw Error('Übertragung noch offen.');
+  }
+  if(person!==self()||submissionSignature()!==signature||!root.isConnected)throw Error('Angaben oder Anmeldung haben sich geändert.');
+  sentSignature=signature;
+  const dialog=document.createElement('dialog');dialog.className='sw-send-dialog';dialog.setAttribute('aria-labelledby','swSendMessage');
+  dialog.innerHTML='<p id="swSendMessage">Deine Dienstzeiten wurden erfolgreich verschickt.</p><button type="button" class="ux-btn primary" id="swSendOk">OK</button>';
+  root.append(dialog);dialog.addEventListener('cancel',e=>e.preventDefault());dialog.showModal();
+  await new Promise(resolve=>{dialog.querySelector('button').onclick=resolve;});dialog.remove();
+  if(person===self()&&root.isConnected)next();
+ }catch(e){
+  if(root.isConnected){const box=document.createElement('p');box.id='swSendError';box.className='ux-warningbox';box.setAttribute('role','alert');box.textContent='Deine Dienstzeiten konnten gerade nicht verschickt werden – bitte noch einmal „Fertig“. Deine Angaben bleiben gespeichert.';root.querySelector('.wa-question').append(box);const retry=root.querySelector('#swFinish,#swLeave');if(retry)retry.textContent='Fertig';}
+ }finally{busy=false;buttons.forEach(([b,disabled])=>{if(b.isConnected)b.disabled=disabled;});}
+}
+function clearDayStandby(){if(standby.answer==='yes'||standby.slots?.length)removedStandby=true;standby={answer:'no',slots:[]};}
 function editable(){try{M().assertEditable(owner);return owner===self();}catch{return false;}}
 function shell(html,tip){
  K.roleUx.matrixShell('<main class="wa-root sw-root">'+K.chefCompanion.helper(tip)+'<section class="wa-question">'+(date?badge(date,['done','finish'].includes(step)?M().rows(owner,date):rows()):'')+html+'</section></main>');
@@ -42,8 +74,10 @@ function timeline(d){
 function open(value,fromTeam=false){
  returnToTeam=fromTeam;history=[];lastStep=null;owner=self();date=value;stored=clone(M().rows(owner,date));baseline=JSON.stringify(stored);
  standby=clone(detail.standbyFor(owner,date));
+ removedStandby=false;
  blocks=stored.filter(w=>w.wishType==='unavailable'&&w.scope!=='day').map(w=>({start:w.start,end:w.end}));
  blockMode=stored.some(w=>w.wishType==='unavailable'&&w.scope==='day')?'day':blocks.length?'time':'none';
+ if(blockMode==='day')clearDayStandby();
  can=stored.filter(w=>['available','if_needed'].includes(w.wishType)).map(w=>({start:w.start,end:w.end,wishZone:w.wishZone||'B',reserve:w.wishType==='if_needed'}));
  times=stored.filter(w=>w.wishType==='preferred').map(w=>({start:w.start,end:w.end,wishZone:w.wishZone||'B'}));
  if(!day())return start();
@@ -198,6 +232,7 @@ function render(){
  html+='<div class="sw-block-choices"><button type="button" class="ux-btn '+(blockChosen&&blockMode==='none'?'primary':'secondary')+' sw-block-choice" id="swNoBlock" aria-pressed="'+(blockChosen&&blockMode==='none')+'">✓ Ich kann an diesem Tag<small>keine Sperre</small></button><label class="ux-btn secondary sw-block-choice'+(blockMode==='day'?' chosen':'')+'"><input type="checkbox" id="swDayBlock" '+(blockMode==='day'?'checked':'')+'>Ganzer Tag gesperrt<small>an diesem Tag gar nicht</small></label><label class="ux-btn secondary sw-block-choice'+(blockMode==='time'?' chosen':'')+'"><input type="checkbox" id="swTimeBlock" '+(blockMode==='time'?'checked':'')+' '+(blockMode==='day'?'disabled':'')+'>Nur zeitweise gesperrt<small>z. B. vormittags nicht</small></label></div>';
  if(blockMode==='time')html+=blocks.map((b,i)=>'<article class="wa-slot">'+timeFields(b,i,'blocks')+'<button data-remove-block="'+i+'">Sperrzeit entfernen</button></article>').join('')+'<button class="ux-btn secondary" id="swAddBlock">Weitere Sperrzeit</button>';
  if(blockMode==='day')html+='<p>Dieser Tag ist vollständig gesperrt.</p><fieldset disabled>'+timeFields({start:day().start,end:day().end},0,'disabled',true)+'</fieldset>';
+ if(blockMode==='day'&&removedStandby)html+='<p class="ux-warningbox">Die bisherige Bereitschaft wird beim Speichern entfernt, weil der ganze Tag gesperrt ist.</p>';
  }else if(step==='can'||step==='wish'){
  html+=step==='can'?'<p>(Kann-Zeit): Das ist deine gesamte Verfügbarkeit. Deine Wunschzeit kannst du danach eintragen. Wähle Von und Bis'+(wholeWindow()?' – oder übernimm die ganze freie Zeit':'')+'.</p>'+(wholeWindow()?'<button class="ux-btn secondary" id="swWholeDay">Ganze freie Zeit übernehmen ('+tm(wholeWindow()[0])+'–'+tm(wholeWindow()[1])+' Uhr)</button>':'')+'<button class="ux-btn secondary" id="swEditBlocks">Sperren ändern</button>':'<p>(Wunschzeit): In diesem Teil deiner Kann-Zeit möchtest du bevorzugt eingesetzt werden.</p>'+entrySummary(can.map(t=>({...t,wishType:t.reserve?'if_needed':'available'})))+'<div class="sw-grid"><button class="ux-btn secondary" id="swSame">Kann-Zeit als Wunsch übernehmen</button><button class="ux-btn secondary" id="swNone">Ohne Wunschzeit weiter</button></div>';
  html+=inputRows(step==='can'?can:times,step==='can'?'can':'times');
@@ -218,6 +253,7 @@ function render(){
  }else html+=(blockMode==='day'&&stored.some(w=>w.wishType!=='unavailable')?'<p class="ux-warningbox">Die Tagessperre ersetzt deine bisherigen Zeitangaben für diesen Tag.</p>':'')+ '<h2>Das trägst du für diesen Tag ein</h2>'+entrySummary(rows())+'<label class="sw-check"><input type="checkbox" id="swComplete" checked> Diesen Tag als fertig markieren</label><p class="ux-goodbox">Alles richtig? Dann unten auf <b>„Angaben speichern“</b> tippen.</p><details class="sw-more"><summary>Mehr anzeigen: Stundenüberblick, Durchschnitt, Drucken</summary><button class="ux-btn secondary" id="swPrint">Zusammenfassung drucken</button>'+stats()+'</details>';
  html+=(['wish','check','review'].includes(step)?plannedNotice():'');
  html+='<div id="swError" role="alert"></div>'+(step==='wish'?team():'')+'<div class="wa-actions"><button class="ux-btn secondary" id="swBack">← Zurück</button>'+(!(step==='check'&&coverage().some(p=>p.status==='full'))&&step!=='alternatives'?'<button class="ux-btn primary" id="swNext">'+(step==='review'?'Angaben speichern':step==='check'?'Fertig':'Weiter')+'</button>':'')+'</div>';
+ if(step==='review'&&blockMode==='day'&&removedStandby)html+='<p class="ux-warningbox">Die bisherige Bereitschaft wird beim Speichern entfernt, weil der ganze Tag gesperrt ist.</p>';
  shell(html,titles[step]);bind();if(readinessIssue.length)error(readinessIssue.join(' '));
 }
 function teamButton(){return '<button type="button" class="sw-linkbtn" id="swTeamToggle" aria-expanded="false" aria-controls="swTeam">👥 Bisherige Besetzung anzeigen</button>';}
@@ -253,7 +289,7 @@ function bind(){
  if($('swTeamToggle'))$('swTeamToggle').onclick=()=>{const el=$('swTeam');el.hidden=!el.hidden;$('swTeamToggle').setAttribute('aria-expanded',String(!el.hidden));};
  bindTeamDays();
  if($('swNoBlock'))$('swNoBlock').onclick=()=>{if(busy||!editable())return;blockChosen=true;blockMode='none';changed();step='can';render();};
- if($('swDayBlock'))$('swDayBlock').onchange=e=>{blockChosen=e.target.checked;blockMode=e.target.checked?'day':blocks.length?'time':'none';changed();render();};
+ if($('swDayBlock'))$('swDayBlock').onchange=e=>{blockChosen=e.target.checked;blockMode=e.target.checked?'day':blocks.length?'time':'none';if(blockMode==='day')clearDayStandby();changed();render();};
  if($('swTimeBlock'))$('swTimeBlock').onchange=e=>{blockChosen=e.target.checked;blockMode=e.target.checked?'time':'none';if(blockMode==='time'&&!blocks.length)blocks.push({start:null,end:null});changed();render();};
  if($('swAddBlock'))$('swAddBlock').onclick=()=>{blocks.push({start:null,end:null});changed();render();};
  document.querySelectorAll('[data-remove-block]').forEach(b=>b.onclick=()=>{blocks.splice(Number(b.dataset.removeBlock),1);if(!blocks.length)blockMode='none';changed();render();});
@@ -296,7 +332,7 @@ function dayFinished(){
  const next=nextOpen(date);
  shell('<button class="ux-btn secondary" id="swDoneBack">← Zurück</button><h1>Dein Tag ist gespeichert</h1><p>'+dateLabel(date)+' · '+ruleTime(date)+'</p>'+progress()+(next?'<button class="ux-btn primary" id="swNextDay">▶ Weiter mit '+esc(dateLabel(next))+'</button>':'')+'<div class="sw-grid"><button class="ux-btn secondary" id="swMore">Zur Tagesübersicht</button><button class="ux-btn '+(next?'secondary':'primary')+'" id="swFinish">Fertig</button></div>',next?'Dein Tag ist gespeichert. Weiter mit dem nächsten offenen Tag?':'Alle Tage sind eingetragen. Prima!');
  if($('swNextDay'))$('swNextDay').onclick=()=>open(next);
- $('swDoneBack').onclick=()=>{history=blockMode==='day'?['blocks']:['blocks','can','wish',...(standbyEnabled(day())?['standby']:[]),'check'];step='review';lastStep='review';render();};$('swMore').onclick=()=>start();$('swFinish').onclick=()=>{if(confirmOpenDays())finishOverview(false);};
+ $('swDoneBack').onclick=()=>{history=blockMode==='day'?['blocks']:['blocks','can','wish',...(standbyEnabled(day())?['standby']:[]),'check'];step='review';lastStep='review';render();};$('swMore').onclick=()=>start();$('swFinish').onclick=()=>{if(confirmOpenDays())finishSubmission(()=>finishOverview(false));};
 }
 function finishOverview(show){
  step='finish';
@@ -304,7 +340,7 @@ function finishOverview(show){
  if($('swPrintAll'))$('swPrintAll').onclick=()=>printSummary(true);
  K.wishPrint?.binden?.('swPrintPdf',owner);// Build 254
  $('swFinishBack').onclick=()=>show?finishOverview(false):dayFinished();
- if($('swOverview'))$('swOverview').onclick=()=>finishOverview(true);if($('swMore'))$('swMore').onclick=()=>start();$('swLeave').onclick=()=>{dirty=false;K.roleUx.openTimes();};
+ if($('swOverview'))$('swOverview').onclick=()=>finishOverview(true);if($('swMore'))$('swMore').onclick=()=>start();$('swLeave').onclick=()=>finishSubmission(()=>{dirty=false;K.roleUx.openTimes();});
 }
 function printSummary(all){
  const sheet=document.createElement('section');sheet.id='swPrintSheet';const person=K.person(owner);
@@ -328,6 +364,7 @@ async function openTeamOverview(value){
 }
 async function save(){
  if(!editable())return error('Die Anmeldung oder Wunschphase hat sich geändert.');
+ if(blockMode==='day')clearDayStandby();
  const errors=timeErrors().concat(standbyErrors());if(errors.length)return error(errors.join(' '));
  if(blockMode!=='day'&&coverage().some(p=>p.status==='full')&&accepted!==fingerprint()){step='check';render();return error('Die Besetzung hat sich geändert. Bitte erneut entscheiden.');}
  busy=true;$('swNext').disabled=true;

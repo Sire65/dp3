@@ -16,7 +16,7 @@ async function seite(width,{desktopPdf}){
  for(const f of files)await page.addScriptTag({content:await readFile(path.join(root,'src/'+f+'.js'),'utf8')});
  await page.evaluate(()=>{const K=KCDP,me=K.people[0].personId;K.days=K.days.filter(d=>['2026-12-04','2026-12-05'].includes(d.date));K.shifts=[];K.actualShifts=[];K.planSharing=[];K.memberUxData={};
   K.wishes=[{id:'W1',personId:me,date:'2026-12-04',start:14,end:18,wishType:'available',wishZone:'V',status:'confirmed'},{id:'W2',personId:me,date:'2026-12-05',start:11,end:23,wishType:'unavailable',scope:'day',wishZone:'B',status:'confirmed'}];
-  K.currentUser={personId:me,displayName:K.people[0].name,role:'employee'};K.persistAll=async()=>{};K.latestPublishedVersion=()=>null;K.requirementFor=()=>({total:20,front:10,back:10});});
+  K.currentUser={personId:me,displayName:K.people[0].name,role:'employee'};K.persistAll=async()=>{};K.sync={healthCheck:async()=>({ok:true}),flush:async()=>({failed:0,conflicts:0,pending:0}),snapshot:()=>({outbox:[],conflicts:[]})};K.latestPublishedVersion=()=>null;K.requirementFor=()=>({total:20,front:10,back:10});});
  return {page,errors};
 }
 const dialoge=[];
@@ -49,7 +49,7 @@ const dialoge=[];
 for(const width of [320,768]){const {page,errors}=await seite(width,{desktopPdf:false});
  await page.evaluate(()=>KCDP.chefCompanion.finish());assert.ok(await page.locator('#chefPrint').isVisible(),'Twinkey-Auswertung: Knopf fehlt');
  await page.evaluate(()=>KCDP.simpleWishAssistant.open('2026-12-05'));await page.locator('#swDayBlock').waitFor();
- if(!(await page.locator('#swDayBlock').isChecked()))await page.check('#swDayBlock');await page.click('#swNext');await page.click('#swNext');await page.locator('#swFinish').waitFor();page.once('dialog',d=>d.accept());await page.click('#swFinish');
+ if(!(await page.locator('#swDayBlock').isChecked()))await page.check('#swDayBlock');await page.click('#swNext');await page.click('#swNext');await page.locator('#swFinish').waitFor();page.once('dialog',d=>d.accept());await page.click('#swFinish');await page.click('#swSendOk');
  assert.ok(await page.locator('#swPrintPdf').isVisible(),'Einfacher Assistent: Knopf am Schluss fehlt');
  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'Abschluss zu breit');
  assert.deepEqual(errors,[]);await page.close();}

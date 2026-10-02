@@ -1,3 +1,3 @@
-KC-DP2 0.20.0 Build 257 RC
-Twinkey noch einfacher: Sperren als drei klare Antworten („Ich kann“, „Ganzer Tag gesperrt“, „Nur zeitweise gesperrt“), nur ein Zurück-Knopf je Schritt, „Bisherige Besetzung“ nur noch bei der Wunschzeit als Link, kurze Tageszusammenfassung (Details zugeklappt), kompakte Tageskacheln mit Statusfarbe, „Überspringen“ auf dem Startbildschirm entfallen (Ohne Assistent schaltet den Ton ab). Siehe docs/BUILD-257-TWINKEY-UEBERSICHT.md.
-Enthält Build 255/256. Wiederherstellungsprüfung und Zwei-PC-Live-Handtest bleiben vor FINAL erforderlich.
+KC-DP2 0.20.0 Build 258 RC
+Sperrtag ohne Bereitschaft und bestätigte Versandmeldung beim Abschluss. Siehe docs/BUILD-258-TWINKEY-VERSAND.md.
+Enthält Build 255–257. Wiederherstellungsprüfung und Zwei-PC-Live-Handtest bleiben vor FINAL erforderlich.

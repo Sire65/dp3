@@ -62,3 +62,4 @@
 .sw-day-tile.sw-status-complete{background:#e8f5e9;border-color:#2e7d32}.sw-day-tile.sw-status-complete small{color:#1b5e20}
 .sw-day-tile.sw-status-draft{background:#fff8e1;border-color:#f9a825}.sw-day-tile.sw-status-draft small{color:#7a5600}
 .sw-day-tile.sw-status-empty{background:#fafafa;border-color:#bdbdbd}.sw-day-tile.sw-status-empty small{color:#666}
+.sw-send-dialog{box-sizing:border-box;width:min(420px,calc(100vw - 32px));border:1px solid #d8c4bc;border-radius:16px;padding:24px;color:#31271f;background:#fffaf5;font:inherit}.sw-send-dialog::backdrop{background:rgba(0,0,0,.45)}.sw-send-dialog p{line-height:1.5}.sw-send-dialog button{width:100%;min-height:48px}
