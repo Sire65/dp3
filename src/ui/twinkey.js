@@ -43,10 +43,11 @@ function home(){if(!available())return false;if(owner!==self()){reset();owner=se
 function welcome(){
  const name=(K.person(self())?.name||K.currentUser.displayName||'').trim().split(/\s+/)[0];
  shell(`Hallo ${name}, ich bin Twinkey, dein persönlicher Assistent für das Dienstplanprogramm DP2. Wie möchtest du starten?`,
- `<span class="wa-eyebrow">WILLKOMMEN</span><h1>Mit Begleitung oder direkt loslegen?</h1><div class="wa-choices"><button class="wa-choice" data-tw-mode="guided" aria-pressed="false"><b>Mit Twinkey</b><span>Eine Frage nach der anderen.</span></button><button class="wa-choice" data-tw-mode="plain" aria-pressed="false"><b>Ohne Assistent</b><span>Direkt zur gewohnten Übersicht.</span></button></div><div class="wa-actions"><button class="ux-btn secondary" id="twSkip">Überspringen</button><button class="ux-btn primary tw-next" id="twNext" disabled>Weiter →</button></div>`,'welcome');
+ `<span class="wa-eyebrow">WILLKOMMEN</span><h1>Mit Begleitung oder direkt loslegen?</h1><div class="wa-choices"><button class="wa-choice" data-tw-mode="guided" aria-pressed="false"><b>Mit Twinkey</b><span>Eine Frage nach der anderen.</span></button><button class="wa-choice" data-tw-mode="plain" aria-pressed="false"><b>Ohne Assistent</b><span>Direkt zur gewohnten Übersicht.</span></button></div><div class="wa-actions"><button class="ux-btn primary tw-next" id="twNext" disabled>Weiter →</button></div>`,'welcome');
  document.querySelector('.ux-bottomnav')?.setAttribute('hidden','');
  let selected=null;document.querySelectorAll('[data-tw-mode]').forEach(b=>b.onclick=()=>{selected=b.dataset.twMode;document.querySelectorAll('[data-tw-mode]').forEach(x=>{x.classList.toggle('chosen',x===b);x.setAttribute('aria-pressed',String(x===b))});$('twNext').disabled=false;$('twNext').click()});
- $('twNext').onclick=()=>{if(!selected)return;mode=selected;mode==='guided'?tasks():K.roleUx.employeeHome()};$('twSkip').onclick=()=>{mode='plain';voice=false;stop();K.roleUx.employeeHome()};
+ // Build 257: „Überspringen“ war doppelt zu „Ohne Assistent“; dessen Wirkung (Ton aus) übernimmt jetzt „Ohne Assistent“.
+ $('twNext').onclick=()=>{if(!selected)return;mode=selected;if(mode==='guided')tasks();else{voice=false;stop();K.roleUx.employeeHome();}};
 }
 function tasks(){
  const name=(K.person(self())?.name||K.currentUser.displayName||'').trim().split(/\s+/)[0]||'';

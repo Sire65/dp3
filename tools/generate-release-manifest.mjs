@@ -3,8 +3,7 @@ import { readdir, readFile, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const root=path.resolve(import.meta.dirname,'..');
-const version='0.20.0';
-const build=243;
+const {version,build,stage}=JSON.parse(await readFile(path.join(root,'release-version.json'),'utf8'));
 const allowed=new Set(['.html','.js','.css','.webmanifest','.svg','.png','.webp','.xlsx','.docx','.gz','.wav']);
 const excluded=new Set(['service-worker.js','pilot-sw.js','pilot2/sw.js','pilot-mobile/sw.js']);
 const canonicalTextExtensions=new Set(['.html','.js','.css','.webmanifest','.svg']);
@@ -42,9 +41,27 @@ for(const relative of paths){
 }
 
 const manifest={
-  schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,
+  schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,stage,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 259 RC: vollständiger Auftrag abgeglichen (KC-DP-TWINKEY-SPERRTAG-OHNE-BEREITSCHAFT, KC-DP-TWINKEY-VERSANDMELDUNG). Bereitschaft an Sperrtagen ausblenden und beim Speichern bereinigen; bestätigter Versand am endgültigen Ausstieg mit genauem Fehlertext.',
+    'Build 258 RC: Ganzer Sperrtag entfernt Bereitschaft mit Hinweis. Abschluss bestätigt den tatsächlichen Versand mit OK; Fehler behalten die Angaben für einen erneuten Versuch.',
+    'Build 257 RC: Twinkey übersichtlicher (KC-DP-TWINKEY-EINFACH): Sperren als drei klare Antworten, ein Zurück je Schritt, Besetzung nur bei Wunschzeit, kurze Tageszusammenfassung, Tageskacheln mit Statusfarbe, doppeltes „Überspringen“ entfernt.',
+    'Build 256 RC: Twinkey-Weg vereinfacht (KC-DP-TWINKEY-EINFACH): Fortschritt und nächster offener Tag, Rückfrage vor „Fertig“ bei offenen Tagen, Kann-Zeit nicht mehr vorausgefüllt, Wunschzeit erst nach Wahl, Bearbeiten-Knopf sofort sichtbar.',
+    'Build 255 RC: Club-App-Eingang vor lokalem Import je PC reservieren, mit eigenem Token bestätigen und nach Neustart eindeutig prüfen; verlorene Reservierungen zurückrollen. Wiederherstellungs- und Zwei-PC-Liveprüfung vor FINAL offen.',
+    'Build 254 RC: „Meine Angaben ausdrucken“ mit Sicherheitsabfrage, PDF-Vorschau und QR oben rechts am Ende von Matrix, Twinkey-Auswertung und einfachem Assistenten; Papierimport übernimmt am ganzen Sperrtag kein V/H/B und keine Zeiten (sichtbar zur Prüfung).',
+    'Build 253 RC: Zusammenführung der Club-App-Schnittstelle (250–252 RC) mit den PDF-/QR-Korrekturen aus Build 250/251 des Hauptzweigs; Live-Handtest und serverseitige Claim-/Versionsprüfung offen.',
+    'Build 252 RC: Tagesvergleich vor Überschreiben durch Club-App, bewusste Auswahl, erneute Versionsprüfung und vollständiger Abbruch bei ungültigen Angaben.',
+    'Build 251 RC: Mitglieder-Buttons berücksichtigen eigene Daten, Wunschphase, gültige Zeiten und freie Zeitfenster; gesperrte Aktionen zeigen den Grund.',
+    'Build 251 (Hauptzweig): „Meine Unterlagen“ in der Twinkey-Seite (auch Club-App) erzeugt Papiermatrix und Handschriftprobe; PDF-Baustein mit neuer Versionskennung geladen',
+    'Build 250 RC: Club-App-Tage, geprüfter Wunscheingang mit Ersetzen, Bereitschaft und Twinkey-Status; einheitliche Istzeit-Event-ID. Live-Handtest ausstehend.',
+    'Build 250 (Hauptzweig): Papierunterlagen mit Original-Kochmütze, echten Ankreuzkästchen und Anführungszeichen statt „?“ sowie größerem QR-Code oben rechts',
+    'Build 249: manuellen Kassen-Dienstplan-Minitest mit sicherer Start-/Aufräumroutine vorbereitet',
+    'Build 248: Dienstplan-Snapshot auch bei leerem veröffentlichten Sollplan zuverlässig bereinigt',
+    'Build 247: Dienstplan-Brücke final geprüft – KC-WM-2026, Europe/Berlin, Offline-Cache und Release-Sicherung',
+    'Build 246: Dienstplan-Veranstaltung KC-WM-2026, Europe-Berlin-Datumslogik und vollständiger Kassen-Datenweg abgesichert',
+    'Build 245: Dienstplan-Brücke vollständig freigegeben; Snapshot-Bereinigung, lokale Datumsgrenzen und Kassen-Offlineweg abgesichert',
+    'Build 244: Dienstplan-Brücke zu PC-Manager/Kasse mit lokalem Kalendertag und vollständigem Release-Manifest',
     'Build 243: Personenkonto-Kontoauszug deutlich größere Schrift zum Lesen; Präsentationsbeispiel auf wenige realistische Tage verkürzt',
     'Build 242: Originalunterlagen für Kontoauszug, Papiermatrix, Excel und Handschriftprobe direkt in Twinkey',
     'Build 242: direkter Eingabeweg mit einfacher Uhrzeitauswahl und Bereitschaft',

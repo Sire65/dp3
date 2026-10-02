@@ -1,4 +1,3 @@
-KC-DP2 0.20.0 Build 242
-- Direkter Eingabeweg: einfache Uhrzeitauswahl und Bereitschaft mit Überschneidungsprüfung.
-
-KC-DP2 0.20.0 Build 234
+KC-DP2 0.20.0 Build 259 RC
+KC-DP-TWINKEY-SPERRTAG-OHNE-BEREITSCHAFT und KC-DP-TWINKEY-VERSANDMELDUNG: vollständiger Auftrag abgeglichen. Siehe docs/BUILD-259-AUFTRAGSABGLEICH.md.
+Enthält Build 255–258. Wiederherstellung und Zwei-PC-Liveprüfung vor FINAL offen.

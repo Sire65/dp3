@@ -15,6 +15,7 @@ function validate(list){
  list=list.map(w=>({...w,scope:K.wishContract?.normalize(w).scope||w.scope}));
  const errors=[];
  const canRows=list.filter(w=>['available','if_needed'].includes(w.wishType));
+ if(list.some(w=>w.wishType==='unavailable'&&w.scope==='day'&&list.some(x=>x.date===w.date&&x.assistantDay?.standby?.slots?.length)))errors.push('Am Sperrtag ist keine Bereitschaft möglich.');
  if(canRows.some((w,i)=>canRows.some((other,j)=>j>i&&overlap(w,other))))errors.push('Zwei Kann-Zeiten dürfen sich nicht überschneiden. Bitte die Zeiträume trennen oder dazwischen eine Sperrzeit eintragen.');
  for(const w of list){
   errors.push(...(K.validateWish?.(w)||[]).filter(x=>x.level==='error').map(x=>x.text));
@@ -43,6 +44,12 @@ async function save(personId,dates,list,expected,{reviewedDemand=false}={}){
  if(expected!==undefined&&JSON.stringify(rows(personId).filter(w=>dates.includes(w.date)))!==expected)throw Error('Ihre Angaben wurden inzwischen geändert. Bitte den Tag erneut öffnen.');
  if(list.some(w=>w.personId!==personId||!dates.includes(w.date)))throw Error('Die Angaben gehören nicht zur ausgewählten Person oder zum ausgewählten Tag.');
  if(list.some(w=>w.id&&!rows(personId).some(x=>x.id===w.id&&x.date===w.date)))throw Error('Eintrag gehört nicht zu Ihrer Tagesmatrix.');
+ const blockedDates=new Set(list.filter(w=>w.wishType==='unavailable'&&(w.scope||K.wishContract?.inferScope(w))==='day').map(w=>w.date));
+ list=list.map(w=>{
+  if(!blockedDates.has(w.date))return w;
+  const old=w.assistantDay?.standby,changed=old?.answer==='yes'||old?.slots?.length;
+  return {...w,assistantDay:{...w.assistantDay,standby:{answer:'no',slots:[]},...(changed?{completed:false,completedSignature:null}:{})}};
+ });
  const errors=validate(list);if(errors.length)throw Error(errors.join(' '));
  if(!reviewedDemand&&K.wishDemandUi&&list.some(w=>w.wishType==='preferred')){
   const snapshot=JSON.stringify(rows(personId));
@@ -60,6 +67,7 @@ async function save(personId,dates,list,expected,{reviewedDemand=false}={}){
   K.mutations.saveWish(value,{existingId:existing?.id||null,reason:'Persönliche Tagesmatrix gespeichert'});
  }
  for(const w of before)if(!kept.has(w.id))K.mutations.deleteWish(w.id,{reason:'Persönliche Tagesmatrix geändert'});
+ if(blockedDates.size){K.memberUxData=K.memberUxData||{};K.memberUxData.assistantStandby=K.memberUxData.assistantStandby||{};const cache=K.memberUxData.assistantStandby[personId]=K.memberUxData.assistantStandby[personId]||{};for(const date of blockedDates)cache[date]={answer:'no',slots:[]};}
  await K.persistAll();
 }
 async function copy(sourceId,ids){
