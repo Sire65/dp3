@@ -1,3 +1,9 @@
+## Build 261 RC – KC-DP-PK-GRAFIK (06.10.2026)
+
+- Personenkonto: standardmäßig zusätzliche Grafikseite je Person mit Tagesstunden, Gesamtbalken und Zeitspuren; im Druckdialog abschaltbar. Tabellen und Auswertung bleiben unverändert.
+- Fehlende Buchungen sind schraffiert und als „fehlt“ markiert; Ist-Gesamtdifferenzen bleiben dann offen. Ohne Wunsch erscheint ein Hinweis, ohne erfundene Stunden.
+- Mehr als 14 aktive Tage werden auf weitere Grafikseiten verteilt. Seitenzählung, QR und Schwarz-Weiß-Lesbarkeit bleiben erhalten. Keine Plandaten verändert.
+
 ## Build 260 RC – 06.10.2026
 
 KC-DP-WUNSCH-SPERRE-OPTIONAL und KC-DP-TWINKEY-KLAPPBEREICHE: Tagesfrage Ja/Nein/Unbekannt, freiwillige Unterbrechungen innerhalb der Kann-Zeit, vorhandene Sperrzeiten unverändert. Zehn Tageskacheln in zwei Spalten, zugeklappte Zeitübersicht, Sprung zur Eingabe und Andere Tage mit Entwurfsprüfung. Details: docs/BUILD-260-TWINKEY-OPTIONAL.md.

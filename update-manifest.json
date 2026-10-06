@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 260,
+  "build": 261,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b260",
+  "cacheName": "kc-dp-release-0.20.0-b261",
   "releaseNotes": [
+    "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
     "Build 260 RC: KC-DP-WUNSCH-SPERRE-OPTIONAL und KC-DP-TWINKEY-KLAPPBEREICHE. Freiwillige Unterbrechungen innerhalb der Kann-Zeit, offene unbekannte Tage, einklappbare zweispaltige Tagesauswahl und Sprung zur Eingabe. Bestehende Angaben bleiben gültig.",
     "Build 259 RC: vollständiger Auftrag abgeglichen (KC-DP-TWINKEY-SPERRTAG-OHNE-BEREITSCHAFT, KC-DP-TWINKEY-VERSANDMELDUNG). Bereitschaft an Sperrtagen ausblenden und beim Speichern bereinigen; bestätigter Versand am endgültigen Ausstieg mit genauem Fehlertext.",
     "Build 258 RC: Ganzer Sperrtag entfernt Bereitschaft mit Hinweis. Abschluss bestätigt den tatsächlichen Versand mit OK; Fehler behalten die Angaben für einen erneuten Versuch.",
@@ -146,8 +147,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-06T09:18:19.217Z",
-  "totalRuntimeBytes": 37168667,
+  "generatedAt": "2026-10-06T09:42:12.235Z",
+  "totalRuntimeBytes": 37176124,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -327,8 +328,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33705,
-      "sha256": "81132617dc053c0c568f978699eb677be74d30a6b712be577215e8100a535244",
+      "bytes": 33688,
+      "sha256": "12834b05f44e3350dcea930127fe46d5a4e4247563c569f38f380a6e28597a56",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1544,8 +1545,8 @@
     {
       "path": "src/ui/person-account-print.js",
       "installPath": "src/ui/person-account-print.js",
-      "bytes": 20308,
-      "sha256": "b2da7781090cb885626fc60c4fcda33cefcde6c89cc91ec2d8966856b4df16c5",
+      "bytes": 27782,
+      "sha256": "98e52bad492fa7659e8ecf6935cc62afc095aa85d0a1c3f9cf311b1ca915697e",
       "runtime": true
     },
     {
