@@ -1,3 +1,8 @@
+## Build 262 RC – persönliche Handschrift-Ziffern (06.10.2026)
+
+- Handschriftprofile: einzelne Ziffern aus PNG/JPG anlernen, prüfen, verschlüsselt speichern und exportieren/importieren. Foto-Erkennung berücksichtigt passende persönliche Ziffernvorlagen; widersprüchliche Ergebnisse bleiben unsicher.
+- Bestehende Matrix-OCR und manuelle Prüfung bleiben erhalten. Keine automatische Übernahme, kein Buchstaben-/Freitexttraining. Klaus-Profil wird getrennt bereitgestellt, nicht öffentlich in den Programmdateien verteilt.
+
 ## Build 261 RC – KC-DP-PK-GRAFIK (06.10.2026)
 
 - Personenkonto: standardmäßig zusätzliche Grafikseite je Person mit Tagesstunden, Gesamtbalken und Zeitspuren; im Druckdialog abschaltbar. Tabellen und Auswertung bleiben unverändert.

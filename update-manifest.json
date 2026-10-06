@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 261,
+  "build": 262,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b261",
+  "cacheName": "kc-dp-release-0.20.0-b262",
   "releaseNotes": [
+    "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
     "Build 260 RC: KC-DP-WUNSCH-SPERRE-OPTIONAL und KC-DP-TWINKEY-KLAPPBEREICHE. Freiwillige Unterbrechungen innerhalb der Kann-Zeit, offene unbekannte Tage, einklappbare zweispaltige Tagesauswahl und Sprung zur Eingabe. Bestehende Angaben bleiben gültig.",
     "Build 259 RC: vollständiger Auftrag abgeglichen (KC-DP-TWINKEY-SPERRTAG-OHNE-BEREITSCHAFT, KC-DP-TWINKEY-VERSANDMELDUNG). Bereitschaft an Sperrtagen ausblenden und beim Speichern bereinigen; bestätigter Versand am endgültigen Ausstieg mit genauem Fehlertext.",
@@ -147,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-06T09:42:12.235Z",
-  "totalRuntimeBytes": 37176124,
+  "generatedAt": "2026-10-06T10:48:40.049Z",
+  "totalRuntimeBytes": 37188435,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -328,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33688,
-      "sha256": "12834b05f44e3350dcea930127fe46d5a4e4247563c569f38f380a6e28597a56",
+      "bytes": 33840,
+      "sha256": "0b2580f38a389167c74ab77389453a0c32a9adaa36bbf93c1461e9fae4295f53",
       "runtime": true,
       "forceRefresh": true
     },
@@ -474,8 +475,15 @@
     {
       "path": "src/adapters/form-ocr.js",
       "installPath": "src/adapters/form-ocr.js",
-      "bytes": 21311,
-      "sha256": "7fb76a945ba0768ef031dfe3905052bfb2ab8fbe0715db8e7fcd33e5c3a74155",
+      "bytes": 22340,
+      "sha256": "3751355cfd1b8bf9de86470c0bffcf50262010d64fbd1b9b19b07af96aa4448a",
+      "runtime": true
+    },
+    {
+      "path": "src/adapters/handwriting-profile.js",
+      "installPath": "src/adapters/handwriting-profile.js",
+      "bytes": 5129,
+      "sha256": "8e01a469350a061a85bfe10dda624057bc5d229514b4fee189366f9ffffa899f",
       "runtime": true
     },
     {
@@ -1295,6 +1303,13 @@
       "installPath": "src/ui/global-history.js",
       "bytes": 2043,
       "sha256": "ed7a811bdde58533ccc132054bafae855be3d8898bd0c9dc3b79db36064a19d8",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/handwriting-profile.js",
+      "installPath": "src/ui/handwriting-profile.js",
+      "bytes": 6001,
+      "sha256": "24b150f7dc6990822e7a15ee9114810e579ccca238c9f10706f921dbf31ae241",
       "runtime": true
     },
     {
