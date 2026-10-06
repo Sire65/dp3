@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 259,
+  "build": 260,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b259",
+  "cacheName": "kc-dp-release-0.20.0-b260",
   "releaseNotes": [
+    "Build 260 RC: KC-DP-WUNSCH-SPERRE-OPTIONAL und KC-DP-TWINKEY-KLAPPBEREICHE. Freiwillige Unterbrechungen innerhalb der Kann-Zeit, offene unbekannte Tage, einklappbare zweispaltige Tagesauswahl und Sprung zur Eingabe. Bestehende Angaben bleiben gültig.",
     "Build 259 RC: vollständiger Auftrag abgeglichen (KC-DP-TWINKEY-SPERRTAG-OHNE-BEREITSCHAFT, KC-DP-TWINKEY-VERSANDMELDUNG). Bereitschaft an Sperrtagen ausblenden und beim Speichern bereinigen; bestätigter Versand am endgültigen Ausstieg mit genauem Fehlertext.",
     "Build 258 RC: Ganzer Sperrtag entfernt Bereitschaft mit Hinweis. Abschluss bestätigt den tatsächlichen Versand mit OK; Fehler behalten die Angaben für einen erneuten Versuch.",
     "Build 257 RC: Twinkey übersichtlicher (KC-DP-TWINKEY-EINFACH): Sperren als drei klare Antworten, ein Zurück je Schritt, Besetzung nur bei Wunschzeit, kurze Tageszusammenfassung, Tageskacheln mit Statusfarbe, doppeltes „Überspringen“ entfernt.",
@@ -145,8 +146,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-02T17:13:31.520Z",
-  "totalRuntimeBytes": 37162115,
+  "generatedAt": "2026-10-06T09:18:19.217Z",
+  "totalRuntimeBytes": 37168667,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -327,7 +328,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 33705,
-      "sha256": "876b3e5b1b9abb02e063a7f05287257bdf1b443c6be078e773be992c11d37394",
+      "sha256": "81132617dc053c0c568f978699eb677be74d30a6b712be577215e8100a535244",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1844,8 +1845,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 55942,
-      "sha256": "e4cd81f5c1273a619b53ef29b0424a8aad4f400977761f492468794a2902b058",
+      "bytes": 59216,
+      "sha256": "9b8ede8a0f3867215bddca9c1af74e349c83f10ebd6539f8fbf2b3d5d357b9b6",
       "runtime": true
     },
     {
@@ -1886,8 +1887,8 @@
     {
       "path": "src/ui/startup.css",
       "installPath": "src/ui/startup.css",
-      "bytes": 252065,
-      "sha256": "29e92a509498cbf99a86783408a2cf7ac0424f95ea450e3dd172a538003032d4",
+      "bytes": 253704,
+      "sha256": "efb31ed7d9518544f87baaa60331f458de32bb41580bf92c2cc3c1713a6cb98b",
       "runtime": true
     },
     {
@@ -2026,8 +2027,8 @@
     {
       "path": "src/ui/wish-demand.css",
       "installPath": "src/ui/wish-demand.css",
-      "bytes": 11943,
-      "sha256": "a810dbc39b327167c025d1338425136cb9a8a79f627b22a511e35e9d61af8c2c",
+      "bytes": 13582,
+      "sha256": "13353c4227d7c9fa45df05013872e77979d00f16237541a411f4f59615a9df70",
       "runtime": true
     },
     {
@@ -2223,7 +2224,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 6516,
-      "sha256": "64a77d414905dd634048cdafbaa514e4fbe039040c3ff75b2759cb0879c18b1a",
+      "sha256": "c7ac96f5cf4a963c7f80f4fe70e5e71643c59dacfa89e92d7028bc5af7d17588",
       "runtime": true,
       "forceRefresh": true
     }

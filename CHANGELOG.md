@@ -1,3 +1,7 @@
+## Build 260 RC – 06.10.2026
+
+KC-DP-WUNSCH-SPERRE-OPTIONAL und KC-DP-TWINKEY-KLAPPBEREICHE: Tagesfrage Ja/Nein/Unbekannt, freiwillige Unterbrechungen innerhalb der Kann-Zeit, vorhandene Sperrzeiten unverändert. Zehn Tageskacheln in zwei Spalten, zugeklappte Zeitübersicht, Sprung zur Eingabe und Andere Tage mit Entwurfsprüfung. Details: docs/BUILD-260-TWINKEY-OPTIONAL.md.
+
 ## Build 259 RC – 02.10.2026
 
 Abgleich mit dem vollständigen Auftrag: KC-DP-TWINKEY-SPERRTAG-OHNE-BEREITSCHAFT und KC-DP-TWINKEY-VERSANDMELDUNG. Sperrtage ohne Bereitschaftszeile und mit zentraler Bereinigung alter Daten beim Speichern. Versanddialog erst am endgültigen Ausstieg; genauer Fehlertext. Details: docs/BUILD-259-AUFTRAGSABGLEICH.md.
