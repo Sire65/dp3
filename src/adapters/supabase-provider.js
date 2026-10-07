@@ -70,16 +70,16 @@
  }
  async function updatePassword(password){await ensureSession();try{const {data}=await api('/auth/v1/user',{method:'PUT',body:JSON.stringify({password:String(password)})});return {ok:true,user:data};}catch(e){if(e?.code==='same_password'||/new password should be different/i.test(e?.message||''))throw new Error('Das neue Passwort muss sich vom bisherigen Passwort unterscheiden.');throw e;}}
  async function currentMembership(){await ensureSession();const c=validateConfig(),uid=state.userId;if(!uid)throw new Error('Supabase Benutzer-ID fehlt.');const {data}=await api(`/rest/v1/kc_dp_memberships?select=org_id,user_id,role,active,person_id,display_name,email,phone&org_id=eq.${encodeURIComponent(c.orgId)}&user_id=eq.${encodeURIComponent(uid)}&active=is.true&limit=1`,{method:'GET'});const row=Array.isArray(data)?data[0]:null;if(!row)throw new Error('Keine aktive KC-DP-Mitgliedschaft gefunden.');return row;}
- async function readPlanSharing(){
+ async function readPlanSharing({raw=false}={}){
   await ensureSession();const c=validateConfig();
   const {data}=await api('/rest/v1/kc_dp_plan_sharing?select=person_id,plan_kind,allow_view,allow_copy&org_id=eq.'+encodeURIComponent(c.orgId),{method:'GET'});
-  return data||[];
+  return raw?(data||[]):(K.clubWishInbox?.mergeSharing?.(data||[])||data||[]);
  }
  async function savePlanSharing(preferences){
   const m=await currentMembership();if(!m.person_id)throw Error('Dem Zugang ist kein Mitglied zugeordnet.');
   const rows=['can','wish','standby'].map(plan_kind=>({org_id:m.org_id,person_id:m.person_id,plan_kind,allow_view:!!preferences[plan_kind]?.view||!!preferences[plan_kind]?.copy,allow_copy:!!preferences[plan_kind]?.copy}));
   const {data}=await api('/rest/v1/kc_dp_plan_sharing?on_conflict=org_id,person_id,plan_kind',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(rows)});
-  if(!Array.isArray(data)||data.length!==3)throw Error('Freigaben wurden nicht vollständig bestätigt.');return data;
+  if(!Array.isArray(data)||data.length!==3)throw Error('Freigaben wurden nicht vollständig bestätigt.');K.clubWishInbox?.sharingSavedByMember?.(m.person_id);return data;
  }
  async function getSyncKey(){
    await ensureSession();
@@ -133,6 +133,21 @@
   const {data}=await api('/rest/v1/rpc/kc_dp_plan_publish',{method:'POST',body:JSON.stringify({p_org_id:c.orgId,p_event_id:String(eventId||c.projectId||'KC_DP'),p_rows:rows})});
   return data;
  }
+ async function publishDays({eventId,days}){
+  const c=validateConfig();const {data}=await api('/rest/v1/rpc/kc_dp_days_publish',{method:'POST',body:JSON.stringify({p_org_id:c.orgId,p_event_id:String(eventId||'KC-WM-2026'),p_days:days})});return data;
+ }
+ async function wishInboxPending({eventId}){
+  const c=validateConfig();const {data}=await api('/rest/v1/rpc/kc_dp_wish_inbox_pending',{method:'POST',body:JSON.stringify({p_org_id:c.orgId,p_event_id:String(eventId||'KC-WM-2026')})});
+  if(!Array.isArray(data))throw Error('Ungültige Antwort des Club-App-Eingangs.');return data;
+ }
+ async function wishInboxAck({id,revision,status,result}){
+  validateConfig();if(!['uebernommen','abgelehnt'].includes(status))throw Error('Ungültige Eingangsbestätigung.');
+  const {data}=await api('/rest/v1/rpc/kc_dp_wish_inbox_ack',{method:'POST',body:JSON.stringify({p_id:id,p_revision:revision,p_status:status,p_result:result})});return data;
+ }
+ async function wishInboxClaim({id,revision,deviceId,minutes=10}){validateConfig();const {data}=await api('/rest/v1/rpc/kc_dp_wish_inbox_claim',{method:'POST',body:JSON.stringify({p_id:id,p_revision:revision,p_device_id:deviceId,p_minutes:minutes})});return data;}
+ async function wishInboxAckClaimed({id,revision,status,result,claimToken}){validateConfig();if(!['uebernommen','abgelehnt'].includes(status))throw Error('Ungültige Eingangsbestätigung.');const {data}=await api('/rest/v1/rpc/kc_dp_wish_inbox_ack_claimed',{method:'POST',body:JSON.stringify({p_id:id,p_revision:revision,p_status:status,p_result:result,p_claim_token:claimToken})});return data;}
+ async function wishInboxRelease({id,claimToken}){validateConfig();const {data}=await api('/rest/v1/rpc/kc_dp_wish_inbox_release',{method:'POST',body:JSON.stringify({p_id:id,p_claim_token:claimToken})});return data;}
+ async function wishInboxReceipt({id}){validateConfig();const {data}=await api('/rest/v1/rpc/kc_dp_wish_inbox_receipt',{method:'POST',body:JSON.stringify({p_id:id})});return data;}
  async function provider(req){const c=validateConfig();try{
    const syncProjectId=String(req.syncNamespace||req.wireOperation?.syncNamespace||c.projectId);
    if(req.action==='health'){state.status='checking';const {data}=await api(`/rest/v1/kc_dp_sync_operations?select=seq,operation_id&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(syncProjectId)}&limit=1`,{method:'GET'});state.status='ready';state.lastHealthAt=new Date().toISOString();state.lastError=null;return {ok:true,rows:Array.isArray(data)?data.length:0,userId:state.userId};}
@@ -158,6 +173,6 @@
  async function updateSyncTest(id,patch){return rest('kc_dp_sync_test_runs',{method:'PATCH',query:`?id=eq.${encodeURIComponent(id)}`,body:{...patch,updated_at:new Date().toISOString()}});}
  async function listServerConflicts(){const c=validateConfig();return rest('kc_dp_sync_conflicts',{query:`?select=id,entity,entity_id,operation_id,device_id,base_version,remote_version,status,detected_at,resolved_at&org_id=eq.${encodeURIComponent(c.orgId)}&project_id=eq.${encodeURIComponent(c.projectId)}&order=detected_at.desc&limit=50`});}
  async function resolveServerConflict(id,status,resolution={}){return rest('kc_dp_sync_conflicts',{method:'PATCH',query:`?id=eq.${encodeURIComponent(id)}`,body:{status,resolution,resolved_at:new Date().toISOString()}});}
- K.supabaseConnection={version:'0.20.0-sync-g2',contract:'KC_DP_SUPABASE_SYNC_V1',state,configure,configureIfPossible,setAccessToken,restoreSession,persistSession:saveSession,sessionSnapshot:()=>session?JSON.parse(JSON.stringify(session)):null,clearSession,hasAccessToken:()=>!!session?.access_token,signInAnonymously,signInWithPassword,sendOtp,verifyOtp,requestPasswordReset,updatePassword,readPlanSharing,savePlanSharing,publishPlan,currentMembership,memberProvisioningTargets,listMemberAccess,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,sendClientReport,getSyncKey,signOut,refreshSession,ensureSession,test,testProject,probeDatabase,probeRls,probeRoundtrip,registerDevice,listDevices,createSyncTest,listSyncTests,updateSyncTest,listServerConflicts,resolveServerConflict,transportDiagnosis,provider,validateConfig};
+ K.supabaseConnection={version:'0.20.0-sync-g2',contract:'KC_DP_SUPABASE_SYNC_V1',state,configure,configureIfPossible,setAccessToken,restoreSession,persistSession:saveSession,sessionSnapshot:()=>session?JSON.parse(JSON.stringify(session)):null,clearSession,hasAccessToken:()=>!!session?.access_token,signInAnonymously,signInWithPassword,sendOtp,verifyOtp,requestPasswordReset,updatePassword,readPlanSharing,savePlanSharing,publishPlan,publishDays,wishInboxPending,wishInboxAck,wishInboxClaim,wishInboxAckClaimed,wishInboxRelease,wishInboxReceipt,currentMembership,memberProvisioningTargets,listMemberAccess,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,sendClientReport,getSyncKey,signOut,refreshSession,ensureSession,test,testProject,probeDatabase,probeRls,probeRoundtrip,registerDevice,listDevices,createSyncTest,listSyncTests,updateSyncTest,listServerConflicts,resolveServerConflict,transportDiagnosis,provider,validateConfig};
  configureIfPossible();
 })();

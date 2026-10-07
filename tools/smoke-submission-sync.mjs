@@ -1,0 +1,13 @@
+import assert from 'node:assert/strict';
+import vm from 'node:vm';
+import {readFile} from 'node:fs/promises';
+const K={syncOutbox:[],syncConflicts:[]},ctx=vm.createContext({window:{KCDP:K},KCSecureSync:{normalizeQueueItem:x=>({...x,operationId:'one',status:'pending'}),encryptEnvelope:async()=>({cipher:'test'}),nextRetry:()=>new Date(Date.now()+600000).toISOString()},Date,JSON,Set,Error});
+vm.runInContext(await readFile(new URL('../src/adapters/sync.js',import.meta.url),'utf8'),ctx);
+K.sync.setSecretProvider(()=> 'test-key');let calls=0;
+K.sync.setProvider(async()=>{calls++;if(calls===1)return {ok:false,message:'rejected'};return {status:'ok',remoteVersion:1};});
+K.sync.enqueue({entity:'wish',operation:'create',payload:{id:'w1',personId:'test',version:1}});
+let result=await K.sync.flush();assert.equal(result.failed,1);assert.equal(K.syncOutbox.length,1,'negative server reply must retain data');
+result=await K.sync.flush();assert.equal(calls,1,'automatic backoff preserved');assert.equal(result.pending,1);
+result=await K.sync.flush({force:true});assert.equal(calls,2,'explicit retry sends immediately');assert.equal(result.sent,1);assert.equal(K.syncOutbox.length,0);
+K.syncOutbox.push({status:'club_pending'}, {status:'conflict'}, {status:'sending'});await K.sync.flush({force:true});assert.equal(calls,2,'force never bypasses claim, conflict or in-flight holds');
+console.log('Submission sync PASS: negative response retained, automatic backoff, explicit retry, claim/conflict/in-flight holds preserved.');

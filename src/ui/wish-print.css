@@ -1,0 +1,8 @@
+/* Build 254: Vorschau „Meine Angaben ausdrucken“ */
+.wp-overlay{position:fixed;inset:0;z-index:2147483000;background:rgba(20,16,12,.55);display:flex;align-items:center;justify-content:center;padding:12px}
+.wp-box{background:#fff;color:#1d1a17;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.35);width:min(1100px,100%);max-height:100%;display:flex;flex-direction:column;gap:10px;padding:14px 16px;overflow:auto}
+.wp-kopf{display:flex;align-items:center;justify-content:space-between;gap:10px}.wp-kopf h2{margin:0;font-size:1.15rem}
+.wp-info,.wp-hinweis{margin:0}.wp-pdf{width:100%;height:min(70vh,760px);border:1px solid #d6cfc6;border-radius:8px;background:#f4f1ec}
+.wp-aktionen{display:flex;flex-wrap:wrap;gap:8px}.wp-aktionen .ux-btn{min-height:44px}
+.wp-status{margin:4px 0 0;font-size:.92rem;min-height:1.2em}
+@media (max-width:560px){.wp-box{padding:12px}.wp-aktionen .ux-btn{flex:1 1 100%}}

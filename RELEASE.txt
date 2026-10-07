@@ -1,4 +1,3 @@
-KC-DP2 0.20.0 Build 242
-- Direkter Eingabeweg: einfache Uhrzeitauswahl und Bereitschaft mit Überschneidungsprüfung.
-
-KC-DP2 0.20.0 Build 234
+KC-DP2 0.20.0 Build 260 RC
+KC-DP-WUNSCH-SPERRE-OPTIONAL und KC-DP-TWINKEY-KLAPPBEREICHE. Siehe docs/BUILD-260-TWINKEY-OPTIONAL.md.
+Enthält A1 aus Build 259. Wiederherstellung und Zwei-PC-Liveprüfung vor FINAL offen.
