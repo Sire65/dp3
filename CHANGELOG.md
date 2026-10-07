@@ -1,3 +1,10 @@
+## Build 263 RC – Klappbereiche wie in der Club-App (07.10.2026)
+
+- Gemeinsamer Baustein: Schloss, Drehpfeil, gemerkter Zustand und „▴ Zuklappen“; Fingerflächen mindestens 42px.
+- Mitgliederbereiche: Hilfe, Anzeige, Tage, Tagesübersicht, Unterbrechungen, Team-Sperrtage, Besetzung, Alternativen, Wunschschritt, Mehr anzeigen, Freundeszeiten und Bemerkungen.
+- Twinkeys Kalendersteuerung respektiert Feststellung und überschreibt keine gemerkte Benutzerwahl. Keine Änderung an Datenformat oder Versand.
+- Browserprüfungen für Feststellung, Neuladen, blockierten Speicher und den bestehenden Twinkey-Ablauf. Details: docs/BUILD-263-KLAPPBEREICHE.md.
+
 ## Build 262 RC – persönliche Handschrift-Ziffern (06.10.2026)
 
 - Handschriftprofile: einzelne Ziffern aus PNG/JPG anlernen, prüfen, verschlüsselt speichern und exportieren/importieren. Foto-Erkennung berücksichtigt passende persönliche Ziffernvorlagen; widersprüchliche Ergebnisse bleiben unsicher.

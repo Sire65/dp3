@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 262,
+  "build": 263,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b262",
+  "cacheName": "kc-dp-release-0.20.0-b263",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-06T10:48:40.049Z",
-  "totalRuntimeBytes": 37188435,
+  "generatedAt": "2026-10-07T08:48:56.111Z",
+  "totalRuntimeBytes": 37195109,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33840,
-      "sha256": "0b2580f38a389167c74ab77389453a0c32a9adaa36bbf93c1461e9fae4295f53",
+      "bytes": 33976,
+      "sha256": "4da7b7b0b3afc7f4262c5661ea2442d3a614a869159ae4b4da83f3a17cd5ec4c",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1105,8 +1105,8 @@
     {
       "path": "src/ui/chef-companion.js",
       "installPath": "src/ui/chef-companion.js",
-      "bytes": 14071,
-      "sha256": "c2832bc68734e0114e9245ea824d9f15b992931298f61d683d7fa966e60431ae",
+      "bytes": 14112,
+      "sha256": "f083a2e12b1b80081ebc5265525b71d3c1d93b286273a58c66d26fb4c41b0717",
       "runtime": true
     },
     {
@@ -1254,6 +1254,20 @@
       "installPath": "src/ui/fairness-view.js",
       "bytes": 13665,
       "sha256": "753f378209b30052f49a57742fee08c4b160e8aea8f857aada211ff351530660",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/fold-sections.css",
+      "installPath": "src/ui/fold-sections.css",
+      "bytes": 1400,
+      "sha256": "a976db1cba67d702f887c2d4d04e4b7cac495078b9269fa4e5737856613eb9bc",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/fold-sections.js",
+      "installPath": "src/ui/fold-sections.js",
+      "bytes": 4424,
+      "sha256": "aca750f7ce3127a83a456d6395e2ce9ffa486beec7b4867cacdd91830d8c4670",
       "runtime": true
     },
     {
@@ -1427,8 +1441,8 @@
     {
       "path": "src/ui/mobile-wish-matrix.js",
       "installPath": "src/ui/mobile-wish-matrix.js",
-      "bytes": 19728,
-      "sha256": "884b0113573bc78dd8c73d8b55c730f58f55ffe4308daca4b367e4c4c34a4aa7",
+      "bytes": 19782,
+      "sha256": "6f833f654f4bf8d0815300d7bee6cca2224444f6048840fe4618587fc6f68f5d",
       "runtime": true
     },
     {
@@ -1861,8 +1875,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 59216,
-      "sha256": "9b8ede8a0f3867215bddca9c1af74e349c83f10ebd6539f8fbf2b3d5d357b9b6",
+      "bytes": 59610,
+      "sha256": "ba7469ca5841ced01fbb6092da0c7aae6f27549a3d2c177a231284c1fa285090",
       "runtime": true
     },
     {
@@ -2022,8 +2036,8 @@
     {
       "path": "src/ui/wish-assistant.js",
       "installPath": "src/ui/wish-assistant.js",
-      "bytes": 30516,
-      "sha256": "aef206a3d4b931f1fad3203a7294bded44f23a2e7a7278fe90fdf08d36243e46",
+      "bytes": 30611,
+      "sha256": "228a369bb317d267841ee287673e27b09e511e9c3d457e80932aefd8114a8bbe",
       "runtime": true
     },
     {
@@ -2239,8 +2253,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 6516,
-      "sha256": "c7ac96f5cf4a963c7f80f4fe70e5e71643c59dacfa89e92d7028bc5af7d17588",
+      "bytes": 6646,
+      "sha256": "491644da34944f564117e4d8c66396ab24aa36e1f4f73c835887d3c484bb4792",
       "runtime": true,
       "forceRefresh": true
     }
