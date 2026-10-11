@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 251,
-  "cacheName": "kc-dp-release-0.20.0-b251",
+  "build": 252,
+  "cacheName": "kc-dp-release-0.20.0-b252",
   "releaseNotes": [
+    "Build 252: direkte Leitung (Supabase Realtime, nur Signal) – Änderungen eines Geräts kommen bei allen anderen sofort an statt erst im Minutentakt",
     "Build 251: „Meine Unterlagen“ in der Twinkey-Seite (auch Club-App) erzeugt Papiermatrix und Handschriftprobe; PDF-Baustein mit neuer Versionskennung geladen",
     "Build 250: Papierunterlagen mit Original-Kochmütze, echten Ankreuzkästchen und Anführungszeichen statt „?“ sowie größerem QR-Code oben rechts",
     "Build 249: manuellen Kassen-Dienstplan-Minitest mit sicherer Start-/Aufräumroutine vorbereitet",
@@ -135,8 +136,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-01T13:15:40.000Z",
-  "totalRuntimeBytes": 37088026,
+  "generatedAt": "2026-10-11T01:33:22.000Z",
+  "totalRuntimeBytes": 37096695,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -316,8 +317,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33409,
-      "sha256": "d1bb32e865a017bbb4d18ee057aa5168e2b111a6e477da37ac75defbf780cfa9",
+      "bytes": 33557,
+      "sha256": "3d26c967c4f40e51286f454939bc786c9cb715f39a8c2aa937842292748ce39b",
       "runtime": true,
       "forceRefresh": true
     },
@@ -642,6 +643,13 @@
       "runtime": true
     },
     {
+      "path": "src/core/direkte-leitung-dp.js",
+      "installPath": "src/core/direkte-leitung-dp.js",
+      "bytes": 2533,
+      "sha256": "06171e98893ed290efc1a080096c0af83065d2c58bf81030d1a6621ec9aac54d",
+      "runtime": true
+    },
+    {
       "path": "src/core/distribution.js",
       "installPath": "src/core/distribution.js",
       "bytes": 3291,
@@ -716,6 +724,13 @@
       "installPath": "src/core/intelligence.js",
       "bytes": 3638,
       "sha256": "10a180d6dbf28e2f5b8a3a4d00e2b66fe72682071b9b4e43d9c78d50562eea30",
+      "runtime": true
+    },
+    {
+      "path": "src/core/kc-direkte-leitung.js",
+      "installPath": "src/core/kc-direkte-leitung.js",
+      "bytes": 5988,
+      "sha256": "f496f3008702857722bc76799913171b77c31e955089872641ddd3f15da1399c",
       "runtime": true
     },
     {
@@ -2161,17 +2176,17 @@
       "runtime": true
     },
     {
-      "path": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
-      "installPath": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
-      "bytes": 16625,
-      "sha256": "1d47804c38e4d555bd77a547b83aa5242cefb6f825167ce5ef8475f7e9065ccc",
-      "runtime": true
-    },
-    {
       "path": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026.xlsx",
       "installPath": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026.xlsx",
       "bytes": 16621,
       "sha256": "5dff8fc4d8fbce5ff70d7eccb0d0777aa15c603778f213951f7fa9200c373148",
+      "runtime": true
+    },
+    {
+      "path": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
+      "installPath": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
+      "bytes": 16625,
+      "sha256": "1d47804c38e4d555bd77a547b83aa5242cefb6f825167ce5ef8475f7e9065ccc",
       "runtime": true
     },
     {

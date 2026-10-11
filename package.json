@@ -5,7 +5,7 @@
   "description": "KC DP2 Dienstplan und reproduzierbare Testumgebung",
   "scripts": {
     "test": "npm run test:smoke",
-    "test:smoke": "node tools/smoke-core.mjs && node tools/smoke-ui-contracts.mjs && node tools/smoke-plan-transfer.mjs && node tools/smoke-actual-reconciliation.mjs && node tools/smoke-timeclock-supabase.mjs && node tools/verify-release.mjs",
+    "test:smoke": "node tools/smoke-core.mjs && node tools/smoke-ui-contracts.mjs && node tools/smoke-plan-transfer.mjs && node tools/smoke-actual-reconciliation.mjs && node tools/smoke-timeclock-supabase.mjs && node tools/smoke-direkte-leitung.mjs && node tools/verify-release.mjs",
     "test:browser": "node tools/test-twinkey.mjs && node tools/test-mobile-wish-matrix.mjs && node tools/test-wish-assistant.mjs && node tools/test-assistant-staffing.mjs",
     "test:install-browser": "playwright install chromium",
     "test:all": "npm run test:smoke && npm run test:browser",
