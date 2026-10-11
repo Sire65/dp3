@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 266,
+  "build": 267,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b266",
+  "cacheName": "kc-dp-release-0.20.0-b267",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-11T19:01:19.403Z",
-  "totalRuntimeBytes": 37198618,
+  "generatedAt": "2026-10-11T19:35:41.519Z",
+  "totalRuntimeBytes": 37204917,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33976,
-      "sha256": "c19111017584b1516ff36fa11734fb65356f60991c82f3177e118ce51f67e834",
+      "bytes": 34047,
+      "sha256": "5178afff2b1fad2e2fcb17315a46af6678e57e25c46a39fd43ab44fa793c6c39",
       "runtime": true,
       "forceRefresh": true
     },
@@ -475,8 +475,8 @@
     {
       "path": "src/adapters/form-ocr.js",
       "installPath": "src/adapters/form-ocr.js",
-      "bytes": 22829,
-      "sha256": "d5a0b6a3d90151bbcf93b55b96d185bfc1bcc6ff4a1d1b15675072c7ebb64a6d",
+      "bytes": 23140,
+      "sha256": "3fffe7862efa458e679bf970bab51eb294cf55401b4997d1aab50895629cee7b",
       "runtime": true
     },
     {
@@ -510,8 +510,8 @@
     {
       "path": "src/adapters/pdf.js",
       "installPath": "src/adapters/pdf.js",
-      "bytes": 14118,
-      "sha256": "b74da3c5c2ff7c3f28318e9eb1c1e61dbab1b1f2516aebbc3f1a8b9b6b554eb9",
+      "bytes": 14362,
+      "sha256": "bf827a4aa0770ef99d25d62da4ddf994947c5b97018f9e38f1b47fd364363295",
       "runtime": true
     },
     {
@@ -524,8 +524,8 @@
     {
       "path": "src/adapters/photo-recognition.js",
       "installPath": "src/adapters/photo-recognition.js",
-      "bytes": 4927,
-      "sha256": "4a6d4246f5ec67be8a39d4ac91ad25fccdc8b79ef841239dd6f10c0c5332d547",
+      "bytes": 5101,
+      "sha256": "0ea83832929f9d70670f31c62ca7003f37e1309b93b1523237ceff33fed8aa1c",
       "runtime": true
     },
     {
@@ -685,15 +685,15 @@
     {
       "path": "src/core/document-identity.js",
       "installPath": "src/core/document-identity.js",
-      "bytes": 1040,
-      "sha256": "9671c2be9f879bffa0944152439259dc3c10f57b909efdb2e02e38a4c25be456",
+      "bytes": 1258,
+      "sha256": "c815686d2a7c99ed000af89dd835dd91109e6a378f7baab57ce5f631cf6b251f",
       "runtime": true
     },
     {
       "path": "src/core/documents.js",
       "installPath": "src/core/documents.js",
-      "bytes": 32223,
-      "sha256": "73ee25ff88047d10cbc7e4e8db1c09b03ce10312d3c7ff8e89373a9a2edca99d",
+      "bytes": 32780,
+      "sha256": "c35865e1fa565949fc725b4351dbd87c3c97bceeda36f8bc7808315bebd909e2",
       "runtime": true
     },
     {
@@ -713,8 +713,8 @@
     {
       "path": "src/core/export.js",
       "installPath": "src/core/export.js",
-      "bytes": 11153,
-      "sha256": "2922e46616d6d24368820b3a28d1a16737a1efd8281b78121277b27ecf17aa9d",
+      "bytes": 11295,
+      "sha256": "77d66fb3b321a6176e78b3673f8191aea866272361e9eb83d691416c43e86d22",
       "runtime": true
     },
     {
@@ -834,6 +834,13 @@
       "installPath": "src/core/packages.js",
       "bytes": 1044,
       "sha256": "d01cf087f04b74baf7d5e091230545765422b4424e08ab094716557f4d3f8e9a",
+      "runtime": true
+    },
+    {
+      "path": "src/core/paper-documents.js",
+      "installPath": "src/core/paper-documents.js",
+      "bytes": 4174,
+      "sha256": "2670f37a6e7212659db153e47b5b5c0062806357a504c506d802f9e5a58abb5e",
       "runtime": true
     },
     {
@@ -1560,8 +1567,8 @@
     {
       "path": "src/ui/paper-staffing.js",
       "installPath": "src/ui/paper-staffing.js",
-      "bytes": 3881,
-      "sha256": "ff4e6168b9716a68c83cd0ee568301ad07c156cc87bf8847ad32f16327804159",
+      "bytes": 4289,
+      "sha256": "f3ac2505f9d118431868582b3f3f62d5d10ce5426fbdf2d603b1fa85eb197b40",
       "runtime": true
     },
     {
@@ -2254,7 +2261,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 6646,
-      "sha256": "77028c7a44d9c2c4077b2f1877c7e5d78635c8e37fde27f3523c16a1c2b3afca",
+      "sha256": "b848c86c30e2b298140ff0524a69fc1a2fea2b7df4b4b033c3ab3e5d9f7d7df1",
       "runtime": true,
       "forceRefresh": true
     }

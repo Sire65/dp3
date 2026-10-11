@@ -49,7 +49,7 @@
   }
   function printHtml(html,title='KC DP'){
     let root=document.getElementById('printRoot');if(!root){root=document.createElement('section');root.id='printRoot';root.className='print-root';document.body.appendChild(root);}root.innerHTML=html;root.dataset.title=title;document.body.classList.add('print-mode');
-    const old=document.title;document.title=title;setTimeout(()=>{window.print();setTimeout(()=>{document.body.classList.remove('print-mode');document.title=old;root.innerHTML='';},250)},50);
+    const old=document.title;document.title=title;Promise.resolve(K.paperDocuments?.fillRoot?.(root)).catch(()=>{}).then(()=>setTimeout(()=>{window.print();setTimeout(()=>{document.body.classList.remove('print-mode');document.title=old;root.innerHTML='';},250)},50)); // Build 267: QR-Codes der Planer-Papiere vor dem Druck einsetzen
   }
   K.exports={version:'0.11.3',download,personalCsv,analyticsCsv,personalHtml,dayHtml,rangePlanHtml,fairnessHtml,printHtml,
     downloadPersonalCsv(personId,start,end){const p=K.person(personId);download(`KC_DP_${(p?.name||personId).replace(/[^A-Za-z0-9_-]+/g,'_')}_${start}_${end}.csv`,personalCsv(personId,start,end),'text/csv;charset=utf-8');},
