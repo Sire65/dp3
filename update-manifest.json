@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 265,
+  "build": 266,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b265",
+  "cacheName": "kc-dp-release-0.20.0-b266",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-11T18:31:40.544Z",
-  "totalRuntimeBytes": 37195567,
+  "generatedAt": "2026-10-11T19:01:19.403Z",
+  "totalRuntimeBytes": 37198618,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -330,7 +330,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 33976,
-      "sha256": "c9a5ef004a38734307b85aebbeb84363a71af545b5a09ac9859fbf60d515c72e",
+      "sha256": "c19111017584b1516ff36fa11734fb65356f60991c82f3177e118ce51f67e834",
       "runtime": true,
       "forceRefresh": true
     },
@@ -475,8 +475,8 @@
     {
       "path": "src/adapters/form-ocr.js",
       "installPath": "src/adapters/form-ocr.js",
-      "bytes": 22340,
-      "sha256": "3751355cfd1b8bf9de86470c0bffcf50262010d64fbd1b9b19b07af96aa4448a",
+      "bytes": 22829,
+      "sha256": "d5a0b6a3d90151bbcf93b55b96d185bfc1bcc6ff4a1d1b15675072c7ebb64a6d",
       "runtime": true
     },
     {
@@ -510,8 +510,8 @@
     {
       "path": "src/adapters/pdf.js",
       "installPath": "src/adapters/pdf.js",
-      "bytes": 13515,
-      "sha256": "ff22648e74265556c8a6838a910b7bfc8af05225d85a1c987d69ec34c113d199",
+      "bytes": 14118,
+      "sha256": "b74da3c5c2ff7c3f28318e9eb1c1e61dbab1b1f2516aebbc3f1a8b9b6b554eb9",
       "runtime": true
     },
     {
@@ -524,8 +524,8 @@
     {
       "path": "src/adapters/photo-recognition.js",
       "installPath": "src/adapters/photo-recognition.js",
-      "bytes": 3808,
-      "sha256": "05138c1f01889fbb1cbf13e183246d5572f7400ac9952194c7af7233e9c04dd9",
+      "bytes": 4927,
+      "sha256": "4a6d4246f5ec67be8a39d4ac91ad25fccdc8b79ef841239dd6f10c0c5332d547",
       "runtime": true
     },
     {
@@ -839,8 +839,8 @@
     {
       "path": "src/core/personalized-forms.js",
       "installPath": "src/core/personalized-forms.js",
-      "bytes": 21300,
-      "sha256": "85760065a6cddd2bcdb378e849170d010f54f2b0754d87ba5664b9366f6b23d8",
+      "bytes": 22132,
+      "sha256": "21545911da59aa168ba3a170b9e654efc78a71a9e66c99b2e7973f36e1b754e9",
       "runtime": true
     },
     {
@@ -1574,8 +1574,8 @@
     {
       "path": "src/ui/person-account-print.js",
       "installPath": "src/ui/person-account-print.js",
-      "bytes": 27782,
-      "sha256": "98e52bad492fa7659e8ecf6935cc62afc095aa85d0a1c3f9cf311b1ca915697e",
+      "bytes": 27790,
+      "sha256": "d91cadcd7da3cfec2c2810e7297844030c37ca73e24f7b81356fd5b3a3bd9038",
       "runtime": true
     },
     {
@@ -2254,7 +2254,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 6646,
-      "sha256": "2324e982b579151336509429f7984347db0a98aa66bb34758be77d81cd32de29",
+      "sha256": "77028c7a44d9c2c4077b2f1877c7e5d78635c8e37fde27f3523c16a1c2b3afca",
       "runtime": true,
       "forceRefresh": true
     }

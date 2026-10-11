@@ -37,6 +37,12 @@
       if(K.formOcr?.analyze){
         const raw=await K.formOcr.analyze(file,context),detected=Array.isArray(raw?.rows)?raw.rows:[],rows=K.formOcr.completeReview(detected,raw.identity?.personId||context.personId||'');
         if(context.personId&&raw.identity?.status==='matched'&&raw.identity?.personId!==context.personId)throw new Error('Der QR-Code gehoert zu einer anderen Person. Es wird nichts uebernommen.');
+        // Build 266 KC-DP-FORMULARE-EINHEITLICH: nur ausfüllbare Wunschbögen einlesen; anderer Zeitraum wird sichtbar gemeldet (nie still übernommen)
+        const art=raw.identity?.kind||'',lesbar={'wish-matrix-v12':1,'wish-filled-v12':1},namen={'handwriting-v1':'eine Handschriftprobe','wish-excel-v6':'der QR-Bogen der Excel-Matrix','person-account-v1':'ein Kontoauszug','club-bestaetigung-v1':'eine Bestätigung aus der Club-App'};
+        if(art&&!lesbar[art])throw new Error(`Das ist ${namen[art]||'kein Wunschbogen ('+art+')'} – kein ausfüllbarer Wunschbogen. Es wird nichts übernommen.`);
+        const tage=(K.days||[]).map(d=>d.date),zeitraum=tage.length?`${tage[0]}_${tage[tage.length-1]}`:'';
+        if(raw.identity?.periodId&&zeitraum&&raw.identity.periodId!==zeitraum)raw.notes=[...(raw.notes||[]),`Achtung: Der Bogen gehört zu einem anderen Zeitraum (${raw.identity.periodId.replace('_',' bis ')}). Bitte jede Zeile prüfen.`];
+        if(art==='wish-filled-v12')raw.notes=[...(raw.notes||[]),'Das ist ein Ausdruck bereits gespeicherter Angaben – nur handschriftliche Änderungen prüfen.'];
         if(context.personId&&raw.identity?.status!=='matched')raw.notes=[...(raw.notes||[]),'QR nicht sicher lesbar: Zuordnung erfolgt nur zur angemeldeten Person und jede Zeile muss manuell bestätigt werden.'];
         return {...raw,rows:rows.map(r=>normalizeRow(r,context))};
       }
