@@ -1,0 +1,23 @@
+/* Build 268 KC-DP-MITGLIED-KOMPAKT (Wunsch Hansi nach der Eingabe mit Christina): auf dem Handy steht die eigentliche Frage oben,
+   ohne erst herunterschieben zu müssen. „Nur wenn nötig“ ist auffällig; die Startfrage „Bereitschaft generell“ hat große Ja/Nein-Felder. */
+@media (max-width:700px){
+  .sw-root .chef-helper{padding:6px 10px;gap:8px;margin-bottom:8px;align-items:center}
+  .sw-root .chef-helper>div>b,.sw-root .chef-helper>div>p{display:none} /* die Frage steht direkt darunter als Überschrift */
+  .sw-root .chef-helper svg{width:30px;min-width:30px;height:36px}
+  .sw-root .chef-helper>div{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px}
+  .sw-root .wa-question{padding-top:10px}
+  .sw-root .wa-question>h1{font-size:1.35rem;line-height:1.25;margin:6px 0 8px}
+  .sw-root .sw-day-header{margin:4px 0}
+  .sw-root .sw-status{margin-bottom:4px}
+}
+.wa-root .sw-needed,.sw-needed{display:flex;flex-direction:row;gap:12px;align-items:flex-start;margin:14px 0;padding:12px 14px;border:2px solid #e8590c;border-radius:12px;background:#fff4e6;cursor:pointer}
+.wa-root .sw-needed input,.sw-needed input{display:inline-block;width:28px;height:28px;flex:none;margin:2px 0 0;accent-color:#e8590c}
+.sw-needed b{display:block;font-size:1.05rem;color:#9c3d07}
+.sw-needed small{display:block;margin-top:2px;font-size:.9rem;color:#5c4a3a}
+.sw-needed:has(input:checked){background:#ffe8cc;box-shadow:0 0 0 3px rgba(232,89,12,.25)}
+.sw-needed-note{margin:10px 0;padding:8px 12px;border-left:4px solid #e8590c;background:#fff4e6;color:#5c4a3a;font-size:.9rem}
+.tw-sg-question{margin-top:22px}
+.tw-standby-general{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:10px 0 6px}
+.wa-root .tw-sg-choice,.tw-sg-choice{display:flex;flex-direction:row;align-items:center;gap:10px;min-height:56px;padding:10px 12px;border:2px solid #d9cbb8;border-radius:12px;background:#fff;font-weight:600;cursor:pointer}
+.wa-root .tw-sg-choice input,.tw-sg-choice input{display:inline-block;width:24px;height:24px;flex:none;margin:0;accent-color:#7b1e2b}
+.tw-sg-choice:has(input:checked){border-color:#7b1e2b;background:#fbeef0}

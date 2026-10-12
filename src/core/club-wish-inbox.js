@@ -75,8 +75,10 @@ function applyMetadata(meta){
  const target=K.memberUxData.assistantStandby[meta.personId]=K.memberUxData.assistantStandby[meta.personId]||{};
  for(const date of Object.keys(previous?.standby||{}))if(!Object.hasOwn(meta.standby||{},date)&&equal(target[date],previous.standby[date]))delete target[date];
  Object.assign(target,clone(meta.standby||{}));
+ // Build 268: „Bereitschaft generell“ aus der Club-App (true/false; null = nicht beantwortet → nichts ändern)
+ if(typeof meta.standbyGeneral==='boolean'){K.memberUxData.standbyGeneral=K.memberUxData.standbyGeneral||{};K.memberUxData.standbyGeneral[meta.personId]={allow:meta.standbyGeneral,updatedAt:meta.submittedAt||null};}
 }
-function snapshot(input){return {wishes:clone(K.wishes.filter(w=>w.personId===input.personId&&K.days.some(d=>d.date===w.date))),standby:clone(K.memberUxData?.assistantStandby?.[input.personId]),sharing:clone((K.planSharing||[]).filter(r=>r.person_id===input.personId)),consent:clone(K.memberUxData?.colleagueSharing?.[input.personId]),metadata:clone(store().metadata[input.id])};}
+function snapshot(input){return {wishes:clone(K.wishes.filter(w=>w.personId===input.personId&&K.days.some(d=>d.date===w.date))),standby:clone(K.memberUxData?.assistantStandby?.[input.personId]),sharing:clone((K.planSharing||[]).filter(r=>r.person_id===input.personId)),consent:clone(K.memberUxData?.colleagueSharing?.[input.personId]),standbyGeneral:clone(K.memberUxData?.standbyGeneral?.[input.personId]),metadata:clone(store().metadata[input.id])};}
 function comparisonRows(rows){return rows.map(w=>canonical({date:w.date,start:w.start,end:w.end,wishType:w.wishType,wishZone:w.wishZone||'B',scope:w.scope||'time',onlyIfNeeded:!!w.onlyIfNeeded,comment:w.comment||'',assistantDay:w.assistantDay||null})).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b)));}
 function reviewFor(input){
  const before=snapshot(input),current=before.wishes.filter(active),dates=[...new Set([...input.entries.map(w=>w.date),...current.filter(w=>w.source==='club_app').map(w=>w.date),...Object.keys(input.standby||{}),...Object.keys(before.metadata?.standby||{})])].sort();
@@ -104,6 +106,7 @@ async function rollback(receipt){
   if(before.consent===undefined)delete K.memberUxData.colleagueSharing[receipt.personId];else K.memberUxData.colleagueSharing[receipt.personId]=clone(before.consent);
   K.planSharing=(K.planSharing||[]).filter(r=>r.person_id!==receipt.personId).concat(clone(before.sharing));
  }
+ if(K.memberUxData.standbyGeneral){if(before.standbyGeneral===undefined)delete K.memberUxData.standbyGeneral[receipt.personId];else K.memberUxData.standbyGeneral[receipt.personId]=clone(before.standbyGeneral);} // Build 268
  if(before.metadata===undefined)delete s.metadata[receipt.id];else s.metadata[receipt.id]=clone(before.metadata);
  delete s.receipts[receipt.id];
  await K.persistAll();
@@ -174,7 +177,7 @@ async function importOne(input,context,decision=null){
    const readiness=K.memberUxData?.assistantStandby?.[input.personId];
    if(readiness)for(const date of replaceDates)delete readiness[date];
    for(const row of prepared.accepted){const saved=K.mutations.saveWish(row,{reason:'Club-App-Wunscheingang',clubImport:capability});if(saved.duplicate)receipt.result.skipped++;else receipt.result.added++;}
-   const meta={id:input.id,personId:input.personId,orgId:orgId(),eventId:input.eventId,revision:input.revision,standby:prepared.standby,shareWithColleagues:input.shareWithColleagues??before.metadata?.shareWithColleagues??null,submittedAt:input.submittedAt||new Date().toISOString()};
+   const meta={id:input.id,personId:input.personId,orgId:orgId(),eventId:input.eventId,revision:input.revision,standby:prepared.standby,shareWithColleagues:input.shareWithColleagues??before.metadata?.shareWithColleagues??null,standbyGeneral:typeof input.standbyGeneral==='boolean'?input.standbyGeneral:(before.metadata?.standbyGeneral??null),submittedAt:input.submittedAt||new Date().toISOString()};
    applyMetadata(meta);K.sync.enqueue({entity:'club_wish_meta',operation:'update',payload:meta,baseVersion:null});
    K.recordAudit('Club-App-Wunscheingang',{entity:'wish_inbox',entityId:input.id,reason:`Club-App-Wunscheingang ${input.personId} rev ${input.revision}`,after:receipt.result});
   });

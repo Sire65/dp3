@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 267,
+  "build": 268,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b267",
+  "cacheName": "kc-dp-release-0.20.0-b268",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-11T19:35:41.519Z",
-  "totalRuntimeBytes": 37204917,
+  "generatedAt": "2026-10-12T14:53:36.829Z",
+  "totalRuntimeBytes": 37209498,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34047,
-      "sha256": "5178afff2b1fad2e2fcb17315a46af6678e57e25c46a39fd43ab44fa793c6c39",
+      "bytes": 34117,
+      "sha256": "0ca9dc6e71b3b3bab9c806cab675fcd27afb92bc85a61cca086e7e8a1e4a2fff",
       "runtime": true,
       "forceRefresh": true
     },
@@ -622,8 +622,8 @@
     {
       "path": "src/core/club-wish-inbox.js",
       "installPath": "src/core/club-wish-inbox.js",
-      "bytes": 24849,
-      "sha256": "dfb66a1db4a5cd4fe1ab83c680e1bb407bcb03560a0b867b6b4c008528f2c6b3",
+      "bytes": 25594,
+      "sha256": "b7f4332929e8147d8d0ca71384cf0d441cf20cd21f5ed465c48ce36c5c86d101",
       "runtime": true
     },
     {
@@ -1112,8 +1112,8 @@
     {
       "path": "src/ui/chef-companion.js",
       "installPath": "src/ui/chef-companion.js",
-      "bytes": 14112,
-      "sha256": "f083a2e12b1b80081ebc5265525b71d3c1d93b286273a58c66d26fb4c41b0717",
+      "bytes": 15343,
+      "sha256": "f146cd0b40f704758ae4de487ce5705f93264afd7dd1351542ccfc3398300613",
       "runtime": true
     },
     {
@@ -1387,6 +1387,13 @@
       "installPath": "src/ui/member-button-logic.js",
       "bytes": 5882,
       "sha256": "20d1b14b587afd0b40ab048f9415033912e5acae0aef37fc66c676fdf56f6865",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/member-compact.css",
+      "installPath": "src/ui/member-compact.css",
+      "bytes": 2162,
+      "sha256": "85098eef0134b0b127be0f1d94cc038cb604a1600a969276590e8ca9d56db9f7",
       "runtime": true
     },
     {
@@ -1882,8 +1889,8 @@
     {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
-      "bytes": 59610,
-      "sha256": "ba7469ca5841ced01fbb6092da0c7aae6f27549a3d2c177a231284c1fa285090",
+      "bytes": 59913,
+      "sha256": "c46b654f60f7af5e3a166086a7faae158643fde4cb4571877bf75ab47bd45fd6",
       "runtime": true
     },
     {
@@ -2260,8 +2267,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 6646,
-      "sha256": "b848c86c30e2b298140ff0524a69fc1a2fea2b7df4b4b033c3ab3e5d9f7d7df1",
+      "bytes": 6716,
+      "sha256": "9896a67627d1dc652dfcd6a395cf9ae72fb608d20dc893d665a899a1c17d293e",
       "runtime": true,
       "forceRefresh": true
     }

@@ -15,6 +15,7 @@ const standbyEnabled=(d,personId=owner||self())=>{
  if(!d)return false;
  const draft=personId===owner&&d.date===date&&!['days','done','finish'].includes(step);
  const blocked=draft?blockMode==='day':M().rows(personId,d.date).some(w=>active(w)&&w.wishType==='unavailable'&&w.scope==='day');
+ if(K.memberUxData?.standbyGeneral?.[personId]?.allow===false&&K.memberUxData?.assistantStandby?.[personId]?.[d.date]?.answer!=='yes')return false; // Build 268: generell „Nein“ → keine Tagesfrage
  return !blocked&&(d.standbyEnabled??!['prep','after'].includes(d.type));
 };
 const daySignature=list=>JSON.stringify(list.filter(active).map(r=>[r.wishType,!!r.onlyIfNeeded,r.scope||'time',r.start,r.end,r.wishZone||'B',r.assistantDay?.standby||null]).sort((a,b)=>JSON.stringify(a).localeCompare(JSON.stringify(b))));
@@ -186,7 +187,7 @@ function slotTeam(g){
  const count=z=>{const n=parts.map(p=>p.areas.find(a=>a.zone===z)?.count||0);return !n.length?'0':Math.min(...n)===Math.max(...n)?String(n[0]):Math.min(...n)+'–'+Math.max(...n);};
  return {short:day().type==='market'?count('front')+' V / '+count('back')+' H':count('total')+' insgesamt',html:[...people.values()].map(x=>'<p><b>'+esc(K.person(x.personId)?.pseudoName||K.person(x.personId)?.name||x.personId)+'</b> · '+zlabel(x.zone)+'<br>'+x.records.map(r=>tm(r.start)+'–'+tm(r.end)).join(', ')+' Uhr · '+(x.kind==='planned'?'geplant':'Wunsch')+'</p>').join('')||'<p>Noch niemand eingetragen.</p>'};
 }
-function neededBox(r,i,kind){return '<label class="sw-check"><input type="checkbox" data-needed="'+i+'" data-kind="'+kind+'" '+(r.reserve?'checked':'')+'> Nur wenn nötig</label>';}
+function neededBox(r,i,kind){return '<label class="sw-needed"><input type="checkbox" data-needed="'+i+'" data-kind="'+kind+'" '+(r.reserve?'checked':'')+'><span><b>Nur wenn nötig</b><small>Ich helfe in dieser Zeit nur, wenn sonst niemand da ist.</small></span></label>';} // Build 268: auffällig statt kleinem Kästchen
 function allowedWindows(kind,index){
  let windows=kind==='wish'?can.filter(valid).map(t=>[Math.max(day().start,t.start),Math.min(day().end,t.end)]):[[day().start,day().end]];
  const cuts=kind==='blocks'?blocks.filter((t,i)=>i!==index&&valid(t)):kind!=='can'&&blockMode==='time'?blocks.filter(valid):[];
@@ -217,7 +218,7 @@ function canErrors(){
 }
 function inputRows(list,kind){
  const name=kind==='can'?'(Kann-Zeit)':'(Wunschzeit)';
- return '<div class="sw-grid">'+list.map((t,i)=>'<article class="wa-slot"><b>Zeitraum '+(i+1)+' '+name+'</b>'+timeFields(t,i,kind)+'<label>Einsatzbereich<select data-zone="'+i+'" data-kind="'+kind+'">'+(day().type==='market'?['B','V','H','Z']:['B','Z']).map(z=>'<option value="'+z+'" '+(t.wishZone===z?'selected':'')+'>'+zlabel(z)+'</option>').join('')+'</select></label>'+(kind==='can'?neededBox(t,i,kind):'<label class="sw-check"><input type="checkbox" disabled '+(inheritedNeeded(t)?'checked':'')+'> Nur wenn nötig (aus Kann-Zeit übernommen)</label>')+'<p data-time-error="'+kind+'-'+i+'" role="status"></p>'+(list.length>1?'<button class="wa-remove" data-remove="'+kind+'" data-i="'+i+'">Zeitraum entfernen</button>':'')+'</article>').join('')+'</div>';
+ return '<div class="sw-grid">'+list.map((t,i)=>'<article class="wa-slot"><b>Zeitraum '+(i+1)+' '+name+'</b>'+timeFields(t,i,kind)+'<label>Einsatzbereich<select data-zone="'+i+'" data-kind="'+kind+'">'+(day().type==='market'?['B','V','H','Z']:['B','Z']).map(z=>'<option value="'+z+'" '+(t.wishZone===z?'selected':'')+'>'+zlabel(z)+'</option>').join('')+'</select></label>'+(kind==='can'?neededBox(t,i,kind):inheritedNeeded(t)?'<p class="sw-needed-note">Gilt als „nur wenn nötig“ (aus deiner Kann-Zeit).</p>':'')+'<p data-time-error="'+kind+'-'+i+'" role="status"></p>'+(list.length>1?'<button class="wa-remove" data-remove="'+kind+'" data-i="'+i+'">Zeitraum entfernen</button>':'')+'</article>').join('')+'</div>';
 }
 
 function teamGraphic(value){
