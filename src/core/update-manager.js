@@ -55,6 +55,7 @@
 
   function downloadPath(file){return cleanPath(file?.downloadPath||file?.path);}
   function installPath(file){return cleanPath(file?.installPath||file?.path);}
+  function runtimeType(file,fallback){const ext=installPath(file).split('.').pop().toLowerCase();return ({html:'text/html; charset=utf-8',js:'text/javascript; charset=utf-8',css:'text/css; charset=utf-8',json:'application/json',webmanifest:'application/manifest+json',svg:'image/svg+xml',png:'image/png',webp:'image/webp',jpg:'image/jpeg',jpeg:'image/jpeg',woff2:'font/woff2',pdf:'application/pdf',wav:'audio/wav',mp3:'audio/mpeg'})[ext]||fallback||'application/octet-stream';}
   async function fetchFile(file,onChunk){
     const source=downloadPath(file),url=LOCAL_REPO_HOST?new URL(source,REMOTE_MANIFEST_URL).toString():sameOriginUrl(source,true),r=await fetch(url,{cache:'no-store'});
     if(!r.ok)throw new Error(`${installPath(file)}: HTTP ${r.status}`);
@@ -63,9 +64,9 @@
       const reader=r.body.getReader();
       for(;;){const {done,value}=await reader.read();if(done)break;if(value){chunks.push(value);loaded+=value.byteLength;onChunk(value.byteLength);}}
       const out=new Uint8Array(loaded);let off=0;for(const c of chunks){out.set(c,off);off+=c.byteLength;}
-      return {buffer:out.buffer,type:r.headers.get('content-type')||'application/octet-stream'};
+      return {buffer:out.buffer,type:runtimeType(file,r.headers.get('content-type'))};
     }
-    const buffer=await r.arrayBuffer();onChunk(buffer.byteLength);return {buffer,type:r.headers.get('content-type')||'application/octet-stream'};
+    const buffer=await r.arrayBuffer();onChunk(buffer.byteLength);return {buffer,type:runtimeType(file,r.headers.get('content-type'))};
   }
   async function stage(manifest){
     if(!('caches'in window)||!('serviceWorker'in navigator)||!window.crypto?.subtle)throw new Error('Dieses Gerät unterstützt die sichere Update-Installation nicht vollständig.');
