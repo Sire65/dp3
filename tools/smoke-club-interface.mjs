@@ -226,4 +226,20 @@ for(const changed of ['phone','dp2','standby']){
  const {K,input,entry,inbox,calls}=await fixture();inbox.push({...input,entries:[entry()],standby:{'2026-12-04':{answer:null,slots:[{start:18,end:20}]}}});
  await K.clubWishInbox.runNow();assert.equal(calls.ack.length,0,'unanswered with actual slots remains invalid');assert(K.clubWishInbox.summary().reviews[0].problems.length);
 }
-console.log('PASS Club-App: claims, rollback, conflicts, validation, unanswered empty readiness neutral, existing readiness retained, invalid readiness blocked.');
+{
+ const {K,input,entry,inbox}=await fixture();
+ K.wishes=['2026-12-04','2026-12-05'].map((date,i)=>({...entry({date,end:16}),id:'direct-'+i,personId:input.personId,source:'assistant',status:'confirmed'}));
+ inbox.push({...input,entries:['2026-12-04','2026-12-05'].map(date=>entry({date,end:18}))});
+ await K.clubWishInbox.runNow();await K.clubWishInbox.rememberChoices(input.id,{'2026-12-04':'keep','2026-12-05':'replace'});
+ for(let i=0;i<3;i++)await K.clubWishInbox.runNow();
+ assert.deepEqual(copy(K.clubWishInbox.summary().reviews[0].choices),{'2026-12-04':'keep','2026-12-05':'replace'},'unchanged background refresh preserves selections');
+ K.clubWishInbox.state.reviews=[];await K.clubWishInbox.runNow();assert.equal(K.clubWishInbox.summary().reviews[0].choices['2026-12-04'],'keep','saved draft survives review reconstruction');
+ K.wishes[1].start=12;await K.clubWishInbox.runNow();assert.deepEqual(copy(K.clubWishInbox.summary().reviews[0].choices),{'2026-12-04':'keep'},'only actually changed day resets');
+ K.supabaseConnection.state.userId='different-admin';await K.clubWishInbox.runNow();assert.deepEqual(copy(K.clubWishInbox.summary().reviews[0].choices),{},'other account does not inherit choices');
+}
+{
+ const {K,input,entry,inbox,calls}=await fixture();K.wishes=[{...entry(),id:'direct',personId:input.personId,source:'manual',status:'confirmed'}];inbox.push({...input,entries:[entry({end:18})]});await K.clubWishInbox.runNow();
+ K.sync.hasProvider=()=>true;K.sync.pull=async()=>{K.wishes[0].updatedAt=new Date().toISOString();K.wishes[0].version=42;inbox[0].claimActive=false;inbox[0].claimedUntil=null;inbox[0].claimedByMe=false;return {conflicts:0}};
+ const result=await K.clubWishInbox.resolve(input.id,{'2026-12-04':'replace'});assert.equal(result.needsReview,undefined,'transport and sync metadata do not invalidate content decision');assert.equal(calls.ack.length,1);
+}
+console.log('PASS Club-App: claims, rollback, real changes block; neutral readiness; saved choices; sync timestamps/claim transport do not cause review loops.');

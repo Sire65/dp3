@@ -85,9 +85,14 @@ function comparisonRows(rows){return rows.map(w=>canonical({date:w.date,start:w.
 function reviewFor(input){
  const before=snapshot(input),current=before.wishes.filter(active),dates=[...new Set([...input.entries.map(w=>w.date),...current.filter(w=>w.source==='club_app').map(w=>w.date),...Object.keys(input.standby||{}),...Object.keys(before.metadata?.standby||{})])].sort();
  const days=dates.map(date=>{const existing=current.filter(w=>w.date===date),incoming=input.entries.filter(w=>w.date===date),standby=before.standby?.[date],nextStandby=input.standby?.[date];return {date,existing,incoming,standby,nextStandby,conflict:!!(existing.length||standby)&&(!equal(comparisonRows(existing),comparisonRows(incoming))||!equal(standby||null,nextStandby||null))};}).filter(d=>d.conflict);
- return {id:input.id,personId:input.personId,revision:input.revision,submittedAt:input.submittedAt,days,fingerprint:JSON.stringify(canonical({input,before})),context:scopeKey(),user:K.supabaseConnection.state?.userId};
+ const stableInput=Object.fromEntries(['id','personId','eventId','source','contract','revision','entries','standby','comment','shareWithColleagues','standbyGeneral'].map(key=>[key,input[key]??null]));
+ const stableBefore={wishes:current.map(w=>({id:w.id,source:w.source,status:w.status,row:comparisonRows([w])[0]})).sort((a,b)=>String(a.id).localeCompare(String(b.id))),standby:before.standby,sharing:before.sharing.map(r=>({person_id:r.person_id,plan_kind:r.plan_kind,allow_view:r.allow_view,allow_copy:r.allow_copy})).sort((a,b)=>String(a.plan_kind).localeCompare(String(b.plan_kind))),consent:before.consent?.allow,standbyGeneral:before.standbyGeneral?.allow,metadata:before.metadata?{revision:before.metadata.revision,standby:before.metadata.standby,shareWithColleagues:before.metadata.shareWithColleagues,standbyGeneral:before.metadata.standbyGeneral}:null};
+ return {id:input.id,personId:input.personId,revision:input.revision,submittedAt:input.submittedAt,days,fingerprint:JSON.stringify(canonical({input:stableInput,before:stableBefore})),context:scopeKey(),user:K.supabaseConnection.state?.userId};
 }
-function holdReview(review,problems=[]){state.reviews=state.reviews.filter(r=>r.id!==review.id);state.reviews.push({...review,problems});return {needsReview:true,id:review.id,revision:review.revision,problems};}
+const draftKey=id=>String(K.supabaseConnection.state?.userId||'')+':'+id;
+const dayDecisionKey=d=>JSON.stringify(canonical({date:d.date,existing:comparisonRows(d.existing),incoming:comparisonRows(d.incoming),standby:d.standby||null,nextStandby:d.nextStandby||null}));
+async function rememberChoices(id,choices){const review=state.reviews.find(r=>r.id===id&&r.context===scopeKey()&&r.user===K.supabaseConnection.state?.userId);if(!review)return;const days={};for(const day of review.days)if(['keep','replace'].includes(choices?.[day.date]))days[day.date]={choice:choices[day.date],signature:dayDecisionKey(day)};store().reviewDrafts=store().reviewDrafts||{};store().reviewDrafts[draftKey(id)]={revision:review.revision,days};review.choices=Object.fromEntries(Object.entries(days).map(([date,v])=>[date,v.choice]));await K.persistAll?.();}
+function holdReview(review,problems=[]){const draft=store().reviewDrafts?.[draftKey(review.id)],choices={};if(draft?.revision===review.revision)for(const day of review.days){const saved=draft.days?.[day.date];if(saved?.signature===dayDecisionKey(day))choices[day.date]=saved.choice;}state.reviews=state.reviews.filter(r=>r.id!==review.id);state.reviews.push({...review,choices,problems});return {needsReview:true,id:review.id,revision:review.revision,problems};}
 async function rollback(receipt){
  const s=store(),before=receipt.before;
  if(Array.isArray(receipt.affectedIds)){
@@ -157,7 +162,7 @@ async function importOne(input,context,decision=null){
  if(prior?.revision===input.revision&&prior.phase==='awaiting_ack')return acknowledge(prior);
  if(prior?.revision>=input.revision&&prior.phase==='done')return {skipped:true,reason:'already_processed'};
  const review=reviewFor(input);
- if(decision&&(decision.fingerprint!==review.fingerprint||decision.context!==context||decision.user!==K.supabaseConnection.state?.userId))return holdReview(review,[{text:'Die Daten wurden inzwischen geändert. Bitte erneut vergleichen und auswählen.'}]);
+ if(decision&&(decision.fingerprint!==review.fingerprint||decision.context!==context||decision.user!==K.supabaseConnection.state?.userId))return holdReview(review,[{text:'Die Daten wurden inzwischen geändert. Nur veränderte Tage müssen erneut entschieden werden.',blocking:false}]);
  if(review.days.length&&(!decision||review.days.some(d=>!['keep','replace'].includes(decision.choices?.[d.date]))))return holdReview(review);
  const keepDates=review.days.filter(d=>decision?.choices[d.date]==='keep').map(d=>d.date),replaceDates=review.days.filter(d=>decision?.choices[d.date]==='replace').map(d=>d.date);
  const selected={...input,entries:input.entries.filter(w=>!keepDates.includes(w.date)),standby:Object.fromEntries(Object.entries(input.standby).filter(([date])=>!keepDates.includes(date)))};
@@ -168,7 +173,7 @@ async function importOne(input,context,decision=null){
  for(const date of keepDates)if(before.standby?.[date])prepared.standby[date]=clone(before.standby[date]);
  const reservation=await claim(input);if(reservation.ok!==true)return reservation;
  if(context!==scopeKey()||review.user!==K.supabaseConnection.state?.userId){await release({id:input.id,claimToken:reservation.claimToken});throw Error('Anmeldung oder Veranstaltung während der Reservierung geändert.');}
- if(!phaseOpen()||review.fingerprint!==reviewFor(input).fingerprint){await release({id:input.id,claimToken:reservation.claimToken});return holdReview(reviewFor(input),[{text:'Die Daten wurden während der Reservierung geändert. Bitte erneut prüfen.'}]);}
+ if(!phaseOpen()||review.fingerprint!==reviewFor(input).fingerprint){await release({id:input.id,claimToken:reservation.claimToken});return holdReview(reviewFor(input),[{text:'Die Daten wurden während der Reservierung geändert. Bitte erneut prüfen.',blocking:false}]);}
  const receipt={id:input.id,personId:input.personId,revision:input.revision,phase:'awaiting_ack',context,tag,before,allSources:true,dates:K.days.map(d=>d.date),auditIds:[],result:{added:0,replaced:0,skipped:prepared.skipped,keptDays:keepDates,replacedDays:replaceDates,standbyDays:Object.keys(prepared.standby).length,problems:prepared.problems,dp2Version:K.VERSION}};
  receipt.claimToken=reservation.claimToken;receipt.claimedUntil=reservation.claimedUntil;receipt.userId=review.user;
  receipt.affectedIds=[...new Set(before.wishes.filter(w=>active(w)&&!keepDates.includes(w.date)&&(w.source==='club_app'||replaceDates.includes(w.date))).map(w=>w.id).concat(prepared.accepted.map(w=>w.id)))];
@@ -259,5 +264,5 @@ async function resolve(id,choices){
  }finally{state.inFlight=false;K.emailCenter?.refreshClubStatus?.();}
 }
 function summary(){const s=store();return {lastRunAt:s.lastRunAt,lastResult:s.lastResult,lastError:state.lastError,notices:clone(state.notices),reviews:clone(state.reviews.filter(r=>r.context===scopeKey()&&r.user===K.supabaseConnection.state?.userId)),pending:Object.values(s.receipts).filter(r=>r.phase==='awaiting_ack').length};}
-K.clubWishInbox={state,runNow,resolve,summary,mergeSharing,sharingSavedByMember,applyMetadata,assertWritable,authorizes,restoreOrder};
+K.clubWishInbox={state,runNow,resolve,summary,rememberChoices,mergeSharing,sharingSavedByMember,applyMetadata,assertWritable,authorizes,restoreOrder};
 })();

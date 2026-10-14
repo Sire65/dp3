@@ -1,6 +1,6 @@
 {
   "name": "kc-dp2",
-  "version": "0.20.0-build272",
+  "version": "0.20.0-build273",
   "private": true,
   "description": "KC DP2 Dienstplan und reproduzierbare Testumgebung",
   "scripts": {
