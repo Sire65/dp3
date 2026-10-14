@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 279,
+  "build": 280,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b279",
+  "cacheName": "kc-dp-release-0.20.0-b280",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-14T14:04:47.276Z",
-  "totalRuntimeBytes": 37254586,
+  "generatedAt": "2026-10-14T18:10:53.032Z",
+  "totalRuntimeBytes": 37257732,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34208,
-      "sha256": "d4dcd21a1a651b09ff1018664f9008b01819921a149729876b3a0a66c8566835",
+      "bytes": 34285,
+      "sha256": "f05b2c8e85d70052362a3c6915f277f134169066f0d6dedd7e8fa9951ba30481",
       "runtime": true,
       "forceRefresh": true
     },
@@ -700,8 +700,8 @@
     {
       "path": "src/core/documents.js",
       "installPath": "src/core/documents.js",
-      "bytes": 32780,
-      "sha256": "c35865e1fa565949fc725b4351dbd87c3c97bceeda36f8bc7808315bebd909e2",
+      "bytes": 34470,
+      "sha256": "d3a53e9bfa60e624f110c102e1a098298e923100b88f2a669075af16ae79d65d",
       "runtime": true
     },
     {
@@ -1085,8 +1085,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 262467,
-      "sha256": "ffb22087db41980d65ce3d4fa169632ae16585d62946f17eda1bb48fec9f7f12",
+      "bytes": 262523,
+      "sha256": "456cf28412a2da959028a68e379bd48a9f433a4134e4721741a02e914cb272ba",
       "runtime": true
     },
     {
@@ -1827,8 +1827,8 @@
     {
       "path": "src/ui/register-actions.js",
       "installPath": "src/ui/register-actions.js",
-      "bytes": 4814,
-      "sha256": "fe0ece9e598a0d91b32d09aa2c69e7e8a399d50a671fda1000cb2198d62c4b44",
+      "bytes": 4960,
+      "sha256": "94d113d552a1c555c3b5f0c9de997e11e30ea95f6fbf93c8f2adf6807fa5c991",
       "runtime": true
     },
     {
@@ -1920,6 +1920,13 @@
       "installPath": "src/ui/source-health-ui.js",
       "bytes": 5982,
       "sha256": "87292ec5d820df9c8743073179331d24b2615da54e356892609914f67139519d",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/staffing-matrix-print.js",
+      "installPath": "src/ui/staffing-matrix-print.js",
+      "bytes": 1159,
+      "sha256": "1f7ff43b9ad8872959bcf6ea4e1de978278ca94d96faaab07fb6423179004be0",
       "runtime": true
     },
     {
@@ -2247,8 +2254,8 @@
     {
       "path": "start-reparieren.html",
       "installPath": "start-reparieren.html",
-      "bytes": 1483,
-      "sha256": "8ee0085f196d1af1304ea4debba3c152e2cc18fba4f604fa2d54da7a2ff45fbb",
+      "bytes": 1501,
+      "sha256": "f2036ccc95e6473fb6edc04a370839ec796011925762f32476222a661da899de",
       "runtime": true,
       "forceRefresh": true
     },
