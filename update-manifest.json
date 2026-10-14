@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 275,
+  "build": 276,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b275",
+  "cacheName": "kc-dp-release-0.20.0-b276",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-14T13:27:44.667Z",
-  "totalRuntimeBytes": 37242949,
+  "generatedAt": "2026-10-14T13:35:14.537Z",
+  "totalRuntimeBytes": 37243800,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34211,
-      "sha256": "517052b448333de18d751ab95c5b62cac73dea0dbfd41c132834e28f73fa9623",
+      "bytes": 34208,
+      "sha256": "380893072b364aefc27daca8a80f2107c5fc41dbdd3937c237d24522d99d5cb1",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1736,15 +1736,15 @@
     {
       "path": "src/ui/planning-focus.css",
       "installPath": "src/ui/planning-focus.css",
-      "bytes": 12347,
-      "sha256": "22a48180b2867fd2f376d6527d8fd42da7e4ac8f04b72c19d2a86e24180b3b2f",
+      "bytes": 12447,
+      "sha256": "99f2b5352947c26a6a1f08efcbc4afc0f96bcb27f8723e876042d6fbd4d9d445",
       "runtime": true
     },
     {
       "path": "src/ui/planning-focus.js",
       "installPath": "src/ui/planning-focus.js",
-      "bytes": 6315,
-      "sha256": "a9371bfc27f4184c4d0e628d8ede0da0d226195dcf1e527eb2424bf8bbe070ee",
+      "bytes": 6448,
+      "sha256": "b24a746b1ff816c0ad2d58529862081cbc3c9ead9a46cb6fe8acd6e8c02be868",
       "runtime": true
     },
     {
@@ -1946,8 +1946,8 @@
     {
       "path": "src/ui/startup.css",
       "installPath": "src/ui/startup.css",
-      "bytes": 253704,
-      "sha256": "efb31ed7d9518544f87baaa60331f458de32bb41580bf92c2cc3c1713a6cb98b",
+      "bytes": 254064,
+      "sha256": "68e088e4abf54f899f308170fad2d52e3fdd204b60a21e2f05b5496f90ac4b34",
       "runtime": true
     },
     {
@@ -2030,8 +2030,8 @@
     {
       "path": "src/ui/v020-layout.css",
       "installPath": "src/ui/v020-layout.css",
-      "bytes": 3426,
-      "sha256": "1902248cf82a43f3be2b3df3d39fb9b22343b0d5050ebb78864f11d848643907",
+      "bytes": 3687,
+      "sha256": "b67391e4d49e5f3b9f953d025e04b25ed163cfb0db46762f128e101e95273cdf",
       "runtime": true
     },
     {

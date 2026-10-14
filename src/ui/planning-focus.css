@@ -33,3 +33,4 @@ body.kc-dense-planning[data-v020-register='matrix'] .hour-matrix{padding:4px 6px
 .planner-lower-separator:hover:before,.planner-lower-separator:focus-within:before,.planner-lower-separator.dragging:before{top:8px!important;border-top-width:2px!important}
 .planner-lower-separator:hover .lower-grip,.planner-lower-separator:focus-within .lower-grip,.planner-lower-separator.dragging .lower-grip{opacity:1;transform:scale(1)}
 @media(pointer:coarse){.planner-lower-separator{height:14px!important;min-height:14px!important}.planner-lower-separator:before{top:6px!important}.planner-lower-separator .lower-grip{opacity:.8;transform:scale(.9)}}
+.kc-view-controls #focusPlanBtn{width:auto!important;min-width:110px!important;white-space:nowrap}

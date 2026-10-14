@@ -34,3 +34,6 @@ body[data-v020-register="matrix"] .v020-ribbon-dot{background:#b27316;box-shadow
   .plan-message-inline{font-size:11px}.plan-message-inline #messagesBtn{display:none}
 }
 @media print{.v020-ribbon-context{display:none!important}}
+
+/* Column toolbar: flex basis must not become a 390px message height. */
+@media(max-width:1280px){.plan-control-row .plan-message-inline{flex:0 0 auto;width:100%;max-width:100%;min-width:0;height:38px;min-height:38px;box-sizing:border-box;align-self:stretch}}
