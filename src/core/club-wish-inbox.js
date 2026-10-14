@@ -55,6 +55,8 @@ function prepare(input,replaceDates=[]){
  }
  const standby={};
  for(const [date,value] of Object.entries(input.standby||{})){
+  // No answer and no slots is a neutral unanswered question, not an invalid offer.
+  if(K.days.some(d=>d.date===date)&&value&&value.answer===null&&Array.isArray(value.slots)&&value.slots.length===0)continue;
   const validTime=s=>s&&typeof s.start==='number'&&typeof s.end==='number'&&Number.isFinite(s.start)&&Number.isFinite(s.end)&&s.start>=0&&s.end<=24&&s.end>s.start&&['V','H','B','Z'].includes(s.wishZone||'B');
   if(!K.days.some(d=>d.date===date)||!value||!['yes','no'].includes(value.answer)||!Array.isArray(value.slots)||value.slots.some(s=>!validTime(s))||(value.answer==='no'&&value.slots.length)||value.slots.some((s,i)=>value.slots.some((t,j)=>j>i&&Math.max(s.start,t.start)<Math.min(s.end,t.end)))){problems.push({date,text:'Ungültige Bereitschaft übersprungen.'});continue;}
   const template=input.entries.filter(e=>e.date===date).map(signatureStandby).find(t=>t&&equal(t,value));
@@ -161,6 +163,7 @@ async function importOne(input,context,decision=null){
  const selected={...input,entries:input.entries.filter(w=>!keepDates.includes(w.date)),standby:Object.fromEntries(Object.entries(input.standby).filter(([date])=>!keepDates.includes(date)))};
  const prepared=prepare(selected,replaceDates),before=snapshot(input),tag=`club:${input.id}:${input.revision}`,auditStart=K.auditLog.length;
  if(prepared.problems.length)return holdReview(review,prepared.problems);
+ for(const [date,value] of Object.entries(selected.standby)){if(value?.answer===null&&Array.isArray(value.slots)&&!value.slots.length&&before.standby?.[date])prepared.standby[date]=clone(before.standby[date]);}
  // Keep the complete existing day, including direct Twinkey readiness, when selected.
  for(const date of keepDates)if(before.standby?.[date])prepared.standby[date]=clone(before.standby[date]);
  const reservation=await claim(input);if(reservation.ok!==true)return reservation;

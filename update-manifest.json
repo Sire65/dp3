@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 270,
+  "build": 271,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b270",
+  "cacheName": "kc-dp-release-0.20.0-b271",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-14T09:08:39.773Z",
-  "totalRuntimeBytes": 37211787,
+  "generatedAt": "2026-10-14T09:37:18.397Z",
+  "totalRuntimeBytes": 37215269,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -330,7 +330,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 34149,
-      "sha256": "041721c76a7e985c6abb102334df8c6630e32be93757d815694853afcd9fa44e",
+      "sha256": "c1099c8c0e48782f9094e1ac8249c16a6711ac8c7624aaa0f35bd4723fa4964f",
       "runtime": true,
       "forceRefresh": true
     },
@@ -622,8 +622,8 @@
     {
       "path": "src/core/club-wish-inbox.js",
       "installPath": "src/core/club-wish-inbox.js",
-      "bytes": 26016,
-      "sha256": "7ec4f94b97bc28edbf73ac61d15e3d0dae051a0191dd554ff8a4753cbd61b9c2",
+      "bytes": 26436,
+      "sha256": "38cb8f36aa8fa7e13e2b6395561281d8036006f43ebf5e60852e056f28f99935",
       "runtime": true
     },
     {
@@ -1231,15 +1231,15 @@
     {
       "path": "src/ui/email-center.css",
       "installPath": "src/ui/email-center.css",
-      "bytes": 6028,
-      "sha256": "9db0c03112b669bf35dfc3bde2a0671dde72ca5da724e86c9a33f7f39a4eb556",
+      "bytes": 6882,
+      "sha256": "9ab1e4345627f9bf7a0fa7a782597ea50f137e43e8eeddf759237ce6d17fea15",
       "runtime": true
     },
     {
       "path": "src/ui/email-center.js",
       "installPath": "src/ui/email-center.js",
-      "bytes": 13403,
-      "sha256": "b3c37585ca2ee95b238d5a590eda5e4d9a5e5ae51d18ae3ed57faa80d3eccc5b",
+      "bytes": 15611,
+      "sha256": "85db4bbe1288fccbba2c7463df376dcf4686fc7867a09630300d06e87a91899f",
       "runtime": true
     },
     {

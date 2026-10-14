@@ -40,5 +40,11 @@ try{
  await page.evaluate(()=>{const K=KCDP;K.supabaseConnection.wishInboxClaim=async()=>({ok:true,claimToken:'browser-claim-3'});K.supabaseConnection.wishInboxAckClaimed=async()=>({ok:false,reason:'claim_lost'});});
  await page.locator('[data-club-day]').selectOption('replace');await page.locator('[data-club-apply]').click();await page.waitForFunction(()=>document.querySelector('[data-club-feedback]').textContent.includes('Reservierung verloren'));
  assert.equal(await page.evaluate(()=>KCDP.wishes.find(w=>w.id==='direct').status),'confirmed');
- assert.deepEqual(errors,[]);console.log('Club-App browser PASS: conflict preview/keep, claimed and claim_lost never shown as success, visible times, escaped text, 320–1280px.');
+ await page.evaluate(()=>{const K=KCDP;K.clubWishInbox.summary=()=>({reviews:[{id:'visible',personId:K.people[0].personId,revision:2,problems:[],days:['2026-12-04','2026-12-05'].map(date=>({date,existing:[],incoming:[],nextStandby:{answer:null,slots:[]}}))}]});K.emailCenter.refreshClubStatus();});
+ assert.match(await page.locator('[data-club-progress]').innerText(),/2 von 2/);assert.equal(await page.locator('.club-needs-choice').count(),2);assert.match(await page.locator('.club-conflict').innerText(),/Nicht beantwortet/);
+ await page.locator('[data-club-next]').click();assert.equal(await page.locator('[data-club-day]').first().evaluate(e=>e===document.activeElement),true);
+ await page.locator('[data-club-day]').first().selectOption('keep');assert.match(await page.locator('[data-club-progress]').innerText(),/1 von 2/);assert(await page.locator('[data-club-apply]').isDisabled());assert.equal(await page.locator('.club-choice-done').count(),1);
+ await page.locator('[data-club-next]').click();assert.equal(await page.locator('[data-club-day]').nth(1).evaluate(e=>e===document.activeElement),true);
+ await page.locator('[data-club-day]').nth(1).selectOption('replace');assert(await page.locator('[data-club-apply]').isEnabled());assert.match(await page.locator('[data-club-progress]').innerText(),/Alle Tagesentscheidungen/);
+ assert.deepEqual(errors,[]);console.log('Club-App browser PASS: conflicts, claim loss, visible missing-count, marked days, next-open focus, readiness text, 320–1280px.');
 }finally{await browser.close();}

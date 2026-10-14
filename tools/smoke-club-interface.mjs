@@ -210,4 +210,20 @@ for(const changed of ['phone','dp2','standby']){
  inbox[0]={...input,revision:2,entries:[]};await K.clubWishInbox.runNow();assert.equal(calls.ack.length,1,'empty newer snapshot must not silently delete');
  assert.equal(K.wishes.filter(w=>w.status!=='deleted').length,1);await K.clubWishInbox.resolve(input.id,{'2026-12-04':'replace'});assert.equal(K.wishes.filter(w=>w.status!=='deleted').length,0);
 }
-console.log('PASS Club-App: two-PC claims, same-login devices, own-token recovery, claim loss/release, authoritative sharing, provider RPCs, publication, conflict keep/replace, missing decisions, changed phone/DP2/readiness, explicit deletion, rollback including direct data, dedup, validation, roles, ACK recovery/restart, standby, sharing, Twinkey signature, auto-sync isolation, version and event ID.');
+{
+ const {K,input,entry,inbox,calls}=await fixture();
+ inbox.push({...input,entries:[entry()],standby:{'2026-12-04':{answer:null,slots:[]}}});
+ await K.clubWishInbox.runNow();assert.equal(calls.ack.length,1,'unanswered empty readiness must not block valid wishes');assert.equal(K.clubWishInbox.summary().reviews.length,0);
+}
+{
+ const {K,input,entry,inbox,calls}=await fixture();const old={answer:'yes',slots:[{start:18,end:20}]};
+ K.memberUxData.assistantStandby={[input.personId]:{'2026-12-04':copy(old)}};
+ inbox.push({...input,entries:[entry()],standby:{'2026-12-04':{answer:null,slots:[]}}});
+ await K.clubWishInbox.runNow();await K.clubWishInbox.resolve(input.id,{'2026-12-04':'replace'});
+ assert.equal(calls.ack.length,1);assert.deepEqual(copy(K.memberUxData.assistantStandby[input.personId]['2026-12-04']),old,'unanswered readiness does not erase existing readiness');
+}
+{
+ const {K,input,entry,inbox,calls}=await fixture();inbox.push({...input,entries:[entry()],standby:{'2026-12-04':{answer:null,slots:[{start:18,end:20}]}}});
+ await K.clubWishInbox.runNow();assert.equal(calls.ack.length,0,'unanswered with actual slots remains invalid');assert(K.clubWishInbox.summary().reviews[0].problems.length);
+}
+console.log('PASS Club-App: claims, rollback, conflicts, validation, unanswered empty readiness neutral, existing readiness retained, invalid readiness blocked.');
