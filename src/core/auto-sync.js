@@ -4,7 +4,7 @@
  let timer=null;
  function cfg(){return K.integrationConfig?.supabase||{};}
  function clear(){if(timer){clearTimeout(timer);timer=null;}state.running=false;state.nextRunAt=null;}
- function schedule(){clear();const c=cfg();if(!c.onlineSyncEnabled||!c.autoSync)return state;const min=Math.max(1,Number(c.syncIntervalMinutes||1));state.running=true;state.nextRunAt=new Date(Date.now()+min*60000).toISOString();timer=setTimeout(()=>runNow({silent:true}).finally(schedule),min*60000);return state;}
+ function schedule(){clear();const c=cfg();if(!c.onlineSyncEnabled||!c.autoSync)return state;const min=Math.max(typeof document!=='undefined'&&document.hidden?5:1,Number(c.syncIntervalMinutes||1)); /* Build 253: im Hintergrund höchstens alle 5 Min. (Datenbank schonen) */state.running=true;state.nextRunAt=new Date(Date.now()+min*60000).toISOString();timer=setTimeout(()=>runNow({silent:true}).finally(schedule),min*60000);return state;}
  async function runNow({silent=false}={}){
    if(state.inFlight)return {skipped:true,reason:'already_running'};
    const c=cfg();if(!c.onlineSyncEnabled)return {skipped:true,reason:'disabled'};
@@ -26,6 +26,8 @@
  if(typeof addEventListener==='function'){
    addEventListener('online',()=>{state.online=true;if(cfg().autoSync)runNow({silent:true}).finally(schedule)});
    addEventListener('offline',()=>{state.online=false;});
+   // Build 253: beim Zurückkommen in den Vordergrund einmal nachholen, wenn der letzte Lauf länger als 1 Min. her ist
+   if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{if(document.hidden||!state.running)return;const alt=state.lastRunAt?Date.now()-Date.parse(state.lastRunAt):Infinity;if(alt>60000)runNow({silent:true}).finally(schedule);else schedule();});
  }
- K.autoSync={version:'0.17.4',state,start,stop,runNow,schedule};
+ K.autoSync={version:'0.17.5',state,start,stop,runNow,schedule};
 })();

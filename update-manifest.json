@@ -2,9 +2,10 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 252,
-  "cacheName": "kc-dp-release-0.20.0-b252",
+  "build": 253,
+  "cacheName": "kc-dp-release-0.20.0-b253",
   "releaseNotes": [
+    "Build 253: weniger Datenbank-Last – Sollplan wird nur bei Änderung an die Kasse veröffentlicht (vorher jede Minute auf jedem Gerät), Abgleich im Hintergrund nur alle 5 Min., Verkehrsmeldungen an die Überwachung gesammelt statt für jede Abfrage einzeln",
     "Build 252: direkte Leitung (Supabase Realtime, nur Signal) – Änderungen eines Geräts kommen bei allen anderen sofort an statt erst im Minutentakt",
     "Build 251: „Meine Unterlagen“ in der Twinkey-Seite (auch Club-App) erzeugt Papiermatrix und Handschriftprobe; PDF-Baustein mit neuer Versionskennung geladen",
     "Build 250: Papierunterlagen mit Original-Kochmütze, echten Ankreuzkästchen und Anführungszeichen statt „?“ sowie größerem QR-Code oben rechts",
@@ -136,8 +137,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-11T01:33:22.000Z",
-  "totalRuntimeBytes": 37096695,
+  "generatedAt": "2026-10-14T12:38:06.000Z",
+  "totalRuntimeBytes": 37098395,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -317,8 +318,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 33557,
-      "sha256": "3d26c967c4f40e51286f454939bc786c9cb715f39a8c2aa937842292748ce39b",
+      "bytes": 33561,
+      "sha256": "7819776288a25846135b6677f1885102214d2a6dd1dfb7d4189ff36bffcb20f2",
       "runtime": true,
       "forceRefresh": true
     },
@@ -589,8 +590,8 @@
     {
       "path": "src/core/auto-sync.js",
       "installPath": "src/core/auto-sync.js",
-      "bytes": 2385,
-      "sha256": "ab5933aadfa0ff59976296b66a6ce3106c0f06c7cb392d4f7529f933c46c410f",
+      "bytes": 2905,
+      "sha256": "b5c3f8f8fda27f866d8d7ba2400179ce352830e18c0f1cbcebed0ec4d5202e3f",
       "runtime": true
     },
     {
@@ -736,8 +737,8 @@
     {
       "path": "src/core/kicc-heartbeat.js",
       "installPath": "src/core/kicc-heartbeat.js",
-      "bytes": 7566,
-      "sha256": "4802da859a30ee07c54e7f9f827fb65d7955ea32ba92b5e005e3503575183443",
+      "bytes": 8155,
+      "sha256": "5ba0603dadb69eb287271ed339956b94b5d3ef369124fc21ba26510ef0fde596",
       "runtime": true
     },
     {
@@ -834,8 +835,8 @@
     {
       "path": "src/core/plan-manager-bridge.js",
       "installPath": "src/core/plan-manager-bridge.js",
-      "bytes": 3615,
-      "sha256": "b723a2429a7c0793030e5e7cac59df5162994839a8b75a740812ffd8ada55741",
+      "bytes": 4202,
+      "sha256": "216be0c500292c092ba4d77ffc1d94b54bc1c2a1ec006f37b5a909451f62e063",
       "runtime": true
     },
     {
