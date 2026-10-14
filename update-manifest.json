@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 281,
+  "build": 282,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b281",
+  "cacheName": "kc-dp-release-0.20.0-b282",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-14T18:17:38.086Z",
-  "totalRuntimeBytes": 37259991,
+  "generatedAt": "2026-10-14T18:25:34.074Z",
+  "totalRuntimeBytes": 37261650,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -330,7 +330,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 34285,
-      "sha256": "e901d0e7dac85c8ee63377daeb8029d4b8ebd8bcf8b4d1e7c7dccaf8102028aa",
+      "sha256": "3d62b9b7c221974b31da6c83d5284456ef6edf1bf101ca315f57647fdc7d0dfb",
       "runtime": true,
       "forceRefresh": true
     },
@@ -518,8 +518,8 @@
     {
       "path": "src/adapters/pdf.js",
       "installPath": "src/adapters/pdf.js",
-      "bytes": 14362,
-      "sha256": "bf827a4aa0770ef99d25d62da4ddf994947c5b97018f9e38f1b47fd364363295",
+      "bytes": 16050,
+      "sha256": "db86ea6db4d38048c509db19d67583e53c9f5328e74362d31ec358d1fbe37640",
       "runtime": true
     },
     {
@@ -1197,8 +1197,8 @@
     {
       "path": "src/ui/demand-view.js",
       "installPath": "src/ui/demand-view.js",
-      "bytes": 19938,
-      "sha256": "416c8522671372bb7a20372c5172f3213ae7221b6536e2a7a67043c54de58dba",
+      "bytes": 19909,
+      "sha256": "726da38cd3c4272f8982448a1ed311ffb6edcecb6f59be63fa785ac1b1441458",
       "runtime": true
     },
     {
