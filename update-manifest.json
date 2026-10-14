@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 271,
+  "build": 272,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b271",
+  "cacheName": "kc-dp-release-0.20.0-b272",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-14T09:37:18.397Z",
-  "totalRuntimeBytes": 37215269,
+  "generatedAt": "2026-10-14T10:32:41.497Z",
+  "totalRuntimeBytes": 37217443,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34149,
-      "sha256": "c1099c8c0e48782f9094e1ac8249c16a6711ac8c7624aaa0f35bd4723fa4964f",
+      "bytes": 34211,
+      "sha256": "d6b2483feb4941b0d1f2b8553fb502456c779a23e2a9e74c1396e49441b95583",
       "runtime": true,
       "forceRefresh": true
     },
@@ -965,15 +965,15 @@
     {
       "path": "src/core/update-build-guard.js",
       "installPath": "src/core/update-build-guard.js",
-      "bytes": 3543,
-      "sha256": "76de9294ba04c12695a1a8edd8a3737a6ef22b80f78b7726f464831a657b89ae",
+      "bytes": 3637,
+      "sha256": "b18a79ca0db6a543b33decdf832511d32624023464012c50f80bf3c892ae40bc",
       "runtime": true
     },
     {
       "path": "src/core/update-manager.js",
       "installPath": "src/core/update-manager.js",
-      "bytes": 14336,
-      "sha256": "4777a1693e0356af239aeada2b3d5f4b899eabd47e24aea78766afded0918152",
+      "bytes": 14116,
+      "sha256": "4318db05c25982dfa384b3ffd0244c6d059c216021e58c35ee930c7e4bc5eb30",
       "runtime": true
     },
     {
@@ -988,6 +988,13 @@
       "installPath": "src/core/wish-demand.js",
       "bytes": 5014,
       "sha256": "b36ad1e588b54d647d6860162ef4ca9b8335b17bb9be7f8cafa10a1d3bf2050a",
+      "runtime": true
+    },
+    {
+      "path": "src/core/wish-summary.js",
+      "installPath": "src/core/wish-summary.js",
+      "bytes": 1618,
+      "sha256": "9387a83f235c290a7e90a9d2bb950586e82421d7e5cd15a3a991c4b00ca6c9f2",
       "runtime": true
     },
     {
@@ -1070,8 +1077,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 261847,
-      "sha256": "679af8877365843e3cb83ae1f83633b18076432542d348cee91b633f6651c347",
+      "bytes": 262467,
+      "sha256": "ffb22087db41980d65ce3d4fa169632ae16585d62946f17eda1bb48fec9f7f12",
       "runtime": true
     },
     {

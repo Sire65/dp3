@@ -19,7 +19,8 @@
 
   async function fetchManifest(){
     if(!/^https?:$/.test(location.protocol))throw new Error('Updateprüfung benötigt die Web-Version über HTTPS/HTTP.');
-    const r=await fetch(`${MANIFEST_URL}?kc_build_check=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'}});
+    const source=K.updateManager?.LOCAL_REPO_HOST?K.updateManager.REMOTE_MANIFEST_URL:MANIFEST_URL;
+    const r=await fetch(`${source}?kc_build_check=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'}});
     if(!r.ok)throw new Error(`Update-Manifest nicht erreichbar (HTTP ${r.status}).`);
     const m=await r.json();
     if(!m||!m.version||!Array.isArray(m.files))throw new Error('Update-Manifest ist unvollständig.');

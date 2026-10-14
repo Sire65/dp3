@@ -2,7 +2,7 @@
   const K=window.KCDP=window.KCDP||{};
   const CURRENT_RELEASE='0.20.0';
   const MANIFEST_URL='update-manifest.json';
-  const REMOTE_MANIFEST_URL='https://raw.githubusercontent.com/Sire65/dp3/main/update-manifest.json';
+  const REMOTE_MANIFEST_URL='https://raw.githubusercontent.com/Sire65/dp3/codex/club-app-interface/update-manifest.json';
   const LOCAL_REPO_HOST=/^(?:127\.0\.0\.1|localhost)$/i.test(location.hostname)||location.protocol==='file:';
   const SNOOZE_MS=12*60*60*1000;
   const REPORT_QUEUE_KEY='kc_dp_pending_update_reports_v1';
@@ -56,7 +56,7 @@
   function downloadPath(file){return cleanPath(file?.downloadPath||file?.path);}
   function installPath(file){return cleanPath(file?.installPath||file?.path);}
   async function fetchFile(file,onChunk){
-    const source=downloadPath(file),url=sameOriginUrl(source,true),r=await fetch(url,{cache:'no-store',headers:{'X-KC-DP-Update':'1'}});
+    const source=downloadPath(file),url=LOCAL_REPO_HOST?new URL(source,REMOTE_MANIFEST_URL).toString():sameOriginUrl(source,true),r=await fetch(url,{cache:'no-store'});
     if(!r.ok)throw new Error(`${installPath(file)}: HTTP ${r.status}`);
     const chunks=[];let loaded=0;
     if(r.body?.getReader){
@@ -121,8 +121,8 @@
   async function flushQueuedReports(){const q=safeStoreGet(REPORT_QUEUE_KEY,[]);if(!q.length||!navigator.onLine||!K.supabaseConnection?.hasAccessToken?.())return {sent:0};const left=[];let sent=0;for(const r of q){try{await sendReport(r);sent++;}catch(_){left.push(r);}}safeStoreSet(REPORT_QUEUE_KEY,left);return {sent};}
   async function install(manifest=state.manifest){
     if(!manifest)throw new Error('Kein Update ausgewählt.');
-    if(LOCAL_REPO_HOST){const error=new Error('Lokale KC-DP2-Installation erkannt. Bitte GitHub Desktop öffnen, Repository dp3 auswählen, „Pull origin“ ausführen und KC DP2 neu laden. Dienstplandaten bleiben unverändert.');state.status='failed';state.lastError=error.message;const report=makeErrorReport(error,manifest,'git-pull-required');state.lastReport=report;window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_FAILED',{detail:{error,report,version:manifest.version}}));return {ok:false,error,report};}
-    try{await stage(manifest);await activate(manifest);state.status='installed';state.phase='done';window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_SUCCESS',{detail:{version:manifest.version}}));return {ok:true,version:manifest.version};}
+    if(location.protocol==='file:')throw new Error('Für Updates DP2-OFFLINE-STARTEN.cmd verwenden und DP2 über die feste lokale HTTP-Adresse öffnen.');
+    try{if(K.storage?.unlocked&&K.persistAll)await K.persistAll();await K.sync?.whenDurable?.();await stage(manifest);await activate(manifest);state.status='installed';state.phase='done';window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_SUCCESS',{detail:{version:manifest.version}}));return {ok:true,version:manifest.version};}
     catch(error){state.status='failed';state.lastError=error.message;const report=makeErrorReport(error,manifest,state.phase);state.lastReport=report;window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_FAILED',{detail:{error,report,version:manifest.version}}));return {ok:false,error,report};}
   }
   async function reportFailure(report){try{const result=await sendReport(report);return {ok:true,result};}catch(error){queueReport(report);return {ok:false,queued:true,error};}}
