@@ -145,6 +145,7 @@ async function claim(input){
  return reply;
 }
 async function importOne(input,context,decision=null){
+ if(K.workMode&&!K.workPeopleReady)throw Error('Zentrale Mitgliederdaten zuerst laden. Keine Übernahme durchgeführt.');
  if(context!==scopeKey())throw Error('Die Veranstaltung wurde während der Übernahme geändert.');
  if(!phaseOpen())return reject(input,'wunschphase_geschlossen');
  const person=K.people.find(p=>p.personId===input.personId);
@@ -200,6 +201,8 @@ async function reject(input,reason){
  store().lastResult=state.lastResult=result;store().lastRunAt=state.lastRunAt=new Date().toISOString();await K.persistAll();return result;
 }
 async function runNow(){
+ if(K.workMode&&!K.workPeopleReady)await K.managerAutoSync?.run?.('club-wish-refresh');
+ if(K.workMode&&!K.workPeopleReady){state.lastError='Zentrale Mitgliederdaten zuerst laden. Noch keine Übernahme möglich.';K.emailCenter?.refreshClubStatus?.();return {skipped:true,reason:'people_not_ready'};}
  if(state.inFlight)return {skipped:true,reason:'already_running'};
  state.inFlight=true;
  try{

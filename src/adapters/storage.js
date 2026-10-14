@@ -1,6 +1,6 @@
 (function(){
   const K=window.KCDP;
-  const PROJECT_ID='KC_DP3_LOCAL',DB_NAME='KC_DP3_SECURE_V020',STORE='encrypted_envelopes',META_KEY='__kc_dp3_local_crypto_meta_v2__',FORMAT='KC_DP3_LOCAL_V2',ITERATIONS=310000;
+  const PROJECT_ID=K.workMode?'KC_DP2_WORK':'KC_DP3_LOCAL',DB_NAME=K.workMode?'KC_DP2_WORK_SECURE_V1':'KC_DP3_SECURE_V020',STORE='encrypted_envelopes',META_KEY='__kc_dp3_local_crypto_meta_v2__',FORMAT='KC_DP3_LOCAL_V2',ITERATIONS=310000;
   const enc=new TextEncoder(),dec=new TextDecoder();
   function idbTraffic(op){try{window.dispatchEvent(new CustomEvent('KC_DP_IDB_TRAFFIC',{detail:{op,at:new Date().toISOString()}}));}catch(_){ }}
   function b64(bytes){let s='';for(let i=0;i<bytes.length;i+=0x8000)s+=String.fromCharCode(...bytes.subarray(i,i+0x8000));return btoa(s)}

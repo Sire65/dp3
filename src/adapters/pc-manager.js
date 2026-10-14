@@ -33,9 +33,19 @@
  function contextPublicationOk(s){const p=s?.publication?.context||s?.meta?.contextPublication||s?.contextPublication||{};return (p.published===true||p.status==='published')&&p.complete===true;}
  function applyContext(s){for(const d of K.days||[]){const w=normalizeWeather(s,d.date);if(w)d.weather={...d.weather,...w,source:w.source||s?.meta?.source||'PC Manager',fetchedAt:w.fetchedAt||new Date().toISOString()};const p=normalizeProgram(s,d.date);if(p.length)d.program=p;}if(s?.event&&K.configuration){K.configuration.updateEvent({name:s.event.name||K.eventConfig.name});for(const x of s.event.days||[]){if(K.days.some(d=>d.date===x.date))K.configuration.updateDay(x.date,x);}}}
  async function syncAll(){
+   if(K.workMode)K.workPeopleReady=false;
    K.auth?.require?.('roster.people.sync','Sie dürfen PC-Manager-Daten nicht übernehmen.');
    const s=await snapshot();if(s?.contract&&s.contract!=='KC_PC_MANAGER_DP_BRIDGE_V1')throw new Error('PC-Manager-Vertrag nicht kompatibel.');
-   const peopleResult=K.personAdapter?.applyAuthoritativeSnapshot?.(s?.people,{source:s?.meta?.source||'pc_manager_bridge',snapshot:s});
+   let peopleResult;
+   if(K.workMode&&state.mode==='supabase'&&!direct&&!hostFn()){
+     if(!Array.isArray(s.people)||!s.people.length)throw Error('Zentrales Mitgliederverzeichnis ist leer oder nicht erreichbar. Es werden keine Beispielpersonen geladen.');
+     const incomingIds=new Set(s.people.map(p=>p.personId));
+     const missing=K.personAdapter.referencedPersonIds().filter(id=>!incomingIds.has(id));
+     if(missing.length)throw Error('Verwendete Personen fehlen im zentralen Verzeichnis: '+missing.join(', '));
+     const people=K.personAdapter.applySnapshot(s.people,{source:'supabase_core_directory'});
+     K.workPeopleReady=true;
+     peopleResult={applied:true,people,source:'supabase_core_directory'};
+   }else peopleResult=K.personAdapter?.applyAuthoritativeSnapshot?.(s?.people,{source:s?.meta?.source||'pc_manager_bridge',snapshot:s});
    if(!peopleResult?.applied){state.status='blocked';state.lastBlock={at:new Date().toISOString(),code:peopleResult?.code||'PEOPLE_NOT_READY',reason:peopleResult?.reason||'PC-Manager-Personendaten sind nicht freigegeben.'};K.recordAudit?.('pc_manager.sync_blocked',{entity:'pc_manager',after:{...state.lastBlock,source:state.lastSource}});return {...s,kcDpApply:{applied:false,people:peopleResult,contextApplied:false}};}
    const contextReady=contextPublicationOk(s);if(contextReady)applyContext(s);
    state.status=contextReady?'ready':'partial';state.lastBlock=contextReady?null:{at:new Date().toISOString(),code:'CONTEXT_NOT_PUBLISHED_COMPLETE',reason:'Wetter/Programm sind noch nicht vollständig freigegeben.'};state.lastSyncAt=new Date().toISOString();

@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 269,
+  "build": 270,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b269",
+  "cacheName": "kc-dp-release-0.20.0-b270",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-14T08:39:56.647Z",
-  "totalRuntimeBytes": 37209498,
+  "generatedAt": "2026-10-14T09:08:39.773Z",
+  "totalRuntimeBytes": 37211787,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34117,
-      "sha256": "969db1949384df624556798af1adba3f3706c2e2980be5c8d0cd2a9392f55e58",
+      "bytes": 34149,
+      "sha256": "041721c76a7e985c6abb102334df8c6630e32be93757d815694853afcd9fa44e",
       "runtime": true,
       "forceRefresh": true
     },
@@ -503,8 +503,8 @@
     {
       "path": "src/adapters/pc-manager.js",
       "installPath": "src/adapters/pc-manager.js",
-      "bytes": 11030,
-      "sha256": "90721f4903938200b0a0312cd356175a9d2b5b8bf4d3d57266b3599ac6aa3ca1",
+      "bytes": 11791,
+      "sha256": "c88e616d330f8841785600b5248464cfd355dcdf3c54bb8bf042cecdafa8f902",
       "runtime": true
     },
     {
@@ -538,8 +538,8 @@
     {
       "path": "src/adapters/storage.js",
       "installPath": "src/adapters/storage.js",
-      "bytes": 12901,
-      "sha256": "8ee62ccc5d4193f3bc3309d2e92df5cb30e07c07e7bee92e8d7d92341e070229",
+      "bytes": 12961,
+      "sha256": "e119fc186ef7d78a8d2def23dec958216b27c0d77df005f6a0b3ca13deb47dc3",
       "runtime": true
     },
     {
@@ -622,8 +622,8 @@
     {
       "path": "src/core/club-wish-inbox.js",
       "installPath": "src/core/club-wish-inbox.js",
-      "bytes": 25594,
-      "sha256": "b7f4332929e8147d8d0ca71384cf0d441cf20cd21f5ed465c48ce36c5c86d101",
+      "bytes": 26016,
+      "sha256": "7ec4f94b97bc28edbf73ac61d15e3d0dae051a0191dd554ff8a4753cbd61b9c2",
       "runtime": true
     },
     {
@@ -783,8 +783,8 @@
     {
       "path": "src/core/member-access.js",
       "installPath": "src/core/member-access.js",
-      "bytes": 11083,
-      "sha256": "edac45cbeab0009e1745316cc78e1358b064b49cd8d8b4abaed9196ffe9c6c68",
+      "bytes": 11380,
+      "sha256": "a1344f34b6c764dc168b5bbffb182b4bf25fb5b5dfaf14eb894a0378e6480f9f",
       "runtime": true
     },
     {
@@ -804,8 +804,8 @@
     {
       "path": "src/core/model.js",
       "installPath": "src/core/model.js",
-      "bytes": 9394,
-      "sha256": "f2cebda0f15e4e116dae3382d84e437db6bc975e7e912860170f3cea964058d9",
+      "bytes": 9827,
+      "sha256": "b3806b845a57cd3864ff6929cccd390ce320ca62a6d64630e2546edc99c30b4b",
       "runtime": true
     },
     {
@@ -1070,8 +1070,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 261586,
-      "sha256": "0bef47e421c502cd860d6dac2a36f80ed456715d471ba572fa440fe3e2d731b7",
+      "bytes": 261847,
+      "sha256": "679af8877365843e3cb83ae1f83633b18076432542d348cee91b633f6651c347",
       "runtime": true
     },
     {
@@ -1294,8 +1294,8 @@
     {
       "path": "src/ui/friday-presentation-simulation.js",
       "installPath": "src/ui/friday-presentation-simulation.js",
-      "bytes": 2984,
-      "sha256": "a0c466b19d3e6cdae9ad5745d6a1cb43dd5d9f07fa553ebf0496ae659481e417",
+      "bytes": 3007,
+      "sha256": "8db6b3179018deeb80f0638440496b03dd02ec74c4b149888ee1d4cc67fca97c",
       "runtime": true
     },
     {

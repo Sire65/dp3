@@ -22,7 +22,7 @@
   async function applyRemoteIdentity(){
     const sb=K.supabaseConnection;if(!sb?.hasAccessToken?.())throw new Error('Keine gültige Supabase-Anmeldung.');
     const m=await sb.currentMembership();if(!m?.active)throw new Error('Dieser KC-DP-Zugang ist nicht aktiv.');
-    const personId=m.person_id||m.personId||null;if(/^KC-TEST-00[12]$/.test(String(personId||'')))ensureTestPeople();const p=personId?K.person?.(personId):null;
+    const personId=m.person_id||m.personId||null;if(/^KC-TEST-/.test(String(personId||''))&&K.workMode)throw Error('Testzugänge sind in der Arbeitsversion nicht freigegeben.');if(/^KC-TEST-00[12]$/.test(String(personId||'')))ensureTestPeople();const p=personId?K.person?.(personId):null;
     if(!personId||!p)throw new Error('Der Anmeldung ist noch kein KC-DP-Mitglied zugeordnet. Bitte den Administrator informieren.');
     const role=normalizeRole(m.role),displayName=m.display_name||p.name;
     K.auth.setCurrentUser({personId,role,displayName});
@@ -67,7 +67,7 @@
     if(!configured())throw new Error('Supabase ist noch nicht vollständig eingerichtet.');
     return K.supabaseConnection.deactivateMemberAccess(personId);
   }
-  async function provisionTestMember({personId,displayName,email,temporaryPassword}={}){
+  async function provisionTestMember({personId,displayName,email,temporaryPassword}={}){if(K.workMode)throw Error('Testzugänge gehören nicht in die Arbeitsversion.');
     if(K.currentUser?.role!=='admin')throw new Error('Nur Administratoren dürfen Testzugänge verwalten.');
     if(!/^KC-TEST-00[12]$/.test(String(personId||'')))throw new Error('Ungültige KC-DP-Testperson.');
     if(!configured())throw new Error('Supabase ist noch nicht vollständig eingerichtet.');
@@ -80,6 +80,6 @@
     return K.supabaseConnection.removeTestMember(personId);
   }
   async function signOut(){state.status='signed_out';state.user=null;state.membership=null;state.firstAccess=false;await setRememberHint(false);try{await K.supabaseConnection?.signOut?.();}catch(_){await K.supabaseConnection?.clearSession?.();}K.session?.logout?.('KC-DP Abmeldung');return true;}
-  function localTestLogin({personId,role='employee'}={}){if(!(location.hostname==='127.0.0.1'||location.hostname==='localhost'||location.protocol==='file:'))throw new Error('Lokaler Prüfzugang ist nur auf diesem Gerät verfügbar.');const p=K.person(personId||K.people?.[0]?.personId);if(!p)throw new Error('Person nicht gefunden.');K.auth.setCurrentUser({personId:p.personId,role:normalizeRole(role),displayName:p.name});K.session?.adoptAuthenticatedUser?.({personId:p.personId,role:normalizeRole(role),displayName:p.name,provider:'local-test'});state.status='authenticated';state.user={personId:p.personId,role:normalizeRole(role),displayName:p.name,localTest:true};return clone(state.user);}
+  function localTestLogin({personId,role='employee'}={}){if(K.workMode)throw Error('Lokale Testanmeldung ist in der Arbeitsversion deaktiviert.');if(!(location.hostname==='127.0.0.1'||location.hostname==='localhost'||location.protocol==='file:'))throw new Error('Lokaler Prüfzugang ist nur auf diesem Gerät verfügbar.');const p=K.person(personId||K.people?.[0]?.personId);if(!p)throw new Error('Person nicht gefunden.');K.auth.setCurrentUser({personId:p.personId,role:normalizeRole(role),displayName:p.name});K.session?.adoptAuthenticatedUser?.({personId:p.personId,role:normalizeRole(role),displayName:p.name,provider:'local-test'});state.status='authenticated';state.user={personId:p.personId,role:normalizeRole(role),displayName:p.name,localTest:true};return clone(state.user);}
   K.memberAccess={version:'0.18.0',state,normalizeRole,configured,publicConfig,cachePublicConfig,restorePublicConfig,setRememberHint,rememberedHint,persistSessionIfNeeded,consumeRecoverySessionFromUrl,finishPasswordRecovery,restore,signInPassword,sendFirstAccessCode,verifyFirstAccessCode,setInitialPassword,requestPasswordReset,applyRemoteIdentity,listMemberAccess,provisionMemberAccess,deactivateMemberAccess,provisionTestMember,removeTestMember,signOut,localTestLogin};
 })();

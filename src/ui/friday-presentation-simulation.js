@@ -1,6 +1,7 @@
 (function(){
 'use strict';
 const K=window.KCDP=window.KCDP||{};
+if(K.workMode)return;
 function active(x){return x&&x.status!=='deleted'}
 function installImportReplacement(){
   if(!K.actual?.importRows||K.actual.__fridaySimulationWrapped)return;
