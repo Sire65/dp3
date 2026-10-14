@@ -1,0 +1,3 @@
+# Build 277 RC – Dateitypen beim Ausliefern absichern
+
+Der Browser konnte Updates noch mit dem älteren Updater installieren. Deshalb reicht die Korrektur beim Herunterladen allein nicht. Der Service Worker korrigiert jetzt zusätzlich die Dateitypen bei der Auslieferung bekannter Programmdateien, auch aus einem bereits falschen Cache. Die Reparaturseite aktualisiert zusätzlich den lokalen Service Worker. Keine Datenbank wird gelöscht. Regressionstest überschreibt nach einem Update sämtliche Cache-Dateitypen absichtlich mit text/plain und prüft dann den tatsächlichen Neustart und neun erhaltene verschlüsselte Testeinträge.

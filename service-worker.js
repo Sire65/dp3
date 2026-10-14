@@ -133,11 +133,12 @@ self.addEventListener('install',event=>event.waitUntil((async()=>{if(!LOCAL_PREV
 self.addEventListener('activate',event=>event.waitUntil((async()=>{if(LOCAL_PREVIEW){await self.clients.claim();return;}let meta=await ensureInitialRelease();meta=await refreshForcedRuntime(meta);meta=await normalizeRecoveryCache(meta);await pruneCaches(meta);await self.clients.claim();})()));
 self.addEventListener('message',event=>{if(event.origin&&event.origin!==self.location.origin)return;const d=event.data||{};if(d.type==='KC_DP_SWITCH_RELEASE')event.waitUntil((async()=>{try{const cache=await caches.open(String(d.cacheName||'')),expected=Array.isArray(d.expectedFiles)?d.expectedFiles:[];for(const p of expected){const u=new URL(p,self.registration.scope).toString();if(!await cache.match(u,{ignoreSearch:true}))throw new Error(`Update-Datei fehlt im geprüften Cache: ${p}`);}const old=LOCAL_PREVIEW?(await readMeta()||{}):await activeMeta(),next={activeCache:String(d.cacheName),activeVersion:String(d.version),manifestFingerprint:null,buildId:null,previousCache:old?.activeCache||null,previousVersion:old?.activeVersion||null,pendingBoot:true,switchedAt:Date.now(),engine:ENGINE};await writeMeta(next);await pruneCaches(next);const reply={type:'KC_DP_UPDATE_ACTIVATED',version:String(d.version)};event.ports?.[0]?.postMessage(reply);await tellClients(reply);}catch(e){const reply={type:'KC_DP_UPDATE_ACTIVATION_FAILED',version:String(d.version||''),message:e instanceof Error?e.message:String(e)};event.ports?.[0]?.postMessage(reply);await tellClients(reply);}})());if(d.type==='KC_DP_BOOT_OK')event.waitUntil((async()=>{const meta=await readMeta();if(meta?.pendingBoot&&String(d.version||'')===String(meta.activeVersion||'')){meta.pendingBoot=false;meta.bootConfirmedAt=new Date().toISOString();await writeMeta(meta);await pruneCaches(meta);}})());if(d.type==='KC_DP_RELEASE_STATUS')event.waitUntil((async()=>{const meta=await activeMeta();event.source?.postMessage?.({type:'KC_DP_RELEASE_STATUS_RESULT',meta});})());if(d.type==='KC_DP_START_GUARD_LOG')event.waitUntil((async()=>{event.source?.postMessage?.({type:'KC_DP_START_GUARD_LOG_RESULT',logs:await readStartLogs()});})());});
 
+function runtimeResponse(response,url){const ext=new URL(url,self.registration.scope).pathname.split('.').pop().toLowerCase(),type=({html:'text/html; charset=utf-8',js:'text/javascript; charset=utf-8',css:'text/css; charset=utf-8',svg:'image/svg+xml',webmanifest:'application/manifest+json'})[ext];if(!type||response.headers.get('Content-Type')===type)return response;const headers=new Headers(response.headers);headers.set('Content-Type',type);headers.delete('Content-Length');return new Response(response.body,{status:response.status,statusText:response.statusText,headers});}
 self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin){if(/\.supabase\.co$/i.test(url.hostname)){event.respondWith(fetchWithTimeout(event.request,{cache:'no-store'}));}return;}
-  if(LOCAL_PREVIEW){event.respondWith((async()=>{const meta=await readMeta();if(meta?.activeCache&&!url.pathname.endsWith('/update-manifest.json')&&!url.pathname.endsWith('/service-worker.js')&&!url.searchParams.has('kc_update')){const cache=await caches.open(meta.activeCache);const target=event.request.mode==='navigate'?new URL(FALLBACK,self.registration.scope).toString():event.request;const hit=await cache.match(target,{ignoreSearch:true});if(hit)return hit;}return fetchWithTimeout(event.request,{cache:'no-store'});})());return;}
+  if(LOCAL_PREVIEW){event.respondWith((async()=>{const meta=await readMeta();if(meta?.activeCache&&!url.pathname.endsWith('/update-manifest.json')&&!url.pathname.endsWith('/service-worker.js')&&!url.searchParams.has('kc_update')){const cache=await caches.open(meta.activeCache);const target=event.request.mode==='navigate'?new URL(FALLBACK,self.registration.scope).toString():event.request;const hit=await cache.match(target,{ignoreSearch:true});if(hit)return runtimeResponse(hit,event.request.url);}return fetchWithTimeout(event.request,{cache:'no-store'});})());return;}
   if(url.toString()===START_LOG_URL){event.respondWith((async()=>new Response(JSON.stringify(await readStartLogs(),null,2),{headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}))());return;}
   if(url.searchParams.has('kc_update')||event.request.headers.get('X-KC-DP-Update')==='1'){event.respondWith(fetchWithTimeout(event.request,{cache:'no-store'}));return;}
   if(url.pathname.endsWith('/update-manifest.json')||url.pathname.endsWith('/service-worker.js')){event.respondWith(fetchWithTimeout(event.request,{cache:'no-store'}));return;}
@@ -150,14 +151,14 @@ self.addEventListener('fetch',event=>{
         const meta=await activeMeta(),cache=await caches.open(meta.activeCache),canonical=new URL(FALLBACK,self.registration.scope).toString();
         r=(await cache.match(canonical,{ignoreSearch:true}))||await fetchWithTimeout(event.request,{cache:'no-store',headers:{'Cache-Control':'no-cache'}},START_GUARD_TIMEOUT_MS);
       }catch(_){r=await activeCacheResponse(event.request);}
-      return injectBadge(r,{status:'yellow',steps:[{status:'yellow',name:'Startprüfung',detail:'Verifizierter Programmstand geladen; Hintergrundprüfung läuft'}]});
+      return injectBadge(runtimeResponse(r,event.request.url),{status:'yellow',steps:[{status:'yellow',name:'Startprüfung',detail:'Verifizierter Programmstand geladen; Hintergrundprüfung läuft'}]});
     })());return;
   }
   if(isCriticalRuntime(event.request,url)){
     event.respondWith((async()=>{
       const meta=await activeMeta(),cache=await caches.open(meta.activeCache);
       const verified=await cache.match(event.request,{ignoreSearch:true});
-      if(verified)return verified;
+      if(verified)return runtimeResponse(verified,event.request.url);
       try{return await fetchWithTimeout(event.request,{cache:'no-store',headers:{'Cache-Control':'no-cache'}});}
       catch(_){return Response.error();}
     })());return;
