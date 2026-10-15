@@ -38,3 +38,9 @@
 @media (max-width:560px){.hr-person{grid-template-columns:1fr}.hr-group{grid-template-columns:1fr}}
 /* KICC-F-100 Phase 7: Zusagen und Fahrgemeinschaften */
 .se-cp-rider{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;font-size:12px}.se-cp-rider select{min-height:32px;font-size:12px}
+/* Build 290 DP2-F-SE-08: vorläufige Einteilung */
+.se-planned{display:block;color:#5a4a8a}
+.se-planned-pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:4px 12px;border:1px solid #e3d9cf;border-radius:8px;padding:8px 10px}
+.se-planned-pick legend{font-weight:600;padding:0 4px}
+.se-planned-pick label{display:flex;align-items:center;gap:6px;min-height:36px;font-size:14px}
+.se-planned-pick .se-hint{grid-column:1/-1}

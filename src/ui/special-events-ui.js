@@ -10,6 +10,9 @@
   const canEdit=()=>K.auth?.has?K.auth.has('roster.plan.edit'):true;
   const canPublish=()=>(K.auth?.has?K.auth.has('roster.plan.publish'):true)&&!!K.supabaseConnection?.publishSpecialEvents;
   let editing=null;
+  // Build 290 (DP2-F-SE-08): vorläufige Einteilung – Auswahl aus aktiven Mitgliedern, kein Freitext.
+  const members=()=>(K.people||[]).filter(p=>p.active!==false&&p.personType==='member'&&!String(p.personId).startsWith('KC-P-LOCAL-')).sort((a,b)=>String(a.name).localeCompare(String(b.name),'de'));
+  const names=ids=>(ids||[]).map(id=>K.person?.(id)?.name||id).join(', ');
 
   function close(){document.getElementById('seBackdrop')?.remove();editing=null;}
   function status(textValue,bad=false){const el=document.getElementById('seStatus');if(el){el.textContent=textValue;el.classList.toggle('bad',!!bad);}}
@@ -26,11 +29,11 @@
   function listHtml(){
     const items=core().list();
     if(!items.length)return'<p class="se-empty">Noch keine Sondereinsätze angelegt. Beispiele: Grünkohl kochen, Abholung und Transport, Getränke mischen zuhause.</p>';
-    return `<ul class="se-list">${items.map(e=>`<li class="se-item" data-se="${esc(e.id)}"><div><b>${esc(e.titel)}</b>${e.ort?`<span class="se-ort">${esc(e.ort)}</span>`:''}<small>${esc(e.artLabel)} · ${terminText(e)}</small></div><span class="se-badge se-${e.effective.terminStatus.toLowerCase()}">${STATUS[e.effective.terminStatus]}</span>${canEdit()?`<div class="se-row-actions">${K.specialEventSignupsCore?`<button type="button" class="ux-btn secondary" data-se-signups="${esc(e.id)}">👥 Zusagen ${(()=>{const c=K.specialEventSignupsCore.counts(e.id);return `${c.ja}${c.vielleicht?'+'+c.vielleicht+'?':''}`})()} · 🚗 ${K.specialEventSignupsCore.carpoolsFor(e.id).length}</button>`:''}<button type="button" class="ux-btn secondary" data-se-edit="${esc(e.id)}">✎ Bearbeiten</button><button type="button" class="ux-btn secondary" data-se-end="${esc(e.id)}">Beenden</button></div>`:''}</li>`).join('')}</ul>`;
+    return `<ul class="se-list">${items.map(e=>`<li class="se-item" data-se="${esc(e.id)}"><div><b>${esc(e.titel)}</b>${e.ort?`<span class="se-ort">${esc(e.ort)}</span>`:''}<small>${esc(e.artLabel)} · ${terminText(e)}</small>${(e.vorgesehen||[]).length?`<small class="se-planned">👥 vorgesehen: ${esc(names(e.vorgesehen))}</small>`:''}</div><span class="se-badge se-${e.effective.terminStatus.toLowerCase()}">${STATUS[e.effective.terminStatus]}</span>${canEdit()?`<div class="se-row-actions">${K.specialEventSignupsCore?`<button type="button" class="ux-btn secondary" data-se-signups="${esc(e.id)}">👥 Zusagen ${(()=>{const c=K.specialEventSignupsCore.counts(e.id);return `${c.ja}${c.vielleicht?'+'+c.vielleicht+'?':''}`})()} · 🚗 ${K.specialEventSignupsCore.carpoolsFor(e.id).length}</button>`:''}<button type="button" class="ux-btn secondary" data-se-edit="${esc(e.id)}">✎ Bearbeiten</button><button type="button" class="ux-btn secondary" data-se-end="${esc(e.id)}">Beenden</button></div>`:''}</li>`).join('')}</ul>`;
   }
 
   function formHtml(e){
-    const v=e||{titel:'',ort:'',art:'kochen',terminStatus:'OFFEN',datumVon:'',datumBis:'',folgtAuf:'',abstandTage:2,wiederkehrend:null,bemerkung:''};
+    const v=e||{titel:'',ort:'',art:'kochen',terminStatus:'OFFEN',datumVon:'',datumBis:'',folgtAuf:'',abstandTage:2,wiederkehrend:null,bemerkung:'',vorgesehen:[]};
     const mode=v.wiederkehrend==='markttage'?'markttage':v.folgtAuf?'folgt':'eigen';
     const parents=core().list().filter(x=>!e||x.id!==e.id);
     return `<form id="seForm" class="se-form" novalidate>
@@ -54,6 +57,7 @@
         <p class="se-hint">Das Datum rückt automatisch mit, sobald der Vorgänger einen Termin hat.</p>
       </div>
       <div class="se-part" data-part="markttage"><p class="se-hint">Gilt für jeden Markttag, z. B. Getränke mischen zuhause und anliefern.</p></div>
+      <fieldset class="se-planned-pick"><legend>Vorgesehen (vorläufig, freiwillig)</legend>${members().map(p=>`<label><input type="checkbox" data-se-person="${esc(p.personId)}" ${(v.vorgesehen||[]).includes(p.personId)?'checked':''}> ${esc(p.name)}</label>`).join('')||'<p class="se-hint">Keine Mitglieder geladen.</p>'}<p class="se-hint">Die Vorgesehenen sehen den Einsatz in der Club App und werden beim Melden als Kollegen vorgeschlagen. Zusagen bleiben ihre eigene Entscheidung.</p></fieldset>
       <label>Bemerkung (freiwillig)<textarea id="seBemerkung" maxlength="500" rows="2">${esc(v.bemerkung||'')}</textarea></label>
       <div class="se-actions"><button type="submit" class="ux-btn">${e?'Änderung speichern':'Sondereinsatz anlegen'}</button>${e?'<button type="button" class="ux-btn secondary" id="seCancel">Abbrechen</button>':''}</div>
     </form>`;
@@ -63,7 +67,7 @@
 
   function readForm(){
     const mode=document.querySelector('input[name="seMode"]:checked')?.value||'eigen',val=id=>document.getElementById(id)?.value??'';
-    const base={titel:val('seTitel'),ort:val('seOrt'),art:val('seArt'),bemerkung:val('seBemerkung')};
+    const base={titel:val('seTitel'),ort:val('seOrt'),art:val('seArt'),bemerkung:val('seBemerkung'),vorgesehen:[...document.querySelectorAll('[data-se-person]:checked')].map(c=>c.dataset.sePerson)};
     if(mode==='folgt')return {...base,folgtAuf:val('seFolgt'),abstandTage:Number(val('seAbstand')),wiederkehrend:null,terminStatus:'OFFEN',datumVon:null,datumBis:null};
     if(mode==='markttage')return {...base,folgtAuf:null,wiederkehrend:'markttage',terminStatus:'FEST',datumVon:null,datumBis:null};
     return {...base,folgtAuf:null,wiederkehrend:null,terminStatus:val('seStatusSel'),datumVon:val('seVon')||null,datumBis:val('seBis')||null};
@@ -115,7 +119,8 @@
     if(pub)pub.onclick=async()=>{pub.disabled=true;status('Wird veröffentlicht …');try{const r=await core().publish();status(`Veröffentlicht: ${r?.upserted??0} Sondereinsätze.`);}catch(err){status('Nicht veröffentlicht: '+(err.message||err),true);}finally{pub.disabled=false;}};
     render();
     document.getElementById('seClose').focus();
+    if(K.supabaseConnection?.specialEventsList)core().pull().then(r=>{if(r.added||r.updated){render();status(`Abgeglichen: ${r.added} neu, ${r.updated} aktualisiert aus dem veröffentlichten Stand.`);}}).catch(()=>{});
   }
 
-  K.specialEventsUi={version:'0.1.0',open,close};
+  K.specialEventsUi={version:'0.2.0',open,close};
 })();

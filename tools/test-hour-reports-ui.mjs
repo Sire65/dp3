@@ -58,5 +58,12 @@ try{
  await page.locator('#seCpSave').click();await page.waitForFunction(()=>window.cp.length===1);
  assert.equal(await page.evaluate(()=>window.cp[0].rows.length),2);assert.equal(await page.evaluate(()=>window.cp[0].rows.reduce((n,r)=>n+r.mitfahrer.length,0)),1);
  await page.locator('#seSuBack').click();assert.match(await page.locator('[data-se-signups]').first().innerText(),/🚗 2/);
- assert.deepEqual(errors,[]);console.log('Sonderstunden-Eingang PASS: abholen, Sammelmeldung mit Summe/Bemerkung/verspätet, Stempeluhr-Überschneidung, bestätigen → Ist, ablehnen nur mit Grund, Erledigt-Ansicht, Weg aus Sondereinsätzen, Zusagen-Übersicht, Fahrgemeinschafts-Vorschlag, Umsetzen, Veröffentlichen, 320–1280px.');
+ // Build 290: vorläufige Einteilung im Planer-Dialog – Auswahl aus Mitgliedern, Anzeige in der Liste
+ await page.locator(`[data-se-edit="${await page.evaluate(()=>window.evId)}"]`).click();
+ const pick=await page.evaluate(()=>window.ids.slice(0,2));for(const id of pick)await page.locator(`[data-se-person="${id}"]`).check();
+ await page.locator('#seForm button[type=submit]').click();await page.waitForFunction(id=>(KCDP.specialEventsCore.get(id)?.vorgesehen||[]).length===2,await page.evaluate(()=>window.evId));
+ assert.match(await page.locator('.se-planned').first().innerText(),/vorgesehen:/);
+ for(const width of [320,390,1280]){await page.setViewportSize({width,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Einteilung overflow '+width)}await page.setViewportSize({width:390,height:844});
+ await page.screenshot({path:path.join(out,'Sondereinsatz-vorgesehen.png'),fullPage:true});
+ assert.deepEqual(errors,[]);console.log('Sonderstunden-Eingang PASS: abholen, Sammelmeldung mit Summe/Bemerkung/verspätet, Stempeluhr-Überschneidung, bestätigen → Ist, ablehnen nur mit Grund, Erledigt-Ansicht, Weg aus Sondereinsätzen, Zusagen-Übersicht, Fahrgemeinschafts-Vorschlag, Umsetzen, Veröffentlichen, vorläufige Einteilung, 320–1280px.');
 }finally{await browser.close()}

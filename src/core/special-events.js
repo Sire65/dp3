@@ -4,13 +4,15 @@
 // Termin darf offen sein (OFFEN → GEPLANT → FEST). Ein Einsatz kann einem anderen mit Abstand in Tagen folgen
 // („Abholung = Kochtermin + 2 Tage“); sein Datum wird immer aus dem Vorgänger berechnet, nie doppelt gespeichert.
 // Rein additiv: K.days, Bedarf und Standbesetzung bleiben unverändert.
+// Build 290 (DP2-F-SE-08): vorläufige Einteilung „vorgesehen“ (nur Mitglieder) und Abgleich mit dem veröffentlichten Stand
+// in Supabase (pull), damit dort eingetragene Einsätze beim nächsten Veröffentlichen nicht verloren gehen.
 (function(){
   'use strict';
   const K=window.KCDP=window.KCDP||{};
-  const VERSION='0.1.0';
+  const VERSION='0.2.0';
   const TERMIN=['OFFEN','GEPLANT','FEST'];
   const RECURRING=['markttage'];
-  const MAX_FOLLOW_DEPTH=10,MAX_GAP_DAYS=60,MAX_TITLE=120,MAX_PLACE=120,MAX_NOTE=500;
+  const MAX_FOLLOW_DEPTH=10,MAX_GAP_DAYS=60,MAX_PLANNED=30,MAX_TITLE=120,MAX_PLACE=120,MAX_NOTE=500;
   K.specialEvents=Array.isArray(K.specialEvents)?K.specialEvents:[];
   // Auswahl statt Freitext (AGENTS 13); austauschbare Liste statt fest verdrahteter Logik (AGENTS 4).
   K.specialEventKinds=Array.isArray(K.specialEventKinds)?K.specialEventKinds:[
@@ -45,7 +47,8 @@
       folgtAuf:text(input.folgtAuf,80)||null,
       abstandTage:input.folgtAuf?(Number.isInteger(gap)?gap:0):null,
       wiederkehrend:RECURRING.includes(input.wiederkehrend)?input.wiederkehrend:null,
-      bemerkung:text(input.bemerkung,MAX_NOTE)
+      bemerkung:text(input.bemerkung,MAX_NOTE),
+      vorgesehen:[...new Set((Array.isArray(input.vorgesehen)?input.vorgesehen:[]).map(v=>String(v??'').trim()).filter(Boolean))]
     };
   }
 
@@ -69,6 +72,8 @@
     const errors=[];
     if(!ev.titel)errors.push('Bitte einen Titel angeben.');
     if(!K.specialEventKinds.some(k=>k.id===ev.art))errors.push('Bitte eine Art aus der Liste wählen.');
+    if((ev.vorgesehen||[]).length>MAX_PLANNED)errors.push(`Höchstens ${MAX_PLANNED} Personen vorsehen.`);
+    if((K.people||[]).length){const bad=(ev.vorgesehen||[]).filter(id=>{const p=K.person?.(id)||(K.people||[]).find(x=>x.personId===id);return !p||p.active===false||(p.personType&&p.personType!=='member');});if(bad.length)errors.push(`Nur aktive Mitglieder können vorgesehen werden (${bad.join(', ')}).`);}
     if(ev.folgtAuf&&ev.wiederkehrend)errors.push('Ein Einsatz kann nicht gleichzeitig wiederkehrend sein und einem anderen folgen.');
     if(ev.folgtAuf){
       if(!Number.isInteger(ev.abstandTage)||ev.abstandTage<0||ev.abstandTage>MAX_GAP_DAYS)errors.push(`Der Abstand muss zwischen 0 und ${MAX_GAP_DAYS} Tagen liegen.`);
@@ -144,19 +149,42 @@
 
   // Zeilen für kc_dp_special_events_publish – nur aktive Einsätze, wirksamer Termin wird mitgeliefert.
   function publishRows(){
-    return K.specialEvents.filter(e=>e.aktiv).map(e=>{const x=effective(e);return {sourceId:e.id,titel:e.titel,ort:e.ort,art:e.art,terminStatus:x.terminStatus,datumVon:x.datumVon,datumBis:x.datumBis,folgtAuf:e.folgtAuf,abstandTage:e.abstandTage,wiederkehrend:e.wiederkehrend,bemerkung:e.bemerkung,version:e.version};});
+    return K.specialEvents.filter(e=>e.aktiv).map(e=>{const x=effective(e);return {sourceId:e.id,titel:e.titel,ort:e.ort,art:e.art,terminStatus:x.terminStatus,datumVon:x.datumVon,datumBis:x.datumBis,folgtAuf:e.folgtAuf,abstandTage:e.abstandTage,wiederkehrend:e.wiederkehrend,bemerkung:e.bemerkung,vorgesehen:[...(e.vorgesehen||[])],version:e.version};});
   }
   async function publish(){
     K.auth?.require?.('roster.plan.publish','Sie dürfen Sondereinsätze nicht veröffentlichen.');
     if(!K.supabaseConnection?.publishSpecialEvents)throw new Error('Supabase-Verbindung nicht bereit.');
+    // Vorher abgleichen: Einsätze, die nur im veröffentlichten Stand stehen, sonst beim Veröffentlichen entfernt.
+    if(K.supabaseConnection?.specialEventsList){try{await pull();}catch(e){throw new Error('Vor dem Veröffentlichen konnte der veröffentlichte Stand nicht abgeglichen werden: '+(e.message||e));}}
     const rows=publishRows(),eventId=K.eventConfig?.eventId||'KC-WM-2026';
     const result=await K.supabaseConnection.publishSpecialEvents({eventId,rows});
     K.recordAudit?.('special_event.publish',{entity:'special_event',entityId:eventId,after:{count:rows.length}});
     return result;
   }
 
+  // Veröffentlichte Zeile (kc_dp_special_events) → lokaler Einsatz. Maßgeblich ist die übergebene Zeile (payload).
+  function fromRemote(row){
+    const p=row?.payload&&typeof row.payload==='object'?row.payload:{},n=normalize({...p,terminStatus:p.terminStatus||row.termin_status,datumVon:p.folgtAuf||p.wiederkehrend?null:(p.datumVon??row.datum_von),datumBis:p.folgtAuf||p.wiederkehrend?null:(p.datumBis??row.datum_bis)});
+    return {id:String(row.source_id||p.sourceId||''),eventId:row.event_id||K.eventConfig?.eventId||'KC-WM-2026',...n,aktiv:true,version:Math.max(1,Number(p.version||1)),createdAt:row.published_at||nowIso(),createdBy:null,updatedAt:row.updated_at||nowIso(),updatedBy:null,source:'supabase'};
+  }
+  // Nimmt neue und neuere veröffentlichte Einsätze auf; lokal Neueres bleibt. Entfernt nie etwas (lokaler Stand führt).
+  async function pull(){
+    if(!K.supabaseConnection?.specialEventsList)throw new Error('Supabase-Verbindung nicht bereit.');
+    const rows=await K.supabaseConnection.specialEventsList({eventId:K.eventConfig?.eventId||'KC-WM-2026'});
+    let added=0,updated=0;
+    for(const row of rows||[]){
+      const ev=fromRemote(row);if(!ev.id||!ev.titel)continue;
+      const local=byId(ev.id);
+      if(!local){K.specialEvents.push(ev);added++;K.recordAudit?.('special_event.pull',{entity:'special_event',entityId:ev.id,before:null,after:clone(ev)});}
+      else if(ev.version>Number(local.version||1)){const before=clone(local);Object.assign(local,{...ev,aktiv:local.aktiv,createdAt:local.createdAt,createdBy:local.createdBy});updated++;K.recordAudit?.('special_event.pull',{entity:'special_event',entityId:ev.id,before,after:clone(local)});}
+    }
+    if(added||updated){notify();try{await K.persistAll?.();}catch(_){}}
+    return {received:(rows||[]).length,added,updated};
+  }
+  function plannedFor(personId){return list().filter(e=>(e.vorgesehen||[]).includes(personId));}
+
   function restore(saved){if(Array.isArray(saved))K.specialEvents=saved.filter(e=>e&&e.id&&e.titel);notify();return K.specialEvents.length;}
   function snapshot(){return clone(K.specialEvents);}
 
-  K.specialEventsCore={VERSION,TERMIN,RECURRING,normalize,validate,effective,create,update,setTermin,deactivate,list,get:id=>{const e=byId(id);return e?view(e):null;},dependents:id=>K.specialEvents.filter(e=>e.aktiv&&e.folgtAuf===id).map(view),kindLabel,publishRows,publish,restore,snapshot,onChange:fn=>{listeners.add(fn);return()=>listeners.delete(fn);}};
+  K.specialEventsCore={VERSION,TERMIN,RECURRING,normalize,validate,effective,create,update,setTermin,deactivate,list,get:id=>{const e=byId(id);return e?view(e):null;},dependents:id=>K.specialEvents.filter(e=>e.aktiv&&e.folgtAuf===id).map(view),kindLabel,publishRows,publish,fromRemote,pull,plannedFor,MAX_PLANNED,restore,snapshot,onChange:fn=>{listeners.add(fn);return()=>listeners.delete(fn);}};
 })();

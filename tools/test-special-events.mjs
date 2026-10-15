@@ -12,7 +12,7 @@ for(const file of ['src/core/model.js','src/core/auth.js','src/core/configuratio
 const K=context.window.KCDP,S=K.specialEventsCore;
 const audit=[];K.recordAudit=(action,meta)=>audit.push({action,...meta});
 const queued=[];K.sync={enqueue:op=>queued.push(op)};
-assert.equal(S.VERSION,'0.1.0');
+assert.equal(S.VERSION,'0.2.0');
 const daysBefore=JSON.stringify(K.days);
 
 // Termin noch offen: kein Datum nötig, kein Datum wirksam.
