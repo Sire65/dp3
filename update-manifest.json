@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 287,
+  "build": 288,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b287",
+  "cacheName": "kc-dp-release-0.20.0-b288",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-15T14:11:59.000Z",
-  "totalRuntimeBytes": 37323604,
+  "generatedAt": "2026-10-15T14:22:36.000Z",
+  "totalRuntimeBytes": 37324799,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -330,7 +330,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 34633,
-      "sha256": "1eb8232202e19c482888f975a6272c0d408f63c6403ba248d49ca5bed6ec9f10",
+      "sha256": "6df499e51d929600e9f213061714ef0d2c70882b4ded4188db389a93d7ddda9c",
       "runtime": true,
       "forceRefresh": true
     },
@@ -595,8 +595,8 @@
     {
       "path": "src/core/actual.js",
       "installPath": "src/core/actual.js",
-      "bytes": 19984,
-      "sha256": "fbb5af545b4702de9fbfebf89e13f5d890999dbff184da052868b6a5adf59f4a",
+      "bytes": 20436,
+      "sha256": "69a0ccb46792fbf8e298d3749499a98256c5a2166f8ff4f06a57a3359df75ba8",
       "runtime": true
     },
     {
@@ -1057,8 +1057,8 @@
     {
       "path": "src/ui/actual-reconciliation.js",
       "installPath": "src/ui/actual-reconciliation.js",
-      "bytes": 16014,
-      "sha256": "0b68537877fc5b0fb58f931ea8c040bbf10b11fcdaf05b2b09ad4bdeb81463ff",
+      "bytes": 16183,
+      "sha256": "31aab9d9cf96af95760476fd07dbca67e4b71d2df89dd7e65c6d44ea464238d7",
       "runtime": true
     },
     {
@@ -1624,8 +1624,8 @@
     {
       "path": "src/ui/person-account-print.js",
       "installPath": "src/ui/person-account-print.js",
-      "bytes": 29607,
-      "sha256": "e58b689590ae2cabbc51f74398ab55071671cb458f8aa48609600cc286b235a9",
+      "bytes": 29852,
+      "sha256": "9d434e8e5ba75e1a752e0808f6b3939874a1813588d9f9a31a06a49b98cc2944",
       "runtime": true
     },
     {
@@ -1638,8 +1638,8 @@
     {
       "path": "src/ui/person-hours-block.js",
       "installPath": "src/ui/person-hours-block.js",
-      "bytes": 4419,
-      "sha256": "dec5caab26d58a3e0bfa048de19cc453cc9ac5ebc1e4bd7663ab7f5977737a92",
+      "bytes": 4748,
+      "sha256": "821955960f9a6cfb21e26473eb4adfd3210abf8ce48a702657ad4d1abd93531c",
       "runtime": true
     },
     {

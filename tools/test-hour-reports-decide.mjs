@@ -80,4 +80,18 @@ await H.decide(loc.created[0].id,{status:'bestaetigt'});assert.equal(decided.len
 K.currentUser={personId:anna,displayName:'Anna',role:'employee'};
 await assert.rejects(()=>H.decide(uuid(3),{status:'bestaetigt'}),/nicht entscheiden|bereits entschieden/);
 assert.ok(audit.some(a=>a.action==='hour_report.confirm')&&audit.some(a=>a.action==='hour_report.reject'));
+// Phase 4: Getränke-Kollegin – geplanter Z-Dienst ohne Stempel = „Meldung ausstehend“, nach Bestätigung verknüpft.
+K.currentUser={personId:'planer',displayName:'Planer',role:'planner'};
+const geschenk=S.create({titel:'Getränke mischen zuhause + Anlieferung',art:'vorbereitung_zuhause',wiederkehrend:'markttage'});
+const zDay=K.days.filter(d=>d.type==='market').map(d=>d.date).find(d=>!K.shifts.some(x=>x.personId===anna&&x.date===d&&x.layer==='planned'&&x.status!=='deleted'));assert.ok(zDay);
+K.shifts.push({id:'Z-G1',personId:anna,date:zDay,start:9,end:12,zone:'special',area:'Z · Getränke zuhause',layer:'planned',status:'published',breakMinutes:0});
+assert.ok(K.actual.reportPending(zDay).some(s=>s.id==='Z-G1'),'Z-Dienst ohne Ist → Meldung ausstehend');
+let zr=P.buildRows(anna,zDay,zDay).find(r=>r.date===zDay);assert.equal(zr.missingBooking,false);assert.equal(zr.reportPending,true);
+assert.match(P.buildHtml({personIds:[anna],start:zDay,end:zDay,nameMode:'clear',onlyActivity:true,detail:'standard',header:'minimal',documentMode:'single'}),/Meldung ausstehend/);
+assert.ok(K.actual.dayStats(zDay).reportPending>=1);
+K.hourReports.push({id:'HR-G1',sammelId:'SM-G',specialEventId:geschenk.id,specialEventTitle:geschenk.titel,personId:anna,gemeldetVon:anna,date:zDay,start:9,end:12.5,breakMinutes:0,taetigkeit:'getraenke',status:'gemeldet',source:'dp2',version:1});
+const gz=await H.decide('HR-G1',{status:'bestaetigt'});const ga=K.actualShifts.find(a=>a.id===gz.actualId);
+assert.equal(ga.linkedShiftId,'Z-G1','Meldung wird mit dem geplanten Z-Dienst verknüpft (Soll/Ist-Abgleich)');
+assert.equal(K.actual.reportPending(zDay).some(s=>s.id==='Z-G1'),false);
+zr=P.buildRows(anna,zDay,zDay).find(r=>r.date===zDay);assert.equal(zr.i,3.5);assert.equal(zr.sp,3.5);assert.equal(zr.reportPending,false);
 console.log('✓ Sonderstunden-Eingang: bestätigen → Ist → Kontoauszug, ablehnen mit Grund, Sammelmeldung, stale, Nachtrag nach Wiederöffnen, Rechte');

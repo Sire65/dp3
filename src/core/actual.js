@@ -74,7 +74,7 @@
     const plannedMinutes=planned.reduce((n,s)=>n+minutes(s.end,s.start,s.breakMinutes),0),actualMinutes=rows.reduce((n,a)=>n+minutes(a.end,a.start,a.breakMinutes),0);
     return {
       date,planned:planned.length,actual:rows.length,matched:comps.filter(c=>c.planned).length,
-      noPlan:comps.filter(c=>c.status==='no_plan').length,noActual:missingPlanned(date).length,
+      noPlan:comps.filter(c=>c.status==='no_plan').length,noActual:missingPlanned(date).length,reportPending:reportPending(date).length,
       within:comps.filter(c=>c.status==='match'||c.status==='within_tolerance').length,
       deviations:comps.filter(c=>c.status==='deviation').length,
       critical:comps.filter(c=>c.status==='critical_deviation').length,
@@ -83,6 +83,9 @@
     };
   }
 
+  // KICC-F-100 Phase 4: Z-Dienste (außerhalb des Stands, z. B. Getränke zuhause) können nicht gestempelt werden –
+  // ohne Ist-Zeit gilt dort „Meldung ausstehend“ (Twinkey „Sonderstunden melden“) statt „Buchung fehlt“. Bleibt ungeklärt bis zur Bestätigung.
+  function reportPending(date=null){return missingPlanned(date).filter(s=>K.isSpecialShift?.(s)||s.zone==='special');}
   function eventStats(){
     const days=K.days.map(d=>dayStats(d.date));
     return days.reduce((a,d)=>({
@@ -207,5 +210,5 @@
     return {req,total:stand.length,front:stand.filter(a=>a.zone==='front').length,back:stand.filter(a=>a.zone==='back').length,special:special.length,unassigned:unassigned.length,active:stand,specialActive:special,unassignedActive:unassigned};
   }
 
-  K.actual={version:'0.7.1',minutes,overlapMinutes,statusFromDelta,matchCandidate,linkRecord,comparison,missingPlanned,dayStats,eventStats,validateActual,saveActual,deleteActual,importRows,correctActual,relinkActual,createCorrectionRequest,resolveCorrectionRequest,closePlan,reopenPlan,coverageAt};
+  K.actual={version:'0.7.2',minutes,overlapMinutes,statusFromDelta,matchCandidate,linkRecord,comparison,missingPlanned,reportPending,dayStats,eventStats,validateActual,saveActual,deleteActual,importRows,correctActual,relinkActual,createCorrectionRequest,resolveCorrectionRequest,closePlan,reopenPlan,coverageAt};
 })();
