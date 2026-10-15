@@ -116,7 +116,8 @@ const hrFmt=h=>{const v=Number(h);return v>=24?`${tm(v-24)} (+1 Tag)`:tm(v)};
 const hrHours=v=>Number(v||0).toLocaleString('de-DE',{maximumFractionDigits:2});
 function hrTimeOptions(sel,{from=0,to=24}={}){let o='';for(let q=from*4;q<=to*4;q++){const v=q/4;o+=`<option value="${v}" ${Math.abs(v-sel)<1e-9?'selected':''}>${hrFmt(v)}</option>`;}return o;}
 function hrBreakOptions(sel){return [0,15,30,45,60,90,120].map(m=>`<option value="${m}" ${m===sel?'selected':''}>${m?m+' Min.':'keine'}</option>`).join('');}
-function hrPeople(){return (K.people||[]).filter(p=>p.active!==false&&p.personType!=='external'&&p.personId!==self()).sort((a,b)=>String(a.name).localeCompare(String(b.name),'de'));}
+// Nur Vereinsmitglieder mit Stundenkonto (keine Aushilfen/Platzhalter, keine gesperrten Personen).
+function hrPeople(){return (K.people||[]).filter(p=>p.active!==false&&p.personType==='member'&&!String(p.personId).startsWith('KC-P-LOCAL-')&&K.personPlanningAllowed?.(p.personId)!==false&&p.personId!==self()).sort((a,b)=>String(a.name).localeCompare(String(b.name),'de'));}
 function hoursStart(){
  if(!hrCore())return tasks();
  hr={eventId:null,date:null,start:8,end:16,breakMinutes:0,taetigkeit:null,bemerkung:'',others:{}};

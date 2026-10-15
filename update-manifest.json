@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 285,
+  "build": 286,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b285",
+  "cacheName": "kc-dp-release-0.20.0-b286",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-15T13:58:23.000Z",
-  "totalRuntimeBytes": 37308819,
+  "generatedAt": "2026-10-15T14:06:28.000Z",
+  "totalRuntimeBytes": 37309011,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -330,7 +330,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 34564,
-      "sha256": "d9deb8fd2276ad87b0536d1c2014155f3960f9899702276f89128bfb2c5296e0",
+      "sha256": "8f52659ce9a9b034fca50e67df75e303e6904ac6a6f8806b1d6d8dd7d5a3887e",
       "runtime": true,
       "forceRefresh": true
     },
@@ -2044,8 +2044,8 @@
     {
       "path": "src/ui/twinkey.js",
       "installPath": "src/ui/twinkey.js",
-      "bytes": 29326,
-      "sha256": "bf595483efc5db49b61915ea016e6829f2cf7bdcb51f31c68ad3de2f0af022e8",
+      "bytes": 29518,
+      "sha256": "45cad3792d72c6b5a149e7d3fb32b3d88dd04edc8bac5deb8496087ee34e7902",
       "runtime": true
     },
     {
@@ -2326,7 +2326,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 6842,
-      "sha256": "4a92014e49c0336c794ea4520e8f40999fba549cd78ab5b28baf2f65641ee6c4",
+      "sha256": "0b950117a76c7aea3721dd70b7cfbc198e901388ca61892ce28a0fc473d4e37a",
       "runtime": true,
       "forceRefresh": true
     }
