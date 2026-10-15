@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 282,
+  "build": 283,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b282",
+  "cacheName": "kc-dp-release-0.20.0-b283",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-14T18:25:34.074Z",
-  "totalRuntimeBytes": 37261650,
+  "generatedAt": "2026-10-15T13:46:33.000Z",
+  "totalRuntimeBytes": 37285055,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34285,
-      "sha256": "3d62b9b7c221974b31da6c83d5284456ef6edf1bf101ca315f57647fdc7d0dfb",
+      "bytes": 34496,
+      "sha256": "1424dfad4c69eed75459b9b2539a512f53defa7b6a62910d61a5450cf7c0c954",
       "runtime": true,
       "forceRefresh": true
     },
@@ -553,8 +553,8 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 27177,
-      "sha256": "e7b8a90cedb90c1a4b072bbece23a08f2d3363115a8c2883a039e8c7302ab23d",
+      "bytes": 27582,
+      "sha256": "6b46ce658df8aa3ae385a2494a5856f4d8fd248ab3c051b8a491517c0d4134dd",
       "runtime": true
     },
     {
@@ -950,6 +950,13 @@
       "runtime": true
     },
     {
+      "path": "src/core/special-events.js",
+      "installPath": "src/core/special-events.js",
+      "bytes": 10489,
+      "sha256": "7ef466f6d2ae8c66d2e98a34f275e0431bd40f297a80e05d39b2dd9152378ab7",
+      "runtime": true
+    },
+    {
       "path": "src/core/staffing.js",
       "installPath": "src/core/staffing.js",
       "bytes": 21066,
@@ -1085,8 +1092,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 262523,
-      "sha256": "456cf28412a2da959028a68e379bd48a9f433a4134e4721741a02e914cb272ba",
+      "bytes": 262685,
+      "sha256": "97f44b7e7ccb8e162de74e0bddce2d1bfbc64a535184b24c4adca9757d742e29",
       "runtime": true
     },
     {
@@ -1827,8 +1834,8 @@
     {
       "path": "src/ui/register-actions.js",
       "installPath": "src/ui/register-actions.js",
-      "bytes": 5051,
-      "sha256": "16ddc7d535de3eb61bfec4105e3256be8a97b4792756cde25a229c2edc1ce268",
+      "bytes": 5156,
+      "sha256": "970c928e17f6914a7bbe103c7e1e717eac104cafd5ab1e4fd9da159a9ce9e0e0",
       "runtime": true
     },
     {
@@ -1920,6 +1927,20 @@
       "installPath": "src/ui/source-health-ui.js",
       "bytes": 5982,
       "sha256": "87292ec5d820df9c8743073179331d24b2615da54e356892609914f67139519d",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/special-events-ui.js",
+      "installPath": "src/ui/special-events-ui.js",
+      "bytes": 9317,
+      "sha256": "19c4bf1b061d7623e6f49f2795f3f749e5bcc033a6c0bdebe054be11f4d98395",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/special-events.css",
+      "installPath": "src/ui/special-events.css",
+      "bytes": 2716,
+      "sha256": "bfec27ba1b7a08d815832ce9911879f3cc0e2d4b547d3d1e661f94198c965aad",
       "runtime": true
     },
     {
@@ -2281,17 +2302,17 @@
       "runtime": true
     },
     {
-      "path": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
-      "installPath": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
-      "bytes": 16625,
-      "sha256": "1d47804c38e4d555bd77a547b83aa5242cefb6f825167ce5ef8475f7e9065ccc",
-      "runtime": true
-    },
-    {
       "path": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026.xlsx",
       "installPath": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026.xlsx",
       "bytes": 16621,
       "sha256": "5dff8fc4d8fbce5ff70d7eccb0d0777aa15c603778f213951f7fa9200c373148",
+      "runtime": true
+    },
+    {
+      "path": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
+      "installPath": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
+      "bytes": 16625,
+      "sha256": "1d47804c38e4d555bd77a547b83aa5242cefb6f825167ce5ef8475f7e9065ccc",
       "runtime": true
     },
     {
