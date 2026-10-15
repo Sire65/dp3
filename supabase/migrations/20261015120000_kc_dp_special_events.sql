@@ -36,6 +36,7 @@ create index if not exists kc_dp_special_events_lookup
 alter table public.kc_dp_special_events enable row level security;
 revoke all privileges on table public.kc_dp_special_events from anon;
 revoke insert, update, delete, truncate on table public.kc_dp_special_events from authenticated;
+grant select on table public.kc_dp_special_events to authenticated;  -- Zeilen begrenzt die Policy unten
 
 -- Lesen: jedes aktive DP2-Mitglied des Vereins (Mitglieder sollen die Einsätze in Twinkey sehen).
 create policy kc_dp_special_events_member_read

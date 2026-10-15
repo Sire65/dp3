@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 284,
+  "build": 285,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b284",
+  "cacheName": "kc-dp-release-0.20.0-b285",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-15T13:47:31.000Z",
-  "totalRuntimeBytes": 37287137,
+  "generatedAt": "2026-10-15T13:58:23.000Z",
+  "totalRuntimeBytes": 37308819,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34496,
-      "sha256": "5dc8eedbc132bdda6e5c00c6858f37ff1477d52fa00a4efad6e1dedb48d7429d",
+      "bytes": 34564,
+      "sha256": "d9deb8fd2276ad87b0536d1c2014155f3960f9899702276f89128bfb2c5296e0",
       "runtime": true,
       "forceRefresh": true
     },
@@ -553,15 +553,15 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 27582,
-      "sha256": "6b46ce658df8aa3ae385a2494a5856f4d8fd248ab3c051b8a491517c0d4134dd",
+      "bytes": 28386,
+      "sha256": "ace2923682ea085e7b7e51f365be2de08f5978a721fd854810255005fc460b49",
       "runtime": true
     },
     {
       "path": "src/adapters/sync.js",
       "installPath": "src/adapters/sync.js",
-      "bytes": 15651,
-      "sha256": "35533ab50b9a1499d544ce024d699e015367957d9601a2ed683f9fea42858e67",
+      "bytes": 15749,
+      "sha256": "772f2fe422dd863693a459492363099844a4a4aa8aeb173d79d97d7999bffbde",
       "runtime": true
     },
     {
@@ -730,6 +730,13 @@
       "installPath": "src/core/history.js",
       "bytes": 2054,
       "sha256": "02c4e9895132b6902ed0195e2e9ad105c821b490f2121ebf33647cfb5f598c1c",
+      "runtime": true
+    },
+    {
+      "path": "src/core/hour-reports.js",
+      "installPath": "src/core/hour-reports.js",
+      "bytes": 10535,
+      "sha256": "4e112c85766b01ae90442695c54e585fe59203ce9fafc4b8a086446cd7392458",
       "runtime": true
     },
     {
@@ -1092,8 +1099,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 262685,
-      "sha256": "97f44b7e7ccb8e162de74e0bddce2d1bfbc64a535184b24c4adca9757d742e29",
+      "bytes": 262830,
+      "sha256": "cc94d9b3dcbf09d47f83326c381cc88b5bf4c25b4c6cd25263cfd2a566ad7950",
       "runtime": true
     },
     {
@@ -2037,8 +2044,8 @@
     {
       "path": "src/ui/twinkey.js",
       "installPath": "src/ui/twinkey.js",
-      "bytes": 19420,
-      "sha256": "40303cfb2a3b7c4935721443241410619daab76ffe076c1a6fbb4d8a926dadb9",
+      "bytes": 29326,
+      "sha256": "bf595483efc5db49b61915ea016e6829f2cf7bdcb51f31c68ad3de2f0af022e8",
       "runtime": true
     },
     {
@@ -2318,8 +2325,8 @@
     {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 6716,
-      "sha256": "9896a67627d1dc652dfcd6a395cf9ae72fb608d20dc893d665a899a1c17d293e",
+      "bytes": 6842,
+      "sha256": "4a92014e49c0336c794ea4520e8f40999fba549cd78ab5b28baf2f65641ee6c4",
       "runtime": true,
       "forceRefresh": true
     }
