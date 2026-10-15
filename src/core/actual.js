@@ -104,7 +104,8 @@
   }
 
   function saveActual(candidate,{reason='',source=candidate.source||'manual_correction',importBatchId=candidate.importBatchId||null}={}){
-    K.auth?.require?.(source==='file_import'||source==='timeclock'||source==='planned_transfer'?'roster.actual.import':'roster.actual.correct','Sie dürfen Istzeiten nicht bearbeiten.');
+    // KICC-F-100: vom Planer bestätigte Sonderstunden-Meldungen (self_report) sind wie Stempeluhr-Zeiten ein Import externer Zeiten.
+    K.auth?.require?.(source==='file_import'||source==='timeclock'||source==='planned_transfer'||source==='self_report'?'roster.actual.import':'roster.actual.correct','Sie dürfen Istzeiten nicht bearbeiten.');
     if(K.actualWorkflow.status==='closed')throw new Error('Der Istplan ist abgeschlossen. Vor Änderungen muss er administrativ wieder geöffnet werden.');
     // A transfer may only create an unchanged copy of an active, explicitly linked plan.
     // Editing an existing actual record continues to require roster.actual.correct.

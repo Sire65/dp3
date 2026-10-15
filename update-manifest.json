@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 286,
+  "build": 287,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b286",
+  "cacheName": "kc-dp-release-0.20.0-b287",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-15T14:06:28.000Z",
-  "totalRuntimeBytes": 37309011,
+  "generatedAt": "2026-10-15T14:11:59.000Z",
+  "totalRuntimeBytes": 37323604,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34564,
-      "sha256": "8f52659ce9a9b034fca50e67df75e303e6904ac6a6f8806b1d6d8dd7d5a3887e",
+      "bytes": 34633,
+      "sha256": "1eb8232202e19c482888f975a6272c0d408f63c6403ba248d49ca5bed6ec9f10",
       "runtime": true,
       "forceRefresh": true
     },
@@ -595,8 +595,8 @@
     {
       "path": "src/core/actual.js",
       "installPath": "src/core/actual.js",
-      "bytes": 19825,
-      "sha256": "204c0ad8d3ec576aa6a536b274f6514dde04ee418457d65bad1235fa2bf10cb6",
+      "bytes": 19984,
+      "sha256": "fbb5af545b4702de9fbfebf89e13f5d890999dbff184da052868b6a5adf59f4a",
       "runtime": true
     },
     {
@@ -735,8 +735,8 @@
     {
       "path": "src/core/hour-reports.js",
       "installPath": "src/core/hour-reports.js",
-      "bytes": 10535,
-      "sha256": "4e112c85766b01ae90442695c54e585fe59203ce9fafc4b8a086446cd7392458",
+      "bytes": 15941,
+      "sha256": "aa11c628c5666214132db828c5923c1d02acc86a47c913ed6a81984c8a88530a",
       "runtime": true
     },
     {
@@ -1377,6 +1377,13 @@
       "runtime": true
     },
     {
+      "path": "src/ui/hour-reports-ui.js",
+      "installPath": "src/ui/hour-reports-ui.js",
+      "bytes": 7691,
+      "sha256": "61ec686a37b2f75a32d2231dbc08d6e0228fb9e749653de793860b63f281b883",
+      "runtime": true
+    },
+    {
       "path": "src/ui/installation-center.css",
       "installPath": "src/ui/installation-center.css",
       "bytes": 4093,
@@ -1841,8 +1848,8 @@
     {
       "path": "src/ui/register-actions.js",
       "installPath": "src/ui/register-actions.js",
-      "bytes": 5156,
-      "sha256": "970c928e17f6914a7bbe103c7e1e717eac104cafd5ab1e4fd9da159a9ce9e0e0",
+      "bytes": 5261,
+      "sha256": "693d56b86015cb940669f9802204cda10f0ae1cad9b4e851042db89f4d6c85de",
       "runtime": true
     },
     {
@@ -1939,15 +1946,15 @@
     {
       "path": "src/ui/special-events-ui.js",
       "installPath": "src/ui/special-events-ui.js",
-      "bytes": 9317,
-      "sha256": "19c4bf1b061d7623e6f49f2795f3f749e5bcc033a6c0bdebe054be11f4d98395",
+      "bytes": 9546,
+      "sha256": "5bac2f7c4164bfbe3a1bde0758f7ec3320cde9ac6998297d59a8367fc94d76e9",
       "runtime": true
     },
     {
       "path": "src/ui/special-events.css",
       "installPath": "src/ui/special-events.css",
-      "bytes": 2716,
-      "sha256": "bfec27ba1b7a08d815832ce9911879f3cc0e2d4b547d3d1e661f94198c965aad",
+      "bytes": 3650,
+      "sha256": "d0e13730e93ef2802e07afb363b2f946c9049c15c616c7e732850d35c1815bd3",
       "runtime": true
     },
     {
@@ -2326,7 +2333,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 6842,
-      "sha256": "0b950117a76c7aea3721dd70b7cfbc198e901388ca61892ce28a0fc473d4e37a",
+      "sha256": "119fa218390b9e3f856afecf72d8418bb90bd22abf4ea377b3e22ad43c64b8b3",
       "runtime": true,
       "forceRefresh": true
     }

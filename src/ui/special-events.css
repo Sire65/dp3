@@ -26,3 +26,13 @@
 .se-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;border-top:1px solid #e4ddd6}
 .se-status{font-size:12px;color:#1d5a2a}.se-status.bad{color:#8b1d1d}
 @media (max-width:560px){.se-backdrop{padding:12px 8px}.se-panel{max-height:calc(100vh - 24px)}.se-item{grid-template-columns:1fr}}
+/* DP2-F-SE-03 Sonderstunden-Eingang */
+.hr-tabs{display:flex;gap:8px;flex-wrap:wrap}
+.hr-group{grid-template-columns:1fr auto}
+.hr-people{grid-column:1/-1;display:grid;gap:6px;margin:4px 0 0;padding:0;list-style:none}
+.hr-person{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;padding:8px 10px;border:1px solid #e6ddd5;border-radius:9px;background:#fff}
+.hr-person b{font-size:13px}.hr-person small{display:block;font-size:12px;color:#6d625a}
+.hr-warn.hr-error{color:#8b1d1d}.hr-warn.hr-warn{color:#8a5a00}.hr-late{color:#8a5a00;font-weight:700}
+.hr-closed{margin:0;padding:8px 10px;border-radius:9px;background:#fff1d6;font-size:13px}
+.se-badge.hr-bestaetigt{background:#dcefdf;color:#1d5a2a}.se-badge.hr-abgelehnt{background:#f6dddd;color:#8b1d1d}.se-badge.hr-gemeldet{background:#f1e4c8;color:#6b4a00}
+@media (max-width:560px){.hr-person{grid-template-columns:1fr}.hr-group{grid-template-columns:1fr}}

@@ -84,11 +84,12 @@
     if(!core())return;
     close();
     const back=document.createElement('div');back.id='seBackdrop';back.className='se-backdrop';
-    back.innerHTML=`<section class="se-panel" role="dialog" aria-modal="true" aria-labelledby="seTitle"><header class="se-head"><h2 id="seTitle">★ Sondereinsätze</h2><button type="button" class="se-close" id="seClose" aria-label="Schließen">×</button></header><p class="se-intro">Einsätze außerhalb des Stands, deren Stunden dem Stundenkonto „${esc(K.eventConfig?.name||'Weihnachtsmarkt')}“ gutgeschrieben werden. Der Termin darf noch offen sein.</p><div id="seBody" class="se-body"></div><footer class="se-foot"><span id="seStatus" class="se-status" role="status" aria-live="polite"></span>${canPublish()?'<button type="button" class="ux-btn secondary" id="sePublish">⇧ Für Mitglieder veröffentlichen</button>':''}</footer></section>`;
+    back.innerHTML=`<section class="se-panel" role="dialog" aria-modal="true" aria-labelledby="seTitle"><header class="se-head"><h2 id="seTitle">★ Sondereinsätze</h2><button type="button" class="se-close" id="seClose" aria-label="Schließen">×</button></header><p class="se-intro">Einsätze außerhalb des Stands, deren Stunden dem Stundenkonto „${esc(K.eventConfig?.name||'Weihnachtsmarkt')}“ gutgeschrieben werden. Der Termin darf noch offen sein.</p><div id="seBody" class="se-body"></div><footer class="se-foot"><span id="seStatus" class="se-status" role="status" aria-live="polite"></span>${K.hourReportsUi?'<button type="button" class="ux-btn secondary" id="seReports">★ Sonderstunden-Eingang</button>':''}${canPublish()?'<button type="button" class="ux-btn secondary" id="sePublish">⇧ Für Mitglieder veröffentlichen</button>':''}</footer></section>`;
     document.body.appendChild(back);
     back.addEventListener('click',e=>{if(e.target===back)close();});
     back.addEventListener('keydown',e=>{if(e.key==='Escape')close();});
     document.getElementById('seClose').onclick=close;
+    const rep=document.getElementById('seReports');if(rep)rep.onclick=()=>{close();K.hourReportsUi.open();};
     const pub=document.getElementById('sePublish');
     if(pub)pub.onclick=async()=>{pub.disabled=true;status('Wird veröffentlicht …');try{const r=await core().publish();status(`Veröffentlicht: ${r?.upserted??0} Sondereinsätze.`);}catch(err){status('Nicht veröffentlicht: '+(err.message||err),true);}finally{pub.disabled=false;}};
     render();

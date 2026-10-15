@@ -14,7 +14,7 @@ const audit=[];K.recordAudit=(action,meta)=>audit.push({action,...meta});K.sync=
 let persisted=0;K.persistAll=async()=>{persisted++;return true;};
 const members=K.people.filter(p=>p.active&&p.personType==='member');
 const [me,anna,bernd]=members.map(p=>p.personId);
-assert.equal(H.VERSION,'0.1.0');
+assert.equal(H.VERSION,'0.2.0');
 const today='2027-01-20';
 
 // Einsätze: Kochen fest am 12.01., Abholung +2 Tage, ein offener Einsatz.

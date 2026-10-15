@@ -7,7 +7,7 @@
 (function(){
   'use strict';
   const K=window.KCDP=window.KCDP||{};
-  const VERSION='0.1.0';
+  const VERSION='0.2.0';
   const DEADLINE_DAYS=3,MAX_PERSONS=30,MAX_SPAN=16,MAX_END=30,MAX_BREAK=180,MAX_NOTE=500;
   K.hourReports=Array.isArray(K.hourReports)?K.hourReports:[];
   // Auswahl statt Freitext (AGENTS 13); austauschbare Liste (AGENTS 4).
@@ -125,11 +125,67 @@
     return {id:String(r.id),sammelId:r.sammel_id||r.sammelId||null,eventId:r.event_id||r.eventId,specialEventId:r.special_event_id||r.specialEventId,specialEventTitle:r.special_event_title||r.specialEventTitle||'',personId:r.person_id||r.personId,gemeldetVon:r.gemeldet_von||r.gemeldetVon||null,date:r.work_date||r.date,start:Number(r.start_h??r.start),end:Number(r.end_h??r.end),breakMinutes:Number(r.break_minutes??r.breakMinutes??0),taetigkeit:r.taetigkeit,bemerkung:r.bemerkung||'',status:r.status,verspaetet:!!r.verspaetet,gemeldetAm:r.gemeldet_am||r.gemeldetAm||null,entschiedenVon:r.entschieden_von||null,entschiedenAm:r.entschieden_am||null,ablehngrund:r.ablehngrund||null,source:r.source||'club_app',version:Number(r.version||1)};
   }
 
+
+  // ---------- Phase 3 (DP2-F-SE-03): Planer entscheidet. Bestätigt = Ist-Zeit über den vorhandenen Ist-Kern (K.actual.saveActual). ----------
+  const isRemote=r=>r.source==='club_app'&&/^[0-9a-f-]{36}$/i.test(String(r.id));
+  const byId=id=>K.hourReports.find(r=>r.id===id)||null;
+  function canDecide(){return K.auth?.has?K.auth.has('roster.actual.import'):true;}
+  // Hinweise vor dem Bestätigen (keine Sperre): Doppelzeiten, verspätet, Person unbekannt, Istplan abgeschlossen.
+  function warnings(id){
+    const r=byId(id);if(!r)return [];const out=[];
+    if(!(K.people||[]).some(p=>p.personId===r.personId&&p.active!==false))out.push({level:'error',code:'person_unknown',text:'Diese Person ist in DP2 nicht als aktive Person angelegt.'});
+    const same=(K.actualShifts||[]).filter(a=>a.personId===r.personId&&a.date===r.date&&a.status!=='deleted'&&a.hourReportId!==r.id&&Math.max(Number(a.start),Number(r.start))<Math.min(Number(a.end),Number(r.end)));
+    for(const a of same)out.push({level:'warn',code:'overlap',text:`Überschneidet sich mit einer Istzeit ${fmt(a.start)}–${fmt(a.end)} (${a.source==='timeclock'?'Stempeluhr':a.source==='self_report'?'andere Meldung':'Ist'}).`});
+    if(r.verspaetet)out.push({level:'info',code:'late',text:'Nach Ablauf der Meldefrist (3 Tage) gemeldet.'});
+    if(K.actualWorkflow?.status==='closed')out.push({level:'error',code:'closed',text:'Der Istplan ist abgeschlossen. Für einen Nachtrag zuerst wieder öffnen.'});
+    return out;
+  }
+  const fmt=h=>{const v=Number(h),x=v>=24?v-24:v;return `${String(Math.floor(x)).padStart(2,'0')}:${String(Math.round(x%1*60)).padStart(2,'0')}${v>=24?' (+1)':''}`;};
+  function pending(){return K.hourReports.filter(r=>r.status==='gemeldet');}
+  function groups({status='gemeldet'}={}){
+    const map=new Map();
+    for(const r of K.hourReports.filter(x=>status==='alle'||(status==='erledigt'?['bestaetigt','abgelehnt'].includes(x.status):x.status===status))){const k=r.sammelId||r.id;if(!map.has(k))map.set(k,[]);map.get(k).push(r);}
+    return [...map.entries()].map(([sammelId,rows])=>({sammelId,rows:rows.sort((a,b)=>String(K.person?.(a.personId)?.name||a.personId).localeCompare(String(K.person?.(b.personId)?.name||b.personId),'de')),first:rows[0]})).sort((a,b)=>String(a.first.date).localeCompare(String(b.first.date))||String(a.first.gemeldetAm||'').localeCompare(String(b.first.gemeldetAm||'')));
+  }
+  async function decide(id,{status,reason=''}={}){
+    K.auth?.require?.('roster.actual.import','Sie dürfen Stundenmeldungen nicht entscheiden.');
+    const r=byId(id);if(!r)throw new Error('Meldung nicht gefunden.');
+    if(r.status!=='gemeldet')throw new Error('Diese Meldung ist bereits entschieden.');
+    if(!['bestaetigt','abgelehnt'].includes(status))throw new Error('Bitte bestätigen oder ablehnen.');
+    if(status==='abgelehnt'&&!String(reason).trim())throw new Error('Für eine Ablehnung ist ein Grund erforderlich.');
+    let candidate=null;
+    if(status==='bestaetigt'){
+      const blocking=warnings(id).filter(w=>w.level==='error');if(blocking.length)throw new Error(blocking.map(w=>w.text).join(' '));
+      const title=r.specialEventTitle||K.specialEventsCore?.get?.(r.specialEventId)?.titel||'Sondereinsatz';
+      candidate={id:`A-SE-${String(r.id).slice(0,40)}`,personId:r.personId,date:r.date,start:Number(r.start),end:Number(r.end),breakMinutes:Number(r.breakMinutes||0),zone:'special',area:`Z · ${title}`,specialEventId:r.specialEventId,specialEventTitle:title,hourReportId:r.id,sammelId:r.sammelId||null,taetigkeit:r.taetigkeit,status:'recorded'};
+      const errs=(K.actual?.validateActual?.(candidate)||[]).filter(x=>x.level==='error');if(errs.length)throw new Error(errs.map(x=>x.text).join(' '));
+    }
+    // Erst die gemeinsame Quelle (Supabase) entscheiden, dann lokal buchen – so entsteht kein Mischstand (AGENTS 16).
+    if(isRemote(r)){
+      if(!K.supabaseConnection?.hourReportDecide)throw new Error('Supabase-Verbindung nicht bereit.');
+      const res=await K.supabaseConnection.hourReportDecide({id:r.id,status,reason,actualId:candidate?.id||null});
+      if(!res?.ok){await pull().catch(()=>{});throw new Error('Diese Meldung wurde inzwischen anders bearbeitet. Bitte die Liste neu laden.');}
+    }
+    const before=clone(r);
+    if(candidate){const out=K.actual.saveActual(candidate,{reason:`Sonderstunden-Meldung ${r.id} bestätigt`,source:'self_report'});r.actualId=out?.record?.id||out?.id||candidate.id;}
+    Object.assign(r,{status,ablehngrund:status==='abgelehnt'?String(reason).trim():null,entschiedenAm:new Date().toISOString(),entschiedenVon:self(),version:Number(r.version||1)+1});
+    K.recordAudit?.(`hour_report.${status==='bestaetigt'?'confirm':'reject'}`,{entity:'hour_report',entityId:r.id,before,after:clone(r),reason});
+    K.sync?.enqueue?.({entity:'hour_report',operation:'update',payload:clone(r),baseVersion:before.version});
+    notify();
+    try{await K.persistAll?.();}catch(_){/* Speicherfehler meldet die App selbst */}
+    return clone(r);
+  }
+  async function decideGroup(sammelId,{status,reason=''}={}){
+    const out={done:[],failed:[]};
+    for(const r of pending().filter(x=>(x.sammelId||x.id)===sammelId)){try{out.done.push(await decide(r.id,{status,reason}));}catch(e){out.failed.push({id:r.id,personId:r.personId,error:e.message||String(e)});}}
+    return out;
+  }
+
   function mine(personId=self()){return K.hourReports.filter(r=>r.personId===personId||r.gemeldetVon===personId).sort((a,b)=>String(b.date).localeCompare(String(a.date))||Number(a.start)-Number(b.start));}
   function restore(saved){if(Array.isArray(saved))K.hourReports=saved.filter(r=>r&&r.id&&r.personId);notify();return K.hourReports.length;}
   function snapshot(){return clone(K.hourReports);}
   const listeners=new Set();
   function notify(){listeners.forEach(fn=>{try{fn()}catch(_){}});}
 
-  K.hourReportsCore={VERSION,DEADLINE_DAYS,MAX_END,activityLabel,reportableEvents,allowedDates,hoursOf,deadline,validate,submit,merge,pull,fromRemote,mine,restore,snapshot,todayIso,onChange:fn=>{listeners.add(fn);return()=>listeners.delete(fn);},_test:{buildRows,overlapping}};
+  K.hourReportsCore={VERSION,warnings,pending,groups,decide,decideGroup,canDecide,DEADLINE_DAYS,MAX_END,activityLabel,reportableEvents,allowedDates,hoursOf,deadline,validate,submit,merge,pull,fromRemote,mine,restore,snapshot,todayIso,onChange:fn=>{listeners.add(fn);return()=>listeners.delete(fn);},_test:{buildRows,overlapping}};
 })();
