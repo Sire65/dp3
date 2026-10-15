@@ -59,6 +59,16 @@ try{
  assert.equal(rows.find(r=>r.personId==='bernd').end,25.5);assert.equal(rows.find(r=>r.personId==='me').fahrtRolle,'fahrer');assert.equal(rows.find(r=>r.personId==='anna').fahrtRolle,'keine');assert(await page.evaluate(()=>window.persisted>=1));
  // Meine erfassten Zeiten zeigt die offene Meldung.
  await page.locator('#hrMine').click();assert.match(await page.locator('#twActualRows').innerText(),/Gemeldet, noch nicht bestätigt · Grünkohl kochen/);
+ assert.match(await page.locator('.tw-hr-sum').innerText(),/0 Std\. gutgeschrieben · 9,5 Std\. gemeldet, noch nicht bestätigt/);
+ // Build 291: bestätigt = gutgeschrieben (ohne Doppelung mit der Ist-Zeit), abgelehnt mit Grund und ohne Zählen
+ await page.evaluate(()=>{const K=KCDP,r=K.hourReports.find(x=>x.personId==='me');K.hourReports.push({...r,id:'R-OK',status:'bestaetigt',start:7,end:9,breakMinutes:0},{...r,id:'R-NO',status:'abgelehnt',start:10,end:11,breakMinutes:0,ablehngrund:'Nicht beim Einsatz eingeteilt'},{...r,id:'R-BOOKED',status:'bestaetigt',start:12,end:13,breakMinutes:0,actualId:'A-1'});K.actualShifts=[...(K.actualShifts||[]),{id:'A-1',personId:'me',date:r.date,start:12,end:13,breakMinutes:0,status:'checked',source:'self_report',area:'Z · Einsatz'}];});
+ await page.evaluate(()=>KCDP.twinkey.tasks());await page.locator('[data-tw-task=actual]').click();
+ const mineText=await page.locator('.tw-root').innerText();
+ assert.match(mineText,/3 Std\. gutgeschrieben · 9,5 Std\. gemeldet/,'Summe nur aus bestätigten Meldungen');assert.match(mineText,/✓ Bestätigt – gutgeschrieben · Grünkohl kochen · 2 Stunden/);
+ assert.match(mineText,/✖ Nicht gutgeschrieben · Grünkohl kochen · 1 Stunden \(zählen nicht\)[\s\S]*Grund: Nicht beim Einsatz eingeteilt/);
+ assert.equal((mineText.match(/12:00/g)||[]).length,1,'Bestätigte Meldung mit Ist-Zeit nicht doppelt');
+ await page.screenshot({path:path.join(out,'Sonderstunden-Meine-Zeiten.png'),fullPage:true});
+ await page.evaluate(()=>{KCDP.hourReports=KCDP.hourReports.filter(x=>!['R-OK','R-NO','R-BOOKED'].includes(x.id));KCDP.actualShifts=(KCDP.actualShifts||[]).filter(x=>x.id!=='A-1');});
  // Doppelte Meldung wird erkannt.
  await page.locator('#twTasks').click();await page.locator('[data-tw-task=hours]').click();await page.locator('[data-hr-event=SE-K]').click();await page.locator('[data-hr-act=kochen]').click();await page.locator('#hrNext').click();await page.locator('#hrNext').click();await page.locator('#hrSend').click();
  await page.locator('#hrMine').waitFor();assert.match(await page.locator('.tw-root').innerText(),/Schon vorher gemeldet[\s\S]*Hans Beispiel/);
@@ -81,5 +91,5 @@ try{
  await page.locator('#hrNext').click();assert.match(await page.locator('.tw-root').innerText(),/Anna Beispiel/);await page.locator('#hrSend').click();
  await page.locator('#hrErst').click();const er=await page.evaluate(()=>window.erst[0]);assert.equal(er.specialEventId,'SE-A');assert.equal(er.titel,'Grünkohl abholen Dortmund → Tiefkühler Hamm');assert.equal(er.fahrer,false);
   await page.locator('#twTasks').click();await page.locator('[data-tw-task=signup]').click();assert.match(await page.locator('[data-su-event=SE-O]').innerText(),/Du bist vorgesehen/);
- assert.deepEqual(errors,[]);console.log('Twinkey Sonderstunden PASS: offener Termin gesperrt, Tag vorgegeben, Zeit zuhause→zuhause inkl. +1 Tag, Kollegen mit eigenen Zeiten, Prüfen, Melden, Status in Meine Zeiten, Doppelschutz, Fahrtrolle, Zusage mit Anreise/Startort, Fahrgemeinschaft, Erstattungsknopf, vorgesehene Kollegen vorausgewählt, 320–1280px.');
+ assert.deepEqual(errors,[]);console.log('Twinkey Sonderstunden PASS: offener Termin gesperrt, Tag vorgegeben, Zeit zuhause→zuhause inkl. +1 Tag, Kollegen mit eigenen Zeiten, Prüfen, Melden, Status in Meine Zeiten, Doppelschutz, Fahrtrolle, Zusage mit Anreise/Startort, Fahrgemeinschaft, Erstattungsknopf, vorgesehene Kollegen vorausgewählt, bestätigt/abgelehnt in Meine Zeiten, 320–1280px.');
 }finally{await browser.close()}

@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 290,
+  "build": 291,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b290",
+  "cacheName": "kc-dp-release-0.20.0-b291",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-15T15:42:41.000Z",
-  "totalRuntimeBytes": 37353479,
+  "generatedAt": "2026-10-15T16:04:58.000Z",
+  "totalRuntimeBytes": 37355104,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -330,7 +330,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 34710,
-      "sha256": "03836af6ee66e858057e58da9985365138bd03b618db743962f07ca8b293efd3",
+      "sha256": "a7b6c86b6d7690699068a911fdf79afe41de0e740d74c51b10d41ea5fab351a3",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1428,8 +1428,8 @@
     {
       "path": "src/ui/member-button-logic.js",
       "installPath": "src/ui/member-button-logic.js",
-      "bytes": 5882,
-      "sha256": "20d1b14b587afd0b40ab048f9415033912e5acae0aef37fc66c676fdf56f6865",
+      "bytes": 6045,
+      "sha256": "edaf894c138994c7220a71ea2e57ba74591c7a83c597a0365501a0613ca38208",
       "runtime": true
     },
     {
@@ -2058,8 +2058,8 @@
     {
       "path": "src/ui/twinkey.js",
       "installPath": "src/ui/twinkey.js",
-      "bytes": 37099,
-      "sha256": "387b1e23ddfedf2487a890d352ff67a02ba4d6f6c679b37d0dac95c4e80f9f72",
+      "bytes": 38561,
+      "sha256": "e458d02bcbb810dd29518da7a848aa507a66ca48ba1a55a594c0d3d78861a35b",
       "runtime": true
     },
     {
@@ -2340,7 +2340,7 @@
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
       "bytes": 6913,
-      "sha256": "5d8fef2b148b5802ec09a2f91c8332aadf6ce90bd9d8a0d5b38cc16b0ad68b71",
+      "sha256": "76c5113000c2807d445601811d2206a14917f5032cdbc456243835736f8521ba",
       "runtime": true,
       "forceRefresh": true
     }
