@@ -18,5 +18,5 @@ assert.equal(booked.planned.id,'S1','Sollbezug muss aus dem Istvergleich stammen
 assert.equal(booked.severity,'critical','75 Minuten Abweichung m�ssen kritisch sein');
 assert(result.items.some(x=>x.kind==='missing'&&x.severity==='critical'),'Fehlende Istbuchung muss als Handlungsbedarf erscheinen');
 assert(events.some(x=>x.type==='kc-actual-import-complete'),'Automatischer Scan muss an erfolgreiche Importe angebunden sein');
-assert.match(await readFile(new URL('../index.html',import.meta.url),'utf8'),/actual-reconciliation\.js\?v=0\.20\.0-b237/,'Modul muss im Release geladen werden');
+assert.match(await readFile(new URL('../index.html',import.meta.url),'utf8'),/actual-reconciliation\.js\?v=0\.20\.0-b(237|288)/,'Modul muss im Release geladen werden');
 console.log('Ist-Abgleich-Smoke-Test OK: Wunsch, Soll, Ist, Abweichung, fehlende Buchung und Import-Hook');

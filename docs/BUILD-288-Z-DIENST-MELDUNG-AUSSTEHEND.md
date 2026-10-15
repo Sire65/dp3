@@ -1,0 +1,3 @@
+# Build 288 RC – Z-Dienste: Meldung ausstehend; Personenstunden mit Sondereinsätzen (KICC-F-100 Phase 4)
+
+Geplante Z-Dienste (außerhalb des Stands, z. B. Getränke mischen zuhause) können nicht gestempelt werden. Ohne Ist-Zeit heißen sie im Ist-Abgleich und im Personenkonto „Meldung ausstehend“ statt „Buchung fehlt“ (bleiben ungeklärt bis zur bestätigten Meldung). Bestätigte Sonderstunden-Meldungen werden automatisch mit dem Z-Dienst des Tages verknüpft. Personenstunden (Gesamt/Woche) zählen Tage mit Sonderstunden außerhalb der Markttage mit. K.actual 0.7.2: reportPending, dayStats.reportPending.

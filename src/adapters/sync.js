@@ -85,7 +85,7 @@
     K.recordAudit?.('sync.conflict.resolve',{entity:'sync_conflict',entityId:id,reason:choice,after:c});return c;
   }
 
-  function collectionFor(entity){if(entity==='shift')return K.shifts;if(entity==='wish')return K.wishes;if(entity==='standby')return K.standby;if(entity==='member_shift_offer')return K.memberShiftOffers;return null;}
+  function collectionFor(entity){if(entity==='shift')return K.shifts;if(entity==='wish')return K.wishes;if(entity==='standby')return K.standby;if(entity==='member_shift_offer')return K.memberShiftOffers;if(entity==='special_event')return K.specialEvents;if(entity==='hour_report')return K.hourReports;if(entity==='special_event_signup')return K.specialEventSignups;return null;}
   function entityIdFor(op){
     if(op.entity==='person_rules')return op.payload?.personId||op.entityId||null;
     if(op.entity==='day_config'||op.entity==='demand_matrix'||op.entity==='plan_day')return op.payload?.date||op.entityId||null;

@@ -1,0 +1,3 @@
+# Geprüfte Fehlalarme (kein Geheimnis). Je Eintrag ein Fingerabdruck aus dem Gitleaks-Bericht.
+# KEY='kc_dp2_person_hours_v1' ist der Name des localStorage-Eintrags für den Klappzustand der Personenstunden (Build 288).
+face442820fac143d20fb5aa4e7b723ab2270f4a:src/ui/person-hours-block.js:generic-api-key:1

@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 282,
+  "build": 290,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b282",
+  "cacheName": "kc-dp-release-0.20.0-b290",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-14T18:25:34.074Z",
-  "totalRuntimeBytes": 37261650,
+  "generatedAt": "2026-10-15T15:42:41.000Z",
+  "totalRuntimeBytes": 37353479,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34285,
-      "sha256": "3d62b9b7c221974b31da6c83d5284456ef6edf1bf101ca315f57647fdc7d0dfb",
+      "bytes": 34710,
+      "sha256": "03836af6ee66e858057e58da9985365138bd03b618db743962f07ca8b293efd3",
       "runtime": true,
       "forceRefresh": true
     },
@@ -553,15 +553,15 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 27177,
-      "sha256": "e7b8a90cedb90c1a4b072bbece23a08f2d3363115a8c2883a039e8c7302ab23d",
+      "bytes": 29821,
+      "sha256": "5e2e7ea7b694ce9897f49e9ba2ce55e05f2939f380629a6765fab2fb6f0d78ec",
       "runtime": true
     },
     {
       "path": "src/adapters/sync.js",
       "installPath": "src/adapters/sync.js",
-      "bytes": 15651,
-      "sha256": "35533ab50b9a1499d544ce024d699e015367957d9601a2ed683f9fea42858e67",
+      "bytes": 15813,
+      "sha256": "ea02f30d406f8b7dc084e7493e32317c42b5491dbe4ba9c20ae39082246333e1",
       "runtime": true
     },
     {
@@ -595,8 +595,8 @@
     {
       "path": "src/core/actual.js",
       "installPath": "src/core/actual.js",
-      "bytes": 19825,
-      "sha256": "204c0ad8d3ec576aa6a536b274f6514dde04ee418457d65bad1235fa2bf10cb6",
+      "bytes": 20436,
+      "sha256": "69a0ccb46792fbf8e298d3749499a98256c5a2166f8ff4f06a57a3359df75ba8",
       "runtime": true
     },
     {
@@ -730,6 +730,13 @@
       "installPath": "src/core/history.js",
       "bytes": 2054,
       "sha256": "02c4e9895132b6902ed0195e2e9ad105c821b490f2121ebf33647cfb5f598c1c",
+      "runtime": true
+    },
+    {
+      "path": "src/core/hour-reports.js",
+      "installPath": "src/core/hour-reports.js",
+      "bytes": 16300,
+      "sha256": "b789966b1ba51bd5ecbe31ec9e0e3a819cc9962dc3398b71ee876d043f18f489",
       "runtime": true
     },
     {
@@ -950,6 +957,20 @@
       "runtime": true
     },
     {
+      "path": "src/core/special-event-signups.js",
+      "installPath": "src/core/special-event-signups.js",
+      "bytes": 8989,
+      "sha256": "bedf892e0bbf48223c8cf07a63480d2ba877123343f677ac8f0f3fb988bc160f",
+      "runtime": true
+    },
+    {
+      "path": "src/core/special-events.js",
+      "installPath": "src/core/special-events.js",
+      "bytes": 13601,
+      "sha256": "05683345e386c7c06df198fe982df78a81fb3227a72cb8ddf58beb7b54fa4119",
+      "runtime": true
+    },
+    {
       "path": "src/core/staffing.js",
       "installPath": "src/core/staffing.js",
       "bytes": 21066,
@@ -1043,8 +1064,8 @@
     {
       "path": "src/ui/actual-reconciliation.js",
       "installPath": "src/ui/actual-reconciliation.js",
-      "bytes": 16014,
-      "sha256": "0b68537877fc5b0fb58f931ea8c040bbf10b11fcdaf05b2b09ad4bdeb81463ff",
+      "bytes": 16183,
+      "sha256": "31aab9d9cf96af95760476fd07dbca67e4b71d2df89dd7e65c6d44ea464238d7",
       "runtime": true
     },
     {
@@ -1085,8 +1106,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 262523,
-      "sha256": "456cf28412a2da959028a68e379bd48a9f433a4134e4721741a02e914cb272ba",
+      "bytes": 263000,
+      "sha256": "aabd3810c63029706cbe5f8dd3138a94862a7bd691f1dab4edfdcb96f6eab68f",
       "runtime": true
     },
     {
@@ -1363,6 +1384,13 @@
       "runtime": true
     },
     {
+      "path": "src/ui/hour-reports-ui.js",
+      "installPath": "src/ui/hour-reports-ui.js",
+      "bytes": 7691,
+      "sha256": "61ec686a37b2f75a32d2231dbc08d6e0228fb9e749653de793860b63f281b883",
+      "runtime": true
+    },
+    {
       "path": "src/ui/installation-center.css",
       "installPath": "src/ui/installation-center.css",
       "bytes": 4093,
@@ -1603,8 +1631,8 @@
     {
       "path": "src/ui/person-account-print.js",
       "installPath": "src/ui/person-account-print.js",
-      "bytes": 27790,
-      "sha256": "d91cadcd7da3cfec2c2810e7297844030c37ca73e24f7b81356fd5b3a3bd9038",
+      "bytes": 29852,
+      "sha256": "9d434e8e5ba75e1a752e0808f6b3939874a1813588d9f9a31a06a49b98cc2944",
       "runtime": true
     },
     {
@@ -1617,8 +1645,8 @@
     {
       "path": "src/ui/person-hours-block.js",
       "installPath": "src/ui/person-hours-block.js",
-      "bytes": 4419,
-      "sha256": "dec5caab26d58a3e0bfa048de19cc453cc9ac5ebc1e4bd7663ab7f5977737a92",
+      "bytes": 4748,
+      "sha256": "821955960f9a6cfb21e26473eb4adfd3210abf8ce48a702657ad4d1abd93531c",
       "runtime": true
     },
     {
@@ -1827,8 +1855,8 @@
     {
       "path": "src/ui/register-actions.js",
       "installPath": "src/ui/register-actions.js",
-      "bytes": 5051,
-      "sha256": "16ddc7d535de3eb61bfec4105e3256be8a97b4792756cde25a229c2edc1ce268",
+      "bytes": 5261,
+      "sha256": "693d56b86015cb940669f9802204cda10f0ae1cad9b4e851042db89f4d6c85de",
       "runtime": true
     },
     {
@@ -1920,6 +1948,20 @@
       "installPath": "src/ui/source-health-ui.js",
       "bytes": 5982,
       "sha256": "87292ec5d820df9c8743073179331d24b2615da54e356892609914f67139519d",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/special-events-ui.js",
+      "installPath": "src/ui/special-events-ui.js",
+      "bytes": 15712,
+      "sha256": "fb9925d2a7558c606057057905b535a443292233636f45fc451ed8156b71e9cf",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/special-events.css",
+      "installPath": "src/ui/special-events.css",
+      "bytes": 4306,
+      "sha256": "f86871b621f0969c86d506228686fb34dadcdd749fa3398f11f6ed8523132742",
       "runtime": true
     },
     {
@@ -2016,8 +2058,8 @@
     {
       "path": "src/ui/twinkey.js",
       "installPath": "src/ui/twinkey.js",
-      "bytes": 19155,
-      "sha256": "bac9d0c1b7742c1fcc437a2e3c83d561e99389f6c97ff5352ee78dec118764a8",
+      "bytes": 37099,
+      "sha256": "387b1e23ddfedf2487a890d352ff67a02ba4d6f6c679b37d0dac95c4e80f9f72",
       "runtime": true
     },
     {
@@ -2281,13 +2323,6 @@
       "runtime": true
     },
     {
-      "path": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
-      "installPath": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
-      "bytes": 16625,
-      "sha256": "1d47804c38e4d555bd77a547b83aa5242cefb6f825167ce5ef8475f7e9065ccc",
-      "runtime": true
-    },
-    {
       "path": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026.xlsx",
       "installPath": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026.xlsx",
       "bytes": 16621,
@@ -2295,10 +2330,17 @@
       "runtime": true
     },
     {
+      "path": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
+      "installPath": "templates/KC_DP2_Wunschzeiten_Vorlage_Weihnachtsmarkt_2026_V6_VHB.xlsx",
+      "bytes": 16625,
+      "sha256": "1d47804c38e4d555bd77a547b83aa5242cefb6f825167ce5ef8475f7e9065ccc",
+      "runtime": true
+    },
+    {
       "path": "twinkey-test.html",
       "installPath": "twinkey-test.html",
-      "bytes": 6716,
-      "sha256": "9896a67627d1dc652dfcd6a395cf9ae72fb608d20dc893d665a899a1c17d293e",
+      "bytes": 6913,
+      "sha256": "5d8fef2b148b5802ec09a2f91c8332aadf6ce90bd9d8a0d5b38cc16b0ad68b71",
       "runtime": true,
       "forceRefresh": true
     }
