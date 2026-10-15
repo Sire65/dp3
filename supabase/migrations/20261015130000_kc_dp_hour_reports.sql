@@ -21,6 +21,7 @@ create table if not exists public.kc_dp_hour_reports (
   end_h numeric(4,2) not null check (end_h > 0 and end_h <= 30),          -- bis 30 = 06:00 Folgetag (Fahrt nach Hause)
   break_minutes integer not null default 0 check (break_minutes between 0 and 180),
   taetigkeit text not null check (char_length(taetigkeit) between 1 and 40),
+  fahrt_rolle text check (fahrt_rolle is null or fahrt_rolle in ('fahrer', 'mitfahrer', 'keine')),  -- km-Pauschale nur für Fahrer
   bemerkung text check (bemerkung is null or char_length(bemerkung) <= 500),
   status text not null default 'gemeldet' check (status in ('gemeldet', 'bestaetigt', 'abgelehnt', 'zurueckgezogen')),
   verspaetet boolean not null default false,                               -- Meldefrist 3 Tage überschritten
@@ -30,6 +31,7 @@ create table if not exists public.kc_dp_hour_reports (
   entschieden_am timestamptz,
   ablehngrund text check (ablehngrund is null or char_length(ablehngrund) <= 500),
   actual_id text,                                                          -- DP2-Ist-Zeit, die bei Bestätigung entstand
+  benachrichtigt_am timestamptz,                                           -- Club App hat über die Entscheidung informiert
   version integer not null default 1 check (version > 0),
   updated_at timestamptz not null default now(),
   check (end_h > start_h and end_h - start_h <= 16)
@@ -63,7 +65,7 @@ begin
       'id', r.id, 'sammel_id', r.sammel_id, 'event_id', r.event_id, 'special_event_id', r.special_event_id,
       'special_event_title', r.special_event_title, 'person_id', r.person_id, 'gemeldet_von', r.gemeldet_von,
       'work_date', r.work_date, 'start_h', r.start_h, 'end_h', r.end_h, 'break_minutes', r.break_minutes,
-      'taetigkeit', r.taetigkeit, 'bemerkung', r.bemerkung, 'status', r.status, 'verspaetet', r.verspaetet,
+      'taetigkeit', r.taetigkeit, 'fahrt_rolle', r.fahrt_rolle, 'bemerkung', r.bemerkung, 'status', r.status, 'verspaetet', r.verspaetet,
       'source', r.source, 'gemeldet_am', r.gemeldet_am, 'version', r.version) order by r.gemeldet_am)
     from public.kc_dp_hour_reports r where r.org_id = p_org_id and r.event_id = trim(p_event_id) and r.status = 'gemeldet'), '[]'::jsonb);
 end;

@@ -9,7 +9,7 @@ const browser=await chromium.launch({headless:true,channel:process.env.PLAYWRIGH
 try{
  await page.setContent('<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"></head><body></body></html>');
  for(const css of ['src/ui/app.css','src/ui/special-events.css'])await page.addStyleTag({content:await readFile(path.join(root,css),'utf8')});
- for(const file of ['src/core/model.js','src/core/auth.js','src/core/configuration.js','src/core/planning.js','src/core/actual.js','src/core/special-events.js','src/core/hour-reports.js','src/ui/special-events-ui.js','src/ui/hour-reports-ui.js'])await page.addScriptTag({content:await readFile(path.join(root,file),'utf8')});
+ for(const file of ['src/core/model.js','src/core/auth.js','src/core/configuration.js','src/core/planning.js','src/core/actual.js','src/core/special-events.js','src/core/hour-reports.js','src/core/special-event-signups.js','src/ui/special-events-ui.js','src/ui/hour-reports-ui.js'])await page.addScriptTag({content:await readFile(path.join(root,file),'utf8')});
  await page.evaluate(()=>{const K=KCDP;K.recordAudit=()=>{};K.sync={enqueue(){}};K.persistAll=async()=>{window.persisted=(window.persisted||0)+1};K.render=()=>{};
   const ids=K.people.filter(p=>p.active&&p.personType==='member').map(p=>p.personId);window.ids=ids;
   const ev=K.specialEventsCore.create({titel:'Grünkohl kochen',ort:'Krankenhaus Dortmund',art:'kochen',terminStatus:'FEST',datumVon:'2027-01-12'});
@@ -43,5 +43,20 @@ try{
  const d=await page.evaluate(()=>window.decided.map(x=>x.status+':'+(x.reason||'')));assert.deepEqual(d,['bestaetigt:','abgelehnt:War nicht dabei','bestaetigt:']);
  // Sondereinsätze-Dialog führt zum Eingang
  await page.evaluate(()=>{KCDP.hourReportsUi.close();KCDP.specialEventsUi.open();});await page.locator('#seReports').click();await page.locator('#hrTitle').waitFor();
- assert.deepEqual(errors,[]);console.log('Sonderstunden-Eingang PASS: abholen, Sammelmeldung mit Summe/Bemerkung/verspätet, Stempeluhr-Überschneidung, bestätigen → Ist, ablehnen nur mit Grund, Erledigt-Ansicht, Weg aus Sondereinsätzen, 320–1280px.');
+ // Zusagen & Fahrgemeinschaften im Planer-Dialog
+ await page.evaluate(()=>{const K=KCDP,ev=K.specialEventsCore.list()[0];window.evId=ev.id;const ids=window.ids;
+  K.specialEventSignups=[{specialEventId:ev.id,personId:ids[0],antwort:'ja',anreise:'fahrer',plaetze:1,startort:'Werne',version:1},{specialEventId:ev.id,personId:ids[1],antwort:'ja',anreise:'fahrer',plaetze:2,startort:'Hamm',version:1},{specialEventId:ev.id,personId:ids[2],antwort:'ja',anreise:'mitfahrer',startort:'Werne',version:1},{specialEventId:ev.id,personId:ids[3],antwort:'ja',anreise:'mitfahrer',startort:'Werne',version:1},{specialEventId:ev.id,personId:ids[4],antwort:'nein',version:1}];
+  window.cp=[];K.supabaseConnection.publishCarpools=async x=>{window.cp.push(x);return {ok:true}};K.hourReportsUi.close();K.specialEventsUi.open();});
+ assert.match(await page.locator('[data-se-signups]').first().innerText(),/Zusagen 4/);
+ await page.locator('[data-se-signups]').first().click();
+ assert.match(await page.locator('#seBody').innerText(),/4 ja · 0 vielleicht · 1 nein · 2 Fahrer mit 3 freien Plätzen · 2 brauchen eine Mitfahrt/);
+ await page.locator('#seCpSuggest').click();
+ const groups=await page.locator('#seBody').innerText();assert.match(groups,/1\/1 Plätze belegt/);assert.match(groups,/1\/2 Plätze belegt/);
+ for(const width of [320,390,1280]){await page.setViewportSize({width,height:844});assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'Fahrgemeinschaft overflow '+width)}await page.setViewportSize({width:390,height:844});
+ await page.screenshot({path:path.join(out,'Fahrgemeinschaften-Planer.png'),fullPage:true});
+ await page.locator('[data-cp-move]').first().selectOption('-1');assert.match(await page.locator('#seBody').innerText(),/Noch ohne Mitfahrgelegenheit/);
+ await page.locator('#seCpSave').click();await page.waitForFunction(()=>window.cp.length===1);
+ assert.equal(await page.evaluate(()=>window.cp[0].rows.length),2);assert.equal(await page.evaluate(()=>window.cp[0].rows.reduce((n,r)=>n+r.mitfahrer.length,0)),1);
+ await page.locator('#seSuBack').click();assert.match(await page.locator('[data-se-signups]').first().innerText(),/🚗 2/);
+ assert.deepEqual(errors,[]);console.log('Sonderstunden-Eingang PASS: abholen, Sammelmeldung mit Summe/Bemerkung/verspätet, Stempeluhr-Überschneidung, bestätigen → Ist, ablehnen nur mit Grund, Erledigt-Ansicht, Weg aus Sondereinsätzen, Zusagen-Übersicht, Fahrgemeinschafts-Vorschlag, Umsetzen, Veröffentlichen, 320–1280px.');
 }finally{await browser.close()}

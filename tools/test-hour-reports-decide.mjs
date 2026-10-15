@@ -14,7 +14,7 @@ for(const file of ['src/core/model.js','src/core/auth.js','src/core/configuratio
 }
 const K=context.window.KCDP,S=K.specialEventsCore,H=K.hourReportsCore,P=K.personAccountPrint;
 const audit=[];K.recordAudit=(a,m)=>audit.push({action:a,...m});K.sync={enqueue:()=>{}};K.persistAll=async()=>true;
-assert.equal(H.VERSION,'0.2.0');
+assert.equal(H.VERSION,'0.3.0');
 assert.equal(K.currentUser.role,'planner','Der Planer entscheidet');
 const [me,anna,bernd]=K.people.filter(p=>p.active&&p.personType==='member').map(p=>p.personId);
 const kochen=S.create({titel:'Grünkohl kochen',ort:'Krankenhaus Dortmund',art:'kochen',terminStatus:'FEST',datumVon:'2027-01-12'});

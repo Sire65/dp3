@@ -7,7 +7,8 @@
 (function(){
   'use strict';
   const K=window.KCDP=window.KCDP||{};
-  const VERSION='0.2.0';
+  const VERSION='0.3.0';
+  const ROLES=['fahrer','mitfahrer','keine']; // km-Pauschale nur für Fahrer (Fahrgemeinschaft)
   const DEADLINE_DAYS=3,MAX_PERSONS=30,MAX_SPAN=16,MAX_END=30,MAX_BREAK=180,MAX_NOTE=500;
   K.hourReports=Array.isArray(K.hourReports)?K.hourReports:[];
   // Auswahl statt Freitext (AGENTS 13); austauschbare Liste (AGENTS 4).
@@ -65,6 +66,7 @@
       if(!quarter(s)||!quarter(en)||s<0||s>=24||en<=s||en>MAX_END)errors.push(`${name}: Bitte gültige Von-/Bis-Zeiten wählen.`);
       else if(en-s>MAX_SPAN)errors.push(`${name}: Mehr als ${MAX_SPAN} Stunden am Stück bitte beim Planer melden.`);
       if(!Number.isInteger(b)||b<0||b>MAX_BREAK||b/60>=Math.max(0,en-s))errors.push(`${name}: Die Pause passt nicht zur Zeit.`);
+      if(e.fahrtRolle!=null&&!ROLES.includes(e.fahrtRolle))errors.push(`${name}: Bitte Fahrer, Mitfahrer oder keine Fahrt wählen.`);
     }
     return errors;
   }
@@ -75,7 +77,7 @@
       const start=Number(e.start),end=Number(e.end);
       const dup=overlapping(e.personId,sub.date,start,end,sub.specialEventId);
       if(dup){skipped.push({personId:e.personId,grund:'schon gemeldet',vorhandenId:dup.id});continue;}
-      created.push({id:`HR-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`,sammelId,eventId:ev.eventId||K.eventConfig?.eventId||'KC-WM-2026',specialEventId:ev.id,specialEventTitle:ev.titel,personId:e.personId,gemeldetVon:self(),date:sub.date,start,end,breakMinutes:Number(e.breakMinutes||0),taetigkeit:sub.taetigkeit,bemerkung:String(sub.bemerkung||'').trim(),status:'gemeldet',verspaetet:late,gemeldetAm:new Date().toISOString(),source,version:1});
+      created.push({id:`HR-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,7)}`,sammelId,eventId:ev.eventId||K.eventConfig?.eventId||'KC-WM-2026',specialEventId:ev.id,specialEventTitle:ev.titel,personId:e.personId,gemeldetVon:self(),date:sub.date,start,end,breakMinutes:Number(e.breakMinutes||0),fahrtRolle:e.fahrtRolle||null,taetigkeit:sub.taetigkeit,bemerkung:String(sub.bemerkung||'').trim(),status:'gemeldet',verspaetet:late,gemeldetAm:new Date().toISOString(),source,version:1});
     }
     return {created,skipped};
   }
@@ -94,7 +96,7 @@
 
   async function submit(sub,{today=todayIso()}={}){
     if(!self())throw new Error('Bitte zuerst anmelden.');
-    const clean={specialEventId:sub?.specialEventId,date:isoDate(sub?.date),taetigkeit:sub?.taetigkeit,bemerkung:String(sub?.bemerkung||'').trim(),eintraege:(sub?.eintraege||[]).map(e=>({personId:e.personId,start:Number(e.start),end:Number(e.end),breakMinutes:Number(e.breakMinutes||0)}))};
+    const clean={specialEventId:sub?.specialEventId,date:isoDate(sub?.date),taetigkeit:sub?.taetigkeit,bemerkung:String(sub?.bemerkung||'').trim(),eintraege:(sub?.eintraege||[]).map(e=>({personId:e.personId,start:Number(e.start),end:Number(e.end),breakMinutes:Number(e.breakMinutes||0),...(e.fahrtRolle?{fahrtRolle:e.fahrtRolle}:{})}))};
     const errors=validate(clean,{today});if(errors.length)throw new Error(errors.join(' '));
     const transport=K.hourReportsTransport;
     if(transport?.submit){
@@ -122,7 +124,7 @@
   }
   // Supabase-Zeile (snake_case) → DP2-Zeile.
   function fromRemote(r){
-    return {id:String(r.id),sammelId:r.sammel_id||r.sammelId||null,eventId:r.event_id||r.eventId,specialEventId:r.special_event_id||r.specialEventId,specialEventTitle:r.special_event_title||r.specialEventTitle||'',personId:r.person_id||r.personId,gemeldetVon:r.gemeldet_von||r.gemeldetVon||null,date:r.work_date||r.date,start:Number(r.start_h??r.start),end:Number(r.end_h??r.end),breakMinutes:Number(r.break_minutes??r.breakMinutes??0),taetigkeit:r.taetigkeit,bemerkung:r.bemerkung||'',status:r.status,verspaetet:!!r.verspaetet,gemeldetAm:r.gemeldet_am||r.gemeldetAm||null,entschiedenVon:r.entschieden_von||null,entschiedenAm:r.entschieden_am||null,ablehngrund:r.ablehngrund||null,source:r.source||'club_app',version:Number(r.version||1)};
+    return {id:String(r.id),sammelId:r.sammel_id||r.sammelId||null,eventId:r.event_id||r.eventId,specialEventId:r.special_event_id||r.specialEventId,specialEventTitle:r.special_event_title||r.specialEventTitle||'',personId:r.person_id||r.personId,gemeldetVon:r.gemeldet_von||r.gemeldetVon||null,date:r.work_date||r.date,start:Number(r.start_h??r.start),end:Number(r.end_h??r.end),breakMinutes:Number(r.break_minutes??r.breakMinutes??0),fahrtRolle:r.fahrt_rolle||r.fahrtRolle||null,taetigkeit:r.taetigkeit,bemerkung:r.bemerkung||'',status:r.status,verspaetet:!!r.verspaetet,gemeldetAm:r.gemeldet_am||r.gemeldetAm||null,entschiedenVon:r.entschieden_von||null,entschiedenAm:r.entschieden_am||null,ablehngrund:r.ablehngrund||null,source:r.source||'club_app',version:Number(r.version||1)};
   }
 
 
@@ -187,5 +189,5 @@
   const listeners=new Set();
   function notify(){listeners.forEach(fn=>{try{fn()}catch(_){}});}
 
-  K.hourReportsCore={VERSION,warnings,pending,groups,decide,decideGroup,canDecide,DEADLINE_DAYS,MAX_END,activityLabel,reportableEvents,allowedDates,hoursOf,deadline,validate,submit,merge,pull,fromRemote,mine,restore,snapshot,todayIso,onChange:fn=>{listeners.add(fn);return()=>listeners.delete(fn);},_test:{buildRows,overlapping}};
+  K.hourReportsCore={VERSION,ROLES,warnings,pending,groups,decide,decideGroup,canDecide,DEADLINE_DAYS,MAX_END,activityLabel,reportableEvents,allowedDates,hoursOf,deadline,validate,submit,merge,pull,fromRemote,mine,restore,snapshot,todayIso,onChange:fn=>{listeners.add(fn);return()=>listeners.delete(fn);},_test:{buildRows,overlapping}};
 })();

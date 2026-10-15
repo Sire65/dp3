@@ -36,3 +36,5 @@
 .hr-closed{margin:0;padding:8px 10px;border-radius:9px;background:#fff1d6;font-size:13px}
 .se-badge.hr-bestaetigt{background:#dcefdf;color:#1d5a2a}.se-badge.hr-abgelehnt{background:#f6dddd;color:#8b1d1d}.se-badge.hr-gemeldet{background:#f1e4c8;color:#6b4a00}
 @media (max-width:560px){.hr-person{grid-template-columns:1fr}.hr-group{grid-template-columns:1fr}}
+/* KICC-F-100 Phase 7: Zusagen und Fahrgemeinschaften */
+.se-cp-rider{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:4px;font-size:12px}.se-cp-rider select{min-height:32px;font-size:12px}
