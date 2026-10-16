@@ -27,17 +27,17 @@
 
   async function fetchManifest(){
     if(!/^https?:$/.test(location.protocol))throw new Error('Updateprüfung benötigt die Web-Version über HTTPS/HTTP.');
-    const source=LOCAL_REPO_HOST?REMOTE_MANIFEST_URL:MANIFEST_URL;
+    let commit=null;if(LOCAL_REPO_HOST){const ref=await fetch('https://api.github.com/repos/Sire65/dp3/commits/codex%2Fclub-app-interface',{cache:'no-store',headers:{Accept:'application/vnd.github+json'},signal:AbortSignal.timeout(12000)});if(!ref.ok)throw Error('GitHub-Stand nicht erreichbar (HTTP '+ref.status+'). Bitte später erneut prüfen.');commit=String((await ref.json()).sha||'');if(!/^[a-f0-9]{40}$/.test(commit))throw Error('GitHub hat keine gültige Commit-Kennung geliefert.');}const source=LOCAL_REPO_HOST?'https://raw.githubusercontent.com/Sire65/dp3/'+commit+'/update-manifest.json':MANIFEST_URL;
     const r=await fetch(`${source}?t=${Date.now()}`,{cache:'no-store',headers:{Accept:'application/json'}});
     if(!r.ok)throw new Error(`Update-Manifest nicht erreichbar (HTTP ${r.status}).`);
     const m=await r.json();
     if(!m||!m.version||!Array.isArray(m.files))throw new Error('Update-Manifest ist unvollständig.');
-    return m;
+    if(commit)m.sourceCommit=commit;return m;
   }
   async function check({manual=false}={}){
-    state.status='checking';state.lastCheckAt=new Date().toISOString();state.lastError=null;
+    if(state.installing||state.status==='installed')return {available:false,busy:!!state.installing,installed:state.status==='installed'};state.status='checking';state.lastCheckAt=new Date().toISOString();state.lastError=null;
     try{
-      const m=await fetchManifest();state.manifest=m;
+      const m=await fetchManifest();if(state.installing||state.status==='installed')return {available:false,busy:!!state.installing};state.manifest=m;
       if(newer(m.version,CURRENT_RELEASE)||(String(m.version)===String(CURRENT_RELEASE)&&Number(m.build||0)>Number(window.KC_DP_BUILD||0))){
         state.status='available';
         if(manual||!snoozed(m.version))window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_AVAILABLE',{detail:m}));
@@ -56,8 +56,8 @@
   function downloadPath(file){return cleanPath(file?.downloadPath||file?.path);}
   function installPath(file){return cleanPath(file?.installPath||file?.path);}
   function runtimeType(file,fallback){const ext=installPath(file).split('.').pop().toLowerCase();return ({html:'text/html; charset=utf-8',js:'text/javascript; charset=utf-8',css:'text/css; charset=utf-8',json:'application/json',webmanifest:'application/manifest+json',svg:'image/svg+xml',png:'image/png',webp:'image/webp',jpg:'image/jpeg',jpeg:'image/jpeg',woff2:'font/woff2',pdf:'application/pdf',wav:'audio/wav',mp3:'audio/mpeg'})[ext]||fallback||'application/octet-stream';}
-  async function fetchFile(file,onChunk){
-    const source=downloadPath(file),url=LOCAL_REPO_HOST?new URL(source,REMOTE_MANIFEST_URL).toString():sameOriginUrl(source,true),r=await fetch(url,{cache:'no-store'});
+  async function fetchFile(file,onChunk,manifest){
+    const source=downloadPath(file),url=LOCAL_REPO_HOST?new URL(source,'https://raw.githubusercontent.com/Sire65/dp3/'+manifest.sourceCommit+'/update-manifest.json').toString():sameOriginUrl(source,true),r=await fetch(url,{cache:'no-store'});
     if(!r.ok)throw new Error(`${installPath(file)}: HTTP ${r.status}`);
     const chunks=[];let loaded=0;
     if(r.body?.getReader){
@@ -69,13 +69,14 @@
     const buffer=await r.arrayBuffer();onChunk(buffer.byteLength);return {buffer,type:runtimeType(file,r.headers.get('content-type'))};
   }
   async function stage(manifest){
+    if(LOCAL_REPO_HOST&&!/^[a-f0-9]{40}$/.test(String(manifest.sourceCommit||'')))throw Error('Update bitte erneut prüfen: Der feste GitHub-Stand fehlt.');
     if(!('caches'in window)||!('serviceWorker'in navigator)||!window.crypto?.subtle)throw new Error('Dieses Gerät unterstützt die sichere Update-Installation nicht vollständig.');
     const files=manifest.files.filter(f=>f&&f.path&&f.runtime!==false),total=files.reduce((s,f)=>s+Number(f.bytes||0),0),cacheName=manifest.cacheName||`kc-dp-release-${manifest.version}`,cache=await caches.open(cacheName),started=performance.now();
     state.status='installing';state.phase='download';state.downloadedBytes=0;state.totalBytes=total;
     for(let i=0;i<files.length;i++){
       const file=files[i];
       const onChunk=n=>{state.downloadedBytes+=n;const elapsed=Math.max(.1,(performance.now()-started)/1000),rate=state.downloadedBytes/elapsed,remaining=Math.max(0,total-state.downloadedBytes),eta=rate>0?remaining/rate:Infinity;window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_PROGRESS',{detail:{phase:'download',file:installPath(file),index:i+1,count:files.length,downloaded:state.downloadedBytes,total,percent:total?Math.min(99,Math.round(state.downloadedBytes/total*100)):0,rate,eta}}));};
-      const {buffer,type}=await fetchFile(file,onChunk),verifiedBuffer=canonicalVerifiedBuffer(file,buffer);
+      const {buffer,type}=await fetchFile(file,onChunk,manifest),verifiedBuffer=canonicalVerifiedBuffer(file,buffer);
       if(Number(file.bytes||0)>0&&Math.abs(verifiedBuffer.byteLength-Number(file.bytes))>4)throw new Error(`${installPath(file)}: Dateigröße stimmt nicht mit dem Release überein.`);
       if(file.sha256){state.phase='verify';window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_PROGRESS',{detail:{phase:'verify',file:installPath(file),index:i+1,count:files.length,downloaded:state.downloadedBytes,total,percent:total?Math.min(99,Math.round(state.downloadedBytes/total*100)):0,eta:0}}));const hash=await sha256(verifiedBuffer);if(hash.toLowerCase()!==String(file.sha256).toLowerCase())throw new Error(`${installPath(file)}: SHA-256-Integritätsprüfung fehlgeschlagen (ist ${hash.slice(0,12)}…, erwartet ${String(file.sha256).slice(0,12)}…).`);}
       await cache.put(sameOriginUrl(installPath(file),false),new Response(buffer,{status:200,headers:{'Content-Type':type,'Content-Length':String(buffer.byteLength),'X-KC-DP-Release':manifest.version,'X-KC-DP-SHA256':file.sha256||''}}));
@@ -87,7 +88,7 @@
   async function activate(manifest){
     state.phase='activate';
     let reg=await navigator.serviceWorker.getRegistration('./');
-    const workerUrl='service-worker.js?v=0.20.0-b'+Number(manifest?.build||window.KC_DP_BUILD||184);
+    const workerUrl='service-worker.js?engine=stable-v2';
     if(!reg)reg=await navigator.serviceWorker.register(workerUrl,{updateViaCache:'none'});
     else{try{await reg.update();}catch(_){}}
     await navigator.serviceWorker.ready;
@@ -120,18 +121,19 @@
   }
   async function sendReport(report){try{report.cacheNames='caches'in window?await caches.keys():[];}catch(_){report.cacheNames=[];}if(!K.supabaseConnection?.sendClientReport)throw new Error('Supabase-Fehlerbericht ist noch nicht eingerichtet.');return K.supabaseConnection.sendClientReport(report);}
   async function flushQueuedReports(){const q=safeStoreGet(REPORT_QUEUE_KEY,[]);if(!q.length||!navigator.onLine||!K.supabaseConnection?.hasAccessToken?.())return {sent:0};const left=[];let sent=0;for(const r of q){try{await sendReport(r);sent++;}catch(_){left.push(r);}}safeStoreSet(REPORT_QUEUE_KEY,left);return {sent};}
-  async function install(manifest=state.manifest){
+  async function installCore(manifest=state.manifest){
     if(!manifest)throw new Error('Kein Update ausgewählt.');
     if(location.protocol==='file:')throw new Error('Für Updates DP2-OFFLINE-STARTEN.cmd verwenden und DP2 über die feste lokale HTTP-Adresse öffnen.');
-    try{if(K.storage?.unlocked&&K.persistAll)await K.persistAll();await K.sync?.whenDurable?.();await stage(manifest);await activate(manifest);state.status='installed';state.phase='done';window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_SUCCESS',{detail:{version:manifest.version}}));return {ok:true,version:manifest.version};}
-    catch(error){state.status='failed';state.lastError=error.message;const report=makeErrorReport(error,manifest,state.phase);state.lastReport=report;window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_FAILED',{detail:{error,report,version:manifest.version}}));return {ok:false,error,report};}
+    if(state.installing)return {ok:false,busy:true};state.installing=true;try{if(K.storage?.unlocked&&K.persistAll)await K.persistAll();await K.sync?.whenDurable?.();await stage(manifest);await activate(manifest);state.status='installed';state.phase='done';window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_SUCCESS',{detail:{version:manifest.version,build:manifest.build}}));return {ok:true,version:manifest.version,build:manifest.build};}
+    catch(error){state.status='failed';state.lastError=error.message;const report=makeErrorReport(error,manifest,state.phase);state.lastReport=report;window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_FAILED',{detail:{error,report,version:manifest.version}}));return {ok:false,error,report};}finally{state.installing=false;}
   }
+  async function install(manifest=state.manifest){if(navigator.locks)return navigator.locks.request('kc-dp-program-update',{ifAvailable:true},lock=>lock?installCore(manifest):Promise.resolve({ok:false,busy:true}));return installCore(manifest); }
   async function reportFailure(report){try{const result=await sendReport(report);return {ok:true,result};}catch(error){queueReport(report);return {ok:false,queued:true,error};}}
   function downloadReport(report){const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`KC_DP2_Updatefehler_${report.reportId}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);}
-  async function ensureEngine(){if(!('serviceWorker'in navigator)||!/^https?:$/.test(location.protocol))return null;try{return await navigator.serviceWorker.register('service-worker.js?v=0.20.0-b'+Number(window.KC_DP_BUILD||184),{updateViaCache:'none'});}catch(_){return null;}}
+  async function ensureEngine(){if(!('serviceWorker'in navigator)||!/^https?:$/.test(location.protocol))return null;try{return await navigator.serviceWorker.register('service-worker.js?engine=stable-v2',{updateViaCache:'none'});}catch(_){return null;}}
   function confirmBoot(){try{const c=navigator.serviceWorker?.controller;if(c)c.postMessage({type:'KC_DP_BOOT_OK',version:CURRENT_RELEASE});}catch(_){}}
   function schedule(){ensureEngine();setTimeout(confirmBoot,5000);setTimeout(()=>{flushQueuedReports();check();},1500);setInterval(()=>flushQueuedReports(),15*60*1000);setInterval(()=>check(),5*60*1000);window.addEventListener('online',()=>{flushQueuedReports();check();});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){const last=Date.parse(state.lastCheckAt||0)||0;if(Date.now()-last>60000)check();}});}
 
-  K.updateManager={LOCAL_REPO_HOST,REMOTE_MANIFEST_URL,version:'0.19.45',CURRENT_RELEASE,state,check,install,snooze,reportFailure,downloadReport,flushQueuedReports,bytesText,etaText};
+  K.updateManager={singlePipeline:true,fetchManifest,LOCAL_REPO_HOST,REMOTE_MANIFEST_URL,version:'0.19.45',CURRENT_RELEASE,state,check,install,snooze,reportFailure,downloadReport,flushQueuedReports,bytesText,etaText};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
 })();

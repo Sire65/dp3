@@ -35,7 +35,7 @@
   }
 
   async function check({manual=false}={}){
-    state.lastCheckAt=new Date().toISOString();state.lastError=null;
+    if(K.updateManager?.singlePipeline)return K.updateManager.check({manual});state.lastCheckAt=new Date().toISOString();state.lastError=null;
     try{
       const m=await fetchManifest();
       state.lastSeenBuild=Number(m.build||0);
@@ -53,14 +53,14 @@
     }
   }
 
-  function schedule(){
+  function schedule(){if(K.updateManager?.singlePipeline)return;
     setTimeout(()=>check(),1800);
     setInterval(()=>check(),5*60*1000);
     window.addEventListener('online',()=>check());
     document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){const last=Date.parse(state.lastCheckAt||0)||0;if(Date.now()-last>60000)check();}});
   }
 
-  if(K.updateManager){K.updateManager.snooze=(version)=>snooze(version,state.lastSeenBuild||CURRENT_BUILD);}
+  if(K.updateManager&&!K.updateManager.singlePipeline){K.updateManager.snooze=(version)=>snooze(version,state.lastSeenBuild||CURRENT_BUILD);}
   K.updateBuildGuard={version:'1.0.1',CURRENT_RELEASE,CURRENT_BUILD,state,check,isNewerBuild,snooze};
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',schedule,{once:true});else schedule();
 })();
