@@ -1,3 +1,7 @@
+## Build 293 RC · 21.10.2026
+
+Bedarfsmatrix ergänzt fehlende Stunden bei erweitertem Tagesfenster. Bestehende Bedarfswerte bleiben erhalten.
+
 ## Build 263 RC – Klappbereiche wie in der Club-App (07.10.2026)
 
 - Gemeinsamer Baustein: Schloss, Drehpfeil, gemerkter Zustand und „▴ Zuklappen“; Fingerflächen mindestens 42px.

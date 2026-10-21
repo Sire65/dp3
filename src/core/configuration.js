@@ -9,7 +9,16 @@
   function normalizeNullableTime(v){if(v===''||v==null)return null;const n=Number(v);if(!Number.isFinite(n)||n<0||n>=24)throw new Error('Ungültige Uhrzeit.');return n;}
   function ensureDay(date){const d=dayByDate(date);if(!d)throw new Error('Tag nicht gefunden.');if(!K.daySettings[date])K.daySettings[date]={date,start:d.start,end:d.end,open:d.open,close:d.close,preOpenMinutes:d.preOpenMinutes||0,reserveMinutes:d.type==='market'?60:0,notes:''};else if(K.daySettings[date].reserveMinutes==null)K.daySettings[date].reserveMinutes=d.type==='market'?60:0;return K.daySettings[date];}
   function intervalDefaults(date){const d=dayByDate(date);if(!d)return[];const list=[];for(let h=d.start;h<d.end;h++){const r=origBase(d,h);list.push({start:h,end:h+1,total:Number(r.total||0),front:r.front==null?null:Number(r.front),back:r.back==null?null:Number(r.back),requiredRoles:[]});}return list;}
-  function ensureDemand(date){if(!Array.isArray(K.demandMatrix[date])||!K.demandMatrix[date].length)K.demandMatrix[date]=intervalDefaults(date);return K.demandMatrix[date];}
+  function ensureDemand(date){
+    if(!Array.isArray(K.demandMatrix[date])||!K.demandMatrix[date].length)K.demandMatrix[date]=intervalDefaults(date);
+    const rows=K.demandMatrix[date],d=dayByDate(date);
+    // Fill missing time only. Existing planner values and intervals stay intact.
+    if(d){const start=Number(K.daySettings[date]?.start??d.start),end=Number(K.daySettings[date]?.end??d.end);let cursor=start;
+      const covered=rows.map(r=>({start:Number(r.start),end:Number(r.end)})).filter(r=>Number.isFinite(r.start)&&Number.isFinite(r.end)&&r.end>r.start).sort((a,b)=>a.start-b.start);
+      const addGap=(a,b)=>{while(a<b){const stop=Math.min(b,Math.floor(a)+1),req=origBase(d,a);rows.push({start:a,end:stop,total:Number(req.total||0),front:req.front==null?null:Number(req.front),back:req.back==null?null:Number(req.back),requiredRoles:[]});a=stop;}};
+      for(const row of covered){if(row.end<=cursor)continue;if(row.start>=end)break;if(row.start>cursor)addGap(cursor,Math.min(row.start,end));cursor=Math.max(cursor,row.end);if(cursor>=end)break;}if(cursor<end)addGap(cursor,end);rows.sort((a,b)=>a.start-b.start);
+    }return rows;
+  }
   K.days.forEach(d=>{ensureDay(d.date);ensureDemand(d.date);});
   function applyDaySettings(){for(const d of K.days){const s=ensureDay(d.date);d.start=Number(s.start);d.end=Number(s.end);d.open=s.open==null?null:Number(s.open);d.close=s.close==null?null:Number(s.close);d.preOpenMinutes=Number(s.preOpenMinutes||0);d.reserveMinutes=Math.max(0,Number(s.reserveMinutes||0));d.notes=String(s.notes||'');}}
   applyDaySettings();

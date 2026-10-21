@@ -1,0 +1,18 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import vm from 'node:vm';
+const day={date:'2026-12-04',start:11,end:23,type:'market',open:12,preOpenMinutes:60};
+const K={days:[day],baseRequirementFor:()=>({total:4,front:2,back:2})};
+vm.runInNewContext(fs.readFileSync('src/core/configuration.js','utf8'),{window:{KCDP:K}});
+K.demandMatrix[day.date][0].total=19;
+const old=JSON.stringify(K.demandMatrix[day.date]);
+K.configuration.updateDay(day.date,{start:10,preOpenMinutes:120});
+let rows=K.configuration.ensureDemand(day.date);
+assert.equal(rows[0].start,10);assert.equal(rows[0].end,11);assert.equal(rows[0].total,4);
+assert.equal(JSON.stringify(rows.slice(1)),old);
+assert.equal(K.configuration.ensureDemand(day.date).length,13);
+const saved=JSON.parse(JSON.stringify(K.configuration.snapshot()));
+K.configuration.restore(saved);assert.equal(K.configuration.ensureDemand(day.date).length,13);
+K.configuration.updateDay(day.date,{start:9.5});rows=K.configuration.ensureDemand(day.date);assert.equal(rows[0].end,10);assert.equal(rows[0].start,9.5);assert.equal(rows.length,14);
+assert.equal(rows.find(r=>r.start===11).total,19);
+console.log('PASS demand window: missing hour, preservation, idempotence, restore, half-hour');
