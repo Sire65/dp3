@@ -124,6 +124,11 @@
     }
     if(op.entity==='demand_matrix'){
       const date=op.payload?.date||op.entityId;if(!date||!Array.isArray(op.payload?.rows))return;
+      const confirmed=K.demandConfirmed?.[date];
+      if(confirmed&&JSON.stringify(confirmed.rows)!==JSON.stringify(op.payload.rows)){
+        if(!K.syncConflicts.some(c=>c.status==='open'&&c.entity==='demand_matrix'&&c.entityId===date&&JSON.stringify(c.remote)===JSON.stringify(op.payload)))K.syncConflicts.push({id:'CON-DEMAND-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),entity:'demand_matrix',entityId:date,local:{date,rows:JSON.parse(JSON.stringify(K.demandMatrix[date]))},remote:op.payload,detectedAt:new Date().toISOString(),status:'open',source:'confirmed-demand-protection'});
+        return;
+      }
       if(holdForRemoteConflict(op,K.demandMatrix?.[date]||null))return;
       K.demandMatrix[date]=JSON.parse(JSON.stringify(op.payload.rows));return;
     }

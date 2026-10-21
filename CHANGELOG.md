@@ -1,3 +1,7 @@
+## Build 296 RC · 21.10.2026
+
+Bestätigte Bedarfswerte zusätzlich verschlüsselt sichern, beim Start wiederherstellen und gegen stilles Ersetzen durch abweichende Cloud-Matrizen schützen. Speicherbestätigung prüft die tatsächlich zurückgelesenen Werte.
+
 ## Build 295 RC · 21.10.2026
 
 Bedarfsbearbeitung: Kästchen „Wie vor“ ab der zweiten Stundenzeile übernimmt einmalig Gesamt, Vorne und Hinten aus der vorigen Zeile. Fingertaugliche Bedienfläche; manuelle Änderungen entfernen den Haken.

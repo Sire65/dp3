@@ -5,6 +5,7 @@
   K.eventConfig=K.eventConfig||{eventId:'KC-WM-2026',name:'Weihnachtsmarkt Werne 2026',timezone:'Europe/Berlin',status:'planning'};
   K.daySettings=K.daySettings||{};
   K.demandMatrix=K.demandMatrix||{};
+  K.demandConfirmed=K.demandConfirmed||{};
   const dayByDate=date=>K.days.find(d=>d.date===date);
   function normalizeNullableTime(v){if(v===''||v==null)return null;const n=Number(v);if(!Number.isFinite(n)||n<0||n>=24)throw new Error('Ungültige Uhrzeit.');return n;}
   function ensureDay(date){const d=dayByDate(date);if(!d)throw new Error('Tag nicht gefunden.');if(!K.daySettings[date])K.daySettings[date]={date,start:d.start,end:d.end,open:d.open,close:d.close,preOpenMinutes:d.preOpenMinutes||0,reserveMinutes:d.type==='market'?60:0,notes:''};else if(K.daySettings[date].reserveMinutes==null)K.daySettings[date].reserveMinutes=d.type==='market'?60:0;return K.daySettings[date];}
@@ -32,7 +33,8 @@
     front=Math.max(0,front);back=Math.max(0,back);return {total:front+back,front,back,baseTotal:base.total,weatherExtra,programExtra,requiredRoles:clone(base.requiredRoles||[]),explanation};
   };
   K.configuration={
-    version:'0.16.0',
+    version:'0.20.0-b296',
+    confirmDemand(date){K.demandConfirmed[date]={date,rows:clone(ensureDemand(date)),savedAt:new Date().toISOString()};return K.demandConfirmed[date];},
     ensureDay,ensureDemand,applyDaySettings,
     updateEvent(patch){K.eventConfig={...K.eventConfig,...clone(patch||{})};K.recordAudit?.('config.event.update',{entity:'event_config',entityId:K.eventConfig.eventId,after:K.eventConfig});return K.eventConfig;},
     updateDay(date,patch){const s=ensureDay(date),before=clone(s),next={...s,...clone(patch||{})};next.start=Number(next.start);next.end=Number(next.end);next.open=normalizeNullableTime(next.open);next.close=normalizeNullableTime(next.close);next.preOpenMinutes=Math.max(0,Number(next.preOpenMinutes||0));next.reserveMinutes=Math.min(180,Math.max(0,Number(next.reserveMinutes||0)));if(!(next.end>next.start))throw new Error('Tagesende muss nach Tagesbeginn liegen.');if(next.open!=null&&next.open<next.start)throw new Error('Öffnung liegt vor dem Tagesfenster.');if(next.close!=null&&next.close<=Number(next.open??next.start))throw new Error('Schließzeit muss nach Öffnung liegen.');K.daySettings[date]=next;applyDaySettings();K.recordAudit?.('config.day.update',{entity:'day_config',entityId:date,before,after:next});K.sync?.enqueue?.({entity:'day_config',operation:'update',payload:next,baseVersion:null});return next;},

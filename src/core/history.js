@@ -4,7 +4,7 @@
   const state={undo:[],redo:[],restoring:false,max:40,lastKey:null};
   function snapshot(){const s={};for(const f of fields)s[f]=clone(K[f]??null);return s;}
   function key(s){let h=2166136261,t=JSON.stringify(s);for(let i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
-  function restore(s){state.restoring=true;for(const f of fields)if(f in s)K[f]=clone(s[f]);K.configuration?.restore?.({eventConfig:K.eventConfig,daySettings:K.daySettings,demandMatrix:K.demandMatrix});K.refreshWorkflowState?.();state.restoring=false;window.dispatchEvent(new CustomEvent('kc-history-restored'));}
+  function restore(s){state.restoring=true;for(const f of fields)if(f in s)K[f]=clone(s[f]);K.configuration?.restore?.({eventConfig:K.eventConfig,daySettings:K.daySettings,demandMatrix:K.demandMatrix});for(const date of Object.keys(K.demandConfirmed||{}))K.configuration?.confirmDemand?.(date);K.refreshWorkflowState?.();state.restoring=false;window.dispatchEvent(new CustomEvent('kc-history-restored'));}
   function reset(label='Start'){const s=snapshot();state.undo=[{label,s,key:key(s)}];state.redo=[];state.lastKey=key(s);}
   function record(label='Änderung'){if(state.restoring||K.clubWishInbox?.summary?.().pending)return;const s=snapshot(),k=key(s);if(k===state.lastKey)return;state.undo.push({label,s,key:k});if(state.undo.length>state.max+1)state.undo.shift();state.redo=[];state.lastKey=k;}
   function undo(){if(state.undo.length<2||K.clubWishInbox?.summary?.().pending)return null;const cur=state.undo.pop();state.redo.push(cur);const prev=state.undo.at(-1);restore(prev.s);state.lastKey=prev.key;return prev;}
