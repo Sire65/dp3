@@ -1,3 +1,7 @@
+## Build 298 RC · 21.10.2026
+
+Synchronisationskonflikte je Datensatz vergleichen und ausdrücklich entscheiden. Aktuelle lokale Werte statt alter Konfliktkopien verwenden; überholte Warteschlangenaufträge protokolliert stilllegen, damit sie Entscheidungen nicht erneut blockieren.
+
 ## Build 297 RC · 21.10.2026
 
 Startschutz: keine Gesamtspeicherung und kein automatischer Manager-/Planabgleich vor vollständiger Wiederherstellung der Planungsdaten. Bedarfstag wird als ein vollständiger Vorgang übertragen; Rückmeldung unterscheidet lokale Sicherung und Supabase-Bestätigung.

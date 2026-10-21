@@ -78,11 +78,24 @@
     K.syncOutbox=K.syncOutbox.filter(op=>op.status!=='sent');state.lastSyncAt=new Date().toISOString();setStatus(failed?'error':(state.maintenance?'maintenance':'ready'),failed?`${failed} Übertragung(en) fehlgeschlagen.`:null);
     await persistQueue();K.recordAudit?.('sync.flush',{entity:'sync',after:{sent,conflicts,failed,pending:K.syncOutbox.length}});return {sent,conflicts,failed,pending:K.syncOutbox.length};
   }
-  function resolveConflict(id,choice){
-    K.auth?.require?.('roster.sync.run','Sie dürfen Synchronisationskonflikte nicht auflösen.');const c=K.syncConflicts.find(x=>x.id===id);if(!c)throw new Error('Konflikt nicht gefunden.');
-    if(!['local','remote'].includes(choice))throw new Error('Konfliktentscheidung muss local oder remote sein.');c.status='resolved';c.resolution=choice;c.resolvedAt=new Date().toISOString();
-    if(choice==='local')enqueue({entity:c.entity,operation:'force_update',payload:c.local,baseVersion:c.remote?.version??null});else persistQueue().catch(()=>{});
-    K.recordAudit?.('sync.conflict.resolve',{entity:'sync_conflict',entityId:id,reason:choice,after:c});return c;
+  function conflictLocal(c){const id=c.entityId||c.local?.date||c.remote?.date||c.local?.id||c.remote?.id;
+    if(c.entity==='demand_matrix')return {date:id,rows:JSON.parse(JSON.stringify(K.demandMatrix?.[id]||[]))};
+    if(c.entity==='day_config')return K.daySettings?.[id]||c.local;
+    if(c.entity==='person_rules')return K.personRules?.[id]||c.local;
+    if(c.entity==='plan_day')return {date:id,shifts:(K.shifts||[]).filter(x=>x.date===id&&x.layer==='planned')};
+    return collectionFor(c.entity)?.find(x=>x.id===id)||c.local;
+  }
+  function resolveConflict(id,choice,{expectedLocal}={}){
+    K.auth?.require?.('roster.sync.run','Sie dürfen Synchronisationskonflikte nicht auflösen.');const c=K.syncConflicts.find(x=>x.id===id&&x.status==='open');if(!c)throw Error('Offener Konflikt nicht gefunden.');
+    if(!['local','remote'].includes(choice))throw Error('Ungültige Konfliktentscheidung.');const entityId=c.entityId||c.local?.date||c.remote?.date||c.local?.id||c.remote?.id;if(!entityId)throw Error('Konfliktkennung fehlt.');
+    const local=JSON.parse(JSON.stringify(conflictLocal(c)));if(expectedLocal!==undefined&&JSON.stringify(expectedLocal)!==JSON.stringify(local))throw Error('Die lokalen Werte wurden inzwischen geändert. Bitte erneut vergleichen.');
+    if(choice==='remote'&&!c.remote)throw Error('Serververgleich fehlt.');
+    const related=K.syncConflicts.filter(x=>x.status==='open'&&x.entity===c.entity&&(x.entityId||x.local?.date||x.remote?.date||x.local?.id||x.remote?.id)===entityId);
+    for(const op of K.syncOutbox)if(op.entity===c.entity&&entityIdFor(op)===entityId&&['conflict','pending'].includes(op.status)){op.status='superseded';op.supersededBy=c.id;}
+    if(choice==='local')enqueue({entity:c.entity,operation:'force_update',payload:local,baseVersion:c.remoteVersion??c.remote?.version??null});
+    else {if(!c.remote)throw Error('Serververgleich fehlt.');applyRemote({entity:c.entity,entityId,payload:c.remote,operation:'update'},{approved:true});if(c.entity==='demand_matrix')K.configuration?.confirmDemand?.(entityId);}
+    for(const x of related){x.status='resolved';x.resolution=choice;x.resolvedAt=new Date().toISOString();x.chosenPayload=JSON.parse(JSON.stringify(choice==='local'?local:c.remote));}
+    persistQueue().catch(()=>{});K.recordAudit?.('sync.conflict.resolve',{entity:'sync_conflict',entityId:id,reason:choice,after:{entityId,related:related.map(x=>x.id),payload:choice==='local'?local:c.remote}});return c;
   }
 
   function collectionFor(entity){if(entity==='shift')return K.shifts;if(entity==='wish')return K.wishes;if(entity==='standby')return K.standby;if(entity==='member_shift_offer')return K.memberShiftOffers;if(entity==='special_event')return K.specialEvents;if(entity==='hour_report')return K.hourReports;if(entity==='special_event_signup')return K.specialEventSignups;return null;}
@@ -93,7 +106,7 @@
   }
   function matchingPending(op){
     const id=entityIdFor(op);
-    return K.syncOutbox.filter(x=>x.status!=='sent'&&x.entity===op.entity&&entityIdFor(x)===id);
+    return K.syncOutbox.filter(x=>['pending','sending','conflict','club_pending'].includes(x.status)&&x.entity===op.entity&&entityIdFor(x)===id);
   }
   function holdForRemoteConflict(op,local){
     const pending=matchingPending(op);
@@ -104,17 +117,17 @@
       id:`CON-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,
       operationId:op.operationId||null,entity:op.entity,entityId:entityIdFor(op),
       local:local==null?null:JSON.parse(JSON.stringify(local)),remote:op.payload||null,
-      detectedAt:new Date().toISOString(),status:'open',source:'pull-first'
+      remoteVersion:op.remoteVersion??null,detectedAt:new Date().toISOString(),status:'open',source:'pull-first'
     });
     return true;
   }
-  function applyRemote(op){
+  function applyRemote(op,{approved=false}={}){
     if(op.entity==='club_wish_meta'){K.clubWishInbox?.applyMetadata?.(op.payload);return;}
 
     if(op.entity==='person_rules'){
       const id=op.payload?.personId||op.entityId;if(!id)return;
       K.personRules=K.personRules||{};
-      if(holdForRemoteConflict(op,K.personRules[id]||null))return;
+      if(!approved&&holdForRemoteConflict(op,K.personRules[id]||null))return;
       K.personRules[id]=JSON.parse(JSON.stringify(op.payload));return;
     }
     if(op.entity==='day_config'){
@@ -125,8 +138,8 @@
     if(op.entity==='demand_matrix'){
       const date=op.payload?.date||op.entityId;if(!date||!Array.isArray(op.payload?.rows))return;
       const confirmed=K.demandConfirmed?.[date];
-      if(confirmed&&JSON.stringify(confirmed.rows)!==JSON.stringify(op.payload.rows)){
-        if(!K.syncConflicts.some(c=>c.status==='open'&&c.entity==='demand_matrix'&&c.entityId===date&&JSON.stringify(c.remote)===JSON.stringify(op.payload)))K.syncConflicts.push({id:'CON-DEMAND-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),entity:'demand_matrix',entityId:date,local:{date,rows:JSON.parse(JSON.stringify(K.demandMatrix[date]))},remote:op.payload,detectedAt:new Date().toISOString(),status:'open',source:'confirmed-demand-protection'});
+      if(!approved&&confirmed&&JSON.stringify(confirmed.rows)!==JSON.stringify(op.payload.rows)){
+        if(!K.syncConflicts.some(c=>c.status==='open'&&c.entity==='demand_matrix'&&c.entityId===date&&JSON.stringify(c.remote)===JSON.stringify(op.payload)))K.syncConflicts.push({id:'CON-DEMAND-'+Date.now()+'-'+Math.random().toString(36).slice(2,6),entity:'demand_matrix',entityId:date,local:{date,rows:JSON.parse(JSON.stringify(K.demandMatrix[date]))},remote:op.payload,remoteVersion:op.remoteVersion??null,detectedAt:new Date().toISOString(),status:'open',source:'confirmed-demand-protection'});
         return;
       }
       if(holdForRemoteConflict(op,K.demandMatrix?.[date]||null))return;
@@ -151,7 +164,7 @@
   async function pull(){
     await requireTransport();if(!provider)throw new Error('Supabase-Provider ist nicht verbunden.');
     const key=await ensureRemoteKey();setStatus('syncing');emit('traffic',{direction:'tx'});
-    try{const res=await provider({action:'pull',contract:'KC_DP_SYNC_V1',cursor:state.cursor,syncNamespace:key.namespace});emit('traffic',{direction:'rx'});let applied=0;for(const wire of res?.wireOperations||[]){const op=wire.envelope?await KCSecureSync.decryptEnvelope(wire.envelope,{secret:key.secret,projectId:key.namespace}):wire.operation;if(op){applyRemote(op);applied++;}}state.cursor=res?.cursor??state.cursor;state.lastSyncAt=new Date().toISOString();await persistQueue();setStatus(state.maintenance?'maintenance':'ready');K.recordAudit?.('sync.pull',{entity:'sync',after:{applied,cursor:state.cursor,generation:key.generation}});return {applied,cursor:state.cursor,conflicts:K.syncConflicts.filter(x=>x.status==='open').length,generation:key.generation};}catch(e){setStatus('error',e.message);throw e;}
+    try{const res=await provider({action:'pull',contract:'KC_DP_SYNC_V1',cursor:state.cursor,syncNamespace:key.namespace});emit('traffic',{direction:'rx'});let applied=0;for(const wire of res?.wireOperations||[]){const op=wire.envelope?await KCSecureSync.decryptEnvelope(wire.envelope,{secret:key.secret,projectId:key.namespace}):wire.operation;if(op){op.remoteVersion=wire.remoteVersion??op.remoteVersion;applyRemote(op);applied++;}}state.cursor=res?.cursor??state.cursor;state.lastSyncAt=new Date().toISOString();await persistQueue();setStatus(state.maintenance?'maintenance':'ready');K.recordAudit?.('sync.pull',{entity:'sync',after:{applied,cursor:state.cursor,generation:key.generation}});return {applied,cursor:state.cursor,conflicts:K.syncConflicts.filter(x=>x.status==='open').length,generation:key.generation};}catch(e){setStatus('error',e.message);throw e;}
   }
   async function publishBaseline({confirmed=false}={}){
     K.auth?.require?.('roster.sync.run','Sie dürfen keinen Cloud-Ausgangsstand veröffentlichen.');
@@ -172,7 +185,7 @@
   K.sync={
     version:'0.16.1-cloud-first',state,
     setProvider(fn){provider=typeof fn==='function'?fn:null;setStatus(provider?'ready':'offline');},setSecretProvider(fn){secretProvider=typeof fn==='function'?fn:secretProvider;},resetRemoteKey(){remoteKeyContext=null;remoteKeyPromise=null;},hasProvider(){return !!provider;},
-    stageLocalBatch,settleLocalBatch,publishBaseline,on(fn){if(typeof fn==='function')listeners.add(fn);return()=>listeners.delete(fn);},enqueue,healthCheck,flush,pull,syncBoth,resolveConflict,persistQueue,whenDurable:()=>durableWrite,
+    stageLocalBatch,settleLocalBatch,publishBaseline,on(fn){if(typeof fn==='function')listeners.add(fn);return()=>listeners.delete(fn);},enqueue,healthCheck,flush,pull,syncBoth,resolveConflict,conflictLocal,persistQueue,whenDurable:()=>durableWrite,
     restore({outbox=[],conflicts=[],meta={}}={}){K.syncOutbox=Array.isArray(outbox)?outbox:[];K.syncConflicts=Array.isArray(conflicts)?conflicts:[];Object.assign(state,meta||{});if(!provider&&state.status!=='maintenance')state.status='offline';emit('status');},
     snapshot(){return {outbox:K.syncOutbox,conflicts:K.syncConflicts,meta:{...state}};},
     pending(){return K.syncOutbox.filter(x=>x.status==='pending'||x.status==='sending').length;},openConflicts(){return K.syncConflicts.filter(x=>x.status==='open').length;}

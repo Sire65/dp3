@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 297,
+  "build": 298,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b297",
+  "cacheName": "kc-dp-release-0.20.0-b298",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-21T12:24:25.125Z",
-  "totalRuntimeBytes": 37364541,
+  "generatedAt": "2026-10-21T12:43:55.407Z",
+  "totalRuntimeBytes": 37370896,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34714,
-      "sha256": "b4eb7b4c2186df2e00dc692d687c882c212aa448b172e89f24dde1b23306e1d4",
+      "bytes": 34785,
+      "sha256": "f83a885bca08b7f784e3731da946939c182a859b45f50b16845360d35d289820",
       "runtime": true,
       "forceRefresh": true
     },
@@ -560,8 +560,8 @@
     {
       "path": "src/adapters/sync.js",
       "installPath": "src/adapters/sync.js",
-      "bytes": 16434,
-      "sha256": "6895a8f5f8f4af23dc4ab035b0eada946eae84a4dbdd1ee42936e97107ae86f8",
+      "bytes": 18435,
+      "sha256": "75aa7c9933eed128f526da26ab63a1ac78742bb4cccb22bfaf7ac5cb1570e6ff",
       "runtime": true
     },
     {
@@ -1106,8 +1106,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 263624,
-      "sha256": "94b9247029d4fd9f3c183946ed1b6d882b3a6c570642fa13d8f9b0307eadcdf0",
+      "bytes": 263801,
+      "sha256": "727ba573ffe86620c3a8c139a5c4901d1e5823d765d6cc68603035f87ba77a16",
       "runtime": true
     },
     {
@@ -2004,6 +2004,13 @@
       "installPath": "src/ui/supabase-session-guard.js",
       "bytes": 4009,
       "sha256": "e4ed03e2b325fc181581426f1a679780e432e4aa87cc27565ece8e58d2709d00",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/sync-conflict-ui.js",
+      "installPath": "src/ui/sync-conflict-ui.js",
+      "bytes": 4106,
+      "sha256": "0378cef8ab149ac170342f542403bba05433e5fee9442307fcd79ac9795fafd4",
       "runtime": true
     },
     {
