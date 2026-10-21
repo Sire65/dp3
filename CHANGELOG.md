@@ -1,3 +1,7 @@
+## Build 294 RC · 21.10.2026
+
+Bedarf speichern ordnet Zeilen anhand Datum und Zeitabschnitt statt Listenposition zu. Alle Eingaben werden vor dem ersten Schreiben geprüft; bei Fehlern bleibt der Editor offen.
+
 ## Build 293 RC · 21.10.2026
 
 Bedarfsmatrix ergänzt fehlende Stunden bei erweitertem Tagesfenster. Bestehende Bedarfswerte bleiben erhalten.
