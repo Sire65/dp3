@@ -1,3 +1,7 @@
+## Build 295 RC · 21.10.2026
+
+Bedarfsbearbeitung: Kästchen „Wie vor“ ab der zweiten Stundenzeile übernimmt einmalig Gesamt, Vorne und Hinten aus der vorigen Zeile. Fingertaugliche Bedienfläche; manuelle Änderungen entfernen den Haken.
+
 ## Build 294 RC · 21.10.2026
 
 Bedarf speichern ordnet Zeilen anhand Datum und Zeitabschnitt statt Listenposition zu. Alle Eingaben werden vor dem ersten Schreiben geprüft; bei Fehlern bleibt der Editor offen.
