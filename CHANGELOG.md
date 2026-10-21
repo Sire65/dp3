@@ -1,3 +1,7 @@
+## Build 297 RC · 21.10.2026
+
+Startschutz: keine Gesamtspeicherung und kein automatischer Manager-/Planabgleich vor vollständiger Wiederherstellung der Planungsdaten. Bedarfstag wird als ein vollständiger Vorgang übertragen; Rückmeldung unterscheidet lokale Sicherung und Supabase-Bestätigung.
+
 ## Build 296 RC · 21.10.2026
 
 Bestätigte Bedarfswerte zusätzlich verschlüsselt sichern, beim Start wiederherstellen und gegen stilles Ersetzen durch abweichende Cloud-Matrizen schützen. Speicherbestätigung prüft die tatsächlich zurückgelesenen Werte.

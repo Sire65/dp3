@@ -7,6 +7,7 @@
   function authenticated(){return K.memberAccess?.state?.status==='authenticated'&&K.supabaseConnection?.state?.authStatus==='authenticated'&&!K.memberAccess?.state?.user?.localTest;}
   function permitted(){try{return !!K.auth?.has?.('roster.people.sync');}catch(_){return false;}}
   function canRun(){
+    if(K.planningDataReady===false)return {ok:false,code:'planning_data_loading'};
     if(!enabled())return {ok:false,code:'disabled'};
     if(!authenticated())return {ok:false,code:'not_authenticated'};
     if(!permitted())return {ok:false,code:'not_permitted'};

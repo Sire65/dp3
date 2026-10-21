@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 296,
+  "build": 297,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b296",
+  "cacheName": "kc-dp-release-0.20.0-b297",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-21T11:38:24.724Z",
-  "totalRuntimeBytes": 37361993,
+  "generatedAt": "2026-10-21T12:24:25.125Z",
+  "totalRuntimeBytes": 37364541,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -330,7 +330,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 34714,
-      "sha256": "2c8edaedcfd8a5452a7f792f823c9d5f3a23908bd280e98d757de5192dc4b89e",
+      "sha256": "b4eb7b4c2186df2e00dc692d687c882c212aa448b172e89f24dde1b23306e1d4",
       "runtime": true,
       "forceRefresh": true
     },
@@ -616,8 +616,8 @@
     {
       "path": "src/core/auto-sync.js",
       "installPath": "src/core/auto-sync.js",
-      "bytes": 2575,
-      "sha256": "5823baaa64c5fa90949831a356825721e63d59c696e69c3ba99bf527160e2a57",
+      "bytes": 2663,
+      "sha256": "d70466f70b8f3831543d2812d1747f00e643b3425239afbb78905039fb52d4d5",
       "runtime": true
     },
     {
@@ -637,8 +637,8 @@
     {
       "path": "src/core/configuration.js",
       "installPath": "src/core/configuration.js",
-      "bytes": 7592,
-      "sha256": "30ebb202f96cf9e79216849cfd45f41a81210e691484e57391fe6f6c6dde8a39",
+      "bytes": 8284,
+      "sha256": "e6fcbc670c27a14ddea10bfbdfead4e228a9d2891193a2adb68ff20ea5337ef7",
       "runtime": true
     },
     {
@@ -791,8 +791,8 @@
     {
       "path": "src/core/manager-auto-sync.js",
       "installPath": "src/core/manager-auto-sync.js",
-      "bytes": 4115,
-      "sha256": "511ac78765c51a42974aa6d52eb255f12a32505407b68a886fe97ee03400c783",
+      "bytes": 4198,
+      "sha256": "489809e6bb6d532df7b065dbde78d39802019fa608d9f60fc8e4e628f89c20ab",
       "runtime": true
     },
     {
@@ -1106,8 +1106,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 263419,
-      "sha256": "4ad63051fead2d068df307ddff083a4efe71d3595c7ff58b6472feeab6e61098",
+      "bytes": 263624,
+      "sha256": "94b9247029d4fd9f3c183946ed1b6d882b3a6c570642fa13d8f9b0307eadcdf0",
       "runtime": true
     },
     {
@@ -1218,8 +1218,8 @@
     {
       "path": "src/ui/demand-view.js",
       "installPath": "src/ui/demand-view.js",
-      "bytes": 22621,
-      "sha256": "e772d644a4563adb06253798697000753791be52bb2404006d5ad40f837b5fa0",
+      "bytes": 24101,
+      "sha256": "896e91617884540b7f6a4070e9389072c318fae2843abdddcb8a445487ace3f4",
       "runtime": true
     },
     {
