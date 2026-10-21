@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 298,
+  "build": 299,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b298",
+  "cacheName": "kc-dp-release-0.20.0-b299",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-21T12:43:55.407Z",
-  "totalRuntimeBytes": 37370896,
+  "generatedAt": "2026-10-21T12:47:58.604Z",
+  "totalRuntimeBytes": 37370911,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34785,
-      "sha256": "f83a885bca08b7f784e3731da946939c182a859b45f50b16845360d35d289820",
+      "bytes": 34784,
+      "sha256": "610ed315d953b70061f82f7401b2cb825cc37cafe4c4144752a879f9e8aa8729",
       "runtime": true,
       "forceRefresh": true
     },
@@ -2009,8 +2009,8 @@
     {
       "path": "src/ui/sync-conflict-ui.js",
       "installPath": "src/ui/sync-conflict-ui.js",
-      "bytes": 4106,
-      "sha256": "0378cef8ab149ac170342f542403bba05433e5fee9442307fcd79ac9795fafd4",
+      "bytes": 4122,
+      "sha256": "70c1658b4640a4086adc52fe4d61ce7f75ae98752b3c61e06a7889aa55bd6faf",
       "runtime": true
     },
     {

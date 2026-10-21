@@ -1,5 +1,5 @@
 (function(){
- const K=window.KCDP,esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));let overlay;
+ const K=window.KCDP=window.KCDP||{},esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));let overlay;
  function close(){overlay?.remove();overlay=null;}
  function summary(p){if(Array.isArray(p?.rows)){return '<table style="width:100%;border-collapse:collapse"><tr><th>Zeit</th><th>Gesamt</th><th>Vorne</th><th>Hinten</th></tr>'+p.rows.map(r=>'<tr><td>'+esc(r.start)+'–'+esc(r.end)+'</td><td>'+esc(r.total)+'</td><td>'+esc(r.front??'flexibel')+'</td><td>'+esc(r.back??'flexibel')+'</td></tr>').join('')+'</table>';}return '<pre style="white-space:pre-wrap;overflow-wrap:anywhere">'+esc(JSON.stringify(p,null,2))+'</pre>';}
  function groups(){const map=new Map();for(const c of K.syncConflicts||[]){if(c.status!=='open')continue;const key=c.entity+':'+(c.entityId||c.local?.date||c.remote?.date||c.local?.id||c.remote?.id||c.id),old=map.get(key);if(!old)map.set(key,{c,count:1});else{old.count++;if(Number(c.remoteVersion||0)>Number(old.c.remoteVersion||0)||(!c.remoteVersion&&String(c.detectedAt)>String(old.c.detectedAt)))old.c=c;}}return [...map.values()];}

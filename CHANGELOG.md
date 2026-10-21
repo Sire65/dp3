@@ -1,3 +1,7 @@
+## Build 299 RC · 21.10.2026
+
+Konfliktfenster nach Datenmodell und Anwendung laden; Namespace auch bei frühem Laden sicher initialisieren. Reihenfolge im Test geprüft.
+
 ## Build 298 RC · 21.10.2026
 
 Synchronisationskonflikte je Datensatz vergleichen und ausdrücklich entscheiden. Aktuelle lokale Werte statt alter Konfliktkopien verwenden; überholte Warteschlangenaufträge protokolliert stilllegen, damit sie Entscheidungen nicht erneut blockieren.
