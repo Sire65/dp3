@@ -1,3 +1,7 @@
+## Build 302 RC · 23.10.2026
+
+Update-Aktivierung: alten Worker ausdrücklich durch die aktuelle Registrierung ersetzen und das Protokoll vor dem Umschalten prüfen. Aktivierungsbeleg mit Cache und Vorgangskennung; verlorene Antwort anhand des eigenen gespeicherten Belegs prüfen. Bestätigung vor nichtkritischer Cache-Bereinigung senden. Fehlerbericht um tatsächliche Builds und Worker-Kennung erweitern. Keine Planungsdatenmigration.
+
 ## Build 301 RC · 23.10.2026
 
 Bedarfsmatrix als PDF: Auswahl zwischen kompakter Gesamtübersicht und Tagesblättern, für alle, den aktuellen oder bestimmte Tage. Gleiche benachbarte Werte in der Übersicht zusammenfassen, Tages- und Gesamtsummen als Personalstunden. A4 quer mit Original-Logo, CD-Kopf und Fuß auf jeder Seite; Fortsetzung ohne abgeschnittene Zeilen. Im Arbeitsmodus ausschließlich bestätigten Supabase-Stand lesend verwenden; bei offenen Übertragungen oder verändertem Serverstand Druck blockieren. Keine Planungsdaten ändern.

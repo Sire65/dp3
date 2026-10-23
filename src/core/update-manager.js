@@ -87,37 +87,42 @@
   }
   async function activate(manifest){
     state.phase='activate';
-    let reg=await navigator.serviceWorker.getRegistration('./');
-    const workerUrl='service-worker.js?engine=stable-v2';
-    if(!reg)reg=await navigator.serviceWorker.register(workerUrl,{updateViaCache:'none'});
-    else{try{await reg.update();}catch(_){}}
-    await navigator.serviceWorker.ready;
+    const reg=await navigator.serviceWorker.register('service-worker.js?engine=stable-v3-b302',{updateViaCache:'none'});
+    await reg.update();
     if(reg.installing||reg.waiting){
       const candidate=reg.installing||reg.waiting;
-      if(candidate.state!=='activated')await new Promise(resolve=>{const timeout=setTimeout(resolve,12000);candidate.addEventListener('statechange',()=>{if(candidate.state==='activated'){clearTimeout(timeout);resolve();}});});
+      if(candidate.state!=='activated')await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>{candidate.removeEventListener('statechange',changed);reject(new Error('Der neue Update-Dienst konnte nicht starten. Bitte DP2 über den aktuellen Programmordner öffnen.'));},20000);function changed(){if(candidate.state==='activated'||candidate.state==='redundant'){clearTimeout(timeout);candidate.removeEventListener('statechange',changed);candidate.state==='activated'?resolve():reject(new Error('Der Update-Dienst wurde beim Start ersetzt. Bitte erneut prüfen.'));}}candidate.addEventListener('statechange',changed);changed();});
     }
     const controller=reg.active||navigator.serviceWorker.controller;
     if(!controller)throw new Error('Der KC-DP2 Update-Dienst ist noch nicht aktiv. Bitte die Seite einmal neu laden und erneut versuchen.');
+    const info=await workerRequest(controller,{type:'KC_DP_UPDATE_ENGINE_INFO'});
+    state.workerInfo={scriptURL:controller.scriptURL,engine:info?.engine||null,protocol:info?.protocol||null};
+    if(info?.type!=='KC_DP_UPDATE_ENGINE_INFO_RESULT'||info.protocol!==2)throw new Error('Der lokale Update-Dienst ist veraltet. Bitte DP2 über den aktuellen Programmordner starten.');
     const cacheName=manifest.cacheName||`kc-dp-release-${manifest.version}`,expectedFiles=manifest.files.filter(f=>f.runtime!==false).map(f=>installPath(f));
+    const requestId=crypto.randomUUID();
     await new Promise((resolve,reject)=>{
-      const channel=new MessageChannel();
-      const timeout=setTimeout(()=>{navigator.serviceWorker.removeEventListener('message',handler);channel.port1.close();reject(new Error('Der Update-Dienst hat die Aktivierung nicht bestätigt. Bitte Seite neu laden und erneut versuchen.'));},30000);
-      const finish=error=>{clearTimeout(timeout);navigator.serviceWorker.removeEventListener('message',handler);channel.port1.close();error?reject(error):resolve();};
+      const channel=new MessageChannel();let settled=false;
+      const timeout=setTimeout(async()=>{const status=await workerRequest(controller,{type:'KC_DP_UPDATE_ENGINE_INFO'}).catch(()=>null);if(status?.meta?.activeCache===cacheName&&status?.meta?.activationRequestId===requestId)finish();else finish(new Error('Der Update-Dienst hat die Aktivierung nicht bestätigt. Bitte den technischen Bericht herunterladen.'));},30000);
+      const finish=error=>{if(settled)return;settled=true;clearTimeout(timeout);navigator.serviceWorker.removeEventListener('message',handler);channel.port1.close();error?reject(error):resolve();};
       function accept(data){
-        if(data?.type==='KC_DP_UPDATE_ACTIVATED'&&data?.version===manifest.version)finish();
-        else if(data?.type==='KC_DP_UPDATE_ACTIVATION_FAILED'&&data?.version===manifest.version)finish(new Error(data?.message||'Aktivierung fehlgeschlagen.'));
+        if(data?.type==='KC_DP_UPDATE_ACTIVATED'&&data?.version===manifest.version&&data?.cacheName===cacheName&&data?.requestId===requestId)finish();
+        else if(data?.type==='KC_DP_UPDATE_ACTIVATION_FAILED'&&data?.version===manifest.version&&data?.requestId===requestId)finish(new Error(data?.message||'Aktivierung fehlgeschlagen.'));
       }
-      function handler(e){accept(e.data);}
+      function handler(e){if(e.source===controller)accept(e.data);}
       channel.port1.onmessage=e=>accept(e.data);
       navigator.serviceWorker.addEventListener('message',handler);
-      controller.postMessage({type:'KC_DP_SWITCH_RELEASE',version:manifest.version,cacheName,expectedFiles},[channel.port2]);
+      controller.postMessage({type:'KC_DP_SWITCH_RELEASE',version:manifest.version,cacheName,expectedFiles,requestId},[channel.port2]);
     });
     safeStoreSet('kc_dp_last_installed_release',{version:manifest.version,at:Date.now()});
   }
 
+  function workerRequest(worker,message){
+    return new Promise((resolve,reject)=>{const channel=new MessageChannel();const timer=setTimeout(()=>{channel.port1.close();reject(new Error('Der lokale Update-Dienst antwortet nicht. Bitte DP2 über den aktuellen Programmordner starten; keine Browserdaten löschen.'));},12000);channel.port1.onmessage=e=>{clearTimeout(timer);channel.port1.close();resolve(e.data);};try{worker.postMessage(message,[channel.port2]);}catch(error){clearTimeout(timer);channel.port1.close();reject(error);}});
+  }
+
   function makeErrorReport(error,target,phase){
     const nav=navigator||{};
-    return {reportId:reportId(),type:'update_failure',at:new Date().toISOString(),appRelease:CURRENT_RELEASE,targetRelease:target?.version||null,phase:phase||state.phase||'unknown',message:error?.message||String(error),stack:String(error?.stack||'').slice(0,5000),online:nav.onLine,userAgent:String(nav.userAgent||'').slice(0,1000),language:nav.language||null,viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio||1},page:{origin:location.origin,path:location.pathname},serviceWorker:{supported:'serviceWorker'in nav,controller:!!nav.serviceWorker?.controller},cacheNames:[],role:K.currentUser?.role||null};
+    return {reportId:reportId(),type:'update_failure',at:new Date().toISOString(),appRelease:CURRENT_RELEASE,targetRelease:target?.version||null,targetBuild:target?.build||null,currentBuild:window.KC_DP_BUILD||null,phase:phase||state.phase||'unknown',message:error?.message||String(error),stack:String(error?.stack||'').slice(0,5000),online:nav.onLine,userAgent:String(nav.userAgent||'').slice(0,1000),language:nav.language||null,viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio||1},page:{origin:location.origin,path:location.pathname},serviceWorker:{supported:'serviceWorker'in nav,controller:!!nav.serviceWorker?.controller,scriptURL:nav.serviceWorker?.controller?.scriptURL||null,engine:state.workerInfo||null},cacheNames:[],role:K.currentUser?.role||null};
   }
   async function sendReport(report){try{report.cacheNames='caches'in window?await caches.keys():[];}catch(_){report.cacheNames=[];}if(!K.supabaseConnection?.sendClientReport)throw new Error('Supabase-Fehlerbericht ist noch nicht eingerichtet.');return K.supabaseConnection.sendClientReport(report);}
   async function flushQueuedReports(){const q=safeStoreGet(REPORT_QUEUE_KEY,[]);if(!q.length||!navigator.onLine||!K.supabaseConnection?.hasAccessToken?.())return {sent:0};const left=[];let sent=0;for(const r of q){try{await sendReport(r);sent++;}catch(_){left.push(r);}}safeStoreSet(REPORT_QUEUE_KEY,left);return {sent};}
@@ -130,7 +135,7 @@
   async function install(manifest=state.manifest){if(navigator.locks)return navigator.locks.request('kc-dp-program-update',{ifAvailable:true},lock=>lock?installCore(manifest):Promise.resolve({ok:false,busy:true}));return installCore(manifest); }
   async function reportFailure(report){try{const result=await sendReport(report);return {ok:true,result};}catch(error){queueReport(report);return {ok:false,queued:true,error};}}
   function downloadReport(report){const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`KC_DP2_Updatefehler_${report.reportId}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);}
-  async function ensureEngine(){if(!('serviceWorker'in navigator)||!/^https?:$/.test(location.protocol))return null;try{return await navigator.serviceWorker.register('service-worker.js?engine=stable-v2',{updateViaCache:'none'});}catch(_){return null;}}
+  async function ensureEngine(){if(!('serviceWorker'in navigator)||!/^https?:$/.test(location.protocol))return null;try{return await navigator.serviceWorker.register('service-worker.js?engine=stable-v3-b302',{updateViaCache:'none'});}catch(_){return null;}}
   function confirmBoot(){try{const c=navigator.serviceWorker?.controller;if(c)c.postMessage({type:'KC_DP_BOOT_OK',version:CURRENT_RELEASE});}catch(_){}}
   function schedule(){ensureEngine();setTimeout(confirmBoot,5000);setTimeout(()=>{flushQueuedReports();check();},1500);setInterval(()=>flushQueuedReports(),15*60*1000);setInterval(()=>check(),5*60*1000);window.addEventListener('online',()=>{flushQueuedReports();check();});document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'){const last=Date.parse(state.lastCheckAt||0)||0;if(Date.now()-last>60000)check();}});}
 

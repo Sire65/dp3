@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 301,
+  "build": 302,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b301",
+  "cacheName": "kc-dp-release-0.20.0-b302",
   "releaseNotes": [
+    "Build 302 RC: Update-Dienst vor Aktivierung erneuern und prüfen. Verlorene Bestätigung anhand des eigenen Aktivierungsbelegs erkennen; technische Berichte nennen Build und Dienstkennung. Planungsdaten bleiben unverändert.",
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
     "Build 260 RC: KC-DP-WUNSCH-SPERRE-OPTIONAL und KC-DP-TWINKEY-KLAPPBEREICHE. Freiwillige Unterbrechungen innerhalb der Kann-Zeit, offene unbekannte Tage, einklappbare zweispaltige Tagesauswahl und Sprung zur Eingabe. Bestehende Angaben bleiben gültig.",
@@ -148,8 +149,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-23T15:55:36.008Z",
-  "totalRuntimeBytes": 37411905,
+  "generatedAt": "2026-10-23T16:16:10.884Z",
+  "totalRuntimeBytes": 37413596,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -330,7 +331,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35001,
-      "sha256": "a3c03de94fbcfe7208bc85c84e132e952c3262aa45db473049f5dce9711db1aa",
+      "sha256": "d47afd329c08364d8335efdba52f4628ae956e067cf493b2a9ad26df5e754186",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1008,8 +1009,8 @@
     {
       "path": "src/core/update-manager.js",
       "installPath": "src/core/update-manager.js",
-      "bytes": 15993,
-      "sha256": "d4e8446c143b061d7193cc2b68ffe7c353b48c5c8b57a626dc75cdaae5dc38fc",
+      "bytes": 17662,
+      "sha256": "0d752b3adbdfd53cb2d43fae030b36f31be850256dcaa74fcb6b95463a1b3c3d",
       "runtime": true
     },
     {
@@ -2100,8 +2101,8 @@
     {
       "path": "src/ui/update-ui.js",
       "installPath": "src/ui/update-ui.js",
-      "bytes": 19705,
-      "sha256": "0be56dd16a4c5280976fda0afa10219e722cb05764d3abc5a8e5d6f7330154d8",
+      "bytes": 19727,
+      "sha256": "1e48db932631cfd3dea410954d1beb6e54d2e176d40318fd1f709d897cf083ba",
       "runtime": true
     },
     {

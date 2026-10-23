@@ -44,6 +44,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,stage,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 302 RC: Update-Dienst vor Aktivierung erneuern und prüfen. Verlorene Bestätigung anhand des eigenen Aktivierungsbelegs erkennen; technische Berichte nennen Build und Dienstkennung. Planungsdaten bleiben unverändert.',
     'Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.',
     'Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.',
     'Build 260 RC: KC-DP-WUNSCH-SPERRE-OPTIONAL und KC-DP-TWINKEY-KLAPPBEREICHE. Freiwillige Unterbrechungen innerhalb der Kann-Zeit, offene unbekannte Tage, einklappbare zweispaltige Tagesauswahl und Sprung zur Eingabe. Bestehende Angaben bleiben gültig.',
