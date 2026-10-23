@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 300,
+  "build": 301,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b300",
+  "cacheName": "kc-dp-release-0.20.0-b301",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-23T08:05:09.305Z",
-  "totalRuntimeBytes": 37400142,
+  "generatedAt": "2026-10-23T15:55:36.008Z",
+  "totalRuntimeBytes": 37411905,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34935,
-      "sha256": "ad524fabc570292e18f85742fcb951bc142d4d4af089f08fa758c6298ce39596",
+      "bytes": 35001,
+      "sha256": "a3c03de94fbcfe7208bc85c84e132e952c3262aa45db473049f5dce9711db1aa",
       "runtime": true,
       "forceRefresh": true
     },
@@ -462,8 +462,8 @@
     {
       "path": "src/adapters/cloud-primary.js",
       "installPath": "src/adapters/cloud-primary.js",
-      "bytes": 14179,
-      "sha256": "060c3893a40847f0e119f4c8c8ec52b241369e2b3975a240a885168d4ad2d203",
+      "bytes": 14651,
+      "sha256": "6360eda8b68133505b8eec64a887dbcafec5a9c64535fa0f795ab5acf9a06d7a",
       "runtime": true
     },
     {
@@ -525,8 +525,8 @@
     {
       "path": "src/adapters/pdf.js",
       "installPath": "src/adapters/pdf.js",
-      "bytes": 16050,
-      "sha256": "db86ea6db4d38048c509db19d67583e53c9f5328e74362d31ec358d1fbe37640",
+      "bytes": 18676,
+      "sha256": "6d7fbf581fc6bd49a3fc207e3a8e09018c9fd2db13a59121d2b03f29dedf9c55",
       "runtime": true
     },
     {
@@ -1223,6 +1223,13 @@
       "runtime": true
     },
     {
+      "path": "src/ui/demand-print.js",
+      "installPath": "src/ui/demand-print.js",
+      "bytes": 8516,
+      "sha256": "116b3ed8c5ed4087e162a8ae7220d1d1cfe74f81db458de970abacb966613586",
+      "runtime": true
+    },
+    {
       "path": "src/ui/demand-view.css",
       "installPath": "src/ui/demand-view.css",
       "bytes": 4277,
@@ -1232,8 +1239,8 @@
     {
       "path": "src/ui/demand-view.js",
       "installPath": "src/ui/demand-view.js",
-      "bytes": 24349,
-      "sha256": "e594fae10229529e817a67b0a476319c3768c526ab2b3880128753c6d41892a0",
+      "bytes": 24432,
+      "sha256": "415ba783093a75f67d2466b6b56703d3b800095492da075206929028a3482e59",
       "runtime": true
     },
     {

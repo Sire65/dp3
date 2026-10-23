@@ -24,9 +24,10 @@ const entries=n=>Object.entries({...data(n),integrationConfig:{secret:'DO_NOT_UP
 const remote=server(),a=client(remote,new Map([['wishes',[{start:99}]]]));
 assert.equal((await a.api.load(['wishes']))[0][0].start,3);assert.equal(a.writes.length,0);
 assert.equal((await a.api.save(entries(4))).confirmed,true);assert.equal(remote.data.wishes[0].start,4);assert.equal(remote.data.integrationConfig,undefined);assert.equal(remote.data.supabaseSession,undefined);assert.equal(a.writes.length,0);
+const printable=await a.api.confirmedSnapshot();assert.equal(printable.version,2);printable.data.wishes[0].start=999;assert.equal(remote.data.wishes[0].start,4);
 // Offline changes survive restart, remain unconfirmed, then replay with a version check.
 remote.online=false;assert.equal((await a.api.save(entries(5))).offline,true);assert.equal(a.api.state.status,'offline');assert(a.store.has('cloudPrimaryPendingV1'));
-const offlineRestart=client(remote,a.store);assert.equal((await offlineRestart.api.load(['wishes']))[0][0].start,5);assert.equal(offlineRestart.api.state.status,'offline');
+await assert.rejects(a.api.confirmedSnapshot(),/zuerst/);const offlineRestart=client(remote,a.store);assert.equal((await offlineRestart.api.load(['wishes']))[0][0].start,5);assert.equal(offlineRestart.api.state.status,'offline');
 await offlineRestart.api.save(entries(6));assert.equal(a.store.get('cloudPrimaryPendingV1').namespace,'KC_DP:G2');
 remote.online=true;assert.equal((await offlineRestart.api.reconnect()).confirmed,true);assert.equal(remote.data.wishes[0].start,6);assert.equal(a.store.has('cloudPrimaryPendingV1'),false);
 // Two PCs: only the PC with the current version succeeds. Rejected values stay in its rescue journal.

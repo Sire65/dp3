@@ -130,5 +130,6 @@
     queue=[{id:crypto.randomUUID(),baseVersion:now.remoteVersion,data:clone(now.local),durable:true}];await durable();
     try{return await drain();}catch(e){status(network(e)?'offline':e.code==='CONFLICT'?'conflict':'blocked',e);throw e;}
   });}
-  K.cloudPrimary={enabled,active:()=>enabled()&&ready,state,load,save,reconnect,initialize,inspectMigration,joinPreview:()=>clone(joinPreview),joinServer,review,resolve,isNetworkError:network,localOnly};
+  async function confirmedSnapshot(){requireOwner();if(!ready||state.status!=='saved'||queue.length)throw fail('Bitte zuerst die Änderungen in Supabase speichern und offene Übertragungen bzw. Konflikte klären.','NOT_READY');const remote=await read();if(remote.version!==state.version)throw fail('Der Serverstand wurde inzwischen geändert. Bitte DP2 neu laden und danach drucken.','CONFLICT');return {data:clone(remote.data),version:remote.version};}
+  K.cloudPrimary={enabled,active:()=>enabled()&&ready,state,load,save,reconnect,initialize,inspectMigration,joinPreview:()=>clone(joinPreview),joinServer,review,resolve,confirmedSnapshot,isNetworkError:network,localOnly};
 })();

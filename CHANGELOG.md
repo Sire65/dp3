@@ -1,3 +1,7 @@
+## Build 301 RC · 23.10.2026
+
+Bedarfsmatrix als PDF: Auswahl zwischen kompakter Gesamtübersicht und Tagesblättern, für alle, den aktuellen oder bestimmte Tage. Gleiche benachbarte Werte in der Übersicht zusammenfassen, Tages- und Gesamtsummen als Personalstunden. A4 quer mit Original-Logo, CD-Kopf und Fuß auf jeder Seite; Fortsetzung ohne abgeschnittene Zeilen. Im Arbeitsmodus ausschließlich bestätigten Supabase-Stand lesend verwenden; bei offenen Übertragungen oder verändertem Serverstand Druck blockieren. Keine Planungsdaten ändern.
+
 ## Build 300 RC · 23.10.2026
 
 Planungsdaten für den Arbeitsmodus auf Supabase als führenden Speicher umstellen: verschlüsselte, versionierte Revisionen, atomarer Versionsvergleich, eigene Wiederholungsbelege. IndexedDB dient für neue Planungsänderungen nur als Ausfallsicherung; technische Anmeldedaten bleiben lokal. Umstellung mit geprüftem Ausgangsstand und ausdrücklicher Konfliktentscheidung. Neue Tabelle in Supabase und Neon vorbereitet und ins Sicherungsregister aufgenommen. Club-App-Eingänge erst nach zentraler Speicherbestätigung quittieren. Große verschlüsselte Datenpakete ohne Base64-Aufruflimit; tatsächliche Buildnummer im Kopf anzeigen.
