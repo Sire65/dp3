@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 299,
+  "build": 300,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b299",
+  "cacheName": "kc-dp-release-0.20.0-b300",
   "releaseNotes": [
     "Build 262 RC: Persönliche Handschrift-Ziffernprofile mit verschlüsseltem lokalem Speicher, Scan-Ausschnitten und Profilimport. Foto-OCR berücksichtigt persönliche Ziffern bei zugeordneter Person; Vorschläge bleiben prüfpflichtig.",
     "Build 261 RC: KC-DP-PK-GRAFIK. Zusätzliche abschaltbare Personenkonto-Grafikseiten mit Tagesstunden, Gesamt und Zeitspuren; fehlende Buchungen schraffiert, Ist-Gesamt bei fehlenden Buchungen unvollständig.",
@@ -148,8 +148,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-21T12:47:58.604Z",
-  "totalRuntimeBytes": 37370911,
+  "generatedAt": "2026-10-23T08:05:09.305Z",
+  "totalRuntimeBytes": 37400142,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -329,8 +329,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 34784,
-      "sha256": "610ed315d953b70061f82f7401b2cb825cc37cafe4c4144752a879f9e8aa8729",
+      "bytes": 34935,
+      "sha256": "ad524fabc570292e18f85742fcb951bc142d4d4af089f08fa758c6298ce39596",
       "runtime": true,
       "forceRefresh": true
     },
@@ -460,6 +460,13 @@
       "runtime": true
     },
     {
+      "path": "src/adapters/cloud-primary.js",
+      "installPath": "src/adapters/cloud-primary.js",
+      "bytes": 14179,
+      "sha256": "060c3893a40847f0e119f4c8c8ec52b241369e2b3975a240a885168d4ad2d203",
+      "runtime": true
+    },
+    {
       "path": "src/adapters/context-providers.js",
       "installPath": "src/adapters/context-providers.js",
       "bytes": 1844,
@@ -511,8 +518,8 @@
     {
       "path": "src/adapters/pc-manager.js",
       "installPath": "src/adapters/pc-manager.js",
-      "bytes": 11791,
-      "sha256": "c88e616d330f8841785600b5248464cfd355dcdf3c54bb8bf042cecdafa8f902",
+      "bytes": 11820,
+      "sha256": "da2f64388e7d7b0204691c127b17da6f08dcee7a2ed251f03e4fca4ee47cd02f",
       "runtime": true
     },
     {
@@ -553,15 +560,15 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 29821,
-      "sha256": "5e2e7ea7b694ce9897f49e9ba2ce55e05f2939f380629a6765fab2fb6f0d78ec",
+      "bytes": 30833,
+      "sha256": "aa30dc36317e4d30365779bb253d805241573d3578356d5da706860d9e06f205",
       "runtime": true
     },
     {
       "path": "src/adapters/sync.js",
       "installPath": "src/adapters/sync.js",
-      "bytes": 18435,
-      "sha256": "75aa7c9933eed128f526da26ab63a1ac78742bb4cccb22bfaf7ac5cb1570e6ff",
+      "bytes": 18851,
+      "sha256": "46341b63b5ab3e554e76383a1e78532ededa5478887436fc15318fda0d8e649f",
       "runtime": true
     },
     {
@@ -616,8 +623,8 @@
     {
       "path": "src/core/auto-sync.js",
       "installPath": "src/core/auto-sync.js",
-      "bytes": 2663,
-      "sha256": "d70466f70b8f3831543d2812d1747f00e643b3425239afbb78905039fb52d4d5",
+      "bytes": 2727,
+      "sha256": "51b7f4b42aff6072a96ed3934ee2cf647cee6897ffc538ac1ffc75d7b9619ff8",
       "runtime": true
     },
     {
@@ -630,8 +637,8 @@
     {
       "path": "src/core/club-wish-inbox.js",
       "installPath": "src/core/club-wish-inbox.js",
-      "bytes": 28475,
-      "sha256": "aa5957cb53485bdf5f84916a5cab5e9fc981d6430066b5f7326a579fbfc7ec8c",
+      "bytes": 28670,
+      "sha256": "36e4965aa29a09793f6a235d1cc98b57d72fa7beac5920cf30a9422d261d4a94",
       "runtime": true
     },
     {
@@ -917,8 +924,8 @@
     {
       "path": "src/core/recovery.js",
       "installPath": "src/core/recovery.js",
-      "bytes": 1792,
-      "sha256": "6877380cecbcc809c627f333b52e4902f4646fbcc69474aba1b57212a056afcd",
+      "bytes": 1835,
+      "sha256": "591de3914214b5cd10cedf2d7146f70355213bac433ba1f1d0b93c81515ae916",
       "runtime": true
     },
     {
@@ -938,8 +945,8 @@
     {
       "path": "src/core/security-core.js",
       "installPath": "src/core/security-core.js",
-      "bytes": 3250,
-      "sha256": "5640f4406a7532c8f9cf5b7ad1c187498aee2b0548aaedce94e2dc77d6e40e54",
+      "bytes": 3383,
+      "sha256": "ee6d1749924252936100473d39c1f3559c9893a4707fbaecbd8e61496dd94e58",
       "runtime": true
     },
     {
@@ -1106,8 +1113,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 263801,
-      "sha256": "727ba573ffe86620c3a8c139a5c4901d1e5823d765d6cc68603035f87ba77a16",
+      "bytes": 265064,
+      "sha256": "b8d33e0c9a29a95bcb84f3532794b3b56f50e7a0d5fd81918b48bbb9258f130a",
       "runtime": true
     },
     {
@@ -1150,6 +1157,13 @@
       "installPath": "src/ui/chef-companion.js",
       "bytes": 15343,
       "sha256": "f146cd0b40f704758ae4de487ce5705f93264afd7dd1351542ccfc3398300613",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/cloud-primary-ui.js",
+      "installPath": "src/ui/cloud-primary-ui.js",
+      "bytes": 10932,
+      "sha256": "1d8946374a07ba14bf4bab1839fac6461a2b6160c0979213588d10b6b58a81eb",
       "runtime": true
     },
     {
@@ -1218,8 +1232,8 @@
     {
       "path": "src/ui/demand-view.js",
       "installPath": "src/ui/demand-view.js",
-      "bytes": 24101,
-      "sha256": "896e91617884540b7f6a4070e9389072c318fae2843abdddcb8a445487ace3f4",
+      "bytes": 24349,
+      "sha256": "e594fae10229529e817a67b0a476319c3768c526ab2b3880128753c6d41892a0",
       "runtime": true
     },
     {
@@ -1414,8 +1428,8 @@
     {
       "path": "src/ui/kc-ux-polish.js",
       "installPath": "src/ui/kc-ux-polish.js",
-      "bytes": 9722,
-      "sha256": "7dab2de59fe707c24ff2c155e38b5e04465730c97b4a2cd6239a16cab07ed4ed",
+      "bytes": 10254,
+      "sha256": "6bf36fa5776472c0e4adba402e928905b26f886801bf2067b1c9d7a9d6e4e937",
       "runtime": true
     },
     {
@@ -2107,8 +2121,8 @@
     {
       "path": "src/ui/v020-shell.js",
       "installPath": "src/ui/v020-shell.js",
-      "bytes": 9282,
-      "sha256": "3f13dd14f269e8c6fe6ead17429ec3c6c175edf0f4d582d670f87fb2d5cc3ab2",
+      "bytes": 9316,
+      "sha256": "07adb82b4512545e494c8c3a50a056f34329c269b23f7c095fbaf27a73134e2e",
       "runtime": true
     },
     {

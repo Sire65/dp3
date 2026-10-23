@@ -13,7 +13,7 @@
    if(!K.sync?.hasProvider?.())return {skipped:true,reason:'provider_missing'};
    if(K.memberAccess?.configured?.()&&K.memberAccess?.state?.status!=='authenticated'&&K.supabaseConnection?.state?.authStatus!=='authenticated')return {skipped:true,reason:'auth'};
    state.inFlight=true;
-   try{await K.supabaseConnection?.ensureSession?.();const result=await K.sync.syncBoth();state.lastRunAt=new Date().toISOString();state.lastResult=result;state.lastError=null;
+   try{await K.supabaseConnection?.ensureSession?.();const result=await K.sync.syncBoth();if(K.cloudPrimary?.active?.()&&!result?.confirmed)return result;state.lastRunAt=new Date().toISOString();state.lastResult=result;state.lastError=null;
      // Sollplan an den Manager veroeffentlichen - NACH dem eigentlichen Sync, bewusst nicht
      // eingebunden in dessen Erfolg/Fehler: ein Problem hierbei darf den normalen Sync nicht
      // ruecktroegen oder als fehlgeschlagen markieren (siehe plan-manager-bridge.js).

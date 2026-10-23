@@ -15,14 +15,14 @@
     normalized.localVersion=Number(payload?.version||baseVersion||0);return normalized;
   }
   function persistQueue(){
-    if(!K.storage?.unlocked)return durableWrite;
+    if(!K.storage?.unlocked||K.cloudPrimary?.active?.())return durableWrite;
     const snapshot=JSON.parse(JSON.stringify(K.syncOutbox)),conflicts=JSON.parse(JSON.stringify(K.syncConflicts)),meta={...state};
     durableWrite=durableWrite.catch(()=>{}).then(()=>K.storage.putMany([['syncOutbox',snapshot],['syncConflicts',conflicts],['syncMeta',meta]],{force:true})).catch(e=>{state.lastError=`Lokale Warteschlange konnte nicht gesichert werden: ${e.message}`;emit('status');throw e;});
     return durableWrite;
   }
-  function enqueue(input){const op=makeOp(input);if(localBatch){op.clubInboxBatch=localBatch;op.status='club_pending';}K.syncOutbox.push(op);if(!localBatch){emit('queue',{operation:op});persistQueue().catch(()=>{});}return op;}
+  function enqueue(input){const op=makeOp(input);if(K.cloudPrimary?.active?.()&&!localBatch){op.status='workspace';return op;}if(localBatch){op.clubInboxBatch=localBatch;op.status='club_pending';}K.syncOutbox.push(op);if(!localBatch){emit('queue',{operation:op});persistQueue().catch(()=>{});}return op;}
   function stageLocalBatch(tag,fn){if(localBatch)throw Error('Eine lokale Transaktion läuft bereits.');localBatch=tag;try{return fn();}finally{localBatch=null;}}
-  function settleLocalBatch(tag,commit){K.syncOutbox=K.syncOutbox.filter(op=>{if(op.clubInboxBatch!==tag)return true;if(!commit)return false;delete op.clubInboxBatch;if(op.status!=='conflict')op.status='pending';return true;});}
+  function settleLocalBatch(tag,commit){if(commit&&K.cloudPrimary?.active?.()){K.syncOutbox=K.syncOutbox.filter(op=>op.clubInboxBatch!==tag);return;}K.syncOutbox=K.syncOutbox.filter(op=>{if(op.clubInboxBatch!==tag)return true;if(!commit)return false;delete op.clubInboxBatch;if(op.status!=='conflict')op.status='pending';return true;});}
   function due(op){return op.status==='pending'&&(!op.nextAttemptAt||new Date(op.nextAttemptAt).getTime()<=Date.now());}
   async function ensureRemoteKey(){
     if(remoteKeyContext?.secret)return remoteKeyContext;
@@ -61,6 +61,7 @@
     catch(e){setStatus('error',e.message);throw e;}
   }
   async function flush({force=false}={}){
+    if(K.cloudPrimary?.active?.())return K.cloudPrimary.reconnect();
     await requireTransport();if(!provider)throw new Error('Supabase-Provider ist nicht verbunden.');
     setStatus('syncing');let sent=0,conflicts=0,failed=0;
     for(const op of [...K.syncOutbox].filter(op=>force?op.status==='pending':due(op))){
@@ -162,6 +163,7 @@
     if(local)Object.assign(local,payload);else list.push({...payload,id});
   }
   async function pull(){
+    if(K.cloudPrimary?.active?.())return K.cloudPrimary.reconnect();
     await requireTransport();if(!provider)throw new Error('Supabase-Provider ist nicht verbunden.');
     const key=await ensureRemoteKey();setStatus('syncing');emit('traffic',{direction:'tx'});
     try{const res=await provider({action:'pull',contract:'KC_DP_SYNC_V1',cursor:state.cursor,syncNamespace:key.namespace});emit('traffic',{direction:'rx'});let applied=0;for(const wire of res?.wireOperations||[]){const op=wire.envelope?await KCSecureSync.decryptEnvelope(wire.envelope,{secret:key.secret,projectId:key.namespace}):wire.operation;if(op){op.remoteVersion=wire.remoteVersion??op.remoteVersion;applyRemote(op);applied++;}}state.cursor=res?.cursor??state.cursor;state.lastSyncAt=new Date().toISOString();await persistQueue();setStatus(state.maintenance?'maintenance':'ready');K.recordAudit?.('sync.pull',{entity:'sync',after:{applied,cursor:state.cursor,generation:key.generation}});return {applied,cursor:state.cursor,conflicts:K.syncConflicts.filter(x=>x.status==='open').length,generation:key.generation};}catch(e){setStatus('error',e.message);throw e;}
@@ -181,7 +183,7 @@
     for(const [date,rows] of Object.entries(K.demandMatrix||{})){enqueue({entity:'demand_matrix',operation:'baseline',payload:{date,rows:JSON.parse(JSON.stringify(rows))},baseVersion:null});staged++;}
     await persistQueue();const pushed=await flush(),pulled=await pull();K.recordAudit?.('sync.baseline.publish',{entity:'sync',after:{staged,sent:pushed.sent,generation:key.generation,namespace:key.namespace}});return {staged,pushed,pulled,generation:key.generation};
   }
-  async function syncBoth(){const pulledBefore=await pull();const pushed=await flush();const pulled=await pull();return {pulledBefore,pushed,pulled};}
+  async function syncBoth(){if(K.cloudPrimary?.active?.())return K.cloudPrimary.reconnect();const pulledBefore=await pull();const pushed=await flush();const pulled=await pull();return {pulledBefore,pushed,pulled};}
   K.sync={
     version:'0.16.1-cloud-first',state,
     setProvider(fn){provider=typeof fn==='function'?fn:null;setStatus(provider?'ready':'offline');},setSecretProvider(fn){secretProvider=typeof fn==='function'?fn:secretProvider;},resetRemoteKey(){remoteKeyContext=null;remoteKeyPromise=null;},hasProvider(){return !!provider;},

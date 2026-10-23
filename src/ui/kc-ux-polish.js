@@ -108,7 +108,7 @@
   function updateSaveState(){
     if(diagOpen())return;
     const x=document.getElementById('kcSaveState');if(!x)return;
-    const sup=document.getElementById('supabaseStatusLed'),idb=document.getElementById('idbStatusLed');
+    if(K.cloudPrimary?.enabled?.()){const st=K.cloudPrimary.state.status,ok=st==='saved';x.classList.toggle('bad',['blocked','conflict'].includes(st));x.classList.toggle('warn',!ok);x.textContent=({saved:'✓ In Supabase gespeichert',saving:'Speichert in Supabase …',offline:'⚠ Nur lokal – Übertragung offen',conflict:'⚠ Speicherkonflikt prüfen',migration:'⚠ Datenbank-Umstellung offen',join:'⚠ PC-Abgleich offen',blocked:'⚠ Speichern gesperrt',loading:'Serverdaten werden geladen …'})[st]||'Speicher prüfen';return;}const sup=document.getElementById('supabaseStatusLed'),idb=document.getElementById('idbStatusLed');
     const bad=sup?.classList.contains('error')&&idb?.classList.contains('error');const warn=sup?.classList.contains('error')&&!bad;
     x.classList.toggle('bad',!!bad);x.classList.toggle('warn',!!warn);
     x.innerHTML=bad?'<span>⚠</span><span>Speicher prüfen</span>':warn?'<span>●</span><span>Lokal gespeichert</span>':'<span>✓</span><span>Daten gespeichert</span>';

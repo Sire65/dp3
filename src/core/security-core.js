@@ -1,11 +1,11 @@
 /* KC MarktKasse SecurityCore – Crypto & Secure Sync Module V0.3.0
- * Reused unchanged as the common KC cryptographic foundation.
+ * Common KC cryptographic foundation; chunked Base64 supports full planning snapshots.
  * Browser WebCrypto only; AES-256-GCM + PBKDF2-SHA-256.
  */
 (function(global){
   "use strict";
   const enc=new TextEncoder(), dec=new TextDecoder();
-  const b64=bytes=>btoa(String.fromCharCode(...bytes));
+  const b64=bytes=>{const parts=[];for(let i=0;i<bytes.length;i+=32768)parts.push(String.fromCharCode(...bytes.subarray(i,i+32768)));return btoa(parts.join(''));};
   const unb64=text=>Uint8Array.from(atob(text),c=>c.charCodeAt(0));
   const randomBytes=n=>crypto.getRandomValues(new Uint8Array(n));
   async function deriveKey(secret,salt,iterations=310000){

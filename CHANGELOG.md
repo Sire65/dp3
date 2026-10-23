@@ -1,3 +1,7 @@
+## Build 300 RC · 23.10.2026
+
+Planungsdaten für den Arbeitsmodus auf Supabase als führenden Speicher umstellen: verschlüsselte, versionierte Revisionen, atomarer Versionsvergleich, eigene Wiederholungsbelege. IndexedDB dient für neue Planungsänderungen nur als Ausfallsicherung; technische Anmeldedaten bleiben lokal. Umstellung mit geprüftem Ausgangsstand und ausdrücklicher Konfliktentscheidung. Neue Tabelle in Supabase und Neon vorbereitet und ins Sicherungsregister aufgenommen. Club-App-Eingänge erst nach zentraler Speicherbestätigung quittieren. Große verschlüsselte Datenpakete ohne Base64-Aufruflimit; tatsächliche Buildnummer im Kopf anzeigen.
+
 ## Build 299 RC · 21.10.2026
 
 Konfliktfenster nach Datenmodell und Anwendung laden; Namespace auch bei frühem Laden sicher initialisieren. Reihenfolge im Test geprüft.

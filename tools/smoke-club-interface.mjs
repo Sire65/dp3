@@ -242,4 +242,7 @@ for(const changed of ['phone','dp2','standby']){
  K.sync.hasProvider=()=>true;K.sync.pull=async()=>{K.wishes[0].updatedAt=new Date().toISOString();K.wishes[0].version=42;inbox[0].claimActive=false;inbox[0].claimedUntil=null;inbox[0].claimedByMe=false;return {conflicts:0}};
  const result=await K.clubWishInbox.resolve(input.id,{'2026-12-04':'replace'});assert.equal(result.needsReview,undefined,'transport and sync metadata do not invalidate content decision');assert.equal(calls.ack.length,1);
 }
+{
+ const {K,input,entry,inbox,calls}=await fixture();K.cloudPrimary={active:()=>true};K.persistAll=async()=>({offline:true,confirmed:false});inbox.push({...input,entries:[entry()]});try{await K.clubWishInbox.runNow();}catch(_){}assert.equal(calls.ack.length,0,'primary import must not acknowledge before central save');assert.equal(K.wishes.filter(w=>w.status!=='deleted').length,0,'unconfirmed import rolls back');
+}
 console.log('PASS Club-App: claims, rollback, real changes block; neutral readiness; saved choices; sync timestamps/claim transport do not cause review loops.');

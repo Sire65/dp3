@@ -191,7 +191,8 @@ async function importOne(input,context,decision=null){
    K.recordAudit('Club-App-Wunscheingang',{entity:'wish_inbox',entityId:input.id,reason:`Club-App-Wunscheingang ${input.personId} rev ${input.revision}`,after:receipt.result});
   });
   receipt.auditIds=K.auditLog.slice(auditStart).map(r=>r.id);
-  await K.persistAll();
+  const persisted=await K.persistAll();
+  if(K.cloudPrimary?.active?.()&&persisted?.confirmed!==true)throw Error('Planungsdaten noch nicht von Supabase bestätigt. Der Eingang wird nicht quittiert.');
  }catch(e){receipt.auditIds=K.auditLog.slice(auditStart).map(r=>r.id);try{await rollback(receipt);}finally{await release(receipt);}throw e;}finally{capability=null;}
  // Network failures after persistence leave a recoverable, held batch, never a partial reimport.
  state.reviews=state.reviews.filter(r=>r.id!==input.id);
@@ -256,7 +257,7 @@ async function resolve(id,choices){
  try{
   if(!await K.daysPublishBridge.planningMembership())throw Error('Nur berechtigte Planer dürfen diesen Eingang übernehmen.');
   if(decision.context!==scopeKey()||decision.user!==K.supabaseConnection.state?.userId)throw Error('Anmeldung oder Veranstaltung geändert. Bitte neu laden.');
-  if(K.sync?.hasProvider?.()){const pulled=await K.sync.pull();if(pulled?.conflicts)throw Error('Es gibt offene Synchronisationskonflikte. Bitte diese zuerst klären.');}
+  if(K.sync?.hasProvider?.()){const pulled=await K.sync.pull();if(pulled?.conflicts||pulled?.conflict)throw Error('Es gibt offene Synchronisationskonflikte. Bitte diese zuerst klären.');}
   const inputs=await K.supabaseConnection.wishInboxPending({eventId:eventId()}),input=inputs.find(i=>i.id===id);
   if(!input){state.reviews=state.reviews.filter(r=>r.id!==id);throw Error('Dieser Eingang ist nicht mehr offen. Bitte synchronisieren.');}
   if(decision.context!==scopeKey()||decision.user!==K.supabaseConnection.state?.userId)throw Error('Anmeldung oder Veranstaltung geändert. Bitte neu laden.');
