@@ -1,3 +1,7 @@
+## Build 304 RC · 23.10.2026
+
+Update mit vollständigem Dateiumfang prüfen: wartenden Worker ausdrücklich aktivieren, Cache-Vollständigkeit über ein gemeinsames Dateiverzeichnis statt einzelner Cache-Lesezugriffe prüfen. Laufende Aktivierung bei verlorener Antwort begrenzt nachverfolgen. Eigenständige Reparaturseite lädt die Update-Funktion ohne alten Programmcache und führt nach Erfolg zurück zu DP2. Keine Planungsdaten öffnen oder ändern.
+
 ## Build 303 RC · 23.10.2026
 
 Bedarfsübersicht im PDF mit jedem Stundenbereich einzeln und wiederholten Bedarfszahlen statt Zusammenfassung gleicher Werte. Längere gespeicherte Zeiträume stündlich aufteilen, Teilstunden erhalten. Vollständige Tage nach Möglichkeit in einer Spalte halten; zusätzliche Seiten statt schmalerer Spalten. Tages- und Gesamtsummen unverändert, ausschließlich bestätigten gespeicherten Stand lesend verwenden.

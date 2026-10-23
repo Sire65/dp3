@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="de"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>KC DP2 · Update reparieren</title>
+<link rel="stylesheet" href="src/ui/update-ui.css?kc_update=1">
+<style>body{font:17px system-ui;background:#faf7f2;color:#292522;margin:0;padding:24px}main{max-width:640px;margin:8vh auto;background:white;border:1px solid #dfd4cc;border-radius:16px;padding:28px}h1{color:#741521}button,a{display:inline-block;padding:14px;margin:8px 8px 8px 0;min-height:48px;box-sizing:border-box}button{background:#741521;color:white;border:0;border-radius:8px;font:inherit}</style>
+<main><h1>KC DP2 · Update reparieren</h1><p>Diese Seite lädt die aktuelle Update-Funktion direkt vom lokalen Programmordner. Sie öffnet oder löscht keine Planungsdaten.</p><p>Bitte zunächst offene Bedarfsänderungen im bisherigen DP2-Fenster speichern. Während der Installation dieses Fenster geöffnet lassen.</p><button id="repairCheck" type="button">Update prüfen und installieren</button><a href="index.html">Zurück zu DP2</a><p id="repairStatus" role="status">Nach erfolgreicher Installation auf „Jetzt neu starten“ tippen.</p></main>
+<script>window.KC_DP_BUILD=0;window.KCDP={};</script>
+<script defer src="src/core/update-manager.js?kc_update=1"></script><script defer src="src/ui/update-ui.js?kc_update=1"></script>
+<script>document.addEventListener('DOMContentLoaded',()=>{document.getElementById('repairCheck').onclick=()=>window.KCDP.updateManager.check({manual:true});window.addEventListener('KC_DP_UPDATE_SUCCESS',e=>{document.getElementById('repairStatus').textContent='Update installiert: Build '+e.detail.build+'. Jetzt zurück zu DP2.';const restart=document.getElementById('kcUpdRestart');if(restart)restart.onclick=()=>location.assign('index.html');});});</script>
+</html>

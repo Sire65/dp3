@@ -90,7 +90,7 @@
     const reg=await navigator.serviceWorker.register('service-worker.js?engine=stable-v3-b302',{updateViaCache:'none'});
     await reg.update();
     if(reg.installing||reg.waiting){
-      const candidate=reg.installing||reg.waiting;
+      const candidate=reg.installing||reg.waiting;candidate.postMessage({type:'KC_DP_ACTIVATE_WORKER'});
       if(candidate.state!=='activated')await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>{candidate.removeEventListener('statechange',changed);reject(new Error('Der neue Update-Dienst konnte nicht starten. Bitte DP2 über den aktuellen Programmordner öffnen.'));},20000);function changed(){if(candidate.state==='activated'||candidate.state==='redundant'){clearTimeout(timeout);candidate.removeEventListener('statechange',changed);candidate.state==='activated'?resolve():reject(new Error('Der Update-Dienst wurde beim Start ersetzt. Bitte erneut prüfen.'));}}candidate.addEventListener('statechange',changed);changed();});
     }
     const controller=reg.active||navigator.serviceWorker.controller;
@@ -99,10 +99,10 @@
     state.workerInfo={scriptURL:controller.scriptURL,engine:info?.engine||null,protocol:info?.protocol||null};
     if(info?.type!=='KC_DP_UPDATE_ENGINE_INFO_RESULT'||info.protocol!==2)throw new Error('Der lokale Update-Dienst ist veraltet. Bitte DP2 über den aktuellen Programmordner starten.');
     const cacheName=manifest.cacheName||`kc-dp-release-${manifest.version}`,expectedFiles=manifest.files.filter(f=>f.runtime!==false).map(f=>installPath(f));
-    const requestId=crypto.randomUUID();
+    const requestId=crypto.randomUUID();state.activation={requestId,cacheName,files:expectedFiles.length,startedAt:new Date().toISOString()};
     await new Promise((resolve,reject)=>{
       const channel=new MessageChannel();let settled=false;
-      const timeout=setTimeout(async()=>{const status=await workerRequest(controller,{type:'KC_DP_UPDATE_ENGINE_INFO'}).catch(()=>null);if(status?.meta?.activeCache===cacheName&&status?.meta?.activationRequestId===requestId)finish();else finish(new Error('Der Update-Dienst hat die Aktivierung nicht bestätigt. Bitte den technischen Bericht herunterladen.'));},30000);
+      const timeout=setTimeout(async()=>{for(let attempt=0;attempt<12&&!settled;attempt++){const status=await workerRequest(controller,{type:'KC_DP_UPDATE_ENGINE_INFO'}).catch(()=>null);state.activation.receipt=status?.meta||null;state.activation.worker=status?.activation||null;if(status?.meta?.activeCache===cacheName&&status?.meta?.activationRequestId===requestId){finish();return;}if(status?.activation?.requestId!==requestId||!['checking','committing'].includes(status.activation.phase))break;await new Promise(resolve=>setTimeout(resolve,2000));}if(!settled)finish(new Error('Der Update-Dienst hat die Aktivierung nicht bestätigt. Bitte den technischen Bericht herunterladen.'));},30000);
       const finish=error=>{if(settled)return;settled=true;clearTimeout(timeout);navigator.serviceWorker.removeEventListener('message',handler);channel.port1.close();error?reject(error):resolve();};
       function accept(data){
         if(data?.type==='KC_DP_UPDATE_ACTIVATED'&&data?.version===manifest.version&&data?.cacheName===cacheName&&data?.requestId===requestId)finish();
@@ -122,7 +122,7 @@
 
   function makeErrorReport(error,target,phase){
     const nav=navigator||{};
-    return {reportId:reportId(),type:'update_failure',at:new Date().toISOString(),appRelease:CURRENT_RELEASE,targetRelease:target?.version||null,targetBuild:target?.build||null,currentBuild:window.KC_DP_BUILD||null,phase:phase||state.phase||'unknown',message:error?.message||String(error),stack:String(error?.stack||'').slice(0,5000),online:nav.onLine,userAgent:String(nav.userAgent||'').slice(0,1000),language:nav.language||null,viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio||1},page:{origin:location.origin,path:location.pathname},serviceWorker:{supported:'serviceWorker'in nav,controller:!!nav.serviceWorker?.controller,scriptURL:nav.serviceWorker?.controller?.scriptURL||null,engine:state.workerInfo||null},cacheNames:[],role:K.currentUser?.role||null};
+    return {reportId:reportId(),type:'update_failure',at:new Date().toISOString(),appRelease:CURRENT_RELEASE,targetRelease:target?.version||null,targetBuild:target?.build||null,currentBuild:window.KC_DP_BUILD||null,phase:phase||state.phase||'unknown',message:error?.message||String(error),stack:String(error?.stack||'').slice(0,5000),online:nav.onLine,userAgent:String(nav.userAgent||'').slice(0,1000),language:nav.language||null,viewport:{width:innerWidth,height:innerHeight,dpr:devicePixelRatio||1},page:{origin:location.origin,path:location.pathname},serviceWorker:{supported:'serviceWorker'in nav,controller:!!nav.serviceWorker?.controller,scriptURL:nav.serviceWorker?.controller?.scriptURL||null,engine:state.workerInfo||null,activation:state.activation||null},cacheNames:[],role:K.currentUser?.role||null};
   }
   async function sendReport(report){try{report.cacheNames='caches'in window?await caches.keys():[];}catch(_){report.cacheNames=[];}if(!K.supabaseConnection?.sendClientReport)throw new Error('Supabase-Fehlerbericht ist noch nicht eingerichtet.');return K.supabaseConnection.sendClientReport(report);}
   async function flushQueuedReports(){const q=safeStoreGet(REPORT_QUEUE_KEY,[]);if(!q.length||!navigator.onLine||!K.supabaseConnection?.hasAccessToken?.())return {sent:0};const left=[];let sent=0;for(const r of q){try{await sendReport(r);sent++;}catch(_){left.push(r);}}safeStoreSet(REPORT_QUEUE_KEY,left);return {sent};}
