@@ -1,3 +1,7 @@
+## Build 303 RC · 23.10.2026
+
+Bedarfsübersicht im PDF mit jedem Stundenbereich einzeln und wiederholten Bedarfszahlen statt Zusammenfassung gleicher Werte. Längere gespeicherte Zeiträume stündlich aufteilen, Teilstunden erhalten. Vollständige Tage nach Möglichkeit in einer Spalte halten; zusätzliche Seiten statt schmalerer Spalten. Tages- und Gesamtsummen unverändert, ausschließlich bestätigten gespeicherten Stand lesend verwenden.
+
 ## Build 302 RC · 23.10.2026
 
 Update-Aktivierung: alten Worker ausdrücklich durch die aktuelle Registrierung ersetzen und das Protokoll vor dem Umschalten prüfen. Aktivierungsbeleg mit Cache und Vorgangskennung; verlorene Antwort anhand des eigenen gespeicherten Belegs prüfen. Bestätigung vor nichtkritischer Cache-Bereinigung senden. Fehlerbericht um tatsächliche Builds und Worker-Kennung erweitern. Keine Planungsdatenmigration.
