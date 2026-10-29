@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 304,
+  "build": 305,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b304",
+  "cacheName": "kc-dp-release-0.20.0-b305",
   "releaseNotes": [
+    "Build 305 RC: Gelöschte Alteinträge blockieren den zentralen Mitgliederabgleich und damit den Club-App-Import nicht mehr. Aktive unbekannte Personen bleiben geschützt; Daten unverändert erhalten.",
     "Build 304 RC: Wartenden Update-Dienst aktivieren, vollständige Dateiprüfung beschleunigen und laufende Aktivierung nachverfolgen. Separate Reparaturseite ohne Löschen von Browserdaten.",
     "Build 303 RC: Bedarfsübersicht mit jeder Stunde einzeln samt Bedarf, V und H. Ganze Tage lesbar auf weiteren Seiten statt gleiche Stunden zusammenzufassen. Gespeicherte Zahlen bleiben unverändert.",
     "Build 302 RC: Update-Dienst vor Aktivierung erneuern und prüfen. Verlorene Bestätigung anhand des eigenen Aktivierungsbelegs erkennen; technische Berichte nennen Build und Dienstkennung. Planungsdaten bleiben unverändert.",
@@ -151,8 +152,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-23T16:42:32.152Z",
-  "totalRuntimeBytes": 37415919,
+  "generatedAt": "2026-10-29T15:38:09.515Z",
+  "totalRuntimeBytes": 37416003,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -333,7 +334,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35001,
-      "sha256": "9d2b9e029f189bfa6619d8c48dcbfb2b74656d5ecac7a2794fe6b2141bbfb2c7",
+      "sha256": "06f8503d0d5d61b99e9da505496a5beab460535a74926f38726c03660d427dad",
       "runtime": true,
       "forceRefresh": true
     },
@@ -535,8 +536,8 @@
     {
       "path": "src/adapters/person-provider.js",
       "installPath": "src/adapters/person-provider.js",
-      "bytes": 9319,
-      "sha256": "e34c33055152a4e62cea1725ee4c6559e4b10d24d4cd0397c8f9c0411077eccf",
+      "bytes": 9403,
+      "sha256": "f9600ffb990c815771d976c1e273a9d2781926fba0dbade49cdebc39547d7d78",
       "runtime": true
     },
     {

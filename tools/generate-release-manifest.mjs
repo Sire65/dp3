@@ -44,6 +44,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,stage,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 305 RC: Gelöschte Alteinträge blockieren den zentralen Mitgliederabgleich und damit den Club-App-Import nicht mehr. Aktive unbekannte Personen bleiben geschützt; Daten unverändert erhalten.',
     'Build 304 RC: Wartenden Update-Dienst aktivieren, vollständige Dateiprüfung beschleunigen und laufende Aktivierung nachverfolgen. Separate Reparaturseite ohne Löschen von Browserdaten.',
     'Build 303 RC: Bedarfsübersicht mit jeder Stunde einzeln samt Bedarf, V und H. Ganze Tage lesbar auf weiteren Seiten statt gleiche Stunden zusammenzufassen. Gespeicherte Zahlen bleiben unverändert.',
     'Build 302 RC: Update-Dienst vor Aktivierung erneuern und prüfen. Verlorene Bestätigung anhand des eigenen Aktivierungsbelegs erkennen; technische Berichte nennen Build und Dienstkennung. Planungsdaten bleiben unverändert.',
