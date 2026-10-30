@@ -1,3 +1,7 @@
+## Build 306 RC · 30.10.2026
+
+Schreibfreigabe im Backend unabhängig von der Auswahl für tägliche Neon-Snapshots prüfen; bestehende Spar-Einstellung beibehalten. Planerrechte, Verschlüsselung, Versionsvergleich und Übernahmebelege bleiben unverändert. Die beiden ausgeschiedenen Testkennungen werden auch über ihre alten Alias-IDs nicht erneut als planbare Personen angelegt. Reale Wünsche und Bedarfsmatrix werden durch das Programmupdate nicht migriert.
+
 ## Build 305 RC · 29.10.2026
 
 Mitgliederabgleich: gelöschte oder stornierte historische Zeilen zählen nicht mehr als aktive Personenverweise. Dadurch können veraltete lokale Kennungen aus gelöschten Einträgen den Club-App-Eingang nicht blockieren. Aktive unbekannte Personen blockieren weiterhin; keine Datensätze löschen oder umschlüsseln.
