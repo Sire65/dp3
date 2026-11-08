@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 306,
+  "build": 307,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b306",
+  "cacheName": "kc-dp-release-0.20.0-b307",
   "releaseNotes": [
+    "Build 307 RC: Ist-Rückmeldung nach dem Dienst aus der Club App: „passt“ zählt sofort, Abweichungen ab 15 Minuten und „nicht da“ bestätigt der Planer. Kasse und Stempeluhr haben Vorrang. Kontoauszug zeigt bestätigt, geändert, wartet, nicht da, abgelehnt und keine Antwort. Auswertung Stimmung & Besetzung.",
     "Build 306 RC: Schreibfreigabe in Supabase von der täglichen Sicherungsauswahl trennen. Ehemalige Testpersonen nicht erneut laden; echte Wünsche und Bedarfswerte erhalten.",
     "Build 305 RC: Gelöschte Alteinträge blockieren den zentralen Mitgliederabgleich und damit den Club-App-Import nicht mehr. Aktive unbekannte Personen bleiben geschützt; Daten unverändert erhalten.",
     "Build 304 RC: Wartenden Update-Dienst aktivieren, vollständige Dateiprüfung beschleunigen und laufende Aktivierung nachverfolgen. Separate Reparaturseite ohne Löschen von Browserdaten.",
@@ -153,8 +154,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-10-30T15:02:12.779Z",
-  "totalRuntimeBytes": 37416331,
+  "generatedAt": "2026-11-08T08:25:52.170Z",
+  "totalRuntimeBytes": 37456954,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -334,8 +335,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 35001,
-      "sha256": "3475352b7b64136edc3cbdce8a64e5f8e636ae18f1527671e5d3dc635a00daa7",
+      "bytes": 35146,
+      "sha256": "be058ee140b4f09f3e80364ef47ea7a76a22df8824ebf6e384e153f061cb4911",
       "runtime": true,
       "forceRefresh": true
     },
@@ -565,8 +566,8 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 30833,
-      "sha256": "aa30dc36317e4d30365779bb253d805241573d3578356d5da706860d9e06f205",
+      "bytes": 31941,
+      "sha256": "840e5a8db32eac0f2f914830168a282bd0924f089434249938350c79974efb48",
       "runtime": true
     },
     {
@@ -607,8 +608,8 @@
     {
       "path": "src/core/actual.js",
       "installPath": "src/core/actual.js",
-      "bytes": 20436,
-      "sha256": "69a0ccb46792fbf8e298d3749499a98256c5a2166f8ff4f06a57a3359df75ba8",
+      "bytes": 21986,
+      "sha256": "46ce5afddef1f325c9e3384a3d428017e1a75f8f01c5ab60ffa7b27a89c0f17d",
       "runtime": true
     },
     {
@@ -628,8 +629,8 @@
     {
       "path": "src/core/auto-sync.js",
       "installPath": "src/core/auto-sync.js",
-      "bytes": 2727,
-      "sha256": "51b7f4b42aff6072a96ed3934ee2cf647cee6897ffc538ac1ffc75d7b9619ff8",
+      "bytes": 2934,
+      "sha256": "2780f82b646ffa275d3740f553479df0cddc5ca7867f7572a8d7013cbb33d0cd",
       "runtime": true
     },
     {
@@ -777,6 +778,13 @@
       "installPath": "src/core/intelligence.js",
       "bytes": 3638,
       "sha256": "10a180d6dbf28e2f5b8a3a4d00e2b66fe72682071b9b4e43d9c78d50562eea30",
+      "runtime": true
+    },
+    {
+      "path": "src/core/ist-rueckmeldung.js",
+      "installPath": "src/core/ist-rueckmeldung.js",
+      "bytes": 21254,
+      "sha256": "cbad98e5cb0d2278c90e0db32190edddb3b58725b91a7c22e3b30d3b35d8b83a",
       "runtime": true
     },
     {
@@ -1076,8 +1084,8 @@
     {
       "path": "src/ui/actual-reconciliation.js",
       "installPath": "src/ui/actual-reconciliation.js",
-      "bytes": 16183,
-      "sha256": "31aab9d9cf96af95760476fd07dbca67e4b71d2df89dd7e65c6d44ea464238d7",
+      "bytes": 18115,
+      "sha256": "64ed1905326eba86a728850cd88201b0ca0e7030a5c4a3b816a0461f06b55e21",
       "runtime": true
     },
     {
@@ -1118,8 +1126,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 265064,
-      "sha256": "b8d33e0c9a29a95bcb84f3532794b3b56f50e7a0d5fd81918b48bbb9258f130a",
+      "bytes": 265233,
+      "sha256": "30dfff412c759568da0738057a59f2d44ee7d7a2ea20ff1c2f91c95fd5b2b2c5",
       "runtime": true
     },
     {
@@ -1258,8 +1266,8 @@
     {
       "path": "src/ui/deviations-view.js",
       "installPath": "src/ui/deviations-view.js",
-      "bytes": 10233,
-      "sha256": "4398f1b2836786d69956f0ef026780392ad3e9efe41a56f068526a143ddb2856",
+      "bytes": 10948,
+      "sha256": "94e0070efd67896f8ef1b582c5cbd5d2a5082bf1b250b80cbba5e35682955bfa",
       "runtime": true
     },
     {
@@ -1412,8 +1420,8 @@
     {
       "path": "src/ui/hour-reports-ui.js",
       "installPath": "src/ui/hour-reports-ui.js",
-      "bytes": 7691,
-      "sha256": "61ec686a37b2f75a32d2231dbc08d6e0228fb9e749653de793860b63f281b883",
+      "bytes": 7735,
+      "sha256": "8b372c7047527821a43d18243cdc6cbf0c9db719ea945bc65c66ec5b6ff11b80",
       "runtime": true
     },
     {
@@ -1428,6 +1436,13 @@
       "installPath": "src/ui/installation-center.js",
       "bytes": 9445,
       "sha256": "287b65a07834630e695fd2a62e2acc00c9e59fc0c53e28e8be89bc59d66bc34e",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/ist-rueckmeldung-ui.js",
+      "installPath": "src/ui/ist-rueckmeldung-ui.js",
+      "bytes": 8953,
+      "sha256": "ee7671ac7fd9068a2a2714fdc49dd02adc24df51bf518e38f81b043d8dc61dbf",
       "runtime": true
     },
     {
@@ -1657,8 +1672,8 @@
     {
       "path": "src/ui/person-account-print.js",
       "installPath": "src/ui/person-account-print.js",
-      "bytes": 29852,
-      "sha256": "9d434e8e5ba75e1a752e0808f6b3939874a1813588d9f9a31a06a49b98cc2944",
+      "bytes": 34268,
+      "sha256": "d9d3ba94a3057aa42efdbad0ee31c52f3e8827210e87420554dc2a7d6a90a414",
       "runtime": true
     },
     {
@@ -1881,8 +1896,8 @@
     {
       "path": "src/ui/register-actions.js",
       "installPath": "src/ui/register-actions.js",
-      "bytes": 5261,
-      "sha256": "693d56b86015cb940669f9802204cda10f0ae1cad9b4e851042db89f4d6c85de",
+      "bytes": 5391,
+      "sha256": "a423f9ea9d32b9a8e2bdcf79438f9afe1c45606cedaf355376198069a59265e2",
       "runtime": true
     },
     {

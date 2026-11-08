@@ -11,6 +11,8 @@
   const minutes=(end,start,breakMinutes=0)=>{const gross=Math.max(0,Math.round((Number(end)-Number(start))*60));return K.breakConfig?.hoursAccounting==='deducted'?Math.max(0,gross-Math.max(0,Number(breakMinutes)||0)):gross;};
   const overlapMinutes=(a,b)=>Math.max(0,Math.round((Math.min(a.end,b.end)-Math.max(a.start,b.start))*60));
   const sameDay=(a,b)=>a.date===b.date&&a.personId===b.personId;
+  // Build 307: Selbstauskünfte nach dem Dienst (src/core/ist-rueckmeldung.js) – niedrigster Vorrang.
+  const SELF=['self_confirm','self_change'];
   const plannedActive=s=>!['cancelled','absent','failed','deleted'].includes(s?.status);
 
   function statusFromDelta(startDelta,endDelta,durationDelta){
@@ -64,8 +66,9 @@
 
   function missingPlanned(date=null){
     const planned=K.shifts.filter(s=>s.layer==='planned'&&plannedActive(s)&&(!date||s.date===date));
-    const linked=new Set(K.actualShifts.filter(a=>!date||a.date===date).map(a=>a.linkedShiftId).filter(Boolean));
-    return planned.filter(s=>!linked.has(s.id));
+    const linked=new Set(K.actualShifts.filter(a=>(!date||a.date===date)&&!(a.status==='deleted'&&SELF.includes(a.source))).map(a=>a.linkedShiftId).filter(Boolean));
+    // Build 307: bestätigtes „nicht da“ aus der Ist-Rückmeldung = abwesend, keine fehlende Buchung.
+    return planned.filter(s=>!linked.has(s.id)&&!K.istRueckmeldung?.absentShift?.(s));
   }
 
   function dayStats(date){
@@ -108,7 +111,8 @@
 
   function saveActual(candidate,{reason='',source=candidate.source||'manual_correction',importBatchId=candidate.importBatchId||null}={}){
     // KICC-F-100: vom Planer bestätigte Sonderstunden-Meldungen (self_report) sind wie Stempeluhr-Zeiten ein Import externer Zeiten.
-    K.auth?.require?.(source==='file_import'||source==='timeclock'||source==='planned_transfer'||source==='self_report'?'roster.actual.import':'roster.actual.correct','Sie dürfen Istzeiten nicht bearbeiten.');
+    // Build 307: Ist-Rückmeldungen der Mitglieder (self_confirm/self_change) ebenso.
+    K.auth?.require?.(source==='file_import'||source==='timeclock'||source==='planned_transfer'||source==='self_report'||SELF.includes(source)?'roster.actual.import':'roster.actual.correct','Sie dürfen Istzeiten nicht bearbeiten.');
     if(K.actualWorkflow.status==='closed')throw new Error('Der Istplan ist abgeschlossen. Vor Änderungen muss er administrativ wieder geöffnet werden.');
     // A transfer may only create an unchanged copy of an active, explicitly linked plan.
     // Editing an existing actual record continues to require roster.actual.correct.
@@ -147,13 +151,22 @@
     const batch={id:`IB-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,name:batchName,source,fileMeta,createdAt:new Date().toISOString(),createdBy:K.currentUser?.personId||null,total:rows.length,accepted:0,rejected:0,status:'processing'};
     K.actualImportBatches.push(batch);const results=[];
     for(const row of rows){
-      try{const duplicate=K.actualShifts.find(a=>a.status!=='deleted'&&a.personId===row.personId&&a.date===row.date&&a.start===row.start&&a.end===row.end&&Number(a.breakMinutes||0)===Number(row.breakMinutes||0));if(duplicate){results.push({ok:true,skipped:true,row:duplicate,comparison:comparison(duplicate),issues:[{level:'info',text:'Identischer Istzeit-Datensatz bereits vorhanden.'}]});batch.skipped=Number(batch.skipped||0)+1;continue;}const importIssues=validateActual(row),overlap=importIssues.find(i=>/Überlappt eine weitere Istzeit/.test(i.text));if(overlap)throw new Error('Diese Istzeit überschneidet sich mit einer bereits vorhandenen Istzeit dieser Person. Bitte zuerst prüfen oder korrigieren.');const out=saveActual({...row,source,importBatchId:batch.id},{reason:`Import ${batch.name}`,source,importBatchId:batch.id});results.push({ok:true,row:out.record,comparison:out.comparison,issues:out.issues});batch.accepted++;}
+      try{supersedeSelf(row,`Buchung aus ${batch.name} hat Vorrang`);const duplicate=K.actualShifts.find(a=>a.status!=='deleted'&&!SELF.includes(a.source)&&a.personId===row.personId&&a.date===row.date&&a.start===row.start&&a.end===row.end&&Number(a.breakMinutes||0)===Number(row.breakMinutes||0));if(duplicate){results.push({ok:true,skipped:true,row:duplicate,comparison:comparison(duplicate),issues:[{level:'info',text:'Identischer Istzeit-Datensatz bereits vorhanden.'}]});batch.skipped=Number(batch.skipped||0)+1;continue;}const importIssues=validateActual(row),overlap=importIssues.find(i=>/Überlappt eine weitere Istzeit/.test(i.text));if(overlap)throw new Error('Diese Istzeit überschneidet sich mit einer bereits vorhandenen Istzeit dieser Person. Bitte zuerst prüfen oder korrigieren.');const out=saveActual({...row,source,importBatchId:batch.id},{reason:`Import ${batch.name}`,source,importBatchId:batch.id});results.push({ok:true,row:out.record,comparison:out.comparison,issues:out.issues});batch.accepted++;}
       catch(e){results.push({ok:false,row,error:e.message});batch.rejected++;}
     }
     batch.status=batch.rejected?'review':'imported';batch.completedAt=new Date().toISOString();
     K.recordAudit?.('actual.import.batch',{entity:'actual_import_batch',entityId:batch.id,after:batch,meta:{accepted:batch.accepted,rejected:batch.rejected}});
     K.sync?.enqueue?.({entity:'actual_import_batch',operation:'create',payload:batch,baseVersion:null});
     return {batch,results};
+  }
+
+  // Build 307: Kasse/Stempeluhr/Import hat Vorrang vor der Selbstauskunft – überlappende self_confirm/self_change-Zeiten
+  // derselben Person am selben Tag werden beim Import stillgelegt (nicht gelöscht, mit Grund und Audit).
+  function supersedeSelf(row,reason){
+    const hit=K.actualShifts.filter(a=>a.status!=='deleted'&&SELF.includes(a.source)&&a.personId===row.personId&&a.date===row.date&&Math.max(Number(a.start),Number(row.start))<Math.min(Number(a.end),Number(row.end)));
+    for(const a of hit){const before=clone(a);a.status='deleted';a.deletedAt=new Date().toISOString();a.deletedBy=K.currentUser?.personId||null;a.supersededReason=reason;a.version=Number(a.version||0)+1;a.updatedAt=a.deletedAt;
+      K.recordAudit?.('actual.self_report.retire',{entity:'actual_shift',entityId:a.id,before,after:clone(a),reason});K.sync?.enqueue?.({entity:'actual_shift',operation:'delete',payload:clone(a),baseVersion:before.version||null});}
+    return hit.length;
   }
 
   function correctActual(id,patch,{reason}={}){
@@ -210,5 +223,5 @@
     return {req,total:stand.length,front:stand.filter(a=>a.zone==='front').length,back:stand.filter(a=>a.zone==='back').length,special:special.length,unassigned:unassigned.length,active:stand,specialActive:special,unassignedActive:unassigned};
   }
 
-  K.actual={version:'0.7.2',minutes,overlapMinutes,statusFromDelta,matchCandidate,linkRecord,comparison,missingPlanned,reportPending,dayStats,eventStats,validateActual,saveActual,deleteActual,importRows,correctActual,relinkActual,createCorrectionRequest,resolveCorrectionRequest,closePlan,reopenPlan,coverageAt};
+  K.actual={version:'0.8.0',SELF_SOURCES:SELF,supersedeSelf,minutes,overlapMinutes,statusFromDelta,matchCandidate,linkRecord,comparison,missingPlanned,reportPending,dayStats,eventStats,validateActual,saveActual,deleteActual,importRows,correctActual,relinkActual,createCorrectionRequest,resolveCorrectionRequest,closePlan,reopenPlan,coverageAt};
 })();

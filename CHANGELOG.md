@@ -1,3 +1,7 @@
+## Build 307 RC · 08.11.2026
+
+Ist-Rückmeldung nach dem Dienst (Vorgabe Hansi): Die Club App fragt nach jedem geplanten Dienst, ob die Sollzeit als Ist übernommen wird. DP2 liest die Antworten ausschließlich über `kc_dp_rueckmeldungen_liste` und entscheidet über `kc_dp_rueckmeldung_entscheiden`. „Passt“ und kleine Abweichungen zählen sofort (Quelle `self_confirm`/`self_change`, Original = Soll), Abweichungen ab 15 Minuten, „nicht da“ und Buchungskorrekturen bestätigt der Planer (Ablehnung nur mit Grund). Je Rückmeldung genau eine Ist-Zeit; neue Version aktualisiert sie. Planer-Korrektur, Kasse/Stempeluhr/Import haben Vorrang, ein späterer Import legt die Selbstauskunft still. Bestätigtes „nicht da“ gilt nicht als fehlende Buchung. Kontoauszug zeigt ✅ bestätigt, ✏️ geändert, ⏳ wartet (nicht in der Summe), 🚫 nicht da, ❌ abgelehnt und ⏳ keine Antwort; Summen nur aus gezählten Ist-Zeiten. Neuer Planer-Dialog „Ist-Rückmeldungen der Mitglieder“ mit Auswertung „Stimmung & Besetzung“ je Tag und Bereich; Abholen im Auto-Sync höchstens alle 5 Minuten. Keine Migration in DP2 (Tabelle und RPCs im Club-App-Repo).
+
 ## Build 306 RC · 30.10.2026
 
 Schreibfreigabe im Backend unabhängig von der Auswahl für tägliche Neon-Snapshots prüfen; bestehende Spar-Einstellung beibehalten. Planerrechte, Verschlüsselung, Versionsvergleich und Übernahmebelege bleiben unverändert. Die beiden ausgeschiedenen Testkennungen werden auch über ihre alten Alias-IDs nicht erneut als planbare Personen angelegt. Reale Wünsche und Bedarfsmatrix werden durch das Programmupdate nicht migriert.

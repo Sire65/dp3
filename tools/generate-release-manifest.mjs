@@ -44,6 +44,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,stage,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 307 RC: Ist-Rückmeldung nach dem Dienst aus der Club App: „passt“ zählt sofort, Abweichungen ab 15 Minuten und „nicht da“ bestätigt der Planer. Kasse und Stempeluhr haben Vorrang. Kontoauszug zeigt bestätigt, geändert, wartet, nicht da, abgelehnt und keine Antwort. Auswertung Stimmung & Besetzung.',
     'Build 306 RC: Schreibfreigabe in Supabase von der täglichen Sicherungsauswahl trennen. Ehemalige Testpersonen nicht erneut laden; echte Wünsche und Bedarfswerte erhalten.',
     'Build 305 RC: Gelöschte Alteinträge blockieren den zentralen Mitgliederabgleich und damit den Club-App-Import nicht mehr. Aktive unbekannte Personen bleiben geschützt; Daten unverändert erhalten.',
     'Build 304 RC: Wartenden Update-Dienst aktivieren, vollständige Dateiprüfung beschleunigen und laufende Aktivierung nachverfolgen. Separate Reparaturseite ohne Löschen von Browserdaten.',

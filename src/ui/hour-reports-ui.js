@@ -38,7 +38,7 @@
     const reopen=document.getElementById('hrReopen');if(reopen)reopen.onclick=()=>{const reason=window.prompt('Begründung für das Wiederöffnen (Nachtrag Sonderstunden):','Nachtrag Sonderstunden');if(!reason)return;try{K.actual.reopenPlan({reason});render();status('Istplan für den Nachtrag geöffnet. Danach wieder abschließen.');}catch(e){status(e.message||String(e),true);}};
   }
   async function run(job,ok){if(busy)return;busy=true;status('Wird gespeichert …');try{await job();status(ok);}catch(e){status(e.message||String(e),true);}finally{busy=false;render();K.render?.();}}
-  async function pull(){if(busy)return;busy=true;status('Meldungen werden abgeholt …');try{const r=await core().pull();status(`${r.received} offene Meldungen abgeholt.`);}catch(e){status('Nicht abgeholt: '+(e.message||e),true);}finally{busy=false;render();}}
+  async function pull(){if(busy)return;busy=true;status('Meldungen werden abgeholt …');try{const r=await core().pull();status(`${r.received} offene Meldungen abgeholt.`);K.istRueckmeldung?.poll?.().catch?.(()=>{});}catch(e){status('Nicht abgeholt: '+(e.message||e),true);}finally{busy=false;render();}}
 
   function open({fetch=true}={}){
     if(!core())return;close();
