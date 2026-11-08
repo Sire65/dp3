@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 307,
+  "build": 308,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b307",
+  "cacheName": "kc-dp-release-0.20.0-b308",
   "releaseNotes": [
+    "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
     "Build 307 RC: Ist-Rückmeldung nach dem Dienst aus der Club App: „passt“ zählt sofort, Abweichungen ab 15 Minuten und „nicht da“ bestätigt der Planer. Kasse und Stempeluhr haben Vorrang. Kontoauszug zeigt bestätigt, geändert, wartet, nicht da, abgelehnt und keine Antwort. Auswertung Stimmung & Besetzung.",
     "Build 306 RC: Schreibfreigabe in Supabase von der täglichen Sicherungsauswahl trennen. Ehemalige Testpersonen nicht erneut laden; echte Wünsche und Bedarfswerte erhalten.",
     "Build 305 RC: Gelöschte Alteinträge blockieren den zentralen Mitgliederabgleich und damit den Club-App-Import nicht mehr. Aktive unbekannte Personen bleiben geschützt; Daten unverändert erhalten.",
@@ -154,8 +155,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-08T08:25:52.170Z",
-  "totalRuntimeBytes": 37456954,
+  "generatedAt": "2026-11-08T08:27:59.558Z",
+  "totalRuntimeBytes": 37458137,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -336,7 +337,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35146,
-      "sha256": "be058ee140b4f09f3e80364ef47ea7a76a22df8824ebf6e384e153f061cb4911",
+      "sha256": "a492ed13a21c63ddfa9d83e2da530743cca3f794066cc5fc3906340c5755ed87",
       "runtime": true,
       "forceRefresh": true
     },
@@ -608,8 +609,8 @@
     {
       "path": "src/core/actual.js",
       "installPath": "src/core/actual.js",
-      "bytes": 21986,
-      "sha256": "46ce5afddef1f325c9e3384a3d428017e1a75f8f01c5ab60ffa7b27a89c0f17d",
+      "bytes": 22281,
+      "sha256": "91cc9b7bddf1a9a3fb47aa9085131044ab88f7faf01a1543e67794186eafeddb",
       "runtime": true
     },
     {
@@ -671,8 +672,8 @@
     {
       "path": "src/core/days-publish-bridge.js",
       "installPath": "src/core/days-publish-bridge.js",
-      "bytes": 2522,
-      "sha256": "e1c24cc7518600ca840b72448cff7b999f043e7efaaa08ed7740e128d88d6b97",
+      "bytes": 3410,
+      "sha256": "c5ae13e492d5e80acc7a66396af2dc8fe15ed81e5eb5b36023db69c832f778c0",
       "runtime": true
     },
     {

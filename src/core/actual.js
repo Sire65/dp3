@@ -209,12 +209,15 @@
     if(stats.unresolved&&!String(reason||'').trim())throw new Error(`Es bestehen ${stats.unresolved} ungeklärte Soll-/Ist-Fälle. Zum Abschluss ist ein Begründungstext erforderlich.`);
     const version=Number(K.actualWorkflow.version||0)+1,snapshot={version,closedAt:new Date().toISOString(),closedBy,reason:String(reason||''),stats,actualShifts:clone(K.actualShifts),correctionRequests:clone(K.actualCorrectionRequests),breakConfig:clone(K.breakConfig||{})};
     K.actualPlanVersions.push(snapshot);K.actualWorkflow={...K.actualWorkflow,status:'closed',closedAt:snapshot.closedAt,closedBy,closeReason:snapshot.reason,version};
-    K.recordAudit?.('actual.plan.close',{entity:'actual_plan_version',entityId:String(version),after:{version,closedBy,reason:snapshot.reason,stats}});K.sync?.enqueue?.({entity:'actual_plan_version',operation:'close',payload:snapshot,baseVersion:version-1});return snapshot;
+    K.recordAudit?.('actual.plan.close',{entity:'actual_plan_version',entityId:String(version),after:{version,closedBy,reason:snapshot.reason,stats}});K.sync?.enqueue?.({entity:'actual_plan_version',operation:'close',payload:snapshot,baseVersion:version-1});republishDays();return snapshot;
   }
+
+  // Build 308: Abschlussstand sofort an die Club App (kc_dp_days_published.payload.istStatus); Fehler holt der Auto-Sync nach.
+  function republishDays(){try{const p=K.daysPublishBridge?.publishNow?.();p?.catch?.(()=>{});return p||null;}catch(_){return null;}}
 
   function reopenPlan({reason='',reopenedBy=K.currentUser?.displayName||'Administrator'}={}){
     K.auth?.require?.('roster.actual.reopen','Sie dürfen einen abgeschlossenen Istplan nicht wieder öffnen.');if(K.actualWorkflow.status!=='closed')throw new Error('Istplan ist nicht abgeschlossen.');if(!String(reason||'').trim())throw new Error('Wiederöffnung erfordert eine Begründung.');
-    K.actualWorkflow={...K.actualWorkflow,status:'review',reopenedAt:new Date().toISOString(),reopenedBy,reopenReason:String(reason)};K.recordAudit?.('actual.plan.reopen',{entity:'actual_plan',reason,after:K.actualWorkflow});return K.actualWorkflow;
+    K.actualWorkflow={...K.actualWorkflow,status:'review',reopenedAt:new Date().toISOString(),reopenedBy,reopenReason:String(reason)};K.recordAudit?.('actual.plan.reopen',{entity:'actual_plan',reason,after:K.actualWorkflow});republishDays();return K.actualWorkflow;
   }
 
   function coverageAt(day,time){

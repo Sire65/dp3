@@ -24,3 +24,6 @@
 
 ## Test
 `node tools/test-ist-rueckmeldung.mjs` (offline, Supabase nachgebildet) – Teil von `npm test`.
+
+## Build 308 · Abschluss an die Club App
+`src/core/days-publish-bridge.js` schickt je Tag `istStatus` ('closed'|'open') und `istClosedAt`. Abgeschlossen sind alle Tage bis einschließlich zum Abschlussdatum (Europe/Berlin) von `K.actualWorkflow.closedAt`. `closePlan`/`reopenPlan` veröffentlichen sofort neu. Test: `tools/test-ist-closed-days.mjs`.
