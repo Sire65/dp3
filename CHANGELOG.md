@@ -1,3 +1,8 @@
+## Build 309 RC · Weniger Datenbankanfragen
+
+- Hintergrundabgleich und technische Verkehrsmeldungen gebündelt, unveränderte Sollpläne seltener an den PC Manager gesendet.
+- Kleinere Datei für die Original-Kochmütze.
+
 ## Build 308 RC · 08.11.2026
 
 Istplan-Abschluss erreicht die Club App: `kc_dp_days_publish` schickt je Tageszeile `istStatus` ('closed'|'open') und `istClosedAt` (aus dem Abschlusszeitpunkt; Tage bis einschließlich zum Abschlussdatum in Europe/Berlin gelten als abgeschlossen). Abschließen und Wiederöffnen veröffentlichen die Tage sofort neu; ein Fehler dabei bricht den Abschluss nicht ab, der Auto-Sync holt es nach. Die Club App liest `payload->>istStatus` und fragt für abgeschlossene Tage nicht mehr nach Ist-Zeiten. 5-Minuten-Abruf der Ist-Rückmeldungen bleibt.

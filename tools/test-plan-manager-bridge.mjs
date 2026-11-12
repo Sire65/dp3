@@ -47,7 +47,7 @@ vm.createContext(context);
 vm.runInContext(source, context);
 
 const rows = context.window.KCDP.planManagerBridge.buildRows();
-assert.equal(context.window.KCDP.planManagerBridge.version, '0.2.0');
+assert.equal(context.window.KCDP.planManagerBridge.version, '0.3.0');
 assert.equal(context.window.KCDP.planManagerBridge.today(), today);
 assert.deepEqual(rows.map((r) => r.sourceShiftId), ['A', 'B']);
 assert.equal(rows[0].start, '10:00');
@@ -56,6 +56,13 @@ assert.equal(rows[0].end, '13:30');
 await context.window.KCDP.planManagerBridge.publishNow();
 assert.equal(published.eventId, 'KC-WM-2026');
 assert.deepEqual(published.rows.map((r) => r.sourceShiftId), ['A', 'B']);
+
+// Build 253: unveränderter Plan wird nicht erneut veröffentlicht (Datenbank schonen)
+let zaehler = 0; const altPublish = context.window.KCDP.supabaseConnection.publishPlan;
+context.window.KCDP.supabaseConnection.publishPlan = async (x) => { zaehler++; return altPublish(x); };
+const zweit = await context.window.KCDP.planManagerBridge.publishNow();
+assert.equal(zaehler, 0, 'Unveränderter Sollplan darf nicht erneut veröffentlicht werden.');
+assert.equal(zweit.reason, 'unveraendert');
 
 context.window.KCDP.shifts = [];
 await context.window.KCDP.planManagerBridge.publishNow();

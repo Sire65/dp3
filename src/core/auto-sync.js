@@ -4,7 +4,7 @@
  let timer=null;
  function cfg(){return K.integrationConfig?.supabase||{};}
  function clear(){if(timer){clearTimeout(timer);timer=null;}state.running=false;state.nextRunAt=null;}
- function schedule(){clear();const c=cfg();if(!c.onlineSyncEnabled||!c.autoSync)return state;const min=Math.max(1,Number(c.syncIntervalMinutes||1));state.running=true;state.nextRunAt=new Date(Date.now()+min*60000).toISOString();timer=setTimeout(()=>runNow({silent:true}).finally(schedule),min*60000);return state;}
+ function schedule(){clear();const c=cfg();if(!c.onlineSyncEnabled||!c.autoSync)return state;const min=Math.max(typeof document!=='undefined'&&document.hidden?5:1,Number(c.syncIntervalMinutes||1));state.running=true;state.nextRunAt=new Date(Date.now()+min*60000).toISOString();timer=setTimeout(()=>runNow({silent:true}).finally(schedule),min*60000);return state;}
  async function runNow({silent=false}={}){
    if(K.planningDataReady===false)return {skipped:true,reason:'planning_data_loading'};
    if(state.inFlight)return {skipped:true,reason:'already_running'};
@@ -31,6 +31,13 @@
  if(typeof addEventListener==='function'){
    addEventListener('online',()=>{state.online=true;if(cfg().autoSync)runNow({silent:true}).finally(schedule)});
    addEventListener('offline',()=>{state.online=false;});
+   if(typeof document!=='undefined')document.addEventListener('visibilitychange',()=>{
+     if(!state.running)return;
+     if(document.hidden){schedule();return;}
+     const elapsed=state.lastRunAt?Date.now()-Date.parse(state.lastRunAt):Infinity;
+     if(elapsed>60000)runNow({silent:true}).finally(schedule);
+     else schedule();
+   });
  }
- K.autoSync={version:'0.17.4',state,start,stop,runNow,schedule};
+ K.autoSync={version:'0.17.5',state,start,stop,runNow,schedule};
 })();

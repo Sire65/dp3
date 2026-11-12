@@ -13,7 +13,8 @@
 (function () {
   'use strict';
   const K = (window.KCDP = window.KCDP || {});
-  const VERSION = '0.2.0';
+  const VERSION = '0.3.0';
+  let letzterStand = '', letzteVeroeffentlichung = 0;
   const VORSCHAU_TAGE = 30; // "die naechsten Tage" - genug fuer mehrere Wochen Blaetterpfeil,
                              // ohne bei jedem Takt unnoetig viel zu uebertragen
 
@@ -75,7 +76,13 @@
     // Auch ein LEERER Plan wird veroeffentlicht (z.B. ausserhalb der Saison) - sonst wuerde
     // die Kasse einfach den letzten, inzwischen veralteten Stand weiter anzeigen.
     const eventId = K.eventConfig?.eventId || 'KC-WM-2026';
-    return K.supabaseConnection.publishPlan({ eventId, rows });
+    // Build 253: nur veroeffentlichen, wenn sich der Plan geaendert hat (vorher bei JEDEM Minutentakt der ganze Plan
+    // auf jedem Geraet). Zur Sicherheit spaetestens alle 30 Min. erneut, falls die Datenbank zwischendurch geleert wurde.
+    const stand = eventId + '|' + JSON.stringify(rows);
+    if (stand === letzterStand && Date.now() - letzteVeroeffentlichung < 30 * 60000) return { skipped: true, reason: 'unveraendert' };
+    const ergebnis = await K.supabaseConnection.publishPlan({ eventId, rows });
+    letzterStand = stand; letzteVeroeffentlichung = Date.now();
+    return ergebnis;
   }
 
   K.planManagerBridge = { version: VERSION, publishNow: veroeffentlicheJetzt, buildRows: baueZeilen, today: heute };

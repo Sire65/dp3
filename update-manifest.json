@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 308,
+  "build": 309,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b308",
+  "cacheName": "kc-dp-release-0.20.0-b309",
   "releaseNotes": [
     "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
     "Build 307 RC: Ist-Rückmeldung nach dem Dienst aus der Club App: „passt“ zählt sofort, Abweichungen ab 15 Minuten und „nicht da“ bestätigt der Planer. Kasse und Stempeluhr haben Vorrang. Kontoauszug zeigt bestätigt, geändert, wartet, nicht da, abgelehnt und keine Antwort. Auswertung Stimmung & Besetzung.",
@@ -155,8 +155,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-08T08:27:59.558Z",
-  "totalRuntimeBytes": 37458137,
+  "generatedAt": "2026-11-12T10:37:00.788Z",
+  "totalRuntimeBytes": 37219732,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -217,8 +217,8 @@
     {
       "path": "assets/kc-original-kochmuetze.png",
       "installPath": "assets/kc-original-kochmuetze.png",
-      "bytes": 287949,
-      "sha256": "37497e4568badf6efcdcdf039fd9b6c42e93cf6727919c4d06bcdae4ae0be9fe",
+      "bytes": 47980,
+      "sha256": "42c8514f2da8c49bfb43ce6a227ce39895b1b3cfa84b96ae756706f01bae5656",
       "runtime": true
     },
     {
@@ -337,7 +337,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35146,
-      "sha256": "a492ed13a21c63ddfa9d83e2da530743cca3f794066cc5fc3906340c5755ed87",
+      "sha256": "e37316cf2441d191fbafcdb3fcc2bf7f6cfe5c1f574ee9cbba87caa05d731865",
       "runtime": true,
       "forceRefresh": true
     },
@@ -630,8 +630,8 @@
     {
       "path": "src/core/auto-sync.js",
       "installPath": "src/core/auto-sync.js",
-      "bytes": 2934,
-      "sha256": "2780f82b646ffa275d3740f553479df0cddc5ca7867f7572a8d7013cbb33d0cd",
+      "bytes": 3322,
+      "sha256": "cd008417a2a047b7b58bf605ca65c3849f9bc810a80ab9b94d4ab9abcf48929a",
       "runtime": true
     },
     {
@@ -791,8 +791,8 @@
     {
       "path": "src/core/kicc-heartbeat.js",
       "installPath": "src/core/kicc-heartbeat.js",
-      "bytes": 7566,
-      "sha256": "4802da859a30ee07c54e7f9f827fb65d7955ea32ba92b5e005e3503575183443",
+      "bytes": 8155,
+      "sha256": "5ba0603dadb69eb287271ed339956b94b5d3ef369124fc21ba26510ef0fde596",
       "runtime": true
     },
     {
@@ -896,8 +896,8 @@
     {
       "path": "src/core/plan-manager-bridge.js",
       "installPath": "src/core/plan-manager-bridge.js",
-      "bytes": 3615,
-      "sha256": "b723a2429a7c0793030e5e7cac59df5162994839a8b75a740812ffd8ada55741",
+      "bytes": 4202,
+      "sha256": "216be0c500292c092ba4d77ffc1d94b54bc1c2a1ec006f37b5a909451f62e063",
       "runtime": true
     },
     {
