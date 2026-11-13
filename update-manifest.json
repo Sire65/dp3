@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 309,
+  "build": 310,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b309",
+  "cacheName": "kc-dp-release-0.20.0-b310",
   "releaseNotes": [
+    "Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.",
     "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
     "Build 307 RC: Ist-Rückmeldung nach dem Dienst aus der Club App: „passt“ zählt sofort, Abweichungen ab 15 Minuten und „nicht da“ bestätigt der Planer. Kasse und Stempeluhr haben Vorrang. Kontoauszug zeigt bestätigt, geändert, wartet, nicht da, abgelehnt und keine Antwort. Auswertung Stimmung & Besetzung.",
     "Build 306 RC: Schreibfreigabe in Supabase von der täglichen Sicherungsauswahl trennen. Ehemalige Testpersonen nicht erneut laden; echte Wünsche und Bedarfswerte erhalten.",
@@ -155,8 +156,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-12T10:37:00.788Z",
-  "totalRuntimeBytes": 37219732,
+  "generatedAt": "2026-11-13T04:49:56.595Z",
+  "totalRuntimeBytes": 37223286,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -337,7 +338,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35146,
-      "sha256": "e37316cf2441d191fbafcdb3fcc2bf7f6cfe5c1f574ee9cbba87caa05d731865",
+      "sha256": "199d18e21711299905b15a828c1884b50c1ba3c351cf9c3847915deeb79ae53d",
       "runtime": true,
       "forceRefresh": true
     },
@@ -469,8 +470,8 @@
     {
       "path": "src/adapters/cloud-primary.js",
       "installPath": "src/adapters/cloud-primary.js",
-      "bytes": 14651,
-      "sha256": "6360eda8b68133505b8eec64a887dbcafec5a9c64535fa0f795ab5acf9a06d7a",
+      "bytes": 14749,
+      "sha256": "a9be73666f1b61c403ecdf5a0057229092f54940c6b635e57fe95df1ac955f97",
       "runtime": true
     },
     {
@@ -959,8 +960,8 @@
     {
       "path": "src/core/security-core.js",
       "installPath": "src/core/security-core.js",
-      "bytes": 3383,
-      "sha256": "ee6d1749924252936100473d39c1f3559c9893a4707fbaecbd8e61496dd94e58",
+      "bytes": 5328,
+      "sha256": "a3f99e80e32b4253de32330d77af8bfd42a63bff90a1141cd6554c8ea7ab3216",
       "runtime": true
     },
     {
@@ -1127,8 +1128,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 265233,
-      "sha256": "30dfff412c759568da0738057a59f2d44ee7d7a2ea20ff1c2f91c95fd5b2b2c5",
+      "bytes": 266744,
+      "sha256": "14cf6a3876acca30481388f7f784e0abca350f848e4f5ee4f8d8a52d663349b7",
       "runtime": true
     },
     {
