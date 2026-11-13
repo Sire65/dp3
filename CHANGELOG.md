@@ -1,3 +1,10 @@
+## Build 310 RC · Planungsstände sparsam speichern (13.11.2026)
+
+- Der zentrale Planungsstand wird vor dem Verschlüsseln gepackt (gzip, Format `KC_SECURE_SYNC_V2`, Packmerkmal in den geprüften Zusatzdaten). Ältere Fassungen (V1) bleiben lesbar; Browser ohne `CompressionStream` speichern wie bisher ungepackt.
+- Schnelle Änderungsfolgen werden gebündelt: Liegt die letzte Speicherung weniger als 20 s zurück, sammelt DP2 kurz (3 s Ruhe, höchstens 12 s) und speichert einen Stand. Einzelne Änderungen speichern sofort; beim Verlassen der Seite endet die Pause sofort.
+- Anlass: Am 12.11.2026 entstanden 78 volle Fassungen (je 1,4–1,7 MB) an einem Abend. Die Wünsche der Mitglieder (Club-App-Eingang) sind davon nicht betroffen.
+- Neuer Test `tools/test-speichern-sparsam.mjs` (in `npm run test:smoke`).
+
 ## Build 309 RC · Weniger Datenbankanfragen
 
 - Hintergrundabgleich und technische Verkehrsmeldungen gebündelt, unveränderte Sollpläne seltener an den PC Manager gesendet.

@@ -25,7 +25,7 @@
   async function drain(){
     const hadOfflineJournal=queue.some(item=>item.durable);
     while(queue.length){const item=queue[0];if(item.baseVersion==null)item.baseVersion=state.version;
-      const c=await key();if(!item.envelope)item.envelope=await KCSecureSync.encryptEnvelope({schema:'KC_DP_WORKSPACE_V1',data:item.data},{secret:c.secret,projectId:c.namespace,aad:'KC_DP_WORKSPACE_V1'});
+      const c=await key();if(!item.envelope)item.envelope=await KCSecureSync.encryptEnvelope({schema:'KC_DP_WORKSPACE_V1',data:item.data},{secret:c.secret,projectId:c.namespace,aad:'KC_DP_WORKSPACE_V1',compress:true});/* KC-DP-SPEICHERN-SPARSAM: gepackt (gzip) – alte Fassungen (V1) bleiben lesbar */
       // An offline request is durably updated BEFORE retrying it. Its ID and ciphertext never change.
       if(item.durable)await durable();
       const ack=await K.supabaseConnection.workspaceSave(c.namespace,item.id,item.baseVersion,item.envelope,item.legacySequence??legacySequence);
