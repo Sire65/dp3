@@ -23,5 +23,9 @@
     "lighthouse": "13.4.1",
     "playwright": "1.63.0",
     "supabase": "2.117.0"
+  },
+  "overrides": {
+    "puppeteer-core": "25.13.0",
+    "ansi-regex": "6.3.0"
   }
 }
