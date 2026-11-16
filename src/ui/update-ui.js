@@ -17,7 +17,7 @@
   window.addEventListener('KC_DP_UPDATE_PROGRESS',e=>progress(e.detail));
   window.addEventListener('KC_DP_UPDATE_SUCCESS',e=>success(e.detail));
   window.addEventListener('KC_DP_UPDATE_FAILED',e=>failed(e.detail));
-  window.addEventListener('KC_DP_UPDATE_CURRENT',e=>toast(`KC DP2 V${e.detail.version} ist aktuell.`));
+  window.addEventListener('KC_DP_UPDATE_CURRENT',e=>toast(e.detail.localPreview ? `Lokaler DP2-Build ${e.detail.build}. Neue lokale Dateien werden beim Neuladen geladen.` : `KC DP2 V${e.detail.version} ist aktuell.`));
   window.addEventListener('KC_DP_UPDATE_CHECK_ERROR',e=>toast(`Updateprüfung nicht möglich: ${e.detail.message}`));
   K.updateUi={version:'0.19.37',showAvailable,checkNow:()=>K.updateManager.check({manual:true})};
 })();

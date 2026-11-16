@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 310,
+  "build": 311,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b310",
+  "cacheName": "kc-dp-release-0.20.0-b311",
   "releaseNotes": [
     "Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.",
     "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
@@ -156,8 +156,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-13T04:49:56.595Z",
-  "totalRuntimeBytes": 37223286,
+  "generatedAt": "2026-11-16T11:19:19.760Z",
+  "totalRuntimeBytes": 37229332,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -338,7 +338,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35146,
-      "sha256": "199d18e21711299905b15a828c1884b50c1ba3c351cf9c3847915deeb79ae53d",
+      "sha256": "aaa38954791784c835ef303679a42867dd117303fdeab7eff9c64636d1e6d6ac",
       "runtime": true,
       "forceRefresh": true
     },
@@ -533,8 +533,8 @@
     {
       "path": "src/adapters/pdf.js",
       "installPath": "src/adapters/pdf.js",
-      "bytes": 18676,
-      "sha256": "6d7fbf581fc6bd49a3fc207e3a8e09018c9fd2db13a59121d2b03f29dedf9c55",
+      "bytes": 20239,
+      "sha256": "da36e82d9ca3bd06eede5979476451b380cd6ad180db85aa6784578a09a2b0a0",
       "runtime": true
     },
     {
@@ -715,8 +715,8 @@
     {
       "path": "src/core/documents.js",
       "installPath": "src/core/documents.js",
-      "bytes": 34470,
-      "sha256": "d3a53e9bfa60e624f110c102e1a098298e923100b88f2a669075af16ae79d65d",
+      "bytes": 36650,
+      "sha256": "b9146d2972f33ae967eb9205777dc455bc48d0724ab8211c7ed3c1d3083b5fa5",
       "runtime": true
     },
     {
@@ -1023,8 +1023,8 @@
     {
       "path": "src/core/update-manager.js",
       "installPath": "src/core/update-manager.js",
-      "bytes": 18177,
-      "sha256": "bebc17dc8f97d3e404b2c10351ac8427da01a0ca42e95dc2afc6b35c164c9cdd",
+      "bytes": 18592,
+      "sha256": "ae84b0d225e851c2dd495f89a727253020f2363428d44e7e51b296d031868812",
       "runtime": true
     },
     {
@@ -1128,8 +1128,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 266744,
-      "sha256": "14cf6a3876acca30481388f7f784e0abca350f848e4f5ee4f8d8a52d663349b7",
+      "bytes": 268319,
+      "sha256": "bec48b3b69b7504b1094428b7f8a4d2b3574638571196304e357f1b06c67f9e4",
       "runtime": true
     },
     {
@@ -2122,8 +2122,8 @@
     {
       "path": "src/ui/update-ui.js",
       "installPath": "src/ui/update-ui.js",
-      "bytes": 19727,
-      "sha256": "1e48db932631cfd3dea410954d1beb6e54d2e176d40318fd1f709d897cf083ba",
+      "bytes": 19842,
+      "sha256": "8e846e261aba88a67a148a2749eb71a6b69a954f0dd0bceaf05a9350b9c5f0e1",
       "runtime": true
     },
     {
@@ -2178,8 +2178,8 @@
     {
       "path": "src/ui/wish-bar-composite.js",
       "installPath": "src/ui/wish-bar-composite.js",
-      "bytes": 10517,
-      "sha256": "dea6a364459563f9e2674df23ae9ea297a8e16db783c545354f47afb14dddbcb",
+      "bytes": 10715,
+      "sha256": "ee472cc327c618564b0576dab4143af3a541202b6818db6728777435c9662f7c",
       "runtime": true
     },
     {

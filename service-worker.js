@@ -139,7 +139,22 @@ self.addEventListener('fetch',event=>{
   if(event.request.method!=='GET')return;
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin){if(/\.supabase\.co$/i.test(url.hostname)){event.respondWith(fetchWithTimeout(event.request,{cache:'no-store'}));}return;}
-  if(LOCAL_PREVIEW){event.respondWith((async()=>{const meta=await readMeta();if(meta?.activeCache&&!url.pathname.endsWith('/update-manifest.json')&&!url.pathname.endsWith('/service-worker.js')&&!url.searchParams.has('kc_update')){const cache=await caches.open(meta.activeCache);const target=event.request.mode==='navigate'?new URL(FALLBACK,self.registration.scope).toString():event.request;const hit=await cache.match(target,{ignoreSearch:true});if(hit)return runtimeResponse(hit,event.request.url);}return fetchWithTimeout(event.request,{cache:'no-store'});})());return;}
+  if(LOCAL_PREVIEW){
+    event.respondWith((async()=>{
+      try{return await fetchWithTimeout(event.request,{cache:'no-store'});}
+      catch(error){
+        if(url.searchParams.has('kc_update'))throw error;
+        const meta=await readMeta();
+        if(!meta?.activeCache)throw error;
+        const cache=await caches.open(meta.activeCache);
+        const target=event.request.mode==='navigate'?new URL(FALLBACK,self.registration.scope).toString():event.request;
+        const hit=await cache.match(target,{ignoreSearch:true});
+        if(!hit)throw error;
+        return runtimeResponse(hit,event.request.url);
+      }
+    })());
+    return;
+  }
   if(url.toString()===START_LOG_URL){event.respondWith((async()=>new Response(JSON.stringify(await readStartLogs(),null,2),{headers:{'Content-Type':'application/json','Cache-Control':'no-store'}}))());return;}
   if(url.searchParams.has('kc_update')||event.request.headers.get('X-KC-DP-Update')==='1'){event.respondWith(fetchWithTimeout(event.request,{cache:'no-store'}));return;}
   if(url.pathname.endsWith('/update-manifest.json')||url.pathname.endsWith('/service-worker.js')){event.respondWith(fetchWithTimeout(event.request,{cache:'no-store'}));return;}

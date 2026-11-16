@@ -4,6 +4,7 @@
   const MANIFEST_URL='update-manifest.json';
   const REMOTE_MANIFEST_URL='https://raw.githubusercontent.com/Sire65/dp3/codex/club-app-interface/update-manifest.json';
   const LOCAL_REPO_HOST=/^(?:127\.0\.0\.1|localhost)$/i.test(location.hostname)||location.protocol==='file:';
+  const LOCAL_PREVIEW=/^(?:127\.0\.0\.1|localhost|\[::1\])$/i.test(location.hostname);
   const SNOOZE_MS=12*60*60*1000;
   const REPORT_QUEUE_KEY='kc_dp_pending_update_reports_v1';
   const state={status:'idle',manifest:null,lastCheckAt:null,lastError:null,phase:'idle',downloadedBytes:0,totalBytes:0};
@@ -35,6 +36,12 @@
     if(commit)m.sourceCommit=commit;return m;
   }
   async function check({manual=false}={}){
+    if(LOCAL_PREVIEW){
+      state.status='local-preview';
+      state.manifest=null;
+      if(manual)window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_CURRENT',{detail:{localPreview:true,build:window.KC_DP_BUILD}}));
+      return {available:false,localPreview:true};
+    }
     if(state.installing||state.status==='installed')return {available:false,busy:!!state.installing,installed:state.status==='installed'};state.status='checking';state.lastCheckAt=new Date().toISOString();state.lastError=null;
     try{
       const m=await fetchManifest();if(state.installing||state.status==='installed')return {available:false,busy:!!state.installing};state.manifest=m;
@@ -132,7 +139,7 @@
     if(state.installing)return {ok:false,busy:true};state.installing=true;try{if(K.storage?.unlocked&&K.persistAll)await K.persistAll();await K.sync?.whenDurable?.();await stage(manifest);await activate(manifest);state.status='installed';state.phase='done';window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_SUCCESS',{detail:{version:manifest.version,build:manifest.build}}));return {ok:true,version:manifest.version,build:manifest.build};}
     catch(error){state.status='failed';state.lastError=error.message;const report=makeErrorReport(error,manifest,state.phase);state.lastReport=report;window.dispatchEvent(new CustomEvent('KC_DP_UPDATE_FAILED',{detail:{error,report,version:manifest.version}}));return {ok:false,error,report};}finally{state.installing=false;}
   }
-  async function install(manifest=state.manifest){if(navigator.locks)return navigator.locks.request('kc-dp-program-update',{ifAvailable:true},lock=>lock?installCore(manifest):Promise.resolve({ok:false,busy:true}));return installCore(manifest); }
+  async function install(manifest=state.manifest){if(LOCAL_PREVIEW)return {ok:false,localPreview:true};if(navigator.locks)return navigator.locks.request('kc-dp-program-update',{ifAvailable:true},lock=>lock?installCore(manifest):Promise.resolve({ok:false,busy:true}));return installCore(manifest); }
   async function reportFailure(report){try{const result=await sendReport(report);return {ok:true,result};}catch(error){queueReport(report);return {ok:false,queued:true,error};}}
   function downloadReport(report){const blob=new Blob([JSON.stringify(report,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`KC_DP2_Updatefehler_${report.reportId}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1500);}
   async function ensureEngine(){if(!('serviceWorker'in navigator)||!/^https?:$/.test(location.protocol))return null;try{return await navigator.serviceWorker.register('service-worker.js?engine=stable-v3-b302',{updateViaCache:'none'});}catch(_){return null;}}
