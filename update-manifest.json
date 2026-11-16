@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 311,
+  "build": 312,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b311",
+  "cacheName": "kc-dp-release-0.20.0-b312",
   "releaseNotes": [
     "Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.",
     "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
@@ -156,8 +156,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-16T11:19:19.760Z",
-  "totalRuntimeBytes": 37229332,
+  "generatedAt": "2026-11-16T11:21:49.595Z",
+  "totalRuntimeBytes": 37238002,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -337,8 +337,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 35146,
-      "sha256": "aaa38954791784c835ef303679a42867dd117303fdeab7eff9c64636d1e6d6ac",
+      "bytes": 35295,
+      "sha256": "861d8965e07291585b1e709af62bab09e1f2a2729032420ebb5aa39a4a88cc54",
       "runtime": true,
       "forceRefresh": true
     },
@@ -699,6 +699,13 @@
       "runtime": true
     },
     {
+      "path": "src/core/direkte-leitung-dp.js",
+      "installPath": "src/core/direkte-leitung-dp.js",
+      "bytes": 2533,
+      "sha256": "06171e98893ed290efc1a080096c0af83065d2c58bf81030d1a6621ec9aac54d",
+      "runtime": true
+    },
+    {
       "path": "src/core/distribution.js",
       "installPath": "src/core/distribution.js",
       "bytes": 3291,
@@ -787,6 +794,13 @@
       "installPath": "src/core/ist-rueckmeldung.js",
       "bytes": 21254,
       "sha256": "cbad98e5cb0d2278c90e0db32190edddb3b58725b91a7c22e3b30d3b35d8b83a",
+      "runtime": true
+    },
+    {
+      "path": "src/core/kc-direkte-leitung.js",
+      "installPath": "src/core/kc-direkte-leitung.js",
+      "bytes": 5988,
+      "sha256": "f496f3008702857722bc76799913171b77c31e955089872641ddd3f15da1399c",
       "runtime": true
     },
     {
