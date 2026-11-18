@@ -1,3 +1,9 @@
+## Build 318 RC – V/H/B ausblenden und Bereichsfarben zuschalten
+
+- Zwei gemerkte Anzeige-Schalter neben der Bereitschafts-Schaltfläche: V/H/B ein-/ausblenden und Bereiche separat farbig prüfen.
+- Gesamtampel bleibt rein personenabhängig. Ein gemeinsamer B-Pool wird bei der Bereichsprüfung nur einmal verwendet; keine Dienstzuweisung.
+- PDF berücksichtigt die gewählte Ansicht.
+
 ## Build 317 RC – Personenampel nach Gesamtanzahl
 
 - Rot = weniger, Grün = genau passend, Gelb = mehr Personen als Gesamtbedarf. V/H/B-Verteilung beeinflusst die Ampel nicht.
