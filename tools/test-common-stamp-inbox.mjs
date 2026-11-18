@@ -1,6 +1,9 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import vm from 'node:vm';
+const html=await fs.readFile(new URL('../index.html',import.meta.url),'utf8');
+assert(html.includes('<script defer src="src/adapters/common-stamp-inbox.js'),'stempelbuch follows deferred provider startup');
+assert(html.indexOf('src/adapters/timeclock-supabase.js')<html.indexOf('src/adapters/common-stamp-inbox.js'));
 const source=await fs.readFile(new URL('../src/adapters/common-stamp-inbox.js',import.meta.url),'utf8');
 const K={timeclockSupabase:{pendingRows:async()=>[{sourceRecordId:'legacy'}],acknowledge:async()=>({saved:1})},
  supabaseConnection:{ensureSession:async()=>{},sessionSnapshot:()=>({access_token:'test-token'})},

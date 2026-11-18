@@ -156,8 +156,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-18T08:24:23.491Z",
-  "totalRuntimeBytes": 37241766,
+  "generatedAt": "2026-11-18T08:52:54.060Z",
+  "totalRuntimeBytes": 37241772,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -337,8 +337,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 35370,
-      "sha256": "2a23fe3a04fa4069137fc3dac2d1048a87ccb5286780705c91bf11b261bd2801",
+      "bytes": 35376,
+      "sha256": "0f14ac7c4e9f3af81798c652fc5e0206a7e9bf82cca3a9ff4b7c54ee130e2ed7",
       "runtime": true,
       "forceRefresh": true
     },
