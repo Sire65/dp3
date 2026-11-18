@@ -26,7 +26,7 @@ function forDay(day){
  if(!day)return day;
  const forecast=state.forecast.get(day.date),old=day.weather||{},stale=forecast&&Date.now()-Date.parse(forecast.fetchedAt)>2*HOUR;
  const manual=old.source==='planner_override'||old.source==='manual'||old.factorSource==='planner';
- const weather=forecast&&!stale?{...forecast,factor:manual?Number(old.factor||1):1,impact:manual?old.impact:'neutral',factorSource:manual?'planner':'unrated'}:manual?old:{condition:stale?'Wetterdaten veraltet':'Noch keine Vorhersage für diesen Tag',factor:1,source:'unbekannt'};
+ const weather=forecast&&!stale?{...forecast,factor:manual?Number(old.factor||1):1,impact:manual?old.impact:'neutral',factorSource:manual?'planner':'unrated'}:manual?old:{condition:stale?'Wetterdaten veraltet':'Noch keine Vorhersage für diesen Tag',factor:1,impact:'nicht bewertet',source:'unbekannt'};
  const pub=state.publication,covered=pub&&day.date>=pub.programPublication.from&&day.date<=pub.programPublication.to;
  const local=(day.program||[]).filter(p=>p.source!=='PC Manager'&&p.source!=='manager_context');
  const program=covered?[...pub.program.filter(p=>p.date===day.date&&!local.some(x=>x.title===p.title&&x.start===p.start)),...local]:day.program||[];
