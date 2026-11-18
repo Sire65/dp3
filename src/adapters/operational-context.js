@@ -4,7 +4,7 @@ const K=window.KCDP,WEATHER_URL='https://api.open-meteo.com/v1/forecast?latitude
 const state={busy:false,weather:{status:'missing',checkedAt:null,error:null},program:{status:'missing',checkedAt:null,error:null},forecast:new Map(),publication:null};
 let pending=null,lastWeather=0,lastProgram=0;
 const HOUR=3600000;
-function condition(code){const n=Number(code);return n===0?'klar':n<=3?'bewölkt':[45,48].includes(n)?'Nebel':n>=95?'Gewitter':n>=71&&n<=77?'Schnee':n>=51?'Regen':'Wetterlage';}
+function condition(code){if(code===null||code===undefined||!Number.isFinite(Number(code)))return 'Keine Wetterangabe';const n=Number(code);return n===0?'klar':n<=3?'bewölkt':[45,48].includes(n)?'Nebel':n>=95?'Gewitter':(n>=71&&n<=77)||[85,86].includes(n)?'Schnee':n>=51?'Regen':'Wetterlage';}
 function finite(x){return x!==null&&x!==undefined&&Number.isFinite(Number(x))?Number(x):null;}
 function parseWeather(data,at=new Date().toISOString()){
  if(!Array.isArray(data?.daily?.time)||!Array.isArray(data?.hourly?.time))throw Error('Wetterantwort ist unvollständig.');
