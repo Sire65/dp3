@@ -1,3 +1,9 @@
+## Build 317 RC – Personenampel nach Gesamtanzahl
+
+- Rot = weniger, Grün = genau passend, Gelb = mehr Personen als Gesamtbedarf. V/H/B-Verteilung beeinflusst die Ampel nicht.
+- Kann-/Bedarf-Zeile und Gesamtbewertung färben sich entsprechend; Reserve und Bereitschaft bleiben separat.
+- Browser prüft sichtbare CSS-Farbwechsel bei geänderter Personenanzahl. PDF-Legende angepasst.
+
 ## Build 316 RC – Besetzungsstatistik ohne irreführende Bereichslücken
 
 - Gemeinsamer B-Pool, jede Person einmal, Reserve getrennt. Rot nur bei tatsächlicher Nichtabdeckbarkeit; gelb für offene Zuteilung oder Vorbehalt.
