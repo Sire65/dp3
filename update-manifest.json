@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 312,
+  "build": 313,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b312",
+  "cacheName": "kc-dp-release-0.20.0-b313",
   "releaseNotes": [
     "Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.",
     "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
@@ -156,8 +156,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-16T11:21:49.595Z",
-  "totalRuntimeBytes": 37238002,
+  "generatedAt": "2026-11-18T08:24:23.491Z",
+  "totalRuntimeBytes": 37241766,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -337,8 +337,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 35295,
-      "sha256": "861d8965e07291585b1e709af62bab09e1f2a2729032420ebb5aa39a4a88cc54",
+      "bytes": 35370,
+      "sha256": "2a23fe3a04fa4069137fc3dac2d1048a87ccb5286780705c91bf11b261bd2801",
       "runtime": true,
       "forceRefresh": true
     },
@@ -475,6 +475,13 @@
       "runtime": true
     },
     {
+      "path": "src/adapters/common-stamp-inbox.js",
+      "installPath": "src/adapters/common-stamp-inbox.js",
+      "bytes": 2957,
+      "sha256": "4184e4db80b2a50af2711ade030eaac862f30e261d0b2ece9bb18695ee7503e4",
+      "runtime": true
+    },
+    {
       "path": "src/adapters/context-providers.js",
       "installPath": "src/adapters/context-providers.js",
       "bytes": 1844,
@@ -582,15 +589,15 @@
     {
       "path": "src/adapters/timeclock-import.js",
       "installPath": "src/adapters/timeclock-import.js",
-      "bytes": 6830,
-      "sha256": "b9c1c23247491eb797a0df1b29c816723f54f18df75adc31aaa2c4fe07a38986",
+      "bytes": 6995,
+      "sha256": "859085acf0938f66af31263fd58361877f744ce96e6670704a4b62ebe86b452b",
       "runtime": true
     },
     {
       "path": "src/adapters/timeclock-supabase.js",
       "installPath": "src/adapters/timeclock-supabase.js",
-      "bytes": 4606,
-      "sha256": "9f65b55763f1ead4e67966e1450bf1040927caa3547b68358cccf9900a1458ac",
+      "bytes": 4664,
+      "sha256": "be4fdf09ba9d4e9135b2412aa6be27c51872ee02f15c095464a1dffe5de1ed7e",
       "runtime": true
     },
     {
@@ -610,8 +617,8 @@
     {
       "path": "src/core/actual.js",
       "installPath": "src/core/actual.js",
-      "bytes": 22281,
-      "sha256": "91cc9b7bddf1a9a3fb47aa9085131044ab88f7faf01a1543e67794186eafeddb",
+      "bytes": 21979,
+      "sha256": "e39a6b804949d9f3cf6bf032bd034df6dc6954b2f2b697f9d28210715820c5ec",
       "runtime": true
     },
     {
@@ -1037,8 +1044,8 @@
     {
       "path": "src/core/update-manager.js",
       "installPath": "src/core/update-manager.js",
-      "bytes": 18592,
-      "sha256": "ae84b0d225e851c2dd495f89a727253020f2363428d44e7e51b296d031868812",
+      "bytes": 19415,
+      "sha256": "548dabd97808b2844687a2f33b78c1e4abc0693469650d17ab7ef81c6052eb1f",
       "runtime": true
     },
     {
@@ -1142,8 +1149,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 268319,
-      "sha256": "bec48b3b69b7504b1094428b7f8a4d2b3574638571196304e357f1b06c67f9e4",
+      "bytes": 268803,
+      "sha256": "e1bb893efb44b737f0a17637c5741f38f248d728f22129b3ca5389ccdd484ff5",
       "runtime": true
     },
     {
@@ -1758,8 +1765,8 @@
     {
       "path": "src/ui/plan-transfer.js",
       "installPath": "src/ui/plan-transfer.js",
-      "bytes": 16617,
-      "sha256": "274a8719ad9fb52b502eda2ddb8bc430cf1ac6105a31d27e992a0ef66e96d841",
+      "bytes": 16228,
+      "sha256": "6a782c809c133fba55a16f54d2e5d0b17fcd6439d215825f439db853bdcc2c4e",
       "runtime": true
     },
     {
@@ -1814,8 +1821,8 @@
     {
       "path": "src/ui/planning-efficiency.js",
       "installPath": "src/ui/planning-efficiency.js",
-      "bytes": 9183,
-      "sha256": "bb1b507901a372ccc4b1353d99a57071461d5fd157177c0c66f12cf2e491bd86",
+      "bytes": 9076,
+      "sha256": "bdb523d3d0e0e0ad2288764847006b295e753e9e973bf3b42da7d212d967f881",
       "runtime": true
     },
     {

@@ -72,7 +72,7 @@ assert(hour.includes('K.dayPicker?.open'), 'Stundenmatrix muss gemeinsame Tagesa
 assert(demand.includes("current?'current-day'")&&hour.includes("current?'current-day'")&&index.includes('src/ui/active-day.js')&&index.includes('src/ui/startup.css')&&startupCss.includes('/* src/ui/active-day.css */'), 'Aktiver Tag muss in Bedarf, Stundenmatrix und weiteren Mehrtagesansichten markiert werden');
 assert(app.includes('Letzte technische Fehlerursache')&&app.includes('Warteschlange synchronisieren')&&app.includes('Neu anmelden')&&app.includes('Anmeldung, Provider und Datenbank erreichbar'), 'Supabase-Diagnose muss Ursache, lokalen Datenstatus und nächsten Schritt verständlich anzeigen');
 assert(app.includes('K.planTransfer?.matrixEditor'), 'Wunschbalken-Doppelklick muss vollständige Matrix öffnen');
-assert(transfer.includes('Wunschplan in den Sollplan')&&transfer.includes('Sollplan in den Istplan'), 'Beide Planübergaben müssen vorhanden sein');
+assert(transfer.includes('Wunschzeiten in den Sollplan')&&transfer.includes('Sollzeiten sind kein Ist-Nachweis.'), 'Wunschübernahme und Sperre gegen Soll-Ist-Kopieren müssen vorhanden sein');
 assert(transfer.includes('Es wird nichts überschrieben'), 'Planübergabe darf nichts überschreiben');
 assert(composite.includes('wish-composite-solid')&&composite.includes('plan-wish-guide'), 'Wunsch/Kann-Kompositbalken fehlen');
 assert(deviations.includes('Wunsch, Soll und Ist')&&deviations.includes('data-dev-plan')&&deviations.includes('data-dev-actual'), 'Abweichungsansicht ist unvollständig');
@@ -127,6 +127,6 @@ const pageStub={querySelector:()=>null,querySelectorAll:()=>[],children:[]},pdfB
 assert.equal(String.fromCharCode(...pdfBytes.slice(0,4)),'%PDF','QR-PDF muss als gültiger PDF-Datenstrom beginnen');
 
 const planTransfer=await read('src/ui/plan-transfer.js');
-assert(app.includes('Diesen Wunsch in Sollplan übernehmen')&&app.includes('Diesen Dienst in Istplan übernehmen')&&planTransfer.includes('sourceId')&&planTransfer.includes('x.source.id===sourceId'),'Rechtsklick muss einzelne Wunsch- und Sollbalken sicher in die nächste Planungsstufe übernehmen.');
+assert(app.includes('Diesen Wunsch in Sollplan übernehmen')&&app.includes('Istzeiten einlesen und prüfen')&&planTransfer.includes('sourceId')&&planTransfer.includes('x.source.id===sourceId'),'Rechtsklick muss Wünsche übernehmen und bei Solldiensten zur Ist-Erfassung führen.');
 
 console.log('UI-Vertrags-Smoke-Test OK: kompakte Register, Bedarfseditor, Excel-Ausgabe, Tagesauswahl, Stundenmatrix und Importprüfung');

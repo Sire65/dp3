@@ -1,3 +1,11 @@
+## Build 313 RC – Geprüfte Planübernahmen und gemeinsames Stempelbuch
+
+- Neues gemeinsames Stempelbuch für App- und Kassenzeiten, unvollständige Paare, Quellenhinweise und explizite Prüfung spontaner Einsätze.
+- Importquittung erst nach bestätigter zentraler Speicherung.
+- Sollzeiten lassen sich nicht als Istbuchung speichern. Istzeiten kommen weiterhin aus Erfassung, Kassenimport oder geprüften Rückmeldungen.
+- Die Sammelübernahme übernimmt nur Wunschzeiten ohne Warnung und blockiert mehr als acht Stunden am Stück.
+- Die Update-Prüfung unterscheidet lokale Vorschau und installierten Webstand.
+
 ## Build 310 RC · Planungsstände sparsam speichern (13.11.2026)
 
 - Der zentrale Planungsstand wird vor dem Verschlüsseln gepackt (gzip, Format `KC_SECURE_SYNC_V2`, Packmerkmal in den geprüften Zusatzdaten). Ältere Fassungen (V1) bleiben lesbar; Browser ohne `CompressionStream` speichern wie bisher ungepackt.

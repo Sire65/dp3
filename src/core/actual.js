@@ -110,21 +110,11 @@
   }
 
   function saveActual(candidate,{reason='',source=candidate.source||'manual_correction',importBatchId=candidate.importBatchId||null}={}){
+    if(source==='planned_transfer'||candidate.source==='planned_transfer')throw new Error('Sollzeiten sind kein Ist-Nachweis. Bitte tatsächliche Zeiten einlesen oder erfassen.');
     // KICC-F-100: vom Planer bestätigte Sonderstunden-Meldungen (self_report) sind wie Stempeluhr-Zeiten ein Import externer Zeiten.
     // Build 307: Ist-Rückmeldungen der Mitglieder (self_confirm/self_change) ebenso.
-    K.auth?.require?.(source==='file_import'||source==='timeclock'||source==='planned_transfer'||source==='self_report'||SELF.includes(source)?'roster.actual.import':'roster.actual.correct','Sie dürfen Istzeiten nicht bearbeiten.');
+    K.auth?.require?.(source==='file_import'||source==='timeclock'||source==='self_report'||SELF.includes(source)?'roster.actual.import':'roster.actual.correct','Sie dürfen Istzeiten nicht bearbeiten.');
     if(K.actualWorkflow.status==='closed')throw new Error('Der Istplan ist abgeschlossen. Vor Änderungen muss er administrativ wieder geöffnet werden.');
-    // A transfer may only create an unchanged copy of an active, explicitly linked plan.
-    // Editing an existing actual record continues to require roster.actual.correct.
-    if(source==='planned_transfer'){
-      const planned=K.shifts.find(s=>s.id===candidate.linkedShiftId&&s.layer==='planned'&&plannedActive(s));
-      if(candidate.id||!planned||planned.personId!==candidate.personId||planned.date!==candidate.date||
-        +planned.start!==candidate.start||+planned.end!==candidate.end||Number(planned.breakMinutes||0)!==Number(candidate.breakMinutes||0))
-        throw new Error('Der Solldienst wurde geändert oder ist nicht mehr übernehmbar. Bitte Vorschau neu öffnen.');
-      if(K.actualShifts.some(a=>a.status!=='deleted'&&(a.linkedShiftId===planned.id||a.plannedShiftId===planned.id||
-        (sameDay(a,candidate)&&+a.start===candidate.start&&+a.end===candidate.end))))
-        throw new Error('Für diesen Solldienst ist bereits eine Istzeit vorhanden.');
-    }
     const issues=validateActual(candidate);if(issues.some(i=>i.level==='error'))throw new Error(issues.find(i=>i.level==='error').text);
     let target=candidate.id?K.actualShifts.find(a=>a.id===candidate.id):null;const before=target?clone(target):null;
     if(target)Object.assign(target,candidate,{id:target.id});else{target={...candidate,id:candidate.id||`A-${Date.now()}-${Math.random().toString(36).slice(2,6)}`};K.actualShifts.push(target);}
@@ -151,8 +141,31 @@
     const batch={id:`IB-${Date.now()}-${Math.random().toString(36).slice(2,6)}`,name:batchName,source,fileMeta,createdAt:new Date().toISOString(),createdBy:K.currentUser?.personId||null,total:rows.length,accepted:0,rejected:0,status:'processing'};
     K.actualImportBatches.push(batch);const results=[];
     for(const row of rows){
-      try{supersedeSelf(row,`Buchung aus ${batch.name} hat Vorrang`);const duplicate=K.actualShifts.find(a=>a.status!=='deleted'&&!SELF.includes(a.source)&&a.personId===row.personId&&a.date===row.date&&a.start===row.start&&a.end===row.end&&Number(a.breakMinutes||0)===Number(row.breakMinutes||0));if(duplicate){results.push({ok:true,skipped:true,row:duplicate,comparison:comparison(duplicate),issues:[{level:'info',text:'Identischer Istzeit-Datensatz bereits vorhanden.'}]});batch.skipped=Number(batch.skipped||0)+1;continue;}const importIssues=validateActual(row),overlap=importIssues.find(i=>/Überlappt eine weitere Istzeit/.test(i.text));if(overlap)throw new Error('Diese Istzeit überschneidet sich mit einer bereits vorhandenen Istzeit dieser Person. Bitte zuerst prüfen oder korrigieren.');const out=saveActual({...row,source,importBatchId:batch.id},{reason:`Import ${batch.name}`,source,importBatchId:batch.id});results.push({ok:true,row:out.record,comparison:out.comparison,issues:out.issues});batch.accepted++;}
-      catch(e){results.push({ok:false,row,error:e.message});batch.rejected++;}
+      try {
+        const errors=validateActual(row).filter(issue=>issue.level==='error');
+        if(errors.length)throw new Error(errors[0].text);
+        const duplicate=K.actualShifts.find(a=>a.status!=='deleted'&&!SELF.includes(a.source)&&
+          a.personId===row.personId&&a.date===row.date&&a.start===row.start&&a.end===row.end&&
+          Number(a.breakMinutes||0)===Number(row.breakMinutes||0));
+        if(duplicate){
+          supersedeSelf(row,`Bestätigte Buchung aus ${batch.name} hat Vorrang`);
+          results.push({ok:true,skipped:true,sourceRecordId:row.sourceRecordId,row:duplicate,
+            comparison:comparison(duplicate),issues:[{level:'info',text:'Identischer Istzeit-Datensatz bereits vorhanden.'}]});
+          batch.skipped=Number(batch.skipped||0)+1;
+          continue;
+        }
+        const conflict=K.actualShifts.some(a=>a.status!=='deleted'&&!SELF.includes(a.source)&&
+          a.personId===row.personId&&a.date===row.date&&Math.max(a.start,row.start)<Math.min(a.end,row.end));
+        if(conflict)throw new Error('Diese Istzeit überschneidet sich mit einer bereits vorhandenen Istzeit dieser Person. Bitte zuerst prüfen oder korrigieren.');
+        const out=saveActual({...row,source,importBatchId:batch.id},
+          {reason:`Import ${batch.name}`,source,importBatchId:batch.id});
+        supersedeSelf(row,`Buchung aus ${batch.name} hat Vorrang`);
+        results.push({ok:true,row:out.record,comparison:out.comparison,issues:out.issues});
+        batch.accepted++;
+      } catch(error) {
+        results.push({ok:false,row,error:error.message});
+        batch.rejected++;
+      }
     }
     batch.status=batch.rejected?'review':'imported';batch.completedAt=new Date().toISOString();
     K.recordAudit?.('actual.import.batch',{entity:'actual_import_batch',entityId:batch.id,after:batch,meta:{accepted:batch.accepted,rejected:batch.rejected}});
