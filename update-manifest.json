@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 315,
+  "build": 316,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b315",
+  "cacheName": "kc-dp-release-0.20.0-b316",
   "releaseNotes": [
     "Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.",
     "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
@@ -156,8 +156,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-18T10:08:17.326Z",
-  "totalRuntimeBytes": 37251260,
+  "generatedAt": "2026-11-18T16:52:59.071Z",
+  "totalRuntimeBytes": 37265906,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -337,8 +337,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 35455,
-      "sha256": "171dda9303f56b8410168084134ebc8bff724cf63c5e851fd7164f489fd30df0",
+      "bytes": 35591,
+      "sha256": "4a7939e18d50468204285b995a3a01c132a7193e8a1d9f383addd3b2659018d0",
       "runtime": true,
       "forceRefresh": true
     },
@@ -736,8 +736,8 @@
     {
       "path": "src/core/documents.js",
       "installPath": "src/core/documents.js",
-      "bytes": 36650,
-      "sha256": "b9146d2972f33ae967eb9205777dc455bc48d0724ab8211c7ed3c1d3083b5fa5",
+      "bytes": 37200,
+      "sha256": "937985fa5c3d61893c81b91c969023d0392ad86de67b3ee5ccef930334e58ba6",
       "runtime": true
     },
     {
@@ -1070,6 +1070,13 @@
       "runtime": true
     },
     {
+      "path": "src/core/wish-staffing.js",
+      "installPath": "src/core/wish-staffing.js",
+      "bytes": 5593,
+      "sha256": "1aaa35bbb195b7c7c884d75f02fdd7f4459005f360d24e41ca7b5e158b70c9a7",
+      "runtime": true
+    },
+    {
       "path": "src/core/wish-summary.js",
       "installPath": "src/core/wish-summary.js",
       "bytes": 1618,
@@ -1156,8 +1163,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 269466,
-      "sha256": "d7561c73621982453609ceb2ba62d50dbf3d495a15a31714f40c23cb87ea6285",
+      "bytes": 267378,
+      "sha256": "53919f5623d136c1f001d22df8c926656cda6057c1e5ab22febeec9db458540c",
       "runtime": true
     },
     {
@@ -2066,8 +2073,8 @@
     {
       "path": "src/ui/startup.css",
       "installPath": "src/ui/startup.css",
-      "bytes": 254064,
-      "sha256": "68e088e4abf54f899f308170fad2d52e3fdd204b60a21e2f05b5496f90ac4b34",
+      "bytes": 256117,
+      "sha256": "a4e230a2a53278972e7a5f1dbcbc0de6e869e0509d358a91bd61190e8877be7b",
       "runtime": true
     },
     {
@@ -2271,6 +2278,20 @@
       "installPath": "src/ui/wish-sprint.js",
       "bytes": 8752,
       "sha256": "d36cc3b2b4fd7c007e9f5e1f64796ac707ade220b8fd4990deb84c38f33685cd",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/wish-staffing.css",
+      "installPath": "src/ui/wish-staffing.css",
+      "bytes": 2021,
+      "sha256": "9753cf3fc1d3e503f1d3408d84e768355786ca6027129b77b1eb1d9bfdd32a47",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/wish-staffing.js",
+      "installPath": "src/ui/wish-staffing.js",
+      "bytes": 6381,
+      "sha256": "76a73324faf4fbee677e38c389fbde0984eed26b0d30011cb58626e427525e61",
       "runtime": true
     },
     {
