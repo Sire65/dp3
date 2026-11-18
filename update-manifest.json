@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 313,
+  "build": 314,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b313",
+  "cacheName": "kc-dp-release-0.20.0-b314",
   "releaseNotes": [
     "Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.",
     "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
@@ -156,8 +156,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-18T08:52:54.060Z",
-  "totalRuntimeBytes": 37241772,
+  "generatedAt": "2026-11-18T09:06:06.330Z",
+  "totalRuntimeBytes": 37241823,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -338,7 +338,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35376,
-      "sha256": "0f14ac7c4e9f3af81798c652fc5e0206a7e9bf82cca3a9ff4b7c54ee130e2ed7",
+      "sha256": "99bb2086b8377110b640cfccb07cdd8d3aa456b6a64b470d1e488ae674e0ef92",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1044,8 +1044,8 @@
     {
       "path": "src/core/update-manager.js",
       "installPath": "src/core/update-manager.js",
-      "bytes": 19415,
-      "sha256": "548dabd97808b2844687a2f33b78c1e4abc0693469650d17ab7ef81c6052eb1f",
+      "bytes": 19450,
+      "sha256": "c6c797f8bf3bfe125095bec6260513db0c8a7fb21d847026887d0a2702b3f9ca",
       "runtime": true
     },
     {
@@ -2418,8 +2418,8 @@
     {
       "path": "update-reparieren.html",
       "installPath": "update-reparieren.html",
-      "bytes": 1835,
-      "sha256": "a7e65c5779d9b783dabbfa3e12d26433ebefeb99e4c9755e3a348cb49733fe1d",
+      "bytes": 1851,
+      "sha256": "100e03dfff94fed5b2fcd538bd38a6bf0ad7acdc29c4a9b3af347c5c9408d586",
       "runtime": true,
       "forceRefresh": true
     }

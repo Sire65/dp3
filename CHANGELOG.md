@@ -1,3 +1,8 @@
+## Build 314 RC – Update-Dienst ohne blockierende Wartung
+
+- Aktivierung wartet nicht mehr auf Netzwerk-Downloads oder Cachewartung. Der vorhandene geprüfte Programmstand bleibt bis zum bestätigten Wechsel erhalten.
+- Regression: Update aus vorhandenem Cache auch bei nicht erreichbarem Manifest; neun verschlüsselte Wunschdatensätze bleiben erhalten.
+
 ## Build 313 RC – Geprüfte Planübernahmen und gemeinsames Stempelbuch
 
 - Neues gemeinsames Stempelbuch für App- und Kassenzeiten, unvollständige Paare, Quellenhinweise und explizite Prüfung spontaner Einsätze.

@@ -110,7 +110,7 @@
     await reg.update();
     if(reg.installing||reg.waiting){
       const candidate=reg.installing||reg.waiting;candidate.postMessage({type:'KC_DP_ACTIVATE_WORKER'});
-      if(candidate.state!=='activated')await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>{candidate.removeEventListener('statechange',changed);reject(new Error('Der neue Update-Dienst konnte nicht starten. Bitte DP2 über den aktuellen Programmordner öffnen.'));},20000);function changed(){if(candidate.state==='activated'||candidate.state==='redundant'){clearTimeout(timeout);candidate.removeEventListener('statechange',changed);candidate.state==='activated'?resolve():reject(new Error('Der Update-Dienst wurde beim Start ersetzt. Bitte erneut prüfen.'));}}candidate.addEventListener('statechange',changed);changed();});
+      if(candidate.state!=='activated')await new Promise((resolve,reject)=>{const timeout=setTimeout(()=>{candidate.removeEventListener('statechange',changed);reject(new Error('Der Update-Dienst braucht zu lange. Bitte andere DP2-Fenster schließen und das Update erneut versuchen; keine Browserdaten löschen.'));},20000);function changed(){if(candidate.state==='activated'||candidate.state==='redundant'){clearTimeout(timeout);candidate.removeEventListener('statechange',changed);candidate.state==='activated'?resolve():reject(new Error('Der Update-Dienst wurde beim Start ersetzt. Bitte erneut prüfen.'));}}candidate.addEventListener('statechange',changed);changed();});
     }
     const controller=reg.active||navigator.serviceWorker.controller;
     if(!controller)throw new Error('Der KC-DP2 Update-Dienst ist noch nicht aktiv. Bitte die Seite einmal neu laden und erneut versuchen.');

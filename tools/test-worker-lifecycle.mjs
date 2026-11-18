@@ -1,0 +1,10 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import vm from 'node:vm';
+const listeners={},pending=[];let claimed=0,skipped=0;
+const self={location:new URL('https://dp2.example/dp3/service-worker.js'),registration:{scope:'https://dp2.example/dp3/'},clients:{claim:async()=>{claimed++}},skipWaiting:async()=>{skipped++},addEventListener:(name,fn)=>listeners[name]=fn};
+vm.runInNewContext(await readFile(new URL('../service-worker.js',import.meta.url),'utf8'),{self,URL,Set,TextEncoder,fetch:()=>{throw Error('Lifecycle must not fetch')},caches:{open:async()=>({match:async()=>({json:async()=>({activeCache:'kc-dp-release-existing'})})})}});
+listeners.install({waitUntil:p=>pending.push(p)});await Promise.all(pending);
+listeners.activate({waitUntil:p=>pending.push(p)});await Promise.all(pending);
+assert.equal(skipped,1);assert.equal(claimed,1);
+console.log('PASS worker lifecycle: start without network or cache maintenance; existing data untouched.');
