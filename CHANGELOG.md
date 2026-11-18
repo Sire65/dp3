@@ -1,3 +1,9 @@
+## Build 315 RC – Wetter und Bühnenprogramm laden
+
+- Wettervorhersagen für Werne und freigegebenes Tagesprogramm werden unabhängig vom Personenabgleich geladen.
+- Stundenwetter, Programmstatus, fehlende Endzeiten und Aktualisieren-Knopf unter Bedarf.
+- Bedarfszahlen, Dienstzeiten und offene Eingaben bleiben beim Abruf erhalten. Programmfreigabe im PC-Manager mit vorhandenem serverseitigem Versionsschutz.
+
 ## Build 314 RC – Update-Dienst ohne blockierende Wartung
 
 - Aktivierung wartet nicht mehr auf Netzwerk-Downloads oder Cachewartung. Der vorhandene geprüfte Programmstand bleibt bis zum bestätigten Wechsel erhalten.
