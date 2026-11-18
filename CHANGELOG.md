@@ -1,3 +1,9 @@
+## Build 316 RC – Besetzungsstatistik ohne irreführende Bereichslücken
+
+- Gemeinsamer B-Pool, jede Person einmal, Reserve getrennt. Rot nur bei tatsächlicher Nichtabdeckbarkeit; gelb für offene Zuteilung oder Vorbehalt.
+- Teilzeiten, Sperren und ausdrücklich gemeldete Bereitschaft werden korrekt berücksichtigt. Details pro Zeitabschnitt per Klick.
+- PDF unter dem Wunschplan verwendet dieselbe Statistik. Bedarfszahlen und Dienstzeiten werden nicht verändert.
+
 ## Build 315 RC – Wetter und Bühnenprogramm laden
 
 - Wettervorhersagen für Werne und freigegebenes Tagesprogramm werden unabhängig vom Personenabgleich geladen.
