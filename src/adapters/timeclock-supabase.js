@@ -17,16 +17,16 @@
    const done=new Set((receipts||[]).map(x=>x.source_actual_id));return (actuals||[]).filter(x=>!done.has(x.id)).map(row);
  }
  async function provider(req){
-   if(req?.action==='pull'){const rows=await pendingRows();return {rows,meta:{source:'supabase_pc_manager',eventId:eventId(),fetchedAt:new Date().toISOString()}}}
+   if(req?.action==='pull'){const rows=await K.timeclockSupabase.pendingRows();return {rows,meta:{source:'supabase_pc_manager',eventId:eventId(),fetchedAt:new Date().toISOString()}}}
    if(req?.action==='parse_file')throw new Error('Excel bleibt ein manueller Dateiweg; bitte dafür den Dateiimport verwenden. CSV und JSON können hier weiterhin manuell eingelesen werden.');
    throw new Error('Unbekannte TimeClock-Aktion.');
  }
  async function check({announce=true}={}){
    if(!K.auth?.has?.('roster.actual.import')||!K.supabaseConnection?.hasAccessToken?.())return {pending:0,available:false};
-   state.status='checking';try{const rows=await pendingRows();state.pending=rows.length;state.lastCheckAt=new Date().toISOString();state.lastError=null;state.status='ready';const b=document.getElementById('actualImportBtn');if(b){b.textContent=rows.length?'⏱ Istzeiten ('+rows.length+')':'⏱ Istzeiten';b.title=rows.length?rows.length+' neue Istzeit(en) aus dem PC-Manager zur Prüfung':'Istzeiten / TimeClock importieren und prüfen';b.classList.toggle('notification',rows.length>0)}if(announce&&rows.length)window.dispatchEvent(new CustomEvent('kc-dp-timeclock-pending',{detail:{count:rows.length}}));return {pending:rows.length,available:true}}catch(e){state.status='error';state.lastError=e.message;return {pending:0,available:false,error:e.message}}
+   state.status='checking';try{const rows=await K.timeclockSupabase.pendingRows();state.pending=rows.length;state.lastCheckAt=new Date().toISOString();state.lastError=null;state.status='ready';const b=document.getElementById('actualImportBtn');if(b){b.textContent=rows.length?'⏱ Istzeiten ('+rows.length+')':'⏱ Istzeiten';b.title=rows.length?rows.length+' neue Istzeit(en) aus dem PC-Manager zur Prüfung':'Istzeiten / TimeClock importieren und prüfen';b.classList.toggle('notification',rows.length>0)}if(announce&&rows.length)window.dispatchEvent(new CustomEvent('kc-dp-timeclock-pending',{detail:{count:rows.length}}));return {pending:rows.length,available:true}}catch(e){state.status='error';state.lastError=e.message;return {pending:0,available:false,error:e.message}}
  }
  async function acknowledge(selected,result){
-   const c=cfg(),ids=new Map((result?.results||[]).filter(x=>x.ok).map(x=>[x.row?.sourceRecordId||x.row?.source_record_id,x]));
+   const c=cfg(),ids=new Map((result?.results||[]).filter(x=>x.ok).map(x=>[x.sourceRecordId||x.row?.sourceRecordId||x.row?.source_record_id,x]));
    const rows=selected.filter(x=>x.sourceRecordId&&ids.has(x.sourceRecordId)).map(x=>({org_id:c.orgId,project_id:c.projectId,source_actual_id:x.sourceRecordId,local_actual_id:ids.get(x.sourceRecordId)?.row?.id||null,result:ids.get(x.sourceRecordId)?.skipped?'skipped_duplicate':'imported'}));
    if(!rows.length)return {saved:0};await K.supabaseConnection.ensureSession();const s=K.supabaseConnection.sessionSnapshot(),r=await fetch(String(c.url).replace(/\/$/,'')+'/rest/v1/kc_dp_timeclock_receipts?on_conflict=org_id,project_id,source_actual_id',{method:'POST',headers:{apikey:c.publishableKey,Authorization:'Bearer '+s.access_token,'Content-Type':'application/json',Prefer:'resolution=ignore-duplicates,return=representation'},body:JSON.stringify(rows)});if(!r.ok)throw new Error('Übernahmebestätigung konnte nicht gespeichert werden.');await check({announce:false});return {saved:rows.length};
  }

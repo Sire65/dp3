@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import vm from 'node:vm';
+const K={people:[{personId:'P',active:true}],person:id=>K.people.find(p=>p.personId===id),shifts:[],actualShifts:[],auth:{require(){}},sync:{enqueue(){}},recordAudit(){}};
+vm.runInNewContext(await fs.readFile(new URL('../src/core/actual.js',import.meta.url),'utf8'),{window:{KCDP:K}});
+const self={id:'SELF',personId:'P',date:'2026-12-02',start:10,end:14,source:'self_confirm',status:'recorded'};
+K.actualShifts=[self,{id:'EXTERNAL',personId:'P',date:'2026-12-02',start:13,end:15,source:'timeclock',status:'recorded'}];
+const input={personId:'P',date:'2026-12-02',start:11,end:14.5,sourceRecordId:'stamp:C'};
+let result=K.actual.importRows([input],{source:'timeclock'});
+assert.equal(result.batch.rejected,1);assert.equal(self.status,'recorded','rejected import must preserve self report');
+K.actualShifts=[self];result=K.actual.importRows([input],{source:'timeclock'});
+assert.equal(result.batch.accepted,1);assert.equal(self.status,'deleted');assert.equal(K.actualShifts.length,2);
+result=K.actual.importRows([input],{source:'timeclock'});assert.equal(result.batch.skipped,1);assert.equal(result.results[0].sourceRecordId,'stamp:C');
+console.log('PASS import safety: rejected conflict preserves self report; successful clock import supersedes it; duplicate retains source acknowledgement.');
