@@ -156,8 +156,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-20T19:03:15.230Z",
-  "totalRuntimeBytes": 37283517,
+  "generatedAt": "2026-11-20T19:05:32.605Z",
+  "totalRuntimeBytes": 37283684,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -2017,8 +2017,8 @@
     {
       "path": "src/ui/shift-staffing.js",
       "installPath": "src/ui/shift-staffing.js",
-      "bytes": 3032,
-      "sha256": "c2c5fdef393274cc95acf86a7fd2045382730ae27ab6a6dd831ca444a658a760",
+      "bytes": 3199,
+      "sha256": "a384b76199c6da5d3ca6d6fa83ca1edc76336f396b9452f4841523c4641b74ad",
       "runtime": true
     },
     {
