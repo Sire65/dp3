@@ -1,0 +1,3 @@
+# Build 319 RC
+
+Gesamtfarbe: Rot unter Bedarf, Grün genau Bedarf, Gelb darüber. Bereichsabweichungen ändern sie nicht. Jede Person zählt pro Zeitpunkt einmal; widersprüchliche parallele Bereichszuweisungen erscheinen als flexibel. Abgesagte/gelöschte Einträge, externe Dienste, unzugeordnete Istzeiten und Bereitschaft zählen nicht zur Standbesetzung. Pausen berücksichtigen die bestehende Pausenkonfiguration. Stunden werden an Zeitgrenzen geteilt; Spannen und Einzelabschnitte verhindern falsche Summen bei halben Stunden. Mischstunden haben Rot vor Gelb vor Grün. V/H/B-Anzeigeoptionen gelten ebenfalls für Soll-/Ist-Matrix und PDF. Keine Mitgliederdaten geändert.

@@ -53,6 +53,7 @@
   };
 
   K.coverageAt=function(day,time,override=null){
+    if(K.shiftStaffing)return K.shiftStaffing.point(day,time,'planned',override);
     let shifts=(K.visiblePlannedShifts?K.visiblePlannedShifts(day.date):K.shifts.filter(s=>s.date===day.date&&s.layer==='planned'));
     if(override){shifts=shifts.filter(s=>s.id!==override.id);shifts.push(override);}
     const allActive=shifts.filter(s=>s.start<=time&&s.end>time&&plannedActive(s));

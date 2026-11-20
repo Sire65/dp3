@@ -13,3 +13,9 @@ body.kc-dense-planning .wish-evaluation .matrix-wish-assessment,body.kc-dense-pl
 @media(max-width:500px){.wish-staffing-dialog dl{grid-template-columns:1fr;gap:3px}.wish-staffing-dialog dd{margin-bottom:8px}}
 
 .planner-lower-separator.with-staffing-controls{height:auto!important;min-height:48px!important;flex-wrap:wrap;gap:4px;padding:2px 6px}.lower-staffing-controls{position:relative;z-index:2;display:inline-flex;gap:5px;align-items:center;background:#f5f2ec}.lower-staffing-controls button{min-height:44px;padding:6px 10px;border:1px solid #741521;border-radius:6px;background:#fff;color:#741521;font-size:12px;font-weight:700;cursor:pointer}.lower-staffing-controls button[aria-pressed="true"]{background:#741521;color:#fff}
+
+.occ-interval{display:block;font-size:11px;line-height:1.5;text-align:left}.shift-evaluation .wish-staffing-note{font-size:11px;margin:5px 8px}.occ-chart-series.under .occ-chart-bar{background:#bd3544!important}.occ-chart-series.high .occ-chart-bar{background:#d09a22!important;color:#2d260e}.occ-chart-series.full .occ-chart-bar{background:#2c8a54!important}
+
+.occ-interval .short{background:#f3b8ba;color:#620e16}.occ-interval .full{background:#bfe2cd;color:#123f28}.occ-interval .high{background:#f6dfa1;color:#45360c}
+
+.hm-area-lane .area-gap.neutral{fill:transparent}
