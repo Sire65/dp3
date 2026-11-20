@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 318,
+  "build": 319,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b318",
+  "cacheName": "kc-dp-release-0.20.0-b319",
   "releaseNotes": [
     "Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.",
     "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
@@ -156,8 +156,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-18T18:17:40.808Z",
-  "totalRuntimeBytes": 37270985,
+  "generatedAt": "2026-11-20T19:03:15.230Z",
+  "totalRuntimeBytes": 37283517,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -337,8 +337,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 35591,
-      "sha256": "00ccf2c2581fa5f3dd4cd62a7c8d5eb37eed4581e26f2abb7a0be8af4d3bfa85",
+      "bytes": 35727,
+      "sha256": "8854db5fac9719dc23e567165fc696c0113fc56b7df9e493820c39663a19dc9a",
       "runtime": true,
       "forceRefresh": true
     },
@@ -624,8 +624,8 @@
     {
       "path": "src/core/actual.js",
       "installPath": "src/core/actual.js",
-      "bytes": 21979,
-      "sha256": "e39a6b804949d9f3cf6bf032bd034df6dc6954b2f2b697f9d28210715820c5ec",
+      "bytes": 22051,
+      "sha256": "b26bfbddc2534ae465101f1d2835e7a9287d652af1aab97f1aa5b6c30742bf8e",
       "runtime": true
     },
     {
@@ -960,8 +960,8 @@
     {
       "path": "src/core/planning.js",
       "installPath": "src/core/planning.js",
-      "bytes": 14996,
-      "sha256": "e9cc3732c85ec65d992e79b806be8a4ab791b0106ecb1ff1a21dc6e8e40686ab",
+      "bytes": 15078,
+      "sha256": "3957c5b827784533e959874892253d84c8edbb3056b9ea75d45ccf55dacbee25",
       "runtime": true
     },
     {
@@ -997,6 +997,13 @@
       "installPath": "src/core/session.js",
       "bytes": 2590,
       "sha256": "1402a8021f24fb0ae38c0acb42bf8cf4802c64b0946f9aec98f9d44c56954dff",
+      "runtime": true
+    },
+    {
+      "path": "src/core/shift-staffing.js",
+      "installPath": "src/core/shift-staffing.js",
+      "bytes": 3204,
+      "sha256": "b36daa700d7ac7ba73d1d3754ca7f82c29d88bee4a368c60dad358523c260420",
       "runtime": true
     },
     {
@@ -1163,8 +1170,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 267378,
-      "sha256": "53919f5623d136c1f001d22df8c926656cda6057c1e5ab22febeec9db458540c",
+      "bytes": 267550,
+      "sha256": "a37a2830e908293a5b7d53c95d7d91e05d68988dd2acb293ede7607bb2c19ffd",
       "runtime": true
     },
     {
@@ -1450,8 +1457,8 @@
     {
       "path": "src/ui/hour-matrix.js",
       "installPath": "src/ui/hour-matrix.js",
-      "bytes": 13380,
-      "sha256": "5b86d1c3af7aa2dc02228c2f0ee758ee774807446036597f50a155c3109fdad6",
+      "bytes": 14245,
+      "sha256": "207335d839fe568f65af71841c33147d3d8b5007621fdeabc658a09e93977942",
       "runtime": true
     },
     {
@@ -1618,8 +1625,8 @@
     {
       "path": "src/ui/occupancy-area-chart.js",
       "installPath": "src/ui/occupancy-area-chart.js",
-      "bytes": 4380,
-      "sha256": "74714e5b34083229e0b9aac1851bbbaaeda65addca0ed6d2ecd70fa8d0ea41ed",
+      "bytes": 5028,
+      "sha256": "ffba06c661183e651ca1d99a63a2b79bdcf6ff9994d058ea7dba8f7dd8b54f9f",
       "runtime": true
     },
     {
@@ -1674,8 +1681,8 @@
     {
       "path": "src/ui/occupancy-view.js",
       "installPath": "src/ui/occupancy-view.js",
-      "bytes": 15825,
-      "sha256": "441ae9ad76f51a0cbf6169b484c898b9d98b1c137b9b64ba3136025960bcdcc8",
+      "bytes": 18845,
+      "sha256": "267989de9cec408678f06cf92f6e8bb8596a548dfaa16131a4f765cd53f2a465",
       "runtime": true
     },
     {
@@ -2008,6 +2015,13 @@
       "runtime": true
     },
     {
+      "path": "src/ui/shift-staffing.js",
+      "installPath": "src/ui/shift-staffing.js",
+      "bytes": 3032,
+      "sha256": "c2c5fdef393274cc95acf86a7fd2045382730ae27ab6a6dd831ca444a658a760",
+      "runtime": true
+    },
+    {
       "path": "src/ui/simple-wish-assistant.js",
       "installPath": "src/ui/simple-wish-assistant.js",
       "bytes": 59913,
@@ -2073,8 +2087,8 @@
     {
       "path": "src/ui/startup.css",
       "installPath": "src/ui/startup.css",
-      "bytes": 256640,
-      "sha256": "296abf3f02ea9b7dea39ce7d267770c5915fbbf7746a9c5dc95cf6b623363fad",
+      "bytes": 257214,
+      "sha256": "0bfd1213a882148310d13b31893bee20a6ce4242103119b724f71c094ef85e50",
       "runtime": true
     },
     {
@@ -2283,15 +2297,15 @@
     {
       "path": "src/ui/wish-staffing.css",
       "installPath": "src/ui/wish-staffing.css",
-      "bytes": 2544,
-      "sha256": "733d76f0f277b6657091c2d91764d79d3c4231b8f75a898176570a3ac1e8dce8",
+      "bytes": 3118,
+      "sha256": "5475af2564b6ab5c540f00627efc996322de8cdb340e32a9b7c2789d8d8be6cf",
       "runtime": true
     },
     {
       "path": "src/ui/wish-staffing.js",
       "installPath": "src/ui/wish-staffing.js",
-      "bytes": 9964,
-      "sha256": "25528e7f5e6db737457f8a42698a85fef4bd4eae5ce7bd77ba141f069414c1b8",
+      "bytes": 10117,
+      "sha256": "aa19be8ccdd39000cfe74e7fb46a1dea1cc4112c61799948a9929c5b1da0fff1",
       "runtime": true
     },
     {

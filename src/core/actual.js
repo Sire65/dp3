@@ -234,6 +234,7 @@
   }
 
   function coverageAt(day,time){
+    if(K.shiftStaffing)return K.shiftStaffing.point(day,time,'actual');
     const active=K.actualShifts.filter(a=>a.date===day.date&&a.status!=='deleted'&&a.start<=time&&a.end>time).map(a=>{linkRecord(a);return a;});
     const special=active.filter(a=>a.zone==='special'),unassigned=active.filter(a=>a.zone==='unassigned'),stand=active.filter(a=>a.zone!=='special'&&a.zone!=='unassigned'),req=K.requirementFor(day,time);
     return {req,total:stand.length,front:stand.filter(a=>a.zone==='front').length,back:stand.filter(a=>a.zone==='back').length,special:special.length,unassigned:unassigned.length,active:stand,specialActive:special,unassignedActive:unassigned};

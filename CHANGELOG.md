@@ -1,3 +1,7 @@
+## Build 319 RC – Einheitliche Personenampel in Soll und Ist
+
+Gleichzeitige Personen statt Schichtdatensätze zählen. Stunden bei Beginn, Ende und Pausen aufteilen; Gesamtampel ausschließlich nach Gesamtbedarf. V/H/B separat und mit denselben Anzeigeoptionen wie im Wunschplan. Bildschirm, Vorschau und Matrixdruck verwenden dieselbe Auswertung. Keine Änderung an Planungsdaten.
+
 ## Build 318 RC – V/H/B ausblenden und Bereichsfarben zuschalten
 
 - Zwei gemerkte Anzeige-Schalter neben der Bereitschafts-Schaltfläche: V/H/B ein-/ausblenden und Bereiche separat farbig prüfen.
