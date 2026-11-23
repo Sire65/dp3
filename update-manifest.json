@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 319,
+  "build": 320,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b319",
+  "cacheName": "kc-dp-release-0.20.0-b320",
   "releaseNotes": [
     "Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.",
     "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
@@ -156,8 +156,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-20T19:07:41.208Z",
-  "totalRuntimeBytes": 37283968,
+  "generatedAt": "2026-11-23T18:00:08.675Z",
+  "totalRuntimeBytes": 37285392,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -338,7 +338,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35727,
-      "sha256": "8854db5fac9719dc23e567165fc696c0113fc56b7df9e493820c39663a19dc9a",
+      "sha256": "195df356370e4314ef70aaf36a2f569ca1d81a98fce4ce87910d8d2869532b06",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1163,15 +1163,15 @@
     {
       "path": "src/ui/app.css",
       "installPath": "src/ui/app.css",
-      "bytes": 48938,
-      "sha256": "b344fb46bf9dc2b6770ffbfe5db6e0395abd5677b5a3547fda32a55e10ab547d",
+      "bytes": 49187,
+      "sha256": "95aee6de146a53a8fa50204b80bbb6b838f96d3247d176448ac568b494d5eb21",
       "runtime": true
     },
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 267550,
-      "sha256": "a37a2830e908293a5b7d53c95d7d91e05d68988dd2acb293ede7607bb2c19ffd",
+      "bytes": 268476,
+      "sha256": "281f33f148b9669f867328d2e90d5b3c53fd076cce167da73fd02a52ef3d925d",
       "runtime": true
     },
     {
@@ -2087,8 +2087,8 @@
     {
       "path": "src/ui/startup.css",
       "installPath": "src/ui/startup.css",
-      "bytes": 257214,
-      "sha256": "0bfd1213a882148310d13b31893bee20a6ce4242103119b724f71c094ef85e50",
+      "bytes": 257463,
+      "sha256": "2cb469dc7bdf95620a14d8effc0c8617e2f50790fa6dbb6938094b15971afd8e",
       "runtime": true
     },
     {

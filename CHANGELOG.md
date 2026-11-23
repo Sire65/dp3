@@ -1,3 +1,7 @@
+## Build 320 RC – Ganze Sollbalken verschieben
+
+Verschieben erhält die Dienstdauer, auch an Tagesgrenzen. Kein stilles Kürzen an gespeicherten Kann-Grenzen. Außerhalb der Kann-Zeit erfordert das Ablegen eine ausdrückliche Bestätigung, ohne Wünsche zu ändern; Überschneidungs- und Rechteprüfung bleiben aktiv. Randgriffe ändern weiterhin die Dauer.
+
 ## Build 319 RC – Einheitliche Personenampel in Soll und Ist
 
 Gleichzeitige Personen statt Schichtdatensätze zählen. Stunden bei Beginn, Ende und Pausen aufteilen; Gesamtampel ausschließlich nach Gesamtbedarf. V/H/B separat und mit denselben Anzeigeoptionen wie im Wunschplan. Bildschirm, Vorschau und Matrixdruck verwenden dieselbe Auswertung. Keine Änderung an Planungsdaten.
