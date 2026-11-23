@@ -174,3 +174,6 @@ body.ux-legacy .date-chip.day-prep.day-saturday,body.ux-legacy .date-chip.day-af
 .plan-wish-guide:focus-visible{outline:3px solid #173f67!important;outline-offset:2px}
 /* Globaler Suchtreffer: ganze Mitarbeiterzeile in Wunsch, Soll und Ist sichtbar markieren. */
 .person-row.kc-search-person-focus{position:relative;z-index:12;outline:3px solid #d89b00;outline-offset:-2px;box-shadow:0 0 0 3px #fff7bf,0 3px 14px #9d690080;animation:kc-search-row-pulse .75s ease-in-out 3}.person-row.kc-search-person-focus>.person-cell,.person-row.kc-search-person-focus>.hours-cell{background:#fff0a8!important}.person-row.kc-search-person-focus>.timeline-cell{background-color:#fff9d7!important}.person-row.kc-search-person-focus .person-name{color:#671526!important;font-weight:900!important}@keyframes kc-search-row-pulse{0%,100%{filter:none}50%{filter:brightness(1.08);outline-color:#8f1424}}@media(prefers-reduced-motion:reduce){.person-row.kc-search-person-focus{animation:none}}
+
+/* Whole shift moves; only edge handles resize. */
+.shift.planned{cursor:grab;touch-action:none;user-select:none}.shift.planned.preview{cursor:grabbing}.shift.planned>.shift-label{pointer-events:none}.shift.planned .resize-handle{cursor:ew-resize}
