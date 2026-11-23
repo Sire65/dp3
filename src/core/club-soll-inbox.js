@@ -87,11 +87,16 @@ function analyze(input,{removed=store().removed}={}){
   const blocked=issues.some(i=>i.level==='error');
   items.push({kind:blocked?'fehler':'neu',action:'create',row:label,candidate:cand,issues,blocked,text:blocked?issues.find(i=>i.level==='error').text:null});
  }
+ const skipped=Array.isArray(input?.uebersprungen)?input.uebersprungen.filter(u=>u&&typeof u==='object'):[];
  for(const s of byKey.values()){
   if(INACTIVE.has(s.status)||seen.has(s.sourceImportKey))continue;
   const reasons=protectedReasons(s),label={personId:s.personId,name:'',date:s.date,start:s.start,end:s.end,zone:s.zone,area:s.area,importKey:s.sourceImportKey};
   let lockError=null;try{K.locks?.requireEditable?.(s.date);}catch(e){lockError=e.message;}
-  items.push({kind:lockError?'fehler':reasons.length?'konflikt':'entfaellt',action:'delete',row:label,shiftId:s.id,reasons,blocked:!!lockError,text:lockError});
+  // Die Club-App hat zu dieser Person/diesem Tag nichts übergeben (Person nicht eindeutig, Tag nicht veröffentlicht, ausgenommen):
+  // das ist keine Planänderung → nicht von selbst löschen, nur auf ausdrückliche Wahl.
+  const why=skipped.find(u=>(u.date==null||u.date===s.date)&&(canonicalId(u.personId)===s.personId||(Array.isArray(u.personIds)&&u.personIds.map(canonicalId).includes(s.personId))));
+  if(why)reasons.unshift(String(why.grund||'In der Club-App nicht übergeben').slice(0,80));
+  items.push({kind:lockError?'fehler':reasons.length?'konflikt':'entfaellt',action:'delete',row:label,shiftId:s.id,reasons,skip:why?String(why.grund||'In der Club-App nicht übergeben').slice(0,80):null,blocked:!!lockError,text:lockError});
  }
  const counts={neu:0,geaendert:0,entfaellt:0,gleich:0,konflikt:0,fehler:0};for(const i of items)counts[i.kind]++;
  const signature=JSON.stringify(items.map(i=>[i.kind,i.action||'',i.row.importKey,i.shiftId||'',i.candidate?.clubShiftFp||'',i.blocked?1:0]));
@@ -148,7 +153,7 @@ async function apply(choices={}){
  if(state.inFlight)throw Error('Ein Abgleich läuft bereits. Bitte kurz warten.');
  const preview=state.analysis,previewInput=state.pending;if(!preview||!previewInput)throw Error('Bitte die Vorschau neu öffnen.');
  state.inFlight=true;
- const context=scopeKey(),tag=`clubsoll:${previewInput.id}`;let mutated=false,result=null,snapshot=null,auditStart=0;
+ const context=scopeKey(),tag=`clubsoll:${previewInput.id}`;let mutated=false,result=null,snapshot=null,auditStart=0,storeBefore=null;
  try{
   K.auth.require('roster.plan.edit','Sie dürfen den Sollplan nicht bearbeiten.');
   if(!await planningAllowed())throw Error('Nur berechtigte Planer dürfen den Club-App-Sollplan übernehmen.');
@@ -160,7 +165,7 @@ async function apply(choices={}){
   if(fresh.signature!==preview.signature)throw Error('Der Sollplan wurde seit der Vorschau geändert. Bitte die Vorschau neu öffnen.');
   const ops=plannedOps(fresh,choices);
   const run=()=>applyOps(ops,input);
-  snapshot=clone(K.shifts);auditStart=(K.auditLog||[]).length;mutated=true;
+  snapshot=clone(K.shifts);auditStart=(K.auditLog||[]).length;storeBefore=clone(store());mutated=true;
   result=K.sync?.stageLocalBatch?K.sync.stageLocalBatch(tag,run):run();
   const s=store();for(const key of result.removedKeys)s.removed[key]=new Date().toISOString();
   for(const op of ops.filter(o=>o.action==='create'))delete s.removed[op.row.importKey];
@@ -176,7 +181,7 @@ async function apply(choices={}){
   return summary;
  }catch(e){
   if(mutated){
-   K.shifts=snapshot;if(Array.isArray(K.auditLog))K.auditLog.length=Math.min(K.auditLog.length,auditStart);
+   K.shifts=snapshot;if(storeBefore)K.memberUxData.clubSollInbox[context]=storeBefore;if(Array.isArray(K.auditLog))K.auditLog.length=Math.min(K.auditLog.length,auditStart);
    K.sync?.settleLocalBatch?.(tag,false);
    try{await K.persistAll?.();}catch(_){}
    K.refreshWorkflowState?.();
@@ -191,6 +196,11 @@ async function discard(){
 }
 
 // ---------- Oberfläche (nur im Sollplan, nur für Planer) ----------
+// Nur im aktiven Register „Sollplan“ (nicht Dashboard/Stundenmatrix, die ebenfalls layer 'planned' nutzen).
+function plannedRegister(){
+ const active=K.v020Shell?.state?.active??K.v020ShellState?.active??(typeof document!=='undefined'?document.body?.dataset?.v020Register:undefined);
+ return active!=null?active==='planned':K.state?.layer==='planned';
+}
 const el=id=>typeof document!=='undefined'?document.getElementById(id):null;
 function closeModal(){el('modalBackdrop')?.classList.add('hidden');const m=el('modal');if(m){m.innerHTML='';m.classList.remove('wide');}document.body?.classList?.remove('modal-open');}
 function openModal(html){const b=el('modalBackdrop'),m=el('modal');if(!b||!m)return null;m.classList.add('wide');m.innerHTML=html;b.classList.remove('hidden');document.body.classList.add('modal-open');return m;}
@@ -199,12 +209,12 @@ const standText=v=>{try{return new Intl.DateTimeFormat('de-DE',{dateStyle:'short
 function hintText(a){
  const c=a.counts,parts=[];
  if(!clubShifts().length)return `📥 Plan aus der Club-App übernehmen (${c.neu+c.geaendert+c.konflikt+c.fehler+c.gleich} Schichten${state.pending?.stand?', Stand '+esc(standText(state.pending.stand)):''})`;
- if(c.neu)parts.push(`${c.neu} neu`);if(c.geaendert)parts.push(`${c.geaendert} geändert`);if(c.entfaellt)parts.push(`${c.entfaellt} entfällt`);if(c.konflikt)parts.push(`${c.konflikt} in DP2 geändert`);
+ if(c.neu)parts.push(`${c.neu} neu`);if(c.geaendert)parts.push(`${c.geaendert} geändert`);if(c.entfaellt)parts.push(`${c.entfaellt} entfällt`);if(c.konflikt)parts.push(`${c.konflikt} zu prüfen`);
  return `📥 Änderungen aus der Club-App: ${parts.join(' · ')||'keine'}`;
 }
 function render(){
  if(typeof document==='undefined'||!document.body)return;
- const a=state.analysis,show=!!(a&&(a.changes||a.counts.fehler)&&K.state?.layer==='planned'&&K.auth?.has?.('roster.plan.edit'));
+ const a=state.analysis,show=!!(a&&(a.changes||a.counts.fehler)&&plannedRegister()&&K.auth?.has?.('roster.plan.edit'));
  let bar=el('clubSollHint');
  if(!show){if(bar)bar.remove();return;}
  const main=el('mainView');if(!main?.parentNode)return;
@@ -225,9 +235,9 @@ function preview(){
    extra=`<small>${esc(i.reasons.join(', '))} – Club-Vorschlag: ${esc(was)}</small><label style="display:inline-flex;gap:6px;margin-right:12px"><input type="radio" name="cs-${esc(i.row.importKey)}" value="keep" checked data-cs-key="${esc(i.row.importKey)}"> DP2 behalten</label><label style="display:inline-flex;gap:6px"><input type="radio" name="cs-${esc(i.row.importKey)}" value="club" data-cs-key="${esc(i.row.importKey)}" ${i.blocked?'disabled':''}> Club-Stand übernehmen</label>${i.blocked?`<small>${esc(i.text)}</small>`:''}`;}
   if(i.kind==='fehler')extra=`<small>${esc(i.text||'')}</small>`;
   const warn=(i.issues||[]).filter(x=>x.level!=='error').map(x=>esc(x.text)).join(' · ');
-  return `<div class="${i.kind==='fehler'?'bad':i.kind==='konflikt'?'warn':'ok'}" data-cs-kind="${i.kind}">${kindLabel[i.kind]} · ${rowText(i)}${extra}${warn&&i.kind!=='fehler'?`<small>${warn}</small>`:''}</div>`;}).join('');
+  return `<div class="${i.kind==='fehler'?'bad':i.kind==='konflikt'?'warn':'ok'}" data-cs-kind="${i.kind}">${i.skip?'➖ entfällt? – '+esc(i.skip):kindLabel[i.kind]} · ${rowText(i)}${extra}${warn&&i.kind!=='fehler'?`<small>${warn}</small>`:''}</div>`;}).join('');
  const c=a.counts;
- const m=openModal(`<h2>📥 Sollplan aus der Club-App</h2><div class="transfer-stats"><span><b>${c.neu}</b><small>neu</small></span><span><b>${c.geaendert}</b><small>geändert</small></span><span><b>${c.entfaellt}</b><small>entfällt</small></span><span><b>${c.konflikt}</b><small>in DP2 geändert</small></span><span><b>${c.gleich}</b><small>unverändert</small></span><span><b>${c.fehler}</b><small>nicht übernehmbar</small></span></div><div class="ai-summary">Stand der Club-App: ${esc(standText(state.pending?.stand||state.pending?.createdAt))}. Übernommene Dienste kommen als Entwurf in den Sollplan; von Hand in DP2 angelegte Dienste bleiben unberührt. Erst wenn der Plan fertig ist übernehmen – danach geht er wie jeder DP2-Sollplan an die Kasse. Bereitschaft kommt nicht mit.</div><div class="transfer-list">${list||'<div>Keine Änderungen.</div>'}</div><p id="clubSollResult" role="status"></p><div class="modal-actions"><button class="secondary" id="csClose">Schließen</button><button class="secondary" id="csDiscard">Verwerfen</button><button class="primary" id="csApply">Übernehmen</button></div>`);
+ const m=openModal(`<h2>📥 Sollplan aus der Club-App</h2><div class="transfer-stats"><span><b>${c.neu}</b><small>neu</small></span><span><b>${c.geaendert}</b><small>geändert</small></span><span><b>${c.entfaellt}</b><small>entfällt</small></span><span><b>${c.konflikt}</b><small>zu prüfen</small></span><span><b>${c.gleich}</b><small>unverändert</small></span><span><b>${c.fehler}</b><small>nicht übernehmbar</small></span></div><div class="ai-summary">Stand der Club-App: ${esc(standText(state.pending?.stand||state.pending?.createdAt))}. Übernommene Dienste kommen als Entwurf in den Sollplan; von Hand in DP2 angelegte Dienste bleiben unberührt. Erst wenn der Plan fertig ist übernehmen – danach geht er wie jeder DP2-Sollplan an die Kasse. Bereitschaft kommt nicht mit.</div><div class="transfer-list">${list||'<div>Keine Änderungen.</div>'}</div><p id="clubSollResult" role="status"></p><div class="modal-actions"><button class="secondary" id="csClose">Schließen</button><button class="secondary" id="csDiscard">Verwerfen</button><button class="primary" id="csApply">Übernehmen</button></div>`);
  if(!m)return;
  el('csClose').onclick=closeModal;
  el('csDiscard').onclick=async()=>{if(!confirm('Diesen Stand der Club-App verwerfen? Im Sollplan ändert sich nichts.'))return;try{await discard();closeModal();}catch(e){el('clubSollResult').textContent='✕ '+e.message;}};
@@ -242,12 +252,12 @@ function preview(){
 }
 function install(){
  if(typeof document==='undefined'||!document.addEventListener)return;
- const onRegister=()=>setTimeout(()=>{if(K.state?.layer==='planned')check().catch(()=>{});render();},0);
+ const onRegister=()=>setTimeout(()=>{if(plannedRegister())check().catch(()=>{});render();},0);
  try{window.addEventListener?.('kc-v020-register-change',onRegister);}catch(_){}
  let pending=false;
  try{new MutationObserver(()=>{if(pending)return;pending=true;(window.requestAnimationFrame||setTimeout)(()=>{pending=false;render();});}).observe(document.body,{childList:true});}catch(_){}
  setTimeout(onRegister,4000);
 }
 if(typeof document!=='undefined'&&document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-K.clubSollInbox={version:VERSION,state,fingerprint,analyze,plannedOps,applyOps,check,apply,discard,preview,render,store,protectedReasons};
+K.clubSollInbox={version:VERSION,state,fingerprint,analyze,plannedOps,applyOps,check,apply,discard,preview,render,store,protectedReasons,plannedRegister};
 })();

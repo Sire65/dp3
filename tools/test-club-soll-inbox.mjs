@@ -129,4 +129,25 @@ const active=K=>K.shifts.filter(s=>!['deleted','cancelled'].includes(s.status));
   // ohne Planungsrolle kein Abruf-Ergebnis
   K.currentUser.role='employee';const s=await CS.check({force:true});assert.equal(s.reason,'role');
 }
+// 8) Übersprungene Zeilen (Person in der Club-App nicht eindeutig, Tag nicht veröffentlicht, ausgenommen) → nicht von selbst löschen
+{
+  const f=await fixture(),{K,net}=f,CS=K.clubSollInbox;
+  net.pending=stand('W1',[row(P[0],'2026-12-04',11,15),row(P[1],'2026-12-05',12,16),row(P[2],'2026-12-06',12,16),row(P[3],'2026-12-07',14,18)]);
+  await CS.check({force:true});await CS.apply({});assert.equal(K.shifts.length,4);
+  const w2=stand('W2',[]);w2.uebersprungen=[{name:'Frank B',date:'2026-12-04',personIds:[P[0],'KC-P-M0099'],grund:'Person in der Club-App nicht eindeutig'},{name:'Dieter Z',date:'2026-12-05',personId:P[1],grund:'Tag nicht veröffentlicht'},{name:'',date:null,personId:P[2],grund:'In der Club-App ausgenommen'}];
+  const a=CS.analyze(w2);
+  assert.deepEqual({...a.counts},{neu:0,geaendert:0,entfaellt:1,gleich:0,konflikt:3,fehler:0},'nur die vierte Schicht entfällt wirklich');
+  assert.deepEqual([...a.items.filter(i=>i.skip).map(i=>i.skip)].sort(),['In der Club-App ausgenommen','Person in der Club-App nicht eindeutig','Tag nicht veröffentlicht']);
+  assert.equal(CS.plannedOps(a,{}).length,1,'Standard: behalten');
+  // 9) Speichern scheitert → Schichten UND Merkliste (removed/lastApplied) zurück
+  net.pending=w2;await CS.check({force:true});
+  const before=JSON.stringify(CS.store());K.cloudPrimary={active:()=>true};K.persistAll=async()=>({confirmed:false});
+  await assert.rejects(CS.apply({}),/nicht von Supabase bestätigt/);
+  assert.equal(JSON.stringify(CS.store()),before,'Merkliste unverändert');assert.equal(K.shifts.filter(s=>s.status==='deleted').length,0,'nichts gelöscht');
+  assert.equal(net.acks.filter(x=>x.id==='W2').length,0,'nicht bestätigt');
+  // 10) Hinweis/Abruf nur im Register „Sollplan“, nicht im Dashboard oder der Stundenmatrix (beide layer 'planned')
+  K.state.layer='planned';K.v020ShellState={active:'matrix'};assert.equal(CS.plannedRegister(),false);
+  K.v020ShellState.active='dashboard';assert.equal(CS.plannedRegister(),false);
+  K.v020ShellState.active='planned';assert.equal(CS.plannedRegister(),true);
+}
 console.log('✓ Club-App-Sollplan: Prüfungen, neu/geändert/entfällt/unverändert, Schutz in DP2 geänderter Dienste und Ist-Zeiten, keine Dubletten, Rücknahme, Rechte, Bestätigung/Verwerfen, Veröffentlichungszeilen');

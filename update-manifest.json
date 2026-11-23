@@ -157,8 +157,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-23T20:19:54.934Z",
-  "totalRuntimeBytes": 37309596,
+  "generatedAt": "2026-11-23T20:38:57.229Z",
+  "totalRuntimeBytes": 37310783,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -660,8 +660,8 @@
     {
       "path": "src/core/club-soll-inbox.js",
       "installPath": "src/core/club-soll-inbox.js",
-      "bytes": 23265,
-      "sha256": "0ded316cf3880e56c91247b49a2ab18cb668c78a3eefa0a3a619d4dd26a31c71",
+      "bytes": 24452,
+      "sha256": "080ab13cb5edc1f2de8ba4fb6ed0c26a28c024655d32c99dadd0aa0960df5ca1",
       "runtime": true
     },
     {
