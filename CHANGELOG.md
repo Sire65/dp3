@@ -1,3 +1,11 @@
+## Build 321 RC – Sollplan aus der Club-App übernehmen (KC-DP-SOLL-UEBERGABE)
+
+- Neues Modul `src/core/club-soll-inbox.js`: Die Club-App übergibt ihren berechneten Sollplan als vollständigen Stand (`kc_dp_soll_uebergabe_pending`/`_ack`, Tabelle und RPCs im Club-App-Repo). Im Sollplan erscheint für Planer „📥 Plan aus der Club-App übernehmen“ bzw. „📥 Änderungen aus der Club-App: … neu · … geändert · … entfällt“ (Abruf beim Öffnen des Sollplans, höchstens alle 5 Minuten).
+- Vorschau je Zeile: ➕ neu, ✏️ geändert, ➖ entfällt, ＝ unverändert, ⛔ nicht übernehmbar (unbekannte oder nicht planbare Person, kein Veranstaltungstag, Prüfung des Dienstes, Überschneidung mit einem DP2-Dienst). Übernommene Dienste, die in DP2 geändert wurden, Ist-Zeiten, eine Tauschanfrage oder einen anderen Status haben, zeigt sie als ⚠️ mit Wahl „DP2 behalten“ (Standard) oder „Club-Stand übernehmen“. Von Hand in DP2 angelegte Dienste werden nie verändert.
+- „Übernehmen“ legt Entwürfe mit `planningSource: 'club_import'` und `sourceImportKey` an, ändert/entfernt nur Club-Dienste auf dem normalen Weg (`K.mutations.saveShift`/`deleteShift`), als eine Einheit mit Rücknahme bei Fehlern, und bestätigt danach an die Club-App. „Verwerfen“ ändert nichts. Pause nach DP2-Regel (Pausenvorschlag).
+- Veröffentlichung an PC-Manager/Kasse unverändert (Auto-Sync, `kc_dp_plan_publish`).
+- Neuer Test `tools/test-club-soll-inbox.mjs` (in `npm run test:smoke`).
+
 ## Build 320 RC – Ganze Sollbalken verschieben
 
 Verschieben erhält die Dienstdauer, auch an Tagesgrenzen. Kein stilles Kürzen an gespeicherten Kann-Grenzen. Außerhalb der Kann-Zeit erfordert das Ablegen eine ausdrückliche Bestätigung, ohne Wünsche zu ändern; Überschneidungs- und Rechteprüfung bleiben aktiv. Randgriffe ändern weiterhin die Dauer.
