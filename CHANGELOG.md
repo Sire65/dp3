@@ -1,3 +1,7 @@
+## Build 322 RC – Sichere Club-App-Sollplan-Übernahme
+
+Fehlerhafte Übergaben lösen keine Löschung bestehender Dienste aus, auch bei ungültigen Personen- oder Übernahmeschlüsseln. Jede Änderung am DP2-Sollstand, Ist-Bezug oder Tauschanfragen nach der Vorschau verlangt einen neuen Vergleich. Tests für ungültige Zeiten, Schlüssel, unbekannte Personen sowie erneute Änderungen an bereits geschützten Diensten. Keine Änderung an echten Planungsdaten.
+
 ## Build 321 RC – Sollplan aus der Club-App übernehmen (KC-DP-SOLL-UEBERGABE)
 
 - Neues Modul `src/core/club-soll-inbox.js`: Die Club-App übergibt ihren berechneten Sollplan als vollständigen Stand (`kc_dp_soll_uebergabe_pending`/`_ack`, Tabelle und RPCs im Club-App-Repo). Im Sollplan erscheint für Planer „📥 Plan aus der Club-App übernehmen“ bzw. „📥 Änderungen aus der Club-App: … neu · … geändert · … entfällt“ (Abruf beim Öffnen des Sollplans, höchstens alle 5 Minuten).

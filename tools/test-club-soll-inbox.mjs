@@ -150,4 +150,31 @@ const active=K=>K.shifts.filter(s=>!['deleted','cancelled'].includes(s.status));
   K.v020ShellState.active='dashboard';assert.equal(CS.plannedRegister(),false);
   K.v020ShellState.active='planned';assert.equal(CS.plannedRegister(),true);
 }
-console.log('✓ Club-App-Sollplan: Prüfungen, neu/geändert/entfällt/unverändert, Schutz in DP2 geänderter Dienste und Ist-Zeiten, keine Dubletten, Rücknahme, Rechte, Bestätigung/Verwerfen, Veröffentlichungszeilen');
+// Fehlerhafte Vollstände dürfen auch bei fehlender Zuordnung keine Löschung auslösen.
+for(const bad of [r=>({...r,start:18,end:15}),r=>({...r,importKey:'FALSCH'}),()=>null,r=>({...r,personId:'KC-P-M0099',importKey:'CLUB-2026-12-04-KC-P-M0099'})]){
+ const {K,net}=await fixture(),CS=K.clubSollInbox;
+ const rows=[row(P[0],'2026-12-04',11,15),row(P[1],'2026-12-05',12,16)];
+ net.pending=stand('SAFE1',rows);await CS.check({force:true});await CS.apply({});
+ const before=JSON.stringify(K.shifts);
+ net.pending=stand('SAFE2',[bad(rows[0])]);await CS.check({force:true});
+ assert.equal(CS.state.analysis.counts.entfaellt,0);
+ assert.equal(CS.plannedOps(CS.state.analysis,Object.fromEntries(rows.map(r=>[r.importKey,'club']))).length,0,'auch ausdrückliche Konfliktwahl umgeht fehlerhaften Stand nicht');
+ const result=await CS.apply({});assert.equal(result.removed,0);assert.equal(JSON.stringify(K.shifts),before);
+ // Ein späterer fehlerfreier Vollstand darf echte Entfälle wieder vorschlagen.
+ net.pending=stand('SAFE3',[rows[0]]);await CS.check({force:true});assert.equal(CS.state.analysis.counts.entfaellt,1);
+}
+// Veraltete Vorschau: erneute Handänderung an einem bereits geschützten Dienst.
+for(const deletion of [false,true])for(const change of [s=>s.end=17,s=>s.status='published',s=>s.breakMinutes=15]){
+ const {K,net}=await fixture(),CS=K.clubSollInbox,r=row(P[0],'2026-12-04',11,15);
+ net.pending=stand('STALE1',[r]);await CS.check({force:true});await CS.apply({});
+ K.shifts[0].end=16;
+ net.pending=stand('STALE2',deletion?[]:[{...r,start:12}]);await CS.check({force:true});
+ assert.equal(CS.state.analysis.counts.konflikt,1);
+ change(K.shifts[0]);const before=JSON.stringify(K.shifts),acks=net.acks.length;
+ await assert.rejects(CS.apply({[r.importKey]:'club'}),/seit der Vorschau geändert/);
+ assert.equal(JSON.stringify(K.shifts),before);assert.equal(net.acks.length,acks,'keine Quittung bei veralteter Vorschau');
+ // Nach erneutem Prüfen ist eine ausdrückliche Entscheidung möglich.
+ await CS.check({force:true});await CS.apply({[r.importKey]:'club'});
+ if(deletion)assert.equal(K.shifts[0].status,'deleted');else{assert.equal(K.shifts[0].start,12);assert.equal(K.shifts[0].end,15);}
+}
+console.log('✓ Club-App-Sollplan: Prüfungen, neu/geändert/entfällt/unverändert, Schutz in DP2 geänderter Dienste und Ist-Zeiten, keine Dubletten, Rücknahme, Rechte, Bestätigung/Verwerfen, Veröffentlichungszeilen; Fehlerstände löschen nie, veraltete Konfliktvorschau bricht ab');
