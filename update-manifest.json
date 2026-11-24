@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 323,
+  "build": 324,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b323",
+  "cacheName": "kc-dp-release-0.20.0-b324",
   "releaseNotes": [
+    "Build 324 RC: Bereitschaft aus der Club-App übernehmen (KC-DP-SOLL-BEREITSCHAFT): die Sollplan-Übergabe trägt die Bereitschaft mit; sie wird als Bereitschaft eingetragen, nie als Dienst und nicht an die Kasse. Gleicher Schutz wie bei Diensten. Gelöschte Bereitschaften zählen nicht mehr als Überschneidung.",
     "Build 323 RC: Neuer Dienstplan-Druck mit neun Ausgaben, Filtern, Einzelplan, Bereitschaft separat und kompakten Vektor-PDFs. Keine Änderung an Planungsdaten.",
     "Build 322 RC: Sichere Sollplan-Übernahme – fehlerhafte Übergaben löschen keine Dienste; Änderungen nach der Vorschau verlangen einen neuen Vergleich.",
     "Build 321 RC: Sollplan aus der Club-App übernehmen (KC-DP-SOLL-UEBERGABE): Vorschau mit neu, geändert, entfällt und unverändert; in DP2 geänderte Dienste bleiben, bis der Planer anders wählt. Nichts ändert sich ohne „Übernehmen“.",
@@ -159,8 +160,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-24T08:23:37.710Z",
-  "totalRuntimeBytes": 37346767,
+  "generatedAt": "2026-11-24T13:47:37.392Z",
+  "totalRuntimeBytes": 37355060,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -341,7 +342,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35938,
-      "sha256": "9cbfce989a924a795c2a020cf0be88158f7e7a9a0dda2169364202560da0b083",
+      "sha256": "2ffff8d0127f01ffa09ae76beec0bac36fb1776ee67bacef46e43230938f49fc",
       "runtime": true,
       "forceRefresh": true
     },
@@ -662,8 +663,8 @@
     {
       "path": "src/core/club-soll-inbox.js",
       "installPath": "src/core/club-soll-inbox.js",
-      "bytes": 25185,
-      "sha256": "53fe5d7940a5ce821d891e707be6aa23781b68a8570867196b107f01b366d714",
+      "bytes": 33433,
+      "sha256": "7dcc0df051296da6b4e0046fd095db80963162a3e042074c334dc33452f00916",
       "runtime": true
     },
     {
@@ -970,8 +971,8 @@
     {
       "path": "src/core/planning.js",
       "installPath": "src/core/planning.js",
-      "bytes": 15078,
-      "sha256": "3957c5b827784533e959874892253d84c8edbb3056b9ea75d45ccf55dacbee25",
+      "bytes": 15123,
+      "sha256": "02273a5d845b5facdec1ad5059fb57ca64c56ebf8d9d4d2397ae49fb295a8969",
       "runtime": true
     },
     {

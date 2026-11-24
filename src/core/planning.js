@@ -109,7 +109,7 @@
     const p=K.person(candidate.personId),issues=[];
     if(!p||!p.active)issues.push({level:'error',text:'Person ist nicht aktiv.'});
     if(candidate.end<=candidate.start)issues.push({level:'error',text:'Ende muss nach Beginn liegen.'});
-    const overlaps=K.standby.filter(s=>s.id!==candidate.id&&s.personId===candidate.personId&&s.date===candidate.date&&Math.max(s.start,candidate.start)<Math.min(s.end,candidate.end));
+    const overlaps=K.standby.filter(s=>s.id!==candidate.id&&!['cancelled','deleted'].includes(s.status)&&s.personId===candidate.personId&&s.date===candidate.date&&Math.max(s.start,candidate.start)<Math.min(s.end,candidate.end));
     if(overlaps.length)issues.push({level:'error',text:'Überschneidung mit weiterer Bereitschaft.'});
     const duty=K.shifts.filter(s=>s.personId===candidate.personId&&s.date===candidate.date&&s.layer==='planned'&&plannedActive(s)&&Math.max(s.start,candidate.start)<Math.min(s.end,candidate.end));
     if(duty.length)issues.push({level:'warn',text:'Person hat im Bereitschaftszeitraum bereits einen geplanten Dienst.'});

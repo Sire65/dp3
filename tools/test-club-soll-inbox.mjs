@@ -177,4 +177,84 @@ for(const deletion of [false,true])for(const change of [s=>s.end=17,s=>s.status=
  await CS.check({force:true});await CS.apply({[r.importKey]:'club'});
  if(deletion)assert.equal(K.shifts[0].status,'deleted');else{assert.equal(K.shifts[0].start,12);assert.equal(K.shifts[0].end,15);}
 }
-console.log('✓ Club-App-Sollplan: Prüfungen, neu/geändert/entfällt/unverändert, Schutz in DP2 geänderter Dienste und Ist-Zeiten, keine Dubletten, Rücknahme, Rechte, Bestätigung/Verwerfen, Veröffentlichungszeilen; Fehlerstände löschen nie, veraltete Konfliktvorschau bricht ab');
+// Build 324 · KC-DP-SOLL-BEREITSCHAFT: Bereitschaft kommt als Bereitschaft (K.standby), nie als Dienst; gleiche Schutzregeln.
+{
+  const b=(pid,date,start,end)=>({importKey:`CLUB-B-${date}-${pid}`,personId:pid,name:'',date,start,end});
+  const withB=(id,rows,ber,ueb)=>({...stand(id,rows),bereitschaft:ber,...(ueb?{uebersprungen:ueb}:{})});
+  const clubB=K=>K.standby.filter(s=>s.planningSource==='club_import'&&!['deleted','cancelled'].includes(s.status));
+  // A) neu + Prüfungen (unbekannt, Überschneidung mit Hand-Bereitschaft) – Dienste unberührt
+  {
+    const {K,net}=await fixture(),CS=K.clubSollInbox;
+    K.standby=[{id:'B-HAND',personId:P[2],date:'2026-12-04',start:18,end:20,phone:'0170',status:'planned'}];
+    net.pending=withB('BA',[row(P[0],'2026-12-04',11,15)],[b(P[1],'2026-12-04',20,23),b('KC-P-M0099','2026-12-04',20,23),b(P[2],'2026-12-04',19,23),{...b(P[4],'2026-12-05',20,23),importKey:'CLUB-2026-12-05-'+P[4]}]);
+    await CS.check({force:true});const a=CS.state.analysis;
+    assert.deepEqual({...a.counts},{neu:2,geaendert:0,entfaellt:0,gleich:0,konflikt:0,fehler:3});
+    const t=a.items.filter(i=>i.entity==='standby'&&i.kind==='fehler').map(i=>i.text).join(' | ');
+    for(const x of ['unbekannt','Überschneidung mit weiterer Bereitschaft','Übernahmeschlüssel'])assert.match(t,new RegExp(x));
+    const r=await CS.apply({});assert.deepEqual([r.added,r.standbyAdded,r.standbyUpdated,r.standbyRemoved],[1,1,0,0]);
+    const sb=clubB(K);assert.equal(sb.length,1);assert.deepEqual([sb[0].personId,sb[0].date,sb[0].start,sb[0].end,sb[0].status,sb[0].sourceImportKey],[P[1],'2026-12-04',20,23,'planned',`CLUB-B-2026-12-04-${P[1]}`]);
+    assert.ok(/^B-/.test(sb[0].id),'DP2-eigene ID');
+    assert.equal(K.shifts.filter(s=>s.planningSource==='club_import').length,1,'Bereitschaft wird kein Dienst');
+    assert.equal(K.standby.find(s=>s.id==='B-HAND').end,20,'Hand-Bereitschaft unverändert');
+    assert.equal(net.acks.at(-1).status,'uebernommen');assert.equal(net.acks.at(-1).result.standbyAdded,1);
+    // Kasse: nur Dienste
+    class FixedDate extends Date{constructor(...x){if(x.length)super(...x);else super('2026-12-01T10:00:00Z');}static now(){return Date.parse('2026-12-01T10:00:00Z');}}
+    vm.runInContext(bridgeSource,vm.createContext({window:{KCDP:K},Intl,Date:FixedDate,console,setTimeout,clearTimeout}));
+    assert.deepEqual(K.planManagerBridge.buildRows().map(x=>x.personId),[P[0]],'Bereitschaft geht nicht an die Kasse');
+    // B) geändert
+    net.pending=withB('BB',[row(P[0],'2026-12-04',11,15)],[b(P[1],'2026-12-04',19,23)]);await CS.check({force:true});
+    assert.deepEqual({...CS.state.analysis.counts},{neu:0,geaendert:1,entfaellt:0,gleich:1,konflikt:0,fehler:0});
+    const r2=await CS.apply({});assert.equal(r2.standbyUpdated,1);assert.equal(clubB(K)[0].start,19);assert.equal(clubB(K).length,1,'keine Dublette');
+    // gleicher Stand → nichts zu tun (still bestätigt)
+    net.pending=withB('BB2',[row(P[0],'2026-12-04',11,15)],[b(P[1],'2026-12-04',19,23)]);await CS.check({force:true});
+    assert.equal(net.acks.at(-1).id,'BB2');assert.equal(net.pending,null);
+    // C) in DP2 von Hand geändert → bleibt (Konflikt, Standard behalten)
+    clubB(K)[0].end=22;
+    net.pending=withB('BC',[row(P[0],'2026-12-04',11,15)],[]);await CS.check({force:true});
+    const c=CS.state.analysis.items.find(i=>i.entity==='standby');assert.equal(c.kind,'konflikt');assert.match(c.reasons.join(),/in DP2 geändert/);
+    await CS.apply({});assert.equal(clubB(K).length,1,'Standard: DP2 behalten');assert.equal(clubB(K)[0].end,22);
+    // D) älterer Club-Server ohne Feld „bereitschaft“: an der Bereitschaft ändert sich nichts
+    net.pending=stand('BD',[row(P[0],'2026-12-04',11,15)]);await CS.check({force:true});
+    assert.ok(!(CS.state.analysis?.items||[]).some(i=>i.entity==='standby'),'ohne Feld kein Bereitschafts-Abgleich');
+    assert.equal(clubB(K).length,1);
+  }
+  // E) entfällt sauber; Übersprungen (typ bereitschaft) schützt nur die Bereitschaft, nicht Dienste
+  {
+    const {K,net}=await fixture(),CS=K.clubSollInbox;K.standby=[];
+    net.pending=withB('BE1',[row(P[0],'2026-12-04',11,15),row(P[2],'2026-12-05',12,16)],[b(P[1],'2026-12-04',20,23),b(P[3],'2026-12-05',20,23)]);
+    await CS.check({force:true});await CS.apply({});assert.equal(clubB(K).length,2);
+    net.pending=withB('BE2',[row(P[0],'2026-12-04',11,15)],[],[{typ:'bereitschaft',name:'',date:'2026-12-04',personId:P[1],grund:'Tag nicht veröffentlicht'},{typ:'bereitschaft',name:'',date:'2026-12-05',personId:P[2],grund:'In der Club-App ausgenommen'}]);
+    await CS.check({force:true});const a=CS.state.analysis;
+    assert.equal(a.items.find(i=>i.entity==='standby'&&i.row.personId===P[1]).kind,'konflikt','übersprungene Bereitschaft bleibt');
+    assert.equal(a.items.find(i=>i.entity==='standby'&&i.row.personId===P[3]).kind,'entfaellt');
+    assert.equal(a.items.find(i=>i.entity!=='standby'&&i.row.personId===P[2]).kind,'entfaellt','Bereitschafts-Überspringen schützt keinen Dienst');
+    const r=await CS.apply({});assert.deepEqual([r.removed,r.standbyRemoved],[1,1]);
+    assert.equal(K.standby.find(s=>s.personId===P[3]).status,'deleted');assert.equal(clubB(K).length,1);
+    // in DP2 gelöscht → nicht von selbst wieder anlegen; von der Übernahme entfernt → wieder anlegen erlaubt
+    K.mutations.deleteStandby(clubB(K)[0].id,{reason:'Hand'});
+    net.pending=withB('BE3',[row(P[0],'2026-12-04',11,15)],[b(P[1],'2026-12-04',20,23),b(P[3],'2026-12-05',20,23)]);await CS.check({force:true});
+    const it=k=>CS.state.analysis.items.find(i=>i.entity==='standby'&&i.row.personId===k);
+    assert.equal(it(P[1]).kind,'konflikt');assert.match(it(P[1]).reasons[0],/gelöscht/);assert.equal(it(P[3]).kind,'neu');
+  }
+  // F) Fehler in der Bereitschaft → keine Löschung (auch keine Dienste); Rücknahme bei Speicherfehler
+  {
+    const {K,net}=await fixture(),CS=K.clubSollInbox;K.standby=[];
+    net.pending=withB('BF1',[row(P[0],'2026-12-04',11,15),row(P[1],'2026-12-05',12,16)],[b(P[2],'2026-12-04',20,23)]);
+    await CS.check({force:true});await CS.apply({});
+    net.pending=withB('BF2',[row(P[0],'2026-12-04',11,15)],[{...b(P[2],'2026-12-04',23,20)}]);await CS.check({force:true});
+    assert.equal(CS.state.analysis.counts.entfaellt,0,'fehlerhafter Stand löscht nichts');
+    const r=await CS.apply({});assert.deepEqual([r.removed,r.standbyRemoved],[0,0]);
+    net.pending=withB('BF3',[row(P[0],'2026-12-04',11,15),row(P[1],'2026-12-05',12,16)],[b(P[2],'2026-12-04',19,23),b(P[3],'2026-12-06',20,23)]);await CS.check({force:true});
+    const before=JSON.stringify(K.standby);K.cloudPrimary={active:()=>true};K.persistAll=async()=>({confirmed:false});
+    await assert.rejects(CS.apply({}),/nicht von Supabase bestätigt/);assert.equal(JSON.stringify(K.standby),before,'Bereitschaft zurückgenommen');
+  }
+  // G) ohne Bereitschafts-Recht: nicht übernehmbar, nichts geändert
+  {
+    const {K,net}=await fixture(),CS=K.clubSollInbox;K.standby=[];
+    const has=K.auth.has;K.auth.has=p=>p==='roster.standby.edit'?false:has(p);
+    net.pending=withB('BG',[row(P[0],'2026-12-04',11,15)],[b(P[1],'2026-12-04',20,23)]);await CS.check({force:true});
+    assert.match(CS.state.analysis.items.find(i=>i.entity==='standby').text,/Berechtigung/);
+    await CS.apply({});assert.equal(clubB(K).length,0);assert.equal(K.shifts.length,1);
+  }
+}
+console.log('✓ Club-App-Sollplan: Prüfungen, neu/geändert/entfällt/unverändert, Schutz in DP2 geänderter Dienste und Ist-Zeiten, keine Dubletten, Rücknahme, Rechte, Bestätigung/Verwerfen, Veröffentlichungszeilen; Fehlerstände löschen nie, veraltete Konfliktvorschau bricht ab; Bereitschaft als Bereitschaft (neu/geändert/entfällt, Schutz, nicht an die Kasse)');
