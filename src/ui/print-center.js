@@ -31,11 +31,12 @@ function timelineRows(d,art,o){
  return rows;
 }
 function timelineBlocks(model,art,o){return model.days.map(d=>{const rows=timelineRows(d,art,o),rh=Math.min(16,Math.floor((BOTTOM-TOP-36)/rows.length));if(rh<10)throw Error(`${date(d.date)}: Zu viele Zeilen für ein lesbares Tagesblatt. Bitte Personen filtern oder Wunschplan und Sollplan getrennt auswählen.`);return {kind:'timeline',d,art,rows,rh,height:36+rows.length*rh,force:art==='deployment'};});}
+function timelineGeometry(art,range){const [from,to]=range,x0=204,max=art==='deployment'?738:766,wide=to-from<15,scale=(max-x0)/(wide?8:15);return {x0,x1:x0+(to-from)*scale,scale,right:to===23?(art==='deployment'?80:52):0};}
 function paintTimeline(c,b,y,range){
- const {d,rows,rh,art}=b,[from,to]=range,x0=204,x1=art==='deployment'?738:766,axis=x1-x0,scale=axis/(to-from),right=art==='deployment'?80:52;
+ const {d,rows,rh,art}=b,[from,to]=range,{x0,x1,scale,right}=timelineGeometry(art,range);
  c.text(LEFT,y+10,dayTitle(d),10,true);c.text(450,y+10,`Bedarf ${num(d.demandHours)} h · ${art==='wish'?'Wunsch '+num(d.wishHours):'Soll '+num(d.planHours)} h`,8,true);
- y+=16;c.rect(LEFT,y,794,20,'#eee7df');c.text(LEFT+4,y+13,'Person',8,true);
- c.text(x1+4,y+13,art==='deployment'?'W / S h':'Std.',7.5,true);
+ y+=16;c.rect(LEFT,y,x1+right-LEFT,20,'#eee7df');c.text(LEFT+4,y+13,'Person',8,true);
+ if(right)c.text(x1+4,y+13,art==='deployment'?'W / S h':'Std.',7.5,true);
  for(let t=from;t<to;t+=.5){const x=x0+(t-from)*scale;if(t%1===0)c.text(x+2,y+9,`${Math.floor(t)} Uhr`,6.5,true);c.text(x+2,y+17,t%1?':30':':00',5.5);}
  y+=20;
  for(const row of rows){
@@ -52,7 +53,7 @@ function paintTimeline(c,b,y,range){
    else{const label=`${time(s.start)}–${time(s.end)} · ${num(s.end-s.start)} h`;c.text(x+2,y+rh*.67,label,Math.max(5.7,Math.min(7,w/(label.length*.54))),true,s.type==='planned'?'#fff':color.ink,w-2);}
    if(s.type==='planned')for(const pause of s.breakSegments||[]){const aa=Math.max(a,pause.start),bb=Math.min(end,pause.end);if(bb>aa){c.rect(x0+(aa-from)*scale,y+rh-4,(bb-aa)*scale,3,'#fff',null);}}
   }
-  c.rect(x1,y,right,rh,'#fff');if(row.hours!=null)c.text(x1+4,y+rh*.65,art==='deployment'&&row.kind!=='standby'?`${num(row.wh)} / ${num(row.sh)}`:num(row.hours),8,true);
+  if(right){c.rect(x1,y,right,rh,'#fff');if(row.hours!=null)c.text(x1+4,y+rh*.65,art==='deployment'&&row.kind!=='standby'?`${num(row.wh)} / ${num(row.sh)}`:num(row.hours),8,true);}
   y+=rh;
  }
 }
@@ -126,5 +127,5 @@ function open(defaults={}){
 }
 function install(){if(document.getElementById('kcPrintStart')||!document.getElementById('moreBtn'))return;const b=document.createElement('button');b.id='kcPrintStart';b.type='button';b.className='tool-btn';b.textContent='Druck / PDF';b.onclick=()=>open();document.getElementById('moreBtn').after(b);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-K.printCenter={open,generate,pages,paint,preview,labels};
+K.printCenter={open,generate,pages,paint,preview,labels,timelineGeometry};
 })();

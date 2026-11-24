@@ -159,8 +159,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-24T08:20:37.441Z",
-  "totalRuntimeBytes": 37346435,
+  "generatedAt": "2026-11-24T08:22:56.460Z",
+  "totalRuntimeBytes": 37346655,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -1894,8 +1894,8 @@
     {
       "path": "src/ui/print-center.js",
       "installPath": "src/ui/print-center.js",
-      "bytes": 21769,
-      "sha256": "0efed12b39104d38f718d14976ba9fd2b0383701be693cc5914c0c3348b2acff",
+      "bytes": 21989,
+      "sha256": "ba29f60fdb2f167c9d925b10db19c0ba16e80800028bb36e8284c01a8caa6256",
       "runtime": true
     },
     {
