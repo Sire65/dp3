@@ -44,6 +44,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,stage,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 323 RC: Neuer Dienstplan-Druck mit neun Ausgaben, Filtern, Einzelplan, Bereitschaft separat und kompakten Vektor-PDFs. Keine Änderung an Planungsdaten.',
     'Build 322 RC: Sichere Sollplan-Übernahme – fehlerhafte Übergaben löschen keine Dienste; Änderungen nach der Vorschau verlangen einen neuen Vergleich.',
     'Build 321 RC: Sollplan aus der Club-App übernehmen (KC-DP-SOLL-UEBERGABE): Vorschau mit neu, geändert, entfällt und unverändert; in DP2 geänderte Dienste bleiben, bis der Planer anders wählt. Nichts ändert sich ohne „Übernehmen“.',
     'Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.',
