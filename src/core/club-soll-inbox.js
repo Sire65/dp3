@@ -8,10 +8,15 @@
 // (Fingerabdruck clubShiftFp ≠ aktuelle Werte), Ist-Zeiten, eine Tauschanfrage oder einen anderen Status haben, werden nur nach
 // ausdrücklicher Wahl geändert oder entfernt. „Entfällt“ entfernt über K.mutations.deleteShift (Status deleted → die Veröffentlichung
 // an die Kasse lässt ihn weg). Nichts ändert sich ohne „Übernehmen“. Der Veröffentlichungsweg (Auto-Sync, kc_dp_plan_publish) bleibt unverändert.
+// Build 324 · KC-DP-SOLL-BEREITSCHAFT (Hansi 24.11.2026 „Bereitschaft soll auch im Dienstplan stehen“): die Übergabe trägt zusätzlich
+// „bereitschaft“ (importKey 'CLUB-B-<datum>-<personId>', start/end). Sie wird als Bereitschaft (K.standby, K.mutations.saveStandby) angelegt –
+// nie als Dienst, also nicht auf der Kasse. Gleiche Regeln: neu/geändert/entfällt/unverändert, in DP2 geänderte oder von Hand angelegte
+// Bereitschaft bleibt (Überschneidung → nicht übernehmbar), ein fehlerhafter Stand löscht nichts (auch keine Dienste).
+// Fehlt das Feld (älterer Club-Server), wird an der Bereitschaft nichts geändert.
 (function(){
 'use strict';
 const K=window.KCDP=window.KCDP||{};
-const VERSION='0.1.0',SOURCE='club_import',POLL_MS=5*60000;
+const VERSION='0.2.0',SOURCE='club_import',POLL_MS=5*60000;
 const clone=v=>v==null?v:JSON.parse(JSON.stringify(v));
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const time=h=>{const v=Number(h),m=Math.round(v*60);return `${String(Math.floor(m/60)).padStart(2,'0')}:${String(m%60).padStart(2,'0')}`;};
@@ -27,6 +32,40 @@ const num=v=>Math.round(Number(v)*10000)/10000;
 function fingerprint(s){return JSON.stringify([String(s?.personId||''),String(s?.date||''),num(s?.start),num(s?.end),String(s?.zone||''),String(s?.area||''),Number(s?.breakMinutes||0)]);}
 const canonicalId=id=>K.personIdAliases?.[String(id||'')]||String(id||'');
 const clubShifts=()=>(K.shifts||[]).filter(s=>s&&s.layer==='planned'&&s.planningSource===SOURCE&&s.sourceImportKey);
+// Bereitschaft (eigene Liste K.standby): Fingerabdruck nur aus Person, Tag, Von, Bis
+function standbyFp(s){return JSON.stringify([String(s?.personId||''),String(s?.date||''),num(s?.start),num(s?.end)]);}
+const clubStandby=()=>(K.standby||[]).filter(s=>s&&s.planningSource===SOURCE&&s.sourceImportKey);
+function standbyProtected(s){
+ const out=[];
+ if(s.clubShiftFp&&standbyFp(s)!==s.clubShiftFp)out.push('in DP2 geändert');
+ if(!['planned',undefined,null,''].includes(s.status))out.push(`Status „${s.status}“`);
+ return out;
+}
+function validStandbyRow(r){
+ if(!r||typeof r!=='object')return 'Ungültige Zeile.';
+ if(!/^\d{4}-\d{2}-\d{2}$/.test(String(r.date||'')))return 'Ungültiges Datum.';
+ if(!/^KC-P-[A-Z0-9-]{1,30}$/.test(String(r.personId||'')))return 'Ungültige Personen-ID.';
+ if(r.importKey!==`CLUB-B-${r.date}-${r.personId}`)return 'Ungültiger Übernahmeschlüssel.';
+ if(typeof r.start!=='number'||typeof r.end!=='number'||!Number.isFinite(r.start)||!Number.isFinite(r.end)||r.start<0||r.end>30||r.end<=r.start)return 'Ungültige Von-/Bis-Zeit.';
+ return null;
+}
+function standbyCandidate(row,input,base=null){
+ const pid=canonicalId(row.personId),p=K.person?.(pid);
+ const c={...(base?clone(base):{}),personId:pid,date:row.date,start:Number(row.start),end:Number(row.end),
+  phone:base?.phone&&base.phone!=='nicht hinterlegt'?base.phone:(p?.phone||p?.mobile||'nicht hinterlegt'),status:base?.status||'planned',
+  planningSource:SOURCE,sourceImportKey:row.importKey,clubImportId:input.id,clubImportedAt:new Date().toISOString(),clubRowFp:standbyFp(row)};
+ if(!base)c.id='';
+ c.clubShiftFp=standbyFp(c);
+ return c;
+}
+function standbyIssues(c){
+ let issues=[];
+ if(K.auth?.has&&K.auth.has('roster.standby.edit')!==true)issues.push({level:'error',text:'Keine Berechtigung für Bereitschaften.'});
+ try{issues=issues.concat((K.validateStandby(c)||[]).map(i=>({level:i.level==='error'?'error':i.level==='info'?'info':'warn',text:i.text})));}catch(e){issues.push({level:'error',text:e.message||String(e)});}
+ try{K.locks?.requireEditable?.(c.date);}catch(e){issues.push({level:'error',text:e.message});}
+ return issues;
+}
+const isStandbySkip=u=>u&&u.typ==='bereitschaft';
 function protectedReasons(s){
  const out=[];
  if(s.clubShiftFp&&fingerprint(s)!==s.clubShiftFp)out.push('in DP2 geändert');
@@ -97,15 +136,49 @@ function analyze(input,{removed=store().removed}={}){
   let lockError=null;try{K.locks?.requireEditable?.(s.date);}catch(e){lockError=e.message;}
   // Die Club-App hat zu dieser Person/diesem Tag nichts übergeben (Person nicht eindeutig, Tag nicht veröffentlicht, ausgenommen):
   // das ist keine Planänderung → nicht von selbst löschen, nur auf ausdrückliche Wahl.
-  const why=skipped.find(u=>(u.date==null||u.date===s.date)&&(canonicalId(u.personId)===s.personId||(Array.isArray(u.personIds)&&u.personIds.map(canonicalId).includes(s.personId))));
+  const why=skipped.find(u=>!isStandbySkip(u)&&(u.date==null||u.date===s.date)&&(canonicalId(u.personId)===s.personId||(Array.isArray(u.personIds)&&u.personIds.map(canonicalId).includes(s.personId))));
   if(why)reasons.unshift(String(why.grund||'In der Club-App nicht übergeben').slice(0,80));
   const deletionError=lockError||(incomplete?'Übergabe enthält Fehler. Vorhandener Dienst bleibt erhalten; Löschung erst nach einer fehlerfreien neuen Vorschau.':null);
   items.push({kind:deletionError?'fehler':reasons.length?'konflikt':'entfaellt',action:'delete',row:label,shiftId:s.id,reasons,skip:why?String(why.grund||'In der Club-App nicht übergeben').slice(0,80):null,blocked:!!deletionError,text:deletionError});
  }
+ // ---- Bereitschaft (nur wenn die Übergabe sie trägt) ----
+ if(Array.isArray(input?.bereitschaft)){
+  const bSeen=new Set(),bByKey=new Map();
+  for(const s of clubStandby()){const prev=bByKey.get(s.sourceImportKey);if(!prev||(INACTIVE.has(prev.status)&&!INACTIVE.has(s.status)))bByKey.set(s.sourceImportKey,s);}
+  for(const row of input.bereitschaft){
+   const label={personId:row?.personId,name:row?.name||'',date:row?.date,start:row?.start,end:row?.end,area:'Bereitschaft',importKey:row?.importKey};
+   const bad=validStandbyRow(row);if(bad){items.push({kind:'fehler',entity:'standby',row:label,text:bad});continue;}
+   if(bSeen.has(row.importKey)){items.push({kind:'fehler',entity:'standby',row:label,text:'Doppelte Zeile.'});continue;}bSeen.add(row.importKey);
+   const pid=canonicalId(row.personId),person=K.person?.(pid);
+   if(K.personPlanningAllowed&&!K.personPlanningAllowed(pid)){items.push({kind:'fehler',entity:'standby',row:label,text:'Person ist für diese Veranstaltung nicht planbar.'});continue;}
+   if(!person?.active){items.push({kind:'fehler',entity:'standby',row:label,text:'Person ist in DP2 unbekannt oder nicht aktiv.'});continue;}
+   if(!(K.days||[]).some(d=>d.date===row.date)){items.push({kind:'fehler',entity:'standby',row:label,text:'Kein Veranstaltungstag in DP2.'});continue;}
+   const existing=bByKey.get(row.importKey),rowFp=standbyFp(row);
+   if(existing&&!INACTIVE.has(existing.status)){
+    if(existing.clubRowFp===rowFp){items.push({kind:'gleich',entity:'standby',row:label,shiftId:existing.id});continue;}
+    const cand=standbyCandidate(row,input,existing),reasons=standbyProtected(existing),issues=standbyIssues(cand),blocked=issues.some(i=>i.level==='error');
+    items.push({kind:reasons.length?'konflikt':blocked?'fehler':'geaendert',entity:'standby',action:'update',row:label,shiftId:existing.id,before:{start:existing.start,end:existing.end,area:'Bereitschaft',personId:existing.personId},candidate:cand,issues,reasons,blocked,text:blocked?issues.find(i=>i.level==='error').text:null});
+    continue;
+   }
+   const cand=standbyCandidate(row,input,null),issues=standbyIssues(cand),blocked=issues.some(i=>i.level==='error');
+   if(existing&&!removed?.[row.importKey]){items.push({kind:'konflikt',entity:'standby',action:'create',row:label,shiftId:existing.id,candidate:cand,issues,reasons:['in DP2 gelöscht'],blocked,text:blocked?issues.find(i=>i.level==='error').text:null});continue;}
+   items.push({kind:blocked?'fehler':'neu',entity:'standby',action:'create',row:label,candidate:cand,issues,blocked,text:blocked?issues.find(i=>i.level==='error').text:null});
+  }
+  for(const s of bByKey.values()){
+   if(INACTIVE.has(s.status)||bSeen.has(s.sourceImportKey))continue;
+   const reasons=standbyProtected(s),label={personId:s.personId,name:'',date:s.date,start:s.start,end:s.end,area:'Bereitschaft',importKey:s.sourceImportKey};
+   let lockError=null;try{K.locks?.requireEditable?.(s.date);}catch(e){lockError=e.message;}
+   const why=skipped.find(u=>isStandbySkip(u)&&(u.date==null||u.date===s.date)&&(canonicalId(u.personId)===s.personId||(Array.isArray(u.personIds)&&u.personIds.map(canonicalId).includes(s.personId))));
+   if(why)reasons.unshift(String(why.grund||'In der Club-App nicht übergeben').slice(0,80));
+   items.push({kind:lockError?'fehler':reasons.length?'konflikt':'entfaellt',entity:'standby',action:'delete',row:label,shiftId:s.id,reasons,skip:why?String(why.grund||'In der Club-App nicht übergeben').slice(0,80):null,blocked:!!lockError,text:lockError});
+  }
+ }
+ // Build 322-Regel für den ganzen Stand (Dienste UND Bereitschaft): enthält er Fehler, wird nichts gelöscht.
+ if(items.some(i=>i.kind==='fehler'&&i.action!=='delete'))for(const i of items)if(i.action==='delete'&&!i.blocked){i.kind='fehler';i.blocked=true;i.text='Übergabe enthält Fehler. Vorhandener Eintrag bleibt erhalten; Löschung erst nach einer fehlerfreien neuen Vorschau.';}
  const counts={neu:0,geaendert:0,entfaellt:0,gleich:0,konflikt:0,fehler:0};for(const i of items)counts[i.kind]++;
  // Nicht nur das vorgeschlagene Ergebnis vergleichen: bereits als Konflikt markierte
  // Dienste können sich nochmals ändern, ohne dass sich Art oder Club-Vorschlag ändern.
- const signature=JSON.stringify({items:items.map(i=>[i.kind,i.action||'',i.row.importKey,i.shiftId||'',i.candidate?.clubShiftFp||'',i.blocked?1:0,i.reasons||[],i.issues||[]]),shifts:K.shifts||[],actualShifts:K.actualShifts||[],swapRequests:K.swapRequests||[],removed});
+ const signature=JSON.stringify({items:items.map(i=>[i.kind,i.action||'',i.row.importKey,i.shiftId||'',i.candidate?.clubShiftFp||'',i.blocked?1:0,i.reasons||[],i.issues||[],i.entity||'shift']),shifts:K.shifts||[],standby:K.standby||[],actualShifts:K.actualShifts||[],swapRequests:K.swapRequests||[],removed});
  return {id:input?.id||null,pruefsumme:input?.pruefsumme||null,stand:input?.stand||null,items,counts,signature,changes:counts.neu+counts.geaendert+counts.entfaellt+counts.konflikt};
 }
 // Was bei „Übernehmen“ passiert: neu/geändert/entfällt immer, Konflikte nur mit Wahl 'club'.
@@ -113,11 +186,15 @@ function plannedOps(analysis,choices={}){
  return analysis.items.filter(i=>!i.blocked&&(['neu','geaendert','entfaellt'].includes(i.kind)||(i.kind==='konflikt'&&choices[i.row.importKey]==='club')));
 }
 function applyOps(ops,input){
- const res={added:0,updated:0,removed:0,removedKeys:[]};
+ const res={added:0,updated:0,removed:0,removedKeys:[],standbyAdded:0,standbyUpdated:0,standbyRemoved:0};
  const reason=`Club-App-Sollplan ${String(input.id).slice(0,8)}`;
- for(const op of ops.filter(o=>o.action==='delete')){K.mutations.deleteShift(op.shiftId,{reason:reason+': entfällt'});res.removed++;res.removedKeys.push(op.row.importKey);}
- for(const op of ops.filter(o=>o.action==='update')){const c=clone(op.candidate);K.mutations.saveShift(c,{existingId:op.shiftId,reason:reason+': geändert'});res.updated++;}
- for(const op of ops.filter(o=>o.action==='create')){const c=clone(op.candidate);K.mutations.saveShift(c,{existingId:null,reason:reason+': neu'});res.added++;}
+ const sh=ops.filter(o=>o.entity!=='standby'),sb=ops.filter(o=>o.entity==='standby');
+ for(const op of sh.filter(o=>o.action==='delete')){K.mutations.deleteShift(op.shiftId,{reason:reason+': entfällt'});res.removed++;res.removedKeys.push(op.row.importKey);}
+ for(const op of sh.filter(o=>o.action==='update')){const c=clone(op.candidate);K.mutations.saveShift(c,{existingId:op.shiftId,reason:reason+': geändert'});res.updated++;}
+ for(const op of sh.filter(o=>o.action==='create')){const c=clone(op.candidate);K.mutations.saveShift(c,{existingId:null,reason:reason+': neu'});res.added++;}
+ for(const op of sb.filter(o=>o.action==='delete')){K.mutations.deleteStandby(op.shiftId,{reason:reason+': Bereitschaft entfällt'});res.standbyRemoved++;res.removedKeys.push(op.row.importKey);}
+ for(const op of sb.filter(o=>o.action==='update')){const c=clone(op.candidate);K.mutations.saveStandby(c,{existingId:op.shiftId,reason:reason+': Bereitschaft geändert'});res.standbyUpdated++;}
+ for(const op of sb.filter(o=>o.action==='create')){const c=clone(op.candidate);delete c.id;K.mutations.saveStandby(c,{existingId:null,reason:reason+': Bereitschaft neu'});res.standbyAdded++;}
  return res;
 }
 async function planningAllowed(){
@@ -159,7 +236,7 @@ async function apply(choices={}){
  if(state.inFlight)throw Error('Ein Abgleich läuft bereits. Bitte kurz warten.');
  const preview=state.analysis,previewInput=state.pending;if(!preview||!previewInput)throw Error('Bitte die Vorschau neu öffnen.');
  state.inFlight=true;
- const context=scopeKey(),tag=`clubsoll:${previewInput.id}`;let mutated=false,result=null,snapshot=null,auditStart=0,storeBefore=null;
+ const context=scopeKey(),tag=`clubsoll:${previewInput.id}`;let mutated=false,result=null,snapshot=null,standbySnapshot=null,auditStart=0,storeBefore=null;
  try{
   K.auth.require('roster.plan.edit','Sie dürfen den Sollplan nicht bearbeiten.');
   if(!await planningAllowed())throw Error('Nur berechtigte Planer dürfen den Club-App-Sollplan übernehmen.');
@@ -171,7 +248,7 @@ async function apply(choices={}){
   if(fresh.signature!==preview.signature)throw Error('Der Sollplan wurde seit der Vorschau geändert. Bitte die Vorschau neu öffnen.');
   const ops=plannedOps(fresh,choices);
   const run=()=>applyOps(ops,input);
-  snapshot=clone(K.shifts);auditStart=(K.auditLog||[]).length;storeBefore=clone(store());mutated=true;
+  snapshot=clone(K.shifts);standbySnapshot=clone(K.standby);auditStart=(K.auditLog||[]).length;storeBefore=clone(store());mutated=true;
   result=K.sync?.stageLocalBatch?K.sync.stageLocalBatch(tag,run):run();
   const s=store();for(const key of result.removedKeys)s.removed[key]=new Date().toISOString();
   for(const op of ops.filter(o=>o.action==='create'))delete s.removed[op.row.importKey];
@@ -180,14 +257,14 @@ async function apply(choices={}){
   if(K.cloudPrimary?.active?.()&&persisted?.confirmed!==true)throw Error('Planungsdaten noch nicht von Supabase bestätigt. Die Übernahme wurde zurückgenommen.');
   K.sync?.settleLocalBatch?.(tag,true);mutated=false;
   K.historyManager?.record?.('Club-App-Sollplan übernommen');
-  K.recordAudit?.('Club-App-Sollplan übernommen',{entity:'club_soll_inbox',entityId:input.id,reason:`Club-App-Sollplan ${input.id}`,after:{...fresh.counts,added:result.added,updated:result.updated,removed:result.removed}});
-  const summary={added:result.added,updated:result.updated,removed:result.removed,unchanged:fresh.counts.gleich,kept:fresh.counts.konflikt-ops.filter(o=>o.kind==='konflikt').length,skipped:fresh.counts.fehler,problems:fresh.items.filter(i=>i.kind==='fehler').slice(0,40).map(i=>({importKey:i.row.importKey,text:i.text})),dp2Version:K.VERSION,build:typeof window!=='undefined'?window.KC_DP_BUILD||null:null};
+  K.recordAudit?.('Club-App-Sollplan übernommen',{entity:'club_soll_inbox',entityId:input.id,reason:`Club-App-Sollplan ${input.id}`,after:{...fresh.counts,added:result.added,updated:result.updated,removed:result.removed,standbyAdded:result.standbyAdded,standbyUpdated:result.standbyUpdated,standbyRemoved:result.standbyRemoved}});
+  const summary={added:result.added,updated:result.updated,removed:result.removed,standbyAdded:result.standbyAdded,standbyUpdated:result.standbyUpdated,standbyRemoved:result.standbyRemoved,unchanged:fresh.counts.gleich,kept:fresh.counts.konflikt-ops.filter(o=>o.kind==='konflikt').length,skipped:fresh.counts.fehler,problems:fresh.items.filter(i=>i.kind==='fehler').slice(0,40).map(i=>({importKey:i.row.importKey,text:i.text})),dp2Version:K.VERSION,build:typeof window!=='undefined'?window.KC_DP_BUILD||null:null};
   state.lastResult=summary;
   try{await ack(input,'uebernommen',summary);}catch(e){state.notice='Übernommen und gespeichert. Die Bestätigung an die Club-App wird beim nächsten Abruf nachgeholt.';}
   return summary;
  }catch(e){
   if(mutated){
-   K.shifts=snapshot;if(storeBefore)K.memberUxData.clubSollInbox[context]=storeBefore;if(Array.isArray(K.auditLog))K.auditLog.length=Math.min(K.auditLog.length,auditStart);
+   K.shifts=snapshot;if(standbySnapshot)K.standby=standbySnapshot;if(storeBefore)K.memberUxData.clubSollInbox[context]=storeBefore;if(Array.isArray(K.auditLog))K.auditLog.length=Math.min(K.auditLog.length,auditStart);
    K.sync?.settleLocalBatch?.(tag,false);
    try{await K.persistAll?.();}catch(_){}
    K.refreshWorkflowState?.();
@@ -229,7 +306,7 @@ function render(){
  if(bar.dataset.text!==text){bar.dataset.text=text;bar.innerHTML=`<span>${text}</span><button type="button" id="clubSollOpen" class="primary" style="min-height:36px">Ansehen</button>`;bar.querySelector('#clubSollOpen').onclick=()=>preview();}
 }
 const kindLabel={neu:'➕ neu',geaendert:'✏️ geändert',entfaellt:'➖ entfällt',konflikt:'⚠️ in DP2 geändert',fehler:'⛔ nicht übernehmbar',gleich:'＝ unverändert'};
-function rowText(i){const r=i.row,c=i.candidate;const zeit=c?`${time(c.start)}–${time(c.end)}`:`${time(r.start)}–${time(r.end)}`;return `<b>${esc(personName(r.personId)||r.name)}</b> · ${esc(r.date)} · ${zeit}${c?.breakMinutes?` · Pause ${c.breakMinutes} Min.`:''} · ${esc(c?.area||r.area||'')}`;}
+function rowText(i){const r=i.row,c=i.candidate;const zeit=c?`${time(c.start)}–${time(c.end)}`:`${time(r.start)}–${time(r.end)}`;if(i.entity==='standby')return `🛎️ <b>${esc(personName(r.personId)||r.name)}</b> · ${esc(r.date)} · ${zeit} · Bereitschaft`;return `<b>${esc(personName(r.personId)||r.name)}</b> · ${esc(r.date)} · ${zeit}${c?.breakMinutes?` · Pause ${c.breakMinutes} Min.`:''} · ${esc(c?.area||r.area||'')}`;}
 function preview(){
  if(!state.pending)return;
  const a=state.analysis=analyze(state.pending);
@@ -243,7 +320,7 @@ function preview(){
   const warn=(i.issues||[]).filter(x=>x.level!=='error').map(x=>esc(x.text)).join(' · ');
   return `<div class="${i.kind==='fehler'?'bad':i.kind==='konflikt'?'warn':'ok'}" data-cs-kind="${i.kind}">${i.skip?'➖ entfällt? – '+esc(i.skip):kindLabel[i.kind]} · ${rowText(i)}${extra}${warn&&i.kind!=='fehler'?`<small>${warn}</small>`:''}</div>`;}).join('');
  const c=a.counts;
- const m=openModal(`<h2>📥 Sollplan aus der Club-App</h2><div class="transfer-stats"><span><b>${c.neu}</b><small>neu</small></span><span><b>${c.geaendert}</b><small>geändert</small></span><span><b>${c.entfaellt}</b><small>entfällt</small></span><span><b>${c.konflikt}</b><small>zu prüfen</small></span><span><b>${c.gleich}</b><small>unverändert</small></span><span><b>${c.fehler}</b><small>nicht übernehmbar</small></span></div><div class="ai-summary">Stand der Club-App: ${esc(standText(state.pending?.stand||state.pending?.createdAt))}. Übernommene Dienste kommen als Entwurf in den Sollplan; von Hand in DP2 angelegte Dienste bleiben unberührt. Erst wenn der Plan fertig ist übernehmen – danach geht er wie jeder DP2-Sollplan an die Kasse. Bereitschaft kommt nicht mit.</div><div class="transfer-list">${list||'<div>Keine Änderungen.</div>'}</div><p id="clubSollResult" role="status"></p><div class="modal-actions"><button class="secondary" id="csClose">Schließen</button><button class="secondary" id="csDiscard">Verwerfen</button><button class="primary" id="csApply">Übernehmen</button></div>`);
+ const m=openModal(`<h2>📥 Sollplan aus der Club-App</h2><div class="transfer-stats"><span><b>${c.neu}</b><small>neu</small></span><span><b>${c.geaendert}</b><small>geändert</small></span><span><b>${c.entfaellt}</b><small>entfällt</small></span><span><b>${c.konflikt}</b><small>zu prüfen</small></span><span><b>${c.gleich}</b><small>unverändert</small></span><span><b>${c.fehler}</b><small>nicht übernehmbar</small></span></div><div class="ai-summary">Stand der Club-App: ${esc(standText(state.pending?.stand||state.pending?.createdAt))}. Übernommene Dienste kommen als Entwurf in den Sollplan; von Hand in DP2 angelegte Dienste bleiben unberührt. Erst wenn der Plan fertig ist übernehmen – danach geht er wie jeder DP2-Sollplan an die Kasse. Bereitschaft (🛎️) wird als Bereitschaft eingetragen, nicht als Dienst – sie geht nicht an die Kasse.</div><div class="transfer-list">${list||'<div>Keine Änderungen.</div>'}</div><p id="clubSollResult" role="status"></p><div class="modal-actions"><button class="secondary" id="csClose">Schließen</button><button class="secondary" id="csDiscard">Verwerfen</button><button class="primary" id="csApply">Übernehmen</button></div>`);
  if(!m)return;
  el('csClose').onclick=closeModal;
  el('csDiscard').onclick=async()=>{if(!confirm('Diesen Stand der Club-App verwerfen? Im Sollplan ändert sich nichts.'))return;try{await discard();closeModal();}catch(e){el('clubSollResult').textContent='✕ '+e.message;}};
@@ -252,7 +329,7 @@ function preview(){
   const n=plannedOps(state.analysis,choices).length;
   if(!confirm(`${n} Änderungen in den Sollplan übernehmen?`))return;
   el('csApply').disabled=true;
-  try{const r=await apply(choices);el('clubSollResult').textContent=`✓ ${r.added} neu, ${r.updated} geändert, ${r.removed} entfernt, ${r.kept} in DP2 behalten, ${r.skipped} nicht übernehmbar.${state.notice?' '+state.notice:''}`;el('csApply').hidden=true;el('csDiscard').hidden=true;K.v020Shell?.select?.('planned',{quiet:true});}
+  try{const r=await apply(choices);const bsum=(r.standbyAdded||0)+(r.standbyUpdated||0)+(r.standbyRemoved||0);el('clubSollResult').textContent=`✓ ${r.added} neu, ${r.updated} geändert, ${r.removed} entfernt${bsum?` · Bereitschaft: ${r.standbyAdded} neu, ${r.standbyUpdated} geändert, ${r.standbyRemoved} entfernt`:''} · ${r.kept} in DP2 behalten, ${r.skipped} nicht übernehmbar.${state.notice?' '+state.notice:''}`;el('csApply').hidden=true;el('csDiscard').hidden=true;K.v020Shell?.select?.('planned',{quiet:true});}
   catch(e){el('clubSollResult').textContent='✕ '+e.message;el('csApply').disabled=false;}
  };
 }
@@ -265,5 +342,5 @@ function install(){
  setTimeout(onRegister,4000);
 }
 if(typeof document!=='undefined'&&document.readyState==='loading')document.addEventListener('DOMContentLoaded',install,{once:true});else install();
-K.clubSollInbox={version:VERSION,state,fingerprint,analyze,plannedOps,applyOps,check,apply,discard,preview,render,store,protectedReasons,plannedRegister};
+K.clubSollInbox={version:VERSION,state,fingerprint,standbyFp,analyze,plannedOps,applyOps,check,apply,discard,preview,render,store,protectedReasons,plannedRegister};
 })();

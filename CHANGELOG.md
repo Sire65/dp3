@@ -1,3 +1,7 @@
+## Build 324 RC – Bereitschaft aus der Club-App übernehmen
+
+Die Sollplan-Übergabe aus der Club-App (KC-DP-SOLL-UEBERGABE) bringt jetzt auch die Bereitschaft mit (Wunsch Hansi 24.11.2026, KC-DP-SOLL-BEREITSCHAFT). In der Vorschau erscheint sie mit 🛎️ als neu/geändert/entfällt/unverändert und wird bei „Übernehmen“ als Bereitschaft eingetragen – nie als Dienst, nicht an die Kasse. In DP2 geänderte oder von Hand angelegte Bereitschaften bleiben (Überschneidung → nicht übernehmbar); ein fehlerhafter Stand löscht nichts, auch keine Dienste. Ältere Übergaben ohne Bereitschaft ändern an der Bereitschaft nichts. Korrektur: gelöschte oder abgesagte Bereitschaften zählen bei der Überschneidungsprüfung nicht mehr. Tests für neu, geändert, Schutz, Löschen, Übersprungen, Rechte, Rücknahme und Kassenzeilen.
+
 ## Build 323 RC – Dienstplan-Druck mit Filtern
 
 Neuer Einstieg „Druck / PDF“: eigene Wünsche, Sollplan, Gesamt, Einsatzplan, Regelmatrix mit Besetzung und Programm-Zuschlag, Soll-/Wunschstunden, Lücken und Planungsvorschläge. Zeitraum, Tage, Personen/Einzelplan, V/H, Bereitschaft, Matrixzeilen und Zusatzblätter auswählbar. A4 quer, ein Blatt oder zwei Blätter breit mit Überlappung. Ganze Tagesblöcke, Logo, Stand, Seitenzählung; komprimierte Vektor-PDFs ohne Verläufe. Eigene Wünsche aus belegten Mitgliedsquellen; keine Kommentare oder Gesundheitsangaben; Ausfälle ausgeblendet. Bereitschaft zählt nie als Dienstzeit. Reine Ausgabe, keine Planänderung oder Club-App-Aktualisierung.
