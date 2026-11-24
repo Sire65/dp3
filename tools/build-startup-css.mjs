@@ -1,6 +1,7 @@
 import {readFile,writeFile} from 'node:fs/promises';
 const files=[
   "src/ui/app.css",
+  "src/ui/print-center.css",
   "src/ui/wish-staffing.css",
   "src/ui/day-availability-filter.css",
   "src/ui/quick-plan-recommendations.css",

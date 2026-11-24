@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 322,
+  "build": 323,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b322",
+  "cacheName": "kc-dp-release-0.20.0-b323",
   "releaseNotes": [
+    "Build 323 RC: Neuer Dienstplan-Druck mit neun Ausgaben, Filtern, Einzelplan, Bereitschaft separat und kompakten Vektor-PDFs. Keine Änderung an Planungsdaten.",
     "Build 322 RC: Sichere Sollplan-Übernahme – fehlerhafte Übergaben löschen keine Dienste; Änderungen nach der Vorschau verlangen einen neuen Vergleich.",
     "Build 321 RC: Sollplan aus der Club-App übernehmen (KC-DP-SOLL-UEBERGABE): Vorschau mit neu, geändert, entfällt und unverändert; in DP2 geänderte Dienste bleiben, bis der Planer anders wählt. Nichts ändert sich ohne „Übernehmen“.",
     "Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.",
@@ -158,8 +159,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-24T07:43:05.040Z",
-  "totalRuntimeBytes": 37311516,
+  "generatedAt": "2026-11-24T08:23:37.710Z",
+  "totalRuntimeBytes": 37346767,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -339,8 +340,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 35798,
-      "sha256": "6946ab48f3ea4ba30518b6a999a0fe9c4f01028120db9904007ff5afdd0c04d8",
+      "bytes": 35938,
+      "sha256": "9cbfce989a924a795c2a020cf0be88158f7e7a9a0dda2169364202560da0b083",
       "runtime": true,
       "forceRefresh": true
     },
@@ -549,8 +550,8 @@
     {
       "path": "src/adapters/pdf.js",
       "installPath": "src/adapters/pdf.js",
-      "bytes": 20239,
-      "sha256": "da36e82d9ca3bd06eede5979476451b380cd6ad180db85aa6784578a09a2b0a0",
+      "bytes": 20746,
+      "sha256": "bd01fe7e3da50d5d751773db6795abf3a82b8be715cf6cba1972d45195a8898e",
       "runtime": true
     },
     {
@@ -974,6 +975,13 @@
       "runtime": true
     },
     {
+      "path": "src/core/print-center.js",
+      "installPath": "src/core/print-center.js",
+      "bytes": 8815,
+      "sha256": "3f47bbd4e0d7114870cc094583ebba9c1e77e2e5730886eb00dcd2492871bdae",
+      "runtime": true
+    },
+    {
       "path": "src/core/recovery.js",
       "installPath": "src/core/recovery.js",
       "bytes": 1835,
@@ -1179,8 +1187,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 268476,
-      "sha256": "281f33f148b9669f867328d2e90d5b3c53fd076cce167da73fd02a52ef3d925d",
+      "bytes": 268845,
+      "sha256": "25a8645844fb60af6cba254fb7e3704b8d9ec4687a77ae8cea3ef98477310955",
       "runtime": true
     },
     {
@@ -1291,8 +1299,8 @@
     {
       "path": "src/ui/demand-print.js",
       "installPath": "src/ui/demand-print.js",
-      "bytes": 8489,
-      "sha256": "7856483aae3c574d68f45915952f9221c8ea32ae5353bb2bcaec2e47a34657db",
+      "bytes": 8565,
+      "sha256": "7bd045047bf43c6711b00e35f2a974c24084ac76c87909df848cf5dbed141635",
       "runtime": true
     },
     {
@@ -1877,6 +1885,20 @@
       "runtime": true
     },
     {
+      "path": "src/ui/print-center.css",
+      "installPath": "src/ui/print-center.css",
+      "bytes": 1606,
+      "sha256": "0a2cf3ca8f5fa555aa511db39c0b7f48657936fa0aa207bbf5ca02eb078fc013",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/print-center.js",
+      "installPath": "src/ui/print-center.js",
+      "bytes": 22101,
+      "sha256": "8818610ddf2312da6a9efa2e59b262b9f77f2e64437ae8d3e3ca11064ea5d726",
+      "runtime": true
+    },
+    {
       "path": "src/ui/push-center.css",
       "installPath": "src/ui/push-center.css",
       "bytes": 2404,
@@ -2096,8 +2118,8 @@
     {
       "path": "src/ui/startup.css",
       "installPath": "src/ui/startup.css",
-      "bytes": 257463,
-      "sha256": "2cb469dc7bdf95620a14d8effc0c8617e2f50790fa6dbb6938094b15971afd8e",
+      "bytes": 259100,
+      "sha256": "fdf8f970122db0101c932bc3037d31fd5884dcdb12dc78b75253de50b9223eae",
       "runtime": true
     },
     {

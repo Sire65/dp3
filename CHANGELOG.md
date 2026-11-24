@@ -1,3 +1,7 @@
+## Build 323 RC – Dienstplan-Druck mit Filtern
+
+Neuer Einstieg „Druck / PDF“: eigene Wünsche, Sollplan, Gesamt, Einsatzplan, Regelmatrix mit Besetzung und Programm-Zuschlag, Soll-/Wunschstunden, Lücken und Planungsvorschläge. Zeitraum, Tage, Personen/Einzelplan, V/H, Bereitschaft, Matrixzeilen und Zusatzblätter auswählbar. A4 quer, ein Blatt oder zwei Blätter breit mit Überlappung. Ganze Tagesblöcke, Logo, Stand, Seitenzählung; komprimierte Vektor-PDFs ohne Verläufe. Eigene Wünsche aus belegten Mitgliedsquellen; keine Kommentare oder Gesundheitsangaben; Ausfälle ausgeblendet. Bereitschaft zählt nie als Dienstzeit. Reine Ausgabe, keine Planänderung oder Club-App-Aktualisierung.
+
 ## Build 322 RC – Sichere Club-App-Sollplan-Übernahme
 
 Fehlerhafte Übergaben lösen keine Löschung bestehender Dienste aus, auch bei ungültigen Personen- oder Übernahmeschlüsseln. Jede Änderung am DP2-Sollstand, Ist-Bezug oder Tauschanfragen nach der Vorschau verlangt einen neuen Vergleich. Tests für ungültige Zeiten, Schlüssel, unbekannte Personen sowie erneute Änderungen an bereits geschützten Diensten. Keine Änderung an echten Planungsdaten.

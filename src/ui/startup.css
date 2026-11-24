@@ -180,6 +180,24 @@ body.ux-legacy .date-chip.day-prep.day-saturday,body.ux-legacy .date-chip.day-af
 /* Whole shift moves; only edge handles resize. */
 .shift.planned{cursor:grab;touch-action:none;user-select:none}.shift.planned.preview{cursor:grabbing}.shift.planned>.shift-label{pointer-events:none}.shift.planned .resize-handle{cursor:ew-resize}
 
+/* src/ui/print-center.css */
+.kc-print-dialog,.kc-print-preview{color:#292725;border:1px solid #c5b7b0;border-radius:12px;padding:20px;box-sizing:border-box;max-height:94vh;width:min(960px,96vw);background:white}
+.kc-print-dialog::backdrop,.kc-print-preview::backdrop{background:#0008}
+.kc-print-dialog h2,.kc-print-preview h2{color:#741521;margin:0 0 12px}
+.kc-print-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px}
+.kc-print-dialog label{display:flex;gap:9px;align-items:center;min-height:42px;flex-wrap:wrap}
+.kc-print-dialog input[type=checkbox]{width:21px;height:21px;accent-color:#741521;flex-shrink:0}
+.kc-print-dialog select{min-height:42px;width:100%;border:1px solid #c5b7b0;background:#fff;padding:6px}
+.kc-print-dialog fieldset{border:1px solid #d8cec6;border-radius:8px;margin:14px 0;padding:12px}
+.kc-print-dialog legend{font-weight:bold;color:#741521}
+.kc-print-dialog p{font-size:13px;line-height:1.45}
+.kc-print-dialog button,.kc-print-preview button{min-height:44px;padding:8px 16px;margin-right:8px;cursor:pointer;border-radius:7px;border:1px solid #c5b7b0}
+.kc-print-actions{display:flex;justify-content:flex-end;gap:8px}
+.kc-print-preview{width:min(1250px,98vw);height:95vh;display:flex;flex-direction:column}
+.kc-print-preview:not([open]){display:none}.kc-print-preview iframe{width:100%;flex:1;min-height:240px;border:1px solid #c5b7b0;margin-bottom:12px}
+@media(max-width:640px){.kc-print-grid{grid-template-columns:1fr}.kc-print-dialog{padding:12px}}
+@media print{.kc-print-dialog,.kc-print-preview{display:none!important}.kc-print-day{break-inside:avoid;page-break-inside:avoid}}
+
 /* src/ui/wish-staffing.css */
 .wish-evaluation .wish-staffing-note{margin:0;padding:7px 10px;background:#fff9e8;border-bottom:1px solid #d6cbb6;color:#39342b;font-size:12px;line-height:1.4;white-space:normal;max-width:1250px}
 .wish-evaluation .matrix-cell.neutral{background:#f3f5f7;color:#242424}
