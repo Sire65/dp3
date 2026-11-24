@@ -44,7 +44,7 @@ function makeDay(d,people,o){
   const available=allShifts.filter(s=>s.start<=t&&s.end>t&&!K.breaks?.isOnBreak?.(s,t)&&zone(s)!=='special'&&zone(s)!=='unassigned'),count=new Set(available.map(s=>canonical(s.personId))).size;
   const needed=o.area==='all'?req.total:Number(req[o.area])||0,wish=personRows.filter(p=>p.wishes.some(r=>r.type==='preferred'&&r.start<=t&&r.end>t)).length;
   const frontCount=new Set(available.filter(s=>zone(s)==='front').map(s=>canonical(s.personId))).size,backCount=new Set(available.filter(s=>zone(s)==='back').map(s=>canonical(s.personId))).size;
-  intervals.push({start,end,req,baseTotal,extra:Math.max(0,req.total-baseTotal),needed,count,frontCount,backCount,wish,missing:Math.max(0,needed-count),over:Math.max(0,count-needed)});
+  intervals.push({start,end,req,baseTotal,extra:Number(raw.programExtra)||0,needed,count,frontCount,backCount,wish,missing:Math.max(0,needed-count),over:Math.max(0,count-needed)});
  }
  const integrate=key=>intervals.reduce((n,s)=>n+s[key]*(s.end-s.start),0);
  const gaps=[];for(const s of intervals.filter(s=>s.missing)){const last=gaps.at(-1);if(last&&last.end===s.start&&last.missing===s.missing)last.end=s.end;else gaps.push({start:s.start,end:s.end,missing:s.missing});}
