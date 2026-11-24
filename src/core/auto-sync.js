@@ -22,6 +22,8 @@
      try{await K.clubWishInbox?.runNow?.();}catch(e){/* eigener Status, nächster Takt */}
      // Build 307: Ist-Rückmeldungen der Mitglieder (höchstens alle 5 Min., nur Planerrollen) – eigener Status, nächster Takt.
      try{await K.istRueckmeldung?.poll?.();}catch(e){/* nächster Takt */}
+     // Build 325 (KICC-F-112): Zeit aus Erstattungen automatisch buchen/ausbuchen (höchstens alle 5 Min., nur Planerrollen).
+     try{await K.hourReportsCore?.autoPoll?.();}catch(e){/* nächster Takt */}
      return result;}
    catch(e){state.lastError=e.message;if(c.offlineAllowed!==false)return {failed:true,offlineFallback:true,error:e.message};throw e;}
    finally{state.inFlight=false;}

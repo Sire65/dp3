@@ -1,3 +1,15 @@
+## Build 325 RC – Zeit aus der Erstattung automatisch buchen (KICC-F-112, DP2-F-SE-09)
+
+Wunsch Hansi 24.11.2026: Wer z. B. mit dem eigenen Auto Wurst beim Metzger abholt und zum Weihnachtsmarkt bringt, reicht in der Club-App unter 💶 Erstattung Kilometer **und Zeit** in einem Antrag ein. Die Zeit soll „nicht erst in DP2 freigegeben“ werden (Konzept: KC-Infrastructure-Control-Center `docs/KONZEPT-CLUB-ERSTATTUNG-STUNDEN.md`).
+
+- Die Club-App legt die Zeit als Stundenmeldung mit Quelle `erstattung` an, gleich **bestätigt** (Tabelle, Funktionen und Migration im Club-App-Repo: `20261124_kc_dp_erstattung_stunden.sql`).
+- `src/core/hour-reports.js` 0.4.0: `autoSync()` holt per `kc_dp_hour_reports_auto` ab, bucht über den vorhandenen Ist-Kern (`self_report`, wie beim Bestätigen) und quittiert mit `kc_dp_hour_report_auto_ack`. Lehnt der Kassenwart den Antrag ab (`zurueckgezogen`), wird die Ist-Zeit zurückgenommen. Erst lokal buchen, dann quittieren – ein verlorener Quittungsaufruf führt nie zu einer Doppelbuchung (Wiedererkennung über `hourReportId`). Unbekannte Person oder abgeschlossener Istplan → wartet mit Grund, nichts geht verloren.
+- Auto-Sync-Takt ruft `autoPoll()` (höchstens alle 5 Minuten, nur Planerrollen); „⇩ Club-App-Meldungen abholen“ bucht ebenfalls gleich mit.
+- Planer-Dialog ★ Sonderstunden-Eingang: neuer Reiter **„Automatisch (Erstattung)“**, je Zeile „↩ Zurücknehmen“ mit Pflicht-Grund (`kc_dp_hour_report_storno`, erst Supabase, dann lokal). Das Mitglied wird von der Club-App informiert.
+- Sondereinsätze: neuer Termin-Modus **„Ständig (jeder Tag)“** (`wiederkehrend: 'laufend'`), z. B. „Besorgungen & Fahrten“ – Vorbelegung in der Club-App-Erstattung.
+- Bisheriger Weg „Sonderstunden melden“ (Twinkey) unverändert mit Bestätigung durch den Planer.
+- Neuer Test `tools/test-hour-reports-auto.mjs` (in `npm run test:smoke`).
+
 ## Build 324 RC – Bereitschaft aus der Club-App übernehmen
 
 Die Sollplan-Übergabe aus der Club-App (KC-DP-SOLL-UEBERGABE) bringt jetzt auch die Bereitschaft mit (Wunsch Hansi 24.11.2026, KC-DP-SOLL-BEREITSCHAFT). In der Vorschau erscheint sie mit 🛎️ als neu/geändert/entfällt/unverändert und wird bei „Übernehmen“ als Bereitschaft eingetragen – nie als Dienst, nicht an die Kasse. In DP2 geänderte oder von Hand angelegte Bereitschaften bleiben (Überschneidung → nicht übernehmbar); ein fehlerhafter Stand löscht nichts, auch keine Dienste. Ältere Übergaben ohne Bereitschaft ändern an der Bereitschaft nichts. Korrektur: gelöschte oder abgesagte Bereitschaften zählen bei der Überschneidungsprüfung nicht mehr. Tests für neu, geändert, Schutz, Löschen, Übersprungen, Rechte, Rücknahme und Kassenzeilen.

@@ -4,10 +4,13 @@
 // Planer bestätigt (Phase 3); bis dahin stehen sie im Personenkonto als „gemeldet, noch nicht bestätigt“.
 // Fahrzeit von zuhause bis zuhause zählt mit (Betreiber 2026-10-15), daher Ende bis 30:00 (= 06:00 Folgetag).
 // Transport austauschbar (AGENTS 18): K.hourReportsTransport.submit (Club App → kc-club) oder lokal in DP2.
+// Build 325 · KICC-F-112 / DP2-F-SE-09 (Hansi 24.11.2026 „nicht erst in DP2 freigeben“): Zeit, die mit einer Erstattung in der Club App
+// eingereicht wurde (source 'erstattung'), ist schon bestätigt. DP2 bucht sie im Auto-Sync-Takt ohne Klick als Ist (autoSync) und nimmt sie
+// wieder heraus, wenn der Kassenwart den Antrag ablehnt. Der Planer kann eine solche Buchung nur noch mit Grund zurücknehmen (storno).
 (function(){
   'use strict';
   const K=window.KCDP=window.KCDP||{};
-  const VERSION='0.3.0';
+  const VERSION='0.4.0';
   const ROLES=['fahrer','mitfahrer','keine']; // km-Pauschale nur für Fahrer (Fahrgemeinschaft)
   const DEADLINE_DAYS=3,MAX_PERSONS=30,MAX_SPAN=16,MAX_END=30,MAX_BREAK=180,MAX_NOTE=500;
   K.hourReports=Array.isArray(K.hourReports)?K.hourReports:[];
@@ -120,16 +123,18 @@
     const rows=await K.supabaseConnection.hourReportsPending({eventId:K.eventConfig?.eventId||'KC-WM-2026'});
     const n=merge((rows||[]).map(fromRemote));
     K.recordAudit?.('hour_report.pull',{entity:'hour_report',after:{received:(rows||[]).length,changed:n}});
-    return {received:(rows||[]).length,changed:n};
+    let auto=null;try{auto=await autoSync();}catch(e){auto={error:e.message||String(e)};}
+    return {received:(rows||[]).length,changed:n,auto};
   }
   // Supabase-Zeile (snake_case) → DP2-Zeile.
   function fromRemote(r){
-    return {id:String(r.id),sammelId:r.sammel_id||r.sammelId||null,eventId:r.event_id||r.eventId,specialEventId:r.special_event_id||r.specialEventId,specialEventTitle:r.special_event_title||r.specialEventTitle||'',personId:r.person_id||r.personId,gemeldetVon:r.gemeldet_von||r.gemeldetVon||null,date:r.work_date||r.date,start:Number(r.start_h??r.start),end:Number(r.end_h??r.end),breakMinutes:Number(r.break_minutes??r.breakMinutes??0),fahrtRolle:r.fahrt_rolle||r.fahrtRolle||null,taetigkeit:r.taetigkeit,bemerkung:r.bemerkung||'',status:r.status,verspaetet:!!r.verspaetet,gemeldetAm:r.gemeldet_am||r.gemeldetAm||null,entschiedenVon:r.entschieden_von||null,entschiedenAm:r.entschieden_am||null,ablehngrund:r.ablehngrund||null,source:r.source||'club_app',version:Number(r.version||1)};
+    return {id:String(r.id),sammelId:r.sammel_id||r.sammelId||null,eventId:r.event_id||r.eventId,specialEventId:r.special_event_id||r.specialEventId,specialEventTitle:r.special_event_title||r.specialEventTitle||'',personId:r.person_id||r.personId,gemeldetVon:r.gemeldet_von||r.gemeldetVon||null,date:r.work_date||r.date,start:Number(r.start_h??r.start),end:Number(r.end_h??r.end),breakMinutes:Number(r.break_minutes??r.breakMinutes??0),fahrtRolle:r.fahrt_rolle||r.fahrtRolle||null,taetigkeit:r.taetigkeit,bemerkung:r.bemerkung||'',status:r.status,verspaetet:!!r.verspaetet,gemeldetAm:r.gemeldet_am||r.gemeldetAm||null,entschiedenVon:r.entschieden_von||null,entschiedenAm:r.entschieden_am||null,ablehngrund:r.ablehngrund||null,source:r.source||'club_app',erstattungId:r.erstattung_id||r.erstattungId||null,...(r.actual_id!==undefined||r.actualId!==undefined?{actualId:r.actual_id??r.actualId??null}:{}),version:Number(r.version||1)};
   }
 
 
   // ---------- Phase 3 (DP2-F-SE-03): Planer entscheidet. Bestätigt = Ist-Zeit über den vorhandenen Ist-Kern (K.actual.saveActual). ----------
-  const isRemote=r=>r.source==='club_app'&&/^[0-9a-f-]{36}$/i.test(String(r.id));
+  const isRemote=r=>(r.source==='club_app'||r.source==='erstattung')&&/^[0-9a-f-]{36}$/i.test(String(r.id));
+  const AUTO_POLL_MS=5*60*1000;let autoAt=0,autoRunning=null;
   const byId=id=>K.hourReports.find(r=>r.id===id)||null;
   function canDecide(){return K.auth?.has?K.auth.has('roster.actual.import'):true;}
   // Hinweise vor dem Bestätigen (keine Sperre): Doppelzeiten, verspätet, Person unbekannt, Istplan abgeschlossen.
@@ -146,7 +151,7 @@
   function pending(){return K.hourReports.filter(r=>r.status==='gemeldet');}
   function groups({status='gemeldet'}={}){
     const map=new Map();
-    for(const r of K.hourReports.filter(x=>status==='alle'||(status==='erledigt'?['bestaetigt','abgelehnt'].includes(x.status):x.status===status))){const k=r.sammelId||r.id;if(!map.has(k))map.set(k,[]);map.get(k).push(r);}
+    for(const r of K.hourReports.filter(x=>status==='alle'||(status==='automatisch'?x.source==='erstattung':status==='erledigt'?['bestaetigt','abgelehnt'].includes(x.status):x.status===status))){const k=r.sammelId||r.id;if(!map.has(k))map.set(k,[]);map.get(k).push(r);}
     return [...map.entries()].map(([sammelId,rows])=>({sammelId,rows:rows.sort((a,b)=>String(K.person?.(a.personId)?.name||a.personId).localeCompare(String(K.person?.(b.personId)?.name||b.personId),'de')),first:rows[0]})).sort((a,b)=>String(a.first.date).localeCompare(String(b.first.date))||String(a.first.gemeldetAm||'').localeCompare(String(b.first.gemeldetAm||'')));
   }
   async function decide(id,{status,reason=''}={}){
@@ -158,9 +163,7 @@
     let candidate=null;
     if(status==='bestaetigt'){
       const blocking=warnings(id).filter(w=>w.level==='error');if(blocking.length)throw new Error(blocking.map(w=>w.text).join(' '));
-      const title=r.specialEventTitle||K.specialEventsCore?.get?.(r.specialEventId)?.titel||'Sondereinsatz';
-      candidate={id:`A-SE-${String(r.id).slice(0,40)}`,personId:r.personId,date:r.date,start:Number(r.start),end:Number(r.end),breakMinutes:Number(r.breakMinutes||0),zone:'special',area:`Z · ${title}`,specialEventId:r.specialEventId,specialEventTitle:title,hourReportId:r.id,sammelId:r.sammelId||null,taetigkeit:r.taetigkeit,status:'recorded'};
-      const errs=(K.actual?.validateActual?.(candidate)||[]).filter(x=>x.level==='error');if(errs.length)throw new Error(errs.map(x=>x.text).join(' '));
+      candidate=actualCandidate(r);
     }
     // Erst die gemeinsame Quelle (Supabase) entscheiden, dann lokal buchen – so entsteht kein Mischstand (AGENTS 16).
     if(isRemote(r)){
@@ -177,6 +180,91 @@
     try{await K.persistAll?.();}catch(_){/* Speicherfehler meldet die App selbst */}
     return clone(r);
   }
+  // Ist-Zeit zu einer Meldung (gemeinsam für Bestätigen und automatische Buchung).
+  function actualCandidate(r){
+    const title=r.specialEventTitle||K.specialEventsCore?.get?.(r.specialEventId)?.titel||'Sondereinsatz';
+    const candidate={id:`A-SE-${String(r.id).slice(0,40)}`,personId:r.personId,date:r.date,start:Number(r.start),end:Number(r.end),breakMinutes:Number(r.breakMinutes||0),zone:'special',area:`Z · ${title}`,specialEventId:r.specialEventId,specialEventTitle:title,hourReportId:r.id,sammelId:r.sammelId||null,taetigkeit:r.taetigkeit,status:'recorded',...(r.source==='erstattung'?{erstattungId:r.erstattungId||null}:{})};
+    const errs=(K.actual?.validateActual?.(candidate)||[]).filter(x=>x.level==='error');if(errs.length)throw new Error(errs.map(x=>x.text).join(' '));
+    return candidate;
+  }
+  const bookedActual=r=>(K.actualShifts||[]).find(a=>a.hourReportId===r.id&&a.status!=='deleted')||null;
+  // Eigene Ist-Zeit einer Meldung zurücknehmen (wie Ist-Rückmeldungen: Quelle self_report, Recht „Istzeiten importieren“ genügt).
+  function retire(a,reason){
+    const before=clone(a);a.status='deleted';a.deletedAt=new Date().toISOString();a.deletedBy=self();a.supersededReason=reason;a.version=Number(a.version||0)+1;a.updatedAt=a.deletedAt;
+    K.recordAudit?.('actual.self_report.retire',{entity:'actual_shift',entityId:a.id,before,after:clone(a),reason});
+    K.sync?.enqueue?.({entity:'actual_shift',operation:'delete',payload:clone(a),baseVersion:before.version||null});
+  }
+
+  // ---------- Build 325 (DP2-F-SE-09, KICC-F-112): Zeit aus der Erstattung automatisch buchen ----------
+  // Holt bestätigte Erstattungs-Zeiten ohne Ist (buchen) und zurückgezogene/abgelehnte mit Ist (ausbuchen). Erst lokal buchen, dann quittieren –
+  // schlägt die Quittung fehl, findet der nächste Takt die Ist-Zeit über hourReportId und quittiert nur noch (keine Doppelbuchung).
+  async function autoSync(){
+    const out={received:0,booked:0,unbooked:0,waiting:[]};
+    if(!K.supabaseConnection?.hourReportsAuto||!canDecide())return {...out,skipped:true};
+    const rows=await K.supabaseConnection.hourReportsAuto({eventId:K.eventConfig?.eventId||'KC-WM-2026'});
+    out.received=(rows||[]).length;if(!out.received)return out;
+    merge(rows.map(fromRemote));
+    for(const raw of rows){
+      const r=byId(String(raw.id));if(!r||r.source!=='erstattung')continue;
+      try{
+        if(r.status==='bestaetigt'){
+          let a=bookedActual(r);
+          if(!a){
+            const blocking=warnings(r.id).filter(w=>w.level==='error');
+            if(blocking.length){out.waiting.push({id:r.id,personId:r.personId,grund:blocking.map(w=>w.text).join(' ')});continue;}
+            const res=K.actual.saveActual(actualCandidate(r),{reason:`Zeit aus Erstattung ${r.erstattungId||''} automatisch gebucht`.trim(),source:'self_report'});
+            a=res?.record||bookedActual(r);
+          }
+          const ack=await K.supabaseConnection.hourReportAutoAck({id:r.id,actualId:a.id});
+          r.actualId=a.id;if(ack?.ok)out.booked++;
+        }else if(['zurueckgezogen','abgelehnt'].includes(r.status)){
+          const a=bookedActual(r);
+          if(a){
+            if(K.actualWorkflow?.status==='closed'){out.waiting.push({id:r.id,personId:r.personId,grund:'Der Istplan ist abgeschlossen. Für die Rücknahme zuerst wieder öffnen.'});continue;}
+            retire(a,r.status==='zurueckgezogen'?'Erstattung abgelehnt – Zeit zurückgenommen':`Zurückgenommen: ${r.ablehngrund||''}`.trim());
+          }
+          const ack=await K.supabaseConnection.hourReportAutoAck({id:r.id,actualId:null});
+          r.actualId=null;if(ack?.ok)out.unbooked++;
+        }
+      }catch(e){out.waiting.push({id:r.id,personId:r.personId,grund:e.message||String(e)});}
+    }
+    autoAt=Date.now();
+    K.recordAudit?.('hour_report.auto_sync',{entity:'hour_report',after:{received:out.received,booked:out.booked,unbooked:out.unbooked,waiting:out.waiting.length}});
+    notify();
+    if(out.booked||out.unbooked){try{await K.persistAll?.();}catch(_){/* Speicherfehler meldet die App selbst */}}
+    return out;
+  }
+  // Auto-Sync-Takt (src/core/auto-sync.js): höchstens alle 5 Minuten, nur Planerrollen.
+  async function autoPoll({force=false}={}){
+    if(!K.supabaseConnection?.hourReportsAuto||!canDecide())return {skipped:true,reason:'role'};
+    if(!force&&Date.now()-autoAt<AUTO_POLL_MS)return {skipped:true,reason:'interval'};
+    if(autoRunning)return autoRunning;
+    autoRunning=autoSync().finally(()=>{autoRunning=null;});return autoRunning;
+  }
+  // Planer nimmt eine automatisch gebuchte Zeit mit Grund zurück: erst Supabase (Mitglied wird von der Club App informiert), dann lokal.
+  async function storno(id,{reason=''}={}){
+    K.auth?.require?.('roster.actual.import','Sie dürfen Stundenmeldungen nicht zurücknehmen.');
+    const r=byId(id);if(!r)throw new Error('Meldung nicht gefunden.');
+    if(r.source!=='erstattung'||r.status!=='bestaetigt')throw new Error('Zurücknehmen geht nur bei automatisch gebuchter Zeit aus einer Erstattung.');
+    if(!String(reason).trim())throw new Error('Für eine Rücknahme ist ein Grund erforderlich.');
+    const a=bookedActual(r);
+    if(a&&K.actualWorkflow?.status==='closed')throw new Error('Der Istplan ist abgeschlossen. Für die Rücknahme zuerst wieder öffnen.');
+    if(isRemote(r)){
+      if(!K.supabaseConnection?.hourReportStorno)throw new Error('Supabase-Verbindung nicht bereit.');
+      const res=await K.supabaseConnection.hourReportStorno({id:r.id,reason:String(reason).trim()});
+      if(!res?.ok)throw new Error('Diese Meldung wurde inzwischen anders bearbeitet. Bitte die Liste neu laden.');
+    }
+    const before=clone(r);
+    if(a)retire(a,`Zurückgenommen: ${String(reason).trim()}`);
+    Object.assign(r,{status:'abgelehnt',ablehngrund:String(reason).trim(),actualId:null,entschiedenAm:new Date().toISOString(),entschiedenVon:self(),version:Number(r.version||1)+1});
+    K.recordAudit?.('hour_report.storno',{entity:'hour_report',entityId:r.id,before,after:clone(r),reason});
+    K.sync?.enqueue?.({entity:'hour_report',operation:'update',payload:clone(r),baseVersion:before.version});
+    notify();
+    try{await K.persistAll?.();}catch(_){/* Speicherfehler meldet die App selbst */}
+    return clone(r);
+  }
+  function automatic(){return K.hourReports.filter(r=>r.source==='erstattung').sort((a,b)=>String(b.date).localeCompare(String(a.date))||Number(a.start)-Number(b.start));}
+
   async function decideGroup(sammelId,{status,reason=''}={}){
     const out={done:[],failed:[]};
     for(const r of pending().filter(x=>(x.sammelId||x.id)===sammelId)){try{out.done.push(await decide(r.id,{status,reason}));}catch(e){out.failed.push({id:r.id,personId:r.personId,error:e.message||String(e)});}}
@@ -189,5 +277,5 @@
   const listeners=new Set();
   function notify(){listeners.forEach(fn=>{try{fn()}catch(_){}});}
 
-  K.hourReportsCore={VERSION,ROLES,warnings,pending,groups,decide,decideGroup,canDecide,DEADLINE_DAYS,MAX_END,activityLabel,reportableEvents,allowedDates,hoursOf,deadline,validate,submit,merge,pull,fromRemote,mine,restore,snapshot,todayIso,onChange:fn=>{listeners.add(fn);return()=>listeners.delete(fn);},_test:{buildRows,overlapping}};
+  K.hourReportsCore={VERSION,ROLES,warnings,pending,groups,decide,decideGroup,autoSync,autoPoll,storno,automatic,canDecide,DEADLINE_DAYS,MAX_END,activityLabel,reportableEvents,allowedDates,hoursOf,deadline,validate,submit,merge,pull,fromRemote,mine,restore,snapshot,todayIso,onChange:fn=>{listeners.add(fn);return()=>listeners.delete(fn);},_test:{buildRows,overlapping}};
 })();

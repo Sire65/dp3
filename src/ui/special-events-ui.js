@@ -20,6 +20,7 @@
 
   function terminText(e){
     const x=e.effective;
+    if(e.wiederkehrend==='laufend')return'ständig (jeder Tag, z. B. Besorgungen & Fahrten)';
     if(e.wiederkehrend==='markttage')return x.datumVon?`an allen Markttagen (${fmt(x.datumVon)} – ${fmt(x.datumBis)})`:'an allen Markttagen';
     if(e.folgtAuf){const p=core().get(e.folgtAuf);const rel=`${e.abstandTage} ${e.abstandTage===1?'Tag':'Tage'} nach „${esc(p?.titel||'?')}“`;return x.datumVon?`${fmt(x.datumVon)} · ${rel}`:rel;}
     if(!x.datumVon)return'noch kein Datum';
@@ -34,7 +35,7 @@
 
   function formHtml(e){
     const v=e||{titel:'',ort:'',art:'kochen',terminStatus:'OFFEN',datumVon:'',datumBis:'',folgtAuf:'',abstandTage:2,wiederkehrend:null,bemerkung:'',vorgesehen:[]};
-    const mode=v.wiederkehrend==='markttage'?'markttage':v.folgtAuf?'folgt':'eigen';
+    const mode=v.wiederkehrend==='markttage'?'markttage':v.wiederkehrend==='laufend'?'laufend':v.folgtAuf?'folgt':'eigen';
     const parents=core().list().filter(x=>!e||x.id!==e.id);
     return `<form id="seForm" class="se-form" novalidate>
       <h3>${e?'Sondereinsatz bearbeiten':'Neuer Sondereinsatz'}</h3>
@@ -45,6 +46,7 @@
         <label><input type="radio" name="seMode" value="eigen" ${mode==='eigen'?'checked':''}> Eigener Termin</label>
         <label><input type="radio" name="seMode" value="folgt" ${mode==='folgt'?'checked':''} ${parents.length?'':'disabled'}> Folgt auf einen anderen Einsatz</label>
         <label><input type="radio" name="seMode" value="markttage" ${mode==='markttage'?'checked':''}> An allen Markttagen</label>
+        <label><input type="radio" name="seMode" value="laufend" ${mode==='laufend'?'checked':''}> Ständig (jeder Tag)</label>
       </fieldset>
       <div class="se-part" data-part="eigen">
         <label>Stand<select id="seStatusSel">${Object.entries(STATUS).map(([k,l])=>`<option value="${k}" ${k===v.terminStatus?'selected':''}>${l}</option>`).join('')}</select></label>
@@ -57,6 +59,7 @@
         <p class="se-hint">Das Datum rückt automatisch mit, sobald der Vorgänger einen Termin hat.</p>
       </div>
       <div class="se-part" data-part="markttage"><p class="se-hint">Gilt für jeden Markttag, z. B. Getränke mischen zuhause und anliefern.</p></div>
+      <div class="se-part" data-part="laufend"><p class="se-hint">Gilt an jedem Tag, z. B. „Besorgungen &amp; Fahrten“. Mitglieder können dazu ihre Zeit direkt mit der Erstattung (km/Einkauf) einreichen – sie zählt sofort.</p></div>
       <fieldset class="se-planned-pick"><legend>Vorgesehen (vorläufig, freiwillig)</legend>${members().map(p=>`<label><input type="checkbox" data-se-person="${esc(p.personId)}" ${(v.vorgesehen||[]).includes(p.personId)?'checked':''}> ${esc(p.name)}</label>`).join('')||'<p class="se-hint">Keine Mitglieder geladen.</p>'}<p class="se-hint">Die Vorgesehenen sehen den Einsatz in der Club App und werden beim Melden als Kollegen vorgeschlagen. Zusagen bleiben ihre eigene Entscheidung.</p></fieldset>
       <label>Bemerkung (freiwillig)<textarea id="seBemerkung" maxlength="500" rows="2">${esc(v.bemerkung||'')}</textarea></label>
       <div class="se-actions"><button type="submit" class="ux-btn">${e?'Änderung speichern':'Sondereinsatz anlegen'}</button>${e?'<button type="button" class="ux-btn secondary" id="seCancel">Abbrechen</button>':''}</div>
@@ -70,6 +73,7 @@
     const base={titel:val('seTitel'),ort:val('seOrt'),art:val('seArt'),bemerkung:val('seBemerkung'),vorgesehen:[...document.querySelectorAll('[data-se-person]:checked')].map(c=>c.dataset.sePerson)};
     if(mode==='folgt')return {...base,folgtAuf:val('seFolgt'),abstandTage:Number(val('seAbstand')),wiederkehrend:null,terminStatus:'OFFEN',datumVon:null,datumBis:null};
     if(mode==='markttage')return {...base,folgtAuf:null,wiederkehrend:'markttage',terminStatus:'FEST',datumVon:null,datumBis:null};
+    if(mode==='laufend')return {...base,folgtAuf:null,wiederkehrend:'laufend',terminStatus:'FEST',datumVon:null,datumBis:null};
     return {...base,folgtAuf:null,wiederkehrend:null,terminStatus:val('seStatusSel'),datumVon:val('seVon')||null,datumBis:val('seBis')||null};
   }
 

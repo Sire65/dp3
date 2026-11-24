@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 324,
+  "build": 325,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b324",
+  "cacheName": "kc-dp-release-0.20.0-b325",
   "releaseNotes": [
+    "Build 325 RC: Zeit aus der Erstattung (KICC-F-112): Mitglieder reichen in der Club-App mit Fahrtkosten oder Einkauf auch ihre Zeit ein. Sie ist ohne Freigabe bestätigt; DP2 bucht sie im Auto-Sync automatisch als Ist ins Stundenkonto und nimmt sie zurück, wenn der Kassenwart den Antrag ablehnt. Planer: Reiter „Automatisch (Erstattung)“, Rücknahme nur mit Grund. Neu: Sondereinsatz „Ständig (jeder Tag)“, z. B. Besorgungen & Fahrten.",
     "Build 324 RC: Bereitschaft aus der Club-App übernehmen (KC-DP-SOLL-BEREITSCHAFT): die Sollplan-Übergabe trägt die Bereitschaft mit; sie wird als Bereitschaft eingetragen, nie als Dienst und nicht an die Kasse. Gleicher Schutz wie bei Diensten. Gelöschte Bereitschaften zählen nicht mehr als Überschneidung.",
     "Build 323 RC: Neuer Dienstplan-Druck mit neun Ausgaben, Filtern, Einzelplan, Bereitschaft separat und kompakten Vektor-PDFs. Keine Änderung an Planungsdaten.",
     "Build 322 RC: Sichere Sollplan-Übernahme – fehlerhafte Übergaben löschen keine Dienste; Änderungen nach der Vorschau verlangen einen neuen Vergleich.",
@@ -160,8 +161,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-24T13:47:37.392Z",
-  "totalRuntimeBytes": 37355060,
+  "generatedAt": "2026-11-24T21:43:01.215Z",
+  "totalRuntimeBytes": 37365871,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -342,7 +343,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35938,
-      "sha256": "2ffff8d0127f01ffa09ae76beec0bac36fb1776ee67bacef46e43230938f49fc",
+      "sha256": "2d1cb099a5953f20190cac23783a861dacf65279695d48079c83ab944d279d20",
       "runtime": true,
       "forceRefresh": true
     },
@@ -586,8 +587,8 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 32809,
-      "sha256": "f67589f93ba2a91a402eece11ba256509ef1eda994ffde57e5d68478497bd62c",
+      "bytes": 33733,
+      "sha256": "9f6fb06ba9cb04db41948ee4a05efd416c30f1c006ac0e0b10485af8dd388bec",
       "runtime": true
     },
     {
@@ -649,8 +650,8 @@
     {
       "path": "src/core/auto-sync.js",
       "installPath": "src/core/auto-sync.js",
-      "bytes": 3322,
-      "sha256": "cd008417a2a047b7b58bf605ca65c3849f9bc810a80ab9b94d4ab9abcf48929a",
+      "bytes": 3528,
+      "sha256": "cd3601c575d4bb48f762a2934897cd85f9b5f475ec5e996139ac5ee4ce1e34aa",
       "runtime": true
     },
     {
@@ -782,8 +783,8 @@
     {
       "path": "src/core/hour-reports.js",
       "installPath": "src/core/hour-reports.js",
-      "bytes": 16300,
-      "sha256": "b789966b1ba51bd5ecbe31ec9e0e3a819cc9962dc3398b71ee876d043f18f489",
+      "bytes": 23035,
+      "sha256": "bb5d613be89bdf7569bca07bf1e09423510c86358d3c99dbeb09672540063bf5",
       "runtime": true
     },
     {
@@ -1041,8 +1042,8 @@
     {
       "path": "src/core/special-events.js",
       "installPath": "src/core/special-events.js",
-      "bytes": 13601,
-      "sha256": "05683345e386c7c06df198fe982df78a81fb3227a72cb8ddf58beb7b54fa4119",
+      "bytes": 13983,
+      "sha256": "89108f4a97b73ff3000fe455eba0dd282d98708c68a7f0ff83f6e07c12ea8ee2",
       "runtime": true
     },
     {
@@ -1482,8 +1483,8 @@
     {
       "path": "src/ui/hour-reports-ui.js",
       "installPath": "src/ui/hour-reports-ui.js",
-      "bytes": 7735,
-      "sha256": "8b372c7047527821a43d18243cdc6cbf0c9db719ea945bc65c66ec5b6ff11b80",
+      "bytes": 9670,
+      "sha256": "84f369f37f5c7a8d48aecf32dddf2d22b7f460e123aea6b9d08df8b0dff28fa3",
       "runtime": true
     },
     {
@@ -2077,8 +2078,8 @@
     {
       "path": "src/ui/special-events-ui.js",
       "installPath": "src/ui/special-events-ui.js",
-      "bytes": 15712,
-      "sha256": "fb9925d2a7558c606057057905b535a443292233636f45fc451ed8156b71e9cf",
+      "bytes": 16341,
+      "sha256": "569b3ff2131d542610e470da2792c96c51d401fe12f4177a674ca7cfe08321e9",
       "runtime": true
     },
     {

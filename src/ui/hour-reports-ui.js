@@ -1,6 +1,8 @@
 // DP2-F-SE-03 Sonderstunden-Eingang – Planer-Dialog (Register Ist → Menü „★ Sonderstunden-Eingang“).
 // Abholen aus der Club App, Sammelmeldungen ansehen, je Person oder alle bestätigen bzw. mit Grund ablehnen.
 // Regeln und Buchung liegen in src/core/hour-reports.js (bestätigt = Ist über K.actual.saveActual).
+// Build 325 (KICC-F-112): Reiter „Automatisch (Erstattung)“ – Zeit, die mit einer Erstattung eingereicht wurde, ist ohne Freigabe gebucht;
+// der Planer kann sie nur mit Grund zurücknehmen (↩).
 (function(){
   'use strict';
   const K=window.KCDP=window.KCDP||{};
@@ -11,6 +13,7 @@
   const core=()=>K.hourReportsCore;
   const name=id=>K.person?.(id)?.name||id;
   const STATUS={gemeldet:'offen',bestaetigt:'bestätigt',abgelehnt:'abgelehnt',zurueckgezogen:'zurückgezogen'};
+  const autoLabel=r=>r.source!=='erstattung'?'':r.status==='bestaetigt'?((K.actualShifts||[]).some(a=>a.hourReportId===r.id&&a.status!=='deleted')?'automatisch gebucht':'wird automatisch gebucht'):r.status==='zurueckgezogen'?'Erstattung abgelehnt – zurückgenommen':r.status==='abgelehnt'?'zurückgenommen':'';
   let view='gemeldet',busy=false;
 
   function close(){document.getElementById('hrBackdrop')?.remove();}
@@ -20,7 +23,7 @@
 
   function rowHtml(r){
     const w=core().warnings(r.id),open=r.status==='gemeldet'&&core().canDecide();
-    return `<li class="hr-person" data-hr="${esc(r.id)}"><div><b>${esc(name(r.personId))}</b><small>${fmtTime(r.start)}–${fmtTime(r.end)}${r.breakMinutes?` · Pause ${r.breakMinutes} Min.`:''} · ${hours(core().hoursOf(r))} h</small>${w.map(x=>`<small class="hr-warn hr-${x.level}">${x.level==='error'?'⛔':x.level==='warn'?'⚠':'ℹ'} ${esc(x.text)}</small>`).join('')}${r.status==='abgelehnt'&&r.ablehngrund?`<small>Grund: ${esc(r.ablehngrund)}</small>`:''}</div>${open?`<div class="se-row-actions"><button type="button" class="ux-btn" data-hr-ok="${esc(r.id)}">✓ Bestätigen</button><button type="button" class="ux-btn secondary" data-hr-no="${esc(r.id)}">Ablehnen</button></div>`:`<span class="se-badge hr-${esc(r.status)}">${esc(STATUS[r.status]||r.status)}</span>`}</li>`;
+    return `<li class="hr-person" data-hr="${esc(r.id)}"><div><b>${esc(name(r.personId))}</b><small>${fmtTime(r.start)}–${fmtTime(r.end)}${r.breakMinutes?` · Pause ${r.breakMinutes} Min.`:''} · ${hours(core().hoursOf(r))} h</small>${w.map(x=>`<small class="hr-warn hr-${x.level}">${x.level==='error'?'⛔':x.level==='warn'?'⚠':'ℹ'} ${esc(x.text)}</small>`).join('')}${r.status==='abgelehnt'&&r.ablehngrund?`<small>Grund: ${esc(r.ablehngrund)}</small>`:''}</div>${open?`<div class="se-row-actions"><button type="button" class="ux-btn" data-hr-ok="${esc(r.id)}">✓ Bestätigen</button><button type="button" class="ux-btn secondary" data-hr-no="${esc(r.id)}">Ablehnen</button></div>`:`<span class="se-badge hr-${esc(r.status)}">${esc(autoLabel(r)||STATUS[r.status]||r.status)}</span>${r.source==='erstattung'&&r.status==='bestaetigt'&&core().canDecide()?` <button type="button" class="ux-btn secondary" data-hr-storno="${esc(r.id)}" title="Automatisch gebuchte Zeit mit Grund zurücknehmen">↩ Zurücknehmen</button>`:''}`}</li>`;
   }
   function groupHtml(g){
     const f=g.first,title=f.specialEventTitle||K.specialEventsCore?.get?.(f.specialEventId)?.titel||'Sondereinsatz',total=g.rows.reduce((n,r)=>n+core().hoursOf(r),0),openRows=g.rows.filter(r=>r.status==='gemeldet'),note=g.rows.find(r=>r.bemerkung)?.bemerkung||'';
@@ -30,15 +33,16 @@
   function render(){
     const body=document.getElementById('hrBody');if(!body||!core())return;
     const list=core().groups({status:view}),openCount=core().pending().length;
-    body.innerHTML=`<div class="hr-tabs" role="tablist"><button type="button" role="tab" class="ux-btn ${view==='gemeldet'?'':'secondary'}" data-hr-view="gemeldet" aria-selected="${view==='gemeldet'}">Offen (${openCount})</button><button type="button" role="tab" class="ux-btn ${view==='erledigt'?'':'secondary'}" data-hr-view="erledigt" aria-selected="${view==='erledigt'}">Erledigt</button></div>${K.actualWorkflow?.status==='closed'?`<p class="hr-closed">Der Istplan ist abgeschlossen. Bestätigte Stunden werden als Nachtrag gebucht; dafür den Istplan mit Begründung wieder öffnen.${canReopen()?' <button type="button" class="ux-btn secondary" id="hrReopen">Für Nachtrag öffnen</button>':''}</p>`:''}${list.length?`<ul class="se-list">${list.map(groupHtml).join('')}</ul>`:`<p class="se-empty">${view==='gemeldet'?'Keine offenen Meldungen.':'Noch nichts entschieden.'}</p>`}`;
+    body.innerHTML=`<div class="hr-tabs" role="tablist"><button type="button" role="tab" class="ux-btn ${view==='gemeldet'?'':'secondary'}" data-hr-view="gemeldet" aria-selected="${view==='gemeldet'}">Offen (${openCount})</button><button type="button" role="tab" class="ux-btn ${view==='erledigt'?'':'secondary'}" data-hr-view="erledigt" aria-selected="${view==='erledigt'}">Erledigt</button><button type="button" role="tab" class="ux-btn ${view==='automatisch'?'':'secondary'}" data-hr-view="automatisch" aria-selected="${view==='automatisch'}">Automatisch (Erstattung)</button></div>${view==='automatisch'?'<p class="se-intro">Zeit, die Mitglieder mit einer Erstattung (km/Einkauf) eingereicht haben. Sie zählt sofort – eine Freigabe ist nicht nötig. Stimmt etwas nicht, mit ↩ und Grund zurücknehmen.</p>':''}${K.actualWorkflow?.status==='closed'?`<p class="hr-closed">Der Istplan ist abgeschlossen. Bestätigte Stunden werden als Nachtrag gebucht; dafür den Istplan mit Begründung wieder öffnen.${canReopen()?' <button type="button" class="ux-btn secondary" id="hrReopen">Für Nachtrag öffnen</button>':''}</p>`:''}${list.length?`<ul class="se-list">${list.map(groupHtml).join('')}</ul>`:`<p class="se-empty">${view==='gemeldet'?'Keine offenen Meldungen.':view==='automatisch'?'Noch keine Zeit aus Erstattungen.':'Noch nichts entschieden.'}</p>`}`;
     body.querySelectorAll('[data-hr-view]').forEach(b=>b.onclick=()=>{view=b.dataset.hrView;render();});
     body.querySelectorAll('[data-hr-ok]').forEach(b=>b.onclick=()=>run(()=>core().decide(b.dataset.hrOk,{status:'bestaetigt'}),'Bestätigt – die Stunden stehen jetzt im Kontoauszug.'));
     body.querySelectorAll('[data-hr-no]').forEach(b=>b.onclick=()=>{const reason=window.prompt(`Warum wird die Meldung von ${name(core().groups({status:'alle'}).flatMap(g=>g.rows).find(r=>r.id===b.dataset.hrNo)?.personId)} abgelehnt?`,'');if(reason==null)return;run(()=>core().decide(b.dataset.hrNo,{status:'abgelehnt',reason}),'Abgelehnt.');});
     body.querySelectorAll('[data-hr-all]').forEach(b=>b.onclick=()=>run(async()=>{const r=await core().decideGroup(b.dataset.hrAll,{status:'bestaetigt'});if(r.failed.length)throw new Error(`${r.done.length} bestätigt, ${r.failed.length} nicht: ${r.failed.map(f=>`${name(f.personId)} – ${f.error}`).join('; ')}`);},'Alle bestätigt – die Stunden stehen jetzt im Kontoauszug.'));
+    body.querySelectorAll('[data-hr-storno]').forEach(b=>b.onclick=()=>{const r=core().automatic().find(x=>x.id===b.dataset.hrStorno);const reason=window.prompt(`Warum wird die Zeit von ${name(r?.personId)} zurückgenommen? (Das Mitglied bekommt den Grund.)`,'');if(reason==null)return;run(()=>core().storno(b.dataset.hrStorno,{reason}),'Zurückgenommen – das Mitglied wird von der Club-App informiert.');});
     const reopen=document.getElementById('hrReopen');if(reopen)reopen.onclick=()=>{const reason=window.prompt('Begründung für das Wiederöffnen (Nachtrag Sonderstunden):','Nachtrag Sonderstunden');if(!reason)return;try{K.actual.reopenPlan({reason});render();status('Istplan für den Nachtrag geöffnet. Danach wieder abschließen.');}catch(e){status(e.message||String(e),true);}};
   }
   async function run(job,ok){if(busy)return;busy=true;status('Wird gespeichert …');try{await job();status(ok);}catch(e){status(e.message||String(e),true);}finally{busy=false;render();K.render?.();}}
-  async function pull(){if(busy)return;busy=true;status('Meldungen werden abgeholt …');try{const r=await core().pull();status(`${r.received} offene Meldungen abgeholt.`);K.istRueckmeldung?.poll?.().catch?.(()=>{});}catch(e){status('Nicht abgeholt: '+(e.message||e),true);}finally{busy=false;render();}}
+  async function pull(){if(busy)return;busy=true;status('Meldungen werden abgeholt …');try{const r=await core().pull();status(`${r.received} offene Meldungen abgeholt.${r.auto?.booked||r.auto?.unbooked?` Aus Erstattungen: ${r.auto.booked||0} gebucht, ${r.auto.unbooked||0} zurückgenommen.`:''}${r.auto?.waiting?.length?` ⚠ ${r.auto.waiting.length} nicht buchbar: ${r.auto.waiting.map(w=>`${name(w.personId)} – ${w.grund}`).join('; ')}`:''}`);K.istRueckmeldung?.poll?.().catch?.(()=>{});}catch(e){status('Nicht abgeholt: '+(e.message||e),true);}finally{busy=false;render();}}
 
   function open({fetch=true}={}){
     if(!core())return;close();
@@ -50,5 +54,5 @@
     render();document.getElementById('hrClose').focus();
     if(fetch&&canPull())pull();
   }
-  K.hourReportsUi={version:'0.1.0',open,close};
+  K.hourReportsUi={version:'0.2.0',open,close};
 })();

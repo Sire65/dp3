@@ -11,7 +11,9 @@
   const K=window.KCDP=window.KCDP||{};
   const VERSION='0.2.0';
   const TERMIN=['OFFEN','GEPLANT','FEST'];
-  const RECURRING=['markttage'];
+  // Build 325 (KICC-F-112): 'laufend' = ständiger Einsatz der Veranstaltung (jeder vergangene Tag zählt), z. B. „Besorgungen & Fahrten“ –
+  // Vorbelegung für Zeit, die Mitglieder mit einer Erstattung in der Club App einreichen.
+  const RECURRING=['markttage','laufend'];
   const MAX_FOLLOW_DEPTH=10,MAX_GAP_DAYS=60,MAX_PLANNED=30,MAX_TITLE=120,MAX_PLACE=120,MAX_NOTE=500;
   K.specialEvents=Array.isArray(K.specialEvents)?K.specialEvents:[];
   // Auswahl statt Freitext (AGENTS 13); austauschbare Liste statt fest verdrahteter Logik (AGENTS 4).
@@ -92,6 +94,7 @@
       const dates=(K.days||[]).filter(d=>d.type==='market').map(d=>d.date).sort();
       return {terminStatus:dates.length?'FEST':'OFFEN',datumVon:dates[0]||null,datumBis:dates.at(-1)||null,dates,derivedFrom:null};
     }
+    if(ev.wiederkehrend==='laufend')return {terminStatus:'FEST',datumVon:null,datumBis:null,dates:[],derivedFrom:null,laufend:true};
     if(!ev.folgtAuf){
       const von=ev.datumVon||null,bis=ev.datumBis||von;
       return {terminStatus:ev.terminStatus,datumVon:von,datumBis:bis,dates:von?range(von,bis):[],derivedFrom:null};
