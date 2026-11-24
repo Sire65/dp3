@@ -40,9 +40,9 @@ function makeDay(d,people,o){
  for(let i=1;i<points.length;i++){
   const start=points[i-1],end=points[i],t=(start+end)/2,inDay=t>=d.start&&t<d.end;
   const raw=inDay?(K.requirementFor?.(d,t)||{}):{},base=inDay?(K.baseRequirementFor?.(d,t)||raw):{};
-  const req={total:Number(raw.total)||0,front:Number(raw.front)||0,back:Number(raw.back)||0},baseTotal=Number(base.total)||0;
+  const req={total:Number(raw.total)||0,front:raw.front==null?null:Number(raw.front)||0,back:raw.back==null?null:Number(raw.back)||0},baseTotal=Number(base.total)||0;
   const available=allShifts.filter(s=>s.start<=t&&s.end>t&&!K.breaks?.isOnBreak?.(s,t)&&zone(s)!=='special'&&zone(s)!=='unassigned'),count=new Set(available.map(s=>canonical(s.personId))).size;
-  const needed=o.area==='all'?req.total:req[o.area],wish=personRows.filter(p=>p.wishes.some(r=>r.type==='preferred'&&r.start<=t&&r.end>t)).length;
+  const needed=o.area==='all'?req.total:Number(req[o.area])||0,wish=personRows.filter(p=>p.wishes.some(r=>r.type==='preferred'&&r.start<=t&&r.end>t)).length;
   const frontCount=new Set(available.filter(s=>zone(s)==='front').map(s=>canonical(s.personId))).size,backCount=new Set(available.filter(s=>zone(s)==='back').map(s=>canonical(s.personId))).size;
   intervals.push({start,end,req,baseTotal,extra:Math.max(0,req.total-baseTotal),needed,count,frontCount,backCount,wish,missing:Math.max(0,needed-count),over:Math.max(0,count-needed)});
  }
