@@ -88,6 +88,9 @@ function analyze(input,{removed=store().removed}={}){
   items.push({kind:blocked?'fehler':'neu',action:'create',row:label,candidate:cand,issues,blocked,text:blocked?issues.find(i=>i.level==='error').text:null});
  }
  const skipped=Array.isArray(input?.uebersprungen)?input.uebersprungen.filter(u=>u&&typeof u==='object'):[];
+ // Bei Fehlern ist der vollständige Stand nicht verlässlich: keine Löschung ableiten,
+ // auch dann nicht, wenn Personen-ID oder Übernahmeschlüssel nicht mehr zuordenbar sind.
+ const incomplete=items.some(i=>i.kind==='fehler'||i.blocked);
  for(const s of byKey.values()){
   if(INACTIVE.has(s.status)||seen.has(s.sourceImportKey))continue;
   const reasons=protectedReasons(s),label={personId:s.personId,name:'',date:s.date,start:s.start,end:s.end,zone:s.zone,area:s.area,importKey:s.sourceImportKey};
@@ -96,10 +99,13 @@ function analyze(input,{removed=store().removed}={}){
   // das ist keine Planänderung → nicht von selbst löschen, nur auf ausdrückliche Wahl.
   const why=skipped.find(u=>(u.date==null||u.date===s.date)&&(canonicalId(u.personId)===s.personId||(Array.isArray(u.personIds)&&u.personIds.map(canonicalId).includes(s.personId))));
   if(why)reasons.unshift(String(why.grund||'In der Club-App nicht übergeben').slice(0,80));
-  items.push({kind:lockError?'fehler':reasons.length?'konflikt':'entfaellt',action:'delete',row:label,shiftId:s.id,reasons,skip:why?String(why.grund||'In der Club-App nicht übergeben').slice(0,80):null,blocked:!!lockError,text:lockError});
+  const deletionError=lockError||(incomplete?'Übergabe enthält Fehler. Vorhandener Dienst bleibt erhalten; Löschung erst nach einer fehlerfreien neuen Vorschau.':null);
+  items.push({kind:deletionError?'fehler':reasons.length?'konflikt':'entfaellt',action:'delete',row:label,shiftId:s.id,reasons,skip:why?String(why.grund||'In der Club-App nicht übergeben').slice(0,80):null,blocked:!!deletionError,text:deletionError});
  }
  const counts={neu:0,geaendert:0,entfaellt:0,gleich:0,konflikt:0,fehler:0};for(const i of items)counts[i.kind]++;
- const signature=JSON.stringify(items.map(i=>[i.kind,i.action||'',i.row.importKey,i.shiftId||'',i.candidate?.clubShiftFp||'',i.blocked?1:0]));
+ // Nicht nur das vorgeschlagene Ergebnis vergleichen: bereits als Konflikt markierte
+ // Dienste können sich nochmals ändern, ohne dass sich Art oder Club-Vorschlag ändern.
+ const signature=JSON.stringify({items:items.map(i=>[i.kind,i.action||'',i.row.importKey,i.shiftId||'',i.candidate?.clubShiftFp||'',i.blocked?1:0,i.reasons||[],i.issues||[]]),shifts:K.shifts||[],actualShifts:K.actualShifts||[],swapRequests:K.swapRequests||[],removed});
  return {id:input?.id||null,pruefsumme:input?.pruefsumme||null,stand:input?.stand||null,items,counts,signature,changes:counts.neu+counts.geaendert+counts.entfaellt+counts.konflikt};
 }
 // Was bei „Übernehmen“ passiert: neu/geändert/entfällt immer, Konflikte nur mit Wahl 'club'.

@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 321,
+  "build": 322,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b321",
+  "cacheName": "kc-dp-release-0.20.0-b322",
   "releaseNotes": [
+    "Build 322 RC: Sichere Sollplan-Übernahme – fehlerhafte Übergaben löschen keine Dienste; Änderungen nach der Vorschau verlangen einen neuen Vergleich.",
     "Build 321 RC: Sollplan aus der Club-App übernehmen (KC-DP-SOLL-UEBERGABE): Vorschau mit neu, geändert, entfällt und unverändert; in DP2 geänderte Dienste bleiben, bis der Planer anders wählt. Nichts ändert sich ohne „Übernehmen“.",
     "Build 310 RC: Planungsstände werden gepackt gespeichert (deutlich kleiner) und schnelle Änderungsfolgen zu einer Speicherung gebündelt. Ältere Fassungen bleiben lesbar.",
     "Build 308 RC: Abschluss des Istplans je Tag an die Club App melden (istStatus/istClosedAt in den veröffentlichten Tagen). Nach Abschluss fragt die Club App nicht mehr nach Ist-Zeiten; Wiederöffnen gibt die Tage wieder frei.",
@@ -157,8 +158,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-23T20:38:57.229Z",
-  "totalRuntimeBytes": 37310783,
+  "generatedAt": "2026-11-24T07:43:05.040Z",
+  "totalRuntimeBytes": 37311516,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -339,7 +340,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 35798,
-      "sha256": "b1c182bf1d9bad711a25c0f74e94284148d57cea26722a92b8083e4e43cb6035",
+      "sha256": "6946ab48f3ea4ba30518b6a999a0fe9c4f01028120db9904007ff5afdd0c04d8",
       "runtime": true,
       "forceRefresh": true
     },
@@ -660,8 +661,8 @@
     {
       "path": "src/core/club-soll-inbox.js",
       "installPath": "src/core/club-soll-inbox.js",
-      "bytes": 24452,
-      "sha256": "080ab13cb5edc1f2de8ba4fb6ed0c26a28c024655d32c99dadd0aa0960df5ca1",
+      "bytes": 25185,
+      "sha256": "53fe5d7940a5ce821d891e707be6aa23781b68a8570867196b107f01b366d714",
       "runtime": true
     },
     {
