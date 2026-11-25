@@ -1,3 +1,7 @@
+## Build 330 RC – Geräteschlüssel kontrolliert anzeigen
+
+Beim Tippen des Geräteschlüssels bleibt nur das zuletzt eingegebene Zeichen 0,8 Sekunden lesbar. Augen-Schalter zeigt den Schlüssel auf Wunsch bis zu zehn Sekunden, erneutes Klicken verbirgt ihn sofort. Beim Verlassen des Feldes, Entsperren oder Wechseln in den Hintergrund wird wieder maskiert. Eingabe, Verschlüsselung und Speicherung unverändert; keine Protokollierung des Schlüssels.
+
 ## Build 329 RC – Einheitliches Rechtsklickmenü im Sollplan
 
 Wunschvergleich auch über Rechtsklick auf lila Vergleichsbalken und freie Zeitfelder ausblendbar. Der alte globale Rechtsklick-Handler mit irreführender Soll-zu-Ist-Frage entfällt; Rechtsklick öffnet nur das passende Menü. Keine Planungsdaten werden dadurch verändert.
