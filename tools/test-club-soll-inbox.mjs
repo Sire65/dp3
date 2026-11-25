@@ -58,7 +58,7 @@ const active=K=>K.shifts.filter(s=>!['deleted','cancelled'].includes(s.status));
   for(const s of club){assert.equal(s.layer,'planned');assert.equal(s.status,'draft');assert.match(s.sourceImportKey,/^CLUB-\d{4}-\d{2}-\d{2}-KC-P-/);assert.ok(s.clubShiftFp&&s.clubRowFp);assert.ok(/^S-/.test(s.id));}
   const long=club.find(s=>s.personId===P[0]);assert.equal(long.breakMinutes,30);assert.equal(long.breakSegments.length,1,'Pause nach DP2-Regel mit Zeitfenster');
   assert.equal(K.shifts.find(s=>s.id==='S-HAND').start,10,'Handdienst unverändert');
-  assert.equal(net.acks.length,1);assert.equal(net.acks[0].status,'uebernommen');assert.equal(net.acks[0].result.added,3);
+  assert.equal(net.acks.length,0,'Teilübernahme wird nicht vollständig quittiert');assert.equal(out.complete,false);assert.equal(out.remaining,5);assert.equal(net.pending.id,'U1');
   assert.equal(f.persisted,1);assert.deepEqual(f.staged.map(x=>x[0]),['stage','settle']);assert.equal(f.staged[1][2],true);
   // 2) gleicher Stand noch einmal: nur „unverändert“, keine Dubletten, still bestätigt
   net.pending=stand('U1b',[row(P[0],'2026-12-04',11,17.5),row(P[1],'2026-12-04',15,23,'back','Hinten',45),row(P[2],'2026-12-02',8,14,'neutral','Vorbereitung')]);
@@ -196,7 +196,7 @@ for(const deletion of [false,true])for(const change of [s=>s.end=17,s=>s.status=
     assert.ok(/^B-/.test(sb[0].id),'DP2-eigene ID');
     assert.equal(K.shifts.filter(s=>s.planningSource==='club_import').length,1,'Bereitschaft wird kein Dienst');
     assert.equal(K.standby.find(s=>s.id==='B-HAND').end,20,'Hand-Bereitschaft unverändert');
-    assert.equal(net.acks.at(-1).status,'uebernommen');assert.equal(net.acks.at(-1).result.standbyAdded,1);
+    assert.equal(net.acks.length,0,'Fehlerhafte Bereitschaft hält die gesamte Übergabe offen');assert.equal(r.complete,false);assert.equal(net.pending.id,'BA');
     // Kasse: nur Dienste
     class FixedDate extends Date{constructor(...x){if(x.length)super(...x);else super('2026-12-01T10:00:00Z');}static now(){return Date.parse('2026-12-01T10:00:00Z');}}
     vm.runInContext(bridgeSource,vm.createContext({window:{KCDP:K},Intl,Date:FixedDate,console,setTimeout,clearTimeout}));
@@ -257,4 +257,26 @@ for(const deletion of [false,true])for(const change of [s=>s.end=17,s=>s.status=
     await CS.apply({});assert.equal(clubB(K).length,0);assert.equal(K.shifts.length,1);
   }
 }
+// Teilübernahme bleibt offen und wird auch beim erneuten Abruf nicht vollständig quittiert.
+{
+ const {K,net}=await fixture(),CS=K.clubSollInbox;
+ const testPerson='KC-P-TEST-HELPER',originalValidate=K.validateShift;let max=6;
+ K.people.push({personId:testPerson,name:'Synthetische Testperson',active:true,personType:'helper',maxHours:6,availability:[]});
+ K.validateShift=c=>[...originalValidate(c),...(c.personId===testPerson&&c.end-c.start>max?[{level:'error',text:'Maximal 6 Std.'}]:[])];
+ net.pending=stand('PART1',[row(testPerson,'2026-12-07',18,23),row(P[0],'2026-12-02',8,12)]);
+ await CS.check({force:true});await CS.apply({});assert.equal(net.acks.length,1);
+ net.pending=stand('PART2',[row(testPerson,'2026-12-07',16,23),row(P[1],'2026-12-05',12,16)]);
+ await CS.check({force:true});const partial=await CS.apply({});
+ assert.equal(partial.complete,false);assert.equal(partial.remaining,2);assert.equal(net.acks.length,1);assert.equal(net.pending.id,'PART2');
+ assert.match(CS.state.notice,/bleibt offen/);assert.equal(CS.store().lastApplied.id,'PART1');assert.equal(CS.store().lastPartial.id,'PART2');
+ assert.equal(active(K).length,3,'gültiger Dienst gespeichert, alte Einträge geschützt');
+ CS.store().lastApplied={id:'PART2',pruefsumme:'sum-PART2'};
+ await CS.check({force:true});await CS.check({force:true});assert.equal(net.acks.length,1,'Fehler verhindern Auto-Quittung auch mit altem lastApplied');
+ assert.equal(CS.state.analysis.counts.fehler,2);assert.equal(CS.state.analysis.counts.neu,0,'keine Dublette');
+ // Nur im Test: fachliche Grenze ausdrücklich geklärt, Rest kann vollständig übernommen werden.
+ max=8;await CS.check({force:true});const done=await CS.apply({});
+ assert.equal(done.complete,true);assert.equal(done.remaining,0);assert.equal(net.pending,null);assert.equal(net.acks.length,2);assert.equal(CS.store().lastPartial,undefined);
+ assert.equal(active(K).length,2);assert.equal(K.shifts.find(s=>s.personId===testPerson).start,16);
+}
+
 console.log('✓ Club-App-Sollplan: Prüfungen, neu/geändert/entfällt/unverändert, Schutz in DP2 geänderter Dienste und Ist-Zeiten, keine Dubletten, Rücknahme, Rechte, Bestätigung/Verwerfen, Veröffentlichungszeilen; Fehlerstände löschen nie, veraltete Konfliktvorschau bricht ab; Bereitschaft als Bereitschaft (neu/geändert/entfällt, Schutz, nicht an die Kasse)');
