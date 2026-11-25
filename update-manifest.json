@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 329,
+  "build": 330,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b329",
+  "cacheName": "kc-dp-release-0.20.0-b330",
   "releaseNotes": [
     "Build 327 RC: Unvollständige Sollplan-Übernahmen bleiben sichtbar offen. Keine falsche Vollquittung; erneute Prüfung ohne Dubletten. Persönliche Einsatzgrenzen bleiben wirksam.",
     "Build 326 RC: Kontoauszug für die Club App (KICC-F-113): DP2 veröffentlicht im Auto-Sync die gezählten Ist-Zeilen je Person (gleiche Rechnung wie der Kontoauszug), nur bei Änderung. Die Club App zeigt sie in „Mein Stundenkonto“ als bestätigt.",
@@ -163,8 +163,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-25T19:07:02.294Z",
-  "totalRuntimeBytes": 37374547,
+  "generatedAt": "2026-11-25T19:17:04.659Z",
+  "totalRuntimeBytes": 37377688,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -344,8 +344,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 36007,
-      "sha256": "fa77f3a7f27a43ffaf635e44b4f6ab7156170fdc26a71e5f96b70625e02bc523",
+      "bytes": 36078,
+      "sha256": "551b36bdb0b3d6ba09714c3ab5c93e98c102ceaffa89aa86f5eb7ae48283073d",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1198,8 +1198,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 269075,
-      "sha256": "4ff415df05877640f3e19d44ad40d66ffbd53799bd3a55db7435d7d62ac55174",
+      "bytes": 269714,
+      "sha256": "9e65a57bd1ae66b7db322e1cbed169a119a31344bcd0b0517b6da743d125deb1",
       "runtime": true
     },
     {
@@ -2026,6 +2026,13 @@
       "installPath": "src/ui/row-stripe-setting.js",
       "bytes": 1356,
       "sha256": "8b48cacb09a4b12bfe4c7ca7b459689b8467d4a3a85927283048b70bada0ee60",
+      "runtime": true
+    },
+    {
+      "path": "src/ui/secret-visibility.js",
+      "installPath": "src/ui/secret-visibility.js",
+      "bytes": 2431,
+      "sha256": "00efa68a3b7e8bd96efd0a601d0aaf6ef09442038599618d55f2489d5d16d2c5",
       "runtime": true
     },
     {
