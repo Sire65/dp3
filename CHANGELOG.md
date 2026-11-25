@@ -1,3 +1,7 @@
+## Build 331 RC – Veröffentlichungspaket vor Aktivierung prüfen
+
+Die Veröffentlichung wartet explizit auf das hochgeladene GitHub-Pages-Paket und bricht bei ausbleibender Bereitstellung ab. Der Ablauf darf die eigenen Build-Artefakte lesen. Geräteschlüssel-Anzeige aus Build 330 unverändert enthalten.
+
 ## Build 330 RC – Geräteschlüssel kontrolliert anzeigen
 
 Beim Tippen des Geräteschlüssels bleibt nur das zuletzt eingegebene Zeichen 0,8 Sekunden lesbar. Augen-Schalter zeigt den Schlüssel auf Wunsch bis zu zehn Sekunden, erneutes Klicken verbirgt ihn sofort. Beim Verlassen des Feldes, Entsperren oder Wechseln in den Hintergrund wird wieder maskiert. Eingabe, Verschlüsselung und Speicherung unverändert; keine Protokollierung des Schlüssels.

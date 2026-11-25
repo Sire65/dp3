@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  actions: read
   pages: write
   id-token: write
 
@@ -56,6 +57,24 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: .
+
+      - name: Veröffentlichungspaket auf GitHub abwarten
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          for attempt in {1..12}; do
+            if COUNT=$(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID/artifacts" --jq '[.artifacts[] | select(.name == "github-pages" and .expired == false)] | length'); then
+              if [ "$COUNT" -eq 1 ]; then
+                echo "Veröffentlichungspaket ist verfügbar."
+                exit 0
+              fi
+            fi
+            echo "GitHub stellt das Veröffentlichungspaket noch bereit (Versuch $attempt/12)."
+            sleep 5
+          done
+          echo "Veröffentlichungspaket nicht rechtzeitig verfügbar. Die bisherige Version bleibt aktiv."
+          exit 1
 
       - name: GitHub Pages veröffentlichen
         id: deployment

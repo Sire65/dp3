@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 330,
+  "build": 331,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b330",
+  "cacheName": "kc-dp-release-0.20.0-b331",
   "releaseNotes": [
     "Build 327 RC: Unvollständige Sollplan-Übernahmen bleiben sichtbar offen. Keine falsche Vollquittung; erneute Prüfung ohne Dubletten. Persönliche Einsatzgrenzen bleiben wirksam.",
     "Build 326 RC: Kontoauszug für die Club App (KICC-F-113): DP2 veröffentlicht im Auto-Sync die gezählten Ist-Zeilen je Person (gleiche Rechnung wie der Kontoauszug), nur bei Änderung. Die Club App zeigt sie in „Mein Stundenkonto“ als bestätigt.",
@@ -163,7 +163,7 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-25T19:17:04.659Z",
+  "generatedAt": "2026-11-25T19:24:24.223Z",
   "totalRuntimeBytes": 37377688,
   "files": [
     {
@@ -345,7 +345,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 36078,
-      "sha256": "551b36bdb0b3d6ba09714c3ab5c93e98c102ceaffa89aa86f5eb7ae48283073d",
+      "sha256": "48d793cece445bfff4e96883e2a6c3244e483421d208ff333d29450e1834f606",
       "runtime": true,
       "forceRefresh": true
     },
