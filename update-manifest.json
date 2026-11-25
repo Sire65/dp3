@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 325,
+  "build": 326,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b325",
+  "cacheName": "kc-dp-release-0.20.0-b326",
   "releaseNotes": [
+    "Build 326 RC: Kontoauszug für die Club App (KICC-F-113): DP2 veröffentlicht im Auto-Sync die gezählten Ist-Zeilen je Person (gleiche Rechnung wie der Kontoauszug), nur bei Änderung. Die Club App zeigt sie in „Mein Stundenkonto“ als bestätigt.",
     "Build 325 RC: Zeit aus der Erstattung (KICC-F-112): Mitglieder reichen in der Club-App mit Fahrtkosten oder Einkauf auch ihre Zeit ein. Sie ist ohne Freigabe bestätigt; DP2 bucht sie im Auto-Sync automatisch als Ist ins Stundenkonto und nimmt sie zurück, wenn der Kassenwart den Antrag ablehnt. Planer: Reiter „Automatisch (Erstattung)“, Rücknahme nur mit Grund. Neu: Sondereinsatz „Ständig (jeder Tag)“, z. B. Besorgungen & Fahrten.",
     "Build 324 RC: Bereitschaft aus der Club-App übernehmen (KC-DP-SOLL-BEREITSCHAFT): die Sollplan-Übergabe trägt die Bereitschaft mit; sie wird als Bereitschaft eingetragen, nie als Dienst und nicht an die Kasse. Gleicher Schutz wie bei Diensten. Gelöschte Bereitschaften zählen nicht mehr als Überschneidung.",
     "Build 323 RC: Neuer Dienstplan-Druck mit neun Ausgaben, Filtern, Einzelplan, Bereitschaft separat und kompakten Vektor-PDFs. Keine Änderung an Planungsdaten.",
@@ -161,8 +162,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-24T21:43:01.215Z",
-  "totalRuntimeBytes": 37365871,
+  "generatedAt": "2026-11-25T03:43:43.700Z",
+  "totalRuntimeBytes": 37371734,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -342,8 +343,8 @@
     {
       "path": "index.html",
       "installPath": "index.html",
-      "bytes": 35938,
-      "sha256": "2d1cb099a5953f20190cac23783a861dacf65279695d48079c83ab944d279d20",
+      "bytes": 36007,
+      "sha256": "c2a5f5bb98104db43aa320c2bda91011265bc8372e1cd793af8a197bb853ca30",
       "runtime": true,
       "forceRefresh": true
     },
@@ -587,8 +588,8 @@
     {
       "path": "src/adapters/supabase-provider.js",
       "installPath": "src/adapters/supabase-provider.js",
-      "bytes": 33733,
-      "sha256": "9f6fb06ba9cb04db41948ee4a05efd416c30f1c006ac0e0b10485af8dd388bec",
+      "bytes": 34166,
+      "sha256": "f1fa7ba91c9cd87efc45a326e14040cc8732b4ece5dbbe8bd40e640e6e4aa69d",
       "runtime": true
     },
     {
@@ -650,8 +651,8 @@
     {
       "path": "src/core/auto-sync.js",
       "installPath": "src/core/auto-sync.js",
-      "bytes": 3528,
-      "sha256": "cd3601c575d4bb48f762a2934897cd85f9b5f475ec5e996139ac5ee4ce1e34aa",
+      "bytes": 3738,
+      "sha256": "d16c36830a9fe14789074db2893fb54651bdab1c3d879a87193aac4d23c467ea",
       "runtime": true
     },
     {
@@ -834,6 +835,13 @@
       "installPath": "src/core/kicc-heartbeat.js",
       "bytes": 8155,
       "sha256": "5ba0603dadb69eb287271ed339956b94b5d3ef369124fc21ba26510ef0fde596",
+      "runtime": true
+    },
+    {
+      "path": "src/core/konto-publish.js",
+      "installPath": "src/core/konto-publish.js",
+      "bytes": 5038,
+      "sha256": "1859d625ba3dfd57abf56c472d4c68e744ead0b5b8c6e22ef3982ba6c9e88f02",
       "runtime": true
     },
     {
@@ -1735,8 +1743,8 @@
     {
       "path": "src/ui/person-account-print.js",
       "installPath": "src/ui/person-account-print.js",
-      "bytes": 34268,
-      "sha256": "d9d3ba94a3057aa42efdbad0ee31c52f3e8827210e87420554dc2a7d6a90a414",
+      "bytes": 34381,
+      "sha256": "f01b4933c02bf143a4bdc7effd5cb4a1fdc927f0b9977e186e81a8c824d6a75e",
       "runtime": true
     },
     {

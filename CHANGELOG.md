@@ -1,3 +1,11 @@
+## Build 326 RC – Kontoauszug für „Mein Stundenkonto“ der Club App (KICC-F-113 Phase 2, DP2-F-KONTO-01)
+
+Wunsch Hansi 24.11.2026 („ein Stundenkonto pro Person … wie kommen die Stunden her“), Schritt 2 nach dem Einspielen am 25.11.2026: Die Club App zeigt dieselben Zahlen wie der DP2-Kontoauszug – eine Wahrheit, keine zweite Rechnung (Konzept: KC-Infrastructure-Control-Center `docs/KONZEPT-CLUB-STUNDENKONTO.md`).
+
+- Neues Modul `src/core/konto-publish.js` (`K.kontoPublish`): je Ist-Zeit eine Zeile mit Person, Tag, Zeiten, Pause, **gezählten Minuten wie im Kontoauszug** (`K.personAccountPrint.counted`/`active`/`breakMinutes`, jetzt mit ausgegeben), Art (Stand / Sondereinsatz / Zeit aus Erstattung), Anlass, Tätigkeit, korrigiert, Tag abgeschlossen (`K.daysPublishBridge.istStatusFor`), Prüfsumme.
+- Veröffentlichung per `kc_dp_konto_publish` (Tabelle `kc_dp_konto_published`, Migration im Club-App-Repo `20261125_kc_dp_konto_published.sql`): Gesamtstand je Veranstaltung, Server schreibt nur geänderte Zeilen. Auto-Sync ruft `K.kontoPublish.poll()` (höchstens alle 5 Min.); unverändert → keine Server-Anfrage; nur Planungsrollen.
+- Neuer Test `tools/test-konto-publish.mjs` (in `npm run test:smoke`): Summe je Person = Kontoauszug „Ist geprüft“.
+
 ## Build 325 RC – Zeit aus der Erstattung automatisch buchen (KICC-F-112, DP2-F-SE-09)
 
 Wunsch Hansi 24.11.2026: Wer z. B. mit dem eigenen Auto Wurst beim Metzger abholt und zum Weihnachtsmarkt bringt, reicht in der Club-App unter 💶 Erstattung Kilometer **und Zeit** in einem Antrag ein. Die Zeit soll „nicht erst in DP2 freigegeben“ werden (Konzept: KC-Infrastructure-Control-Center `docs/KONZEPT-CLUB-ERSTATTUNG-STUNDEN.md`).
