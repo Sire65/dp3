@@ -24,6 +24,8 @@
      try{await K.istRueckmeldung?.poll?.();}catch(e){/* nächster Takt */}
      // Build 325 (KICC-F-112): Zeit aus Erstattungen automatisch buchen/ausbuchen (höchstens alle 5 Min., nur Planerrollen).
      try{await K.hourReportsCore?.autoPoll?.();}catch(e){/* nächster Takt */}
+     // Build 326 (KICC-F-113): Kontoauszug-Zeilen für „Mein Stundenkonto“ der Club App (nur bei Änderung, höchstens alle 5 Min.).
+     try{await K.kontoPublish?.poll?.();}catch(e){/* nächster Takt */}
      return result;}
    catch(e){state.lastError=e.message;if(c.offlineAllowed!==false)return {failed:true,offlineFallback:true,error:e.message};throw e;}
    finally{state.inFlight=false;}
