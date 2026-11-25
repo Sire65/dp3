@@ -44,6 +44,7 @@ const manifest={
   schema:'KC_DP_UPDATE_MANIFEST_V1',app:'KC DP2',version,build,stage,
   cacheName:`kc-dp-release-${version}-b${build}`,
   releaseNotes:[
+    'Build 327 RC: Unvollständige Sollplan-Übernahmen bleiben sichtbar offen. Keine falsche Vollquittung; erneute Prüfung ohne Dubletten. Persönliche Einsatzgrenzen bleiben wirksam.',
     'Build 326 RC: Kontoauszug für die Club App (KICC-F-113): DP2 veröffentlicht im Auto-Sync die gezählten Ist-Zeilen je Person (gleiche Rechnung wie der Kontoauszug), nur bei Änderung. Die Club App zeigt sie in „Mein Stundenkonto“ als bestätigt.',
     'Build 325 RC: Zeit aus der Erstattung (KICC-F-112): Mitglieder reichen in der Club-App mit Fahrtkosten oder Einkauf auch ihre Zeit ein. Sie ist ohne Freigabe bestätigt; DP2 bucht sie im Auto-Sync automatisch als Ist ins Stundenkonto und nimmt sie zurück, wenn der Kassenwart den Antrag ablehnt. Planer: Reiter „Automatisch (Erstattung)“, Rücknahme nur mit Grund. Neu: Sondereinsatz „Ständig (jeder Tag)“, z. B. Besorgungen & Fahrten.',
     'Build 324 RC: Bereitschaft aus der Club-App übernehmen (KC-DP-SOLL-BEREITSCHAFT): die Sollplan-Übergabe trägt die Bereitschaft mit; sie wird als Bereitschaft eingetragen, nie als Dienst und nicht an die Kasse. Gleicher Schutz wie bei Diensten. Gelöschte Bereitschaften zählen nicht mehr als Überschneidung.',

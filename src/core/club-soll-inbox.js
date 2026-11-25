@@ -219,7 +219,7 @@ async function check({force=false}={}){
  try{
   if(!await planningAllowed()){state.pending=null;state.analysis=null;return {skipped:true,reason:'role'};}
   const input=await fetchPending();state.pending=input;state.analysis=input?analyze(input):null;
-  if(input&&state.analysis&&!state.analysis.changes&&(store().lastApplied?.id===input.id||!state.analysis.counts.fehler)){
+  if(input&&state.analysis&&!state.analysis.changes&&!state.analysis.counts.fehler){
    // Stand ist schon vollständig übernommen (z. B. Bestätigung ging verloren): still bestätigen.
    try{await ack(input,'uebernommen',{...state.analysis.counts,autoAck:true});}catch(_){}
   }
@@ -236,6 +236,7 @@ async function apply(choices={}){
  if(state.inFlight)throw Error('Ein Abgleich läuft bereits. Bitte kurz warten.');
  const preview=state.analysis,previewInput=state.pending;if(!preview||!previewInput)throw Error('Bitte die Vorschau neu öffnen.');
  state.inFlight=true;
+ state.notice=null;
  const context=scopeKey(),tag=`clubsoll:${previewInput.id}`;let mutated=false,result=null,snapshot=null,standbySnapshot=null,auditStart=0,storeBefore=null;
  try{
   K.auth.require('roster.plan.edit','Sie dürfen den Sollplan nicht bearbeiten.');
@@ -252,14 +253,18 @@ async function apply(choices={}){
   result=K.sync?.stageLocalBatch?K.sync.stageLocalBatch(tag,run):run();
   const s=store();for(const key of result.removedKeys)s.removed[key]=new Date().toISOString();
   for(const op of ops.filter(o=>o.action==='create'))delete s.removed[op.row.importKey];
-  s.lastApplied={id:input.id,pruefsumme:input.pruefsumme,at:new Date().toISOString()};
+  const complete=fresh.counts.fehler===0;
+  if(complete){s.lastApplied={id:input.id,pruefsumme:input.pruefsumme,at:new Date().toISOString()};delete s.lastPartial;}
+  else s.lastPartial={id:input.id,pruefsumme:input.pruefsumme,at:new Date().toISOString(),remaining:fresh.counts.fehler};
   const persisted=await K.persistAll?.();
   if(K.cloudPrimary?.active?.()&&persisted?.confirmed!==true)throw Error('Planungsdaten noch nicht von Supabase bestätigt. Die Übernahme wurde zurückgenommen.');
   K.sync?.settleLocalBatch?.(tag,true);mutated=false;
   K.historyManager?.record?.('Club-App-Sollplan übernommen');
   K.recordAudit?.('Club-App-Sollplan übernommen',{entity:'club_soll_inbox',entityId:input.id,reason:`Club-App-Sollplan ${input.id}`,after:{...fresh.counts,added:result.added,updated:result.updated,removed:result.removed,standbyAdded:result.standbyAdded,standbyUpdated:result.standbyUpdated,standbyRemoved:result.standbyRemoved}});
   const summary={added:result.added,updated:result.updated,removed:result.removed,standbyAdded:result.standbyAdded,standbyUpdated:result.standbyUpdated,standbyRemoved:result.standbyRemoved,unchanged:fresh.counts.gleich,kept:fresh.counts.konflikt-ops.filter(o=>o.kind==='konflikt').length,skipped:fresh.counts.fehler,problems:fresh.items.filter(i=>i.kind==='fehler').slice(0,40).map(i=>({importKey:i.row.importKey,text:i.text})),dp2Version:K.VERSION,build:typeof window!=='undefined'?window.KC_DP_BUILD||null:null};
+  summary.complete=complete;summary.remaining=fresh.counts.fehler;
   state.lastResult=summary;
+  if(!complete){state.analysis=analyze(input);state.notice=`Nur teilweise übernommen: ${summary.remaining} Einträge sind noch offen. Die Übergabe bleibt offen und wird nicht als vollständig übernommen bestätigt.`;return summary;}
   try{await ack(input,'uebernommen',summary);}catch(e){state.notice='Übernommen und gespeichert. Die Bestätigung an die Club-App wird beim nächsten Abruf nachgeholt.';}
   return summary;
  }catch(e){
@@ -293,6 +298,7 @@ function hintText(a){
  const c=a.counts,parts=[];
  if(!clubShifts().length)return `📥 Plan aus der Club-App übernehmen (${c.neu+c.geaendert+c.konflikt+c.fehler+c.gleich} Schichten${state.pending?.stand?', Stand '+esc(standText(state.pending.stand)):''})`;
  if(c.neu)parts.push(`${c.neu} neu`);if(c.geaendert)parts.push(`${c.geaendert} geändert`);if(c.entfaellt)parts.push(`${c.entfaellt} entfällt`);if(c.konflikt)parts.push(`${c.konflikt} zu prüfen`);
+ if(c.fehler)parts.push(`${c.fehler} noch nicht übernommen`);
  return `📥 Änderungen aus der Club-App: ${parts.join(' · ')||'keine'}`;
 }
 function render(){
@@ -329,7 +335,7 @@ function preview(){
   const n=plannedOps(state.analysis,choices).length;
   if(!confirm(`${n} Änderungen in den Sollplan übernehmen?`))return;
   el('csApply').disabled=true;
-  try{const r=await apply(choices);const bsum=(r.standbyAdded||0)+(r.standbyUpdated||0)+(r.standbyRemoved||0);el('clubSollResult').textContent=`✓ ${r.added} neu, ${r.updated} geändert, ${r.removed} entfernt${bsum?` · Bereitschaft: ${r.standbyAdded} neu, ${r.standbyUpdated} geändert, ${r.standbyRemoved} entfernt`:''} · ${r.kept} in DP2 behalten, ${r.skipped} nicht übernehmbar.${state.notice?' '+state.notice:''}`;el('csApply').hidden=true;el('csDiscard').hidden=true;K.v020Shell?.select?.('planned',{quiet:true});}
+  try{const r=await apply(choices);const bsum=(r.standbyAdded||0)+(r.standbyUpdated||0)+(r.standbyRemoved||0);el('clubSollResult').textContent=`${r.complete?'✓':'⚠ Nur teilweise:'} ${r.added} neu, ${r.updated} geändert, ${r.removed} entfernt${bsum?` · Bereitschaft: ${r.standbyAdded} neu, ${r.standbyUpdated} geändert, ${r.standbyRemoved} entfernt`:''} · ${r.kept} in DP2 behalten, ${r.skipped} nicht übernehmbar.${state.notice?' '+state.notice:''}`;if(r.complete){el('csApply').hidden=true;el('csDiscard').hidden=true;K.v020Shell?.select?.('planned',{quiet:true});}else{el('csApply').disabled=false;el('csApply').textContent='Offene Einträge neu prüfen';el('csApply').onclick=()=>preview();}}
   catch(e){el('clubSollResult').textContent='✕ '+e.message;el('csApply').disabled=false;}
  };
 }

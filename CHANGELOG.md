@@ -1,3 +1,7 @@
+## Build 327 RC – Teilübernahmen bleiben offen
+
+Sollplan- und Bereitschaftsimporte mit Fehlern werden nicht mehr als vollständig übernommen quittiert. Gültige Positionen bleiben gespeichert, offene Positionen erscheinen im Hinweis und können erneut geprüft werden; Wiederholung ohne Dubletten. Auch ein alter lastApplied-Merker darf Fehler nicht still quittieren. Der Server weist Quittungen mit skipped/fehler/remaining, offenen Problemen oder complete=false ab. Rechte unverändert. Persönliche Zeitgrenzen werden nicht still erhöht.
+
 ## Build 326 RC – Kontoauszug für „Mein Stundenkonto“ der Club App (KICC-F-113 Phase 2, DP2-F-KONTO-01)
 
 Wunsch Hansi 24.11.2026 („ein Stundenkonto pro Person … wie kommen die Stunden her“), Schritt 2 nach dem Einspielen am 25.11.2026: Die Club App zeigt dieselben Zahlen wie der DP2-Kontoauszug – eine Wahrheit, keine zweite Rechnung (Konzept: KC-Infrastructure-Control-Center `docs/KONZEPT-CLUB-STUNDENKONTO.md`).

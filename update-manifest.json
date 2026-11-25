@@ -2,10 +2,11 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 326,
+  "build": 327,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b326",
+  "cacheName": "kc-dp-release-0.20.0-b327",
   "releaseNotes": [
+    "Build 327 RC: Unvollständige Sollplan-Übernahmen bleiben sichtbar offen. Keine falsche Vollquittung; erneute Prüfung ohne Dubletten. Persönliche Einsatzgrenzen bleiben wirksam.",
     "Build 326 RC: Kontoauszug für die Club App (KICC-F-113): DP2 veröffentlicht im Auto-Sync die gezählten Ist-Zeilen je Person (gleiche Rechnung wie der Kontoauszug), nur bei Änderung. Die Club App zeigt sie in „Mein Stundenkonto“ als bestätigt.",
     "Build 325 RC: Zeit aus der Erstattung (KICC-F-112): Mitglieder reichen in der Club-App mit Fahrtkosten oder Einkauf auch ihre Zeit ein. Sie ist ohne Freigabe bestätigt; DP2 bucht sie im Auto-Sync automatisch als Ist ins Stundenkonto und nimmt sie zurück, wenn der Kassenwart den Antrag ablehnt. Planer: Reiter „Automatisch (Erstattung)“, Rücknahme nur mit Grund. Neu: Sondereinsatz „Ständig (jeder Tag)“, z. B. Besorgungen & Fahrten.",
     "Build 324 RC: Bereitschaft aus der Club-App übernehmen (KC-DP-SOLL-BEREITSCHAFT): die Sollplan-Übergabe trägt die Bereitschaft mit; sie wird als Bereitschaft eingetragen, nie als Dienst und nicht an die Kasse. Gleicher Schutz wie bei Diensten. Gelöschte Bereitschaften zählen nicht mehr als Überschneidung.",
@@ -162,8 +163,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-25T03:43:43.700Z",
-  "totalRuntimeBytes": 37371734,
+  "generatedAt": "2026-11-25T13:40:59.424Z",
+  "totalRuntimeBytes": 37372462,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -344,7 +345,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 36007,
-      "sha256": "c2a5f5bb98104db43aa320c2bda91011265bc8372e1cd793af8a197bb853ca30",
+      "sha256": "5b02197108bb5d0bc79061644c3f9557cbb94fbc6b1e5ab2184ce2da9ceb5bbd",
       "runtime": true,
       "forceRefresh": true
     },
@@ -665,8 +666,8 @@
     {
       "path": "src/core/club-soll-inbox.js",
       "installPath": "src/core/club-soll-inbox.js",
-      "bytes": 33433,
-      "sha256": "7dcc0df051296da6b4e0046fd095db80963162a3e042074c334dc33452f00916",
+      "bytes": 34161,
+      "sha256": "b85a0f6a5032a33135464be0519f5b425db4993a72de61d3e9b04680318dbaf3",
       "runtime": true
     },
     {
