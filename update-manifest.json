@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 327,
+  "build": 328,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b327",
+  "cacheName": "kc-dp-release-0.20.0-b328",
   "releaseNotes": [
     "Build 327 RC: Unvollständige Sollplan-Übernahmen bleiben sichtbar offen. Keine falsche Vollquittung; erneute Prüfung ohne Dubletten. Persönliche Einsatzgrenzen bleiben wirksam.",
     "Build 326 RC: Kontoauszug für die Club App (KICC-F-113): DP2 veröffentlicht im Auto-Sync die gezählten Ist-Zeilen je Person (gleiche Rechnung wie der Kontoauszug), nur bei Änderung. Die Club App zeigt sie in „Mein Stundenkonto“ als bestätigt.",
@@ -163,8 +163,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-25T13:40:59.424Z",
-  "totalRuntimeBytes": 37372462,
+  "generatedAt": "2026-11-25T14:52:07.035Z",
+  "totalRuntimeBytes": 37374930,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -345,7 +345,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 36007,
-      "sha256": "5b02197108bb5d0bc79061644c3f9557cbb94fbc6b1e5ab2184ce2da9ceb5bbd",
+      "sha256": "03ae88f142135e4abe22311755bdce9375d8e13eb35a98bd54f0901268576209",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1198,8 +1198,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 268845,
-      "sha256": "25a8645844fb60af6cba254fb7e3704b8d9ec4687a77ae8cea3ef98477310955",
+      "bytes": 268961,
+      "sha256": "57724fbd4895943882f8f14bf6a08a1188a38e2abcca26404dae67453fc17a99",
       "runtime": true
     },
     {
@@ -1870,8 +1870,8 @@
     {
       "path": "src/ui/planning-efficiency.js",
       "installPath": "src/ui/planning-efficiency.js",
-      "bytes": 9076,
-      "sha256": "bdb523d3d0e0e0ad2288764847006b295e753e9e973bf3b42da7d212d967f881",
+      "bytes": 9122,
+      "sha256": "b0353401a00c171cd0116d39b1a5fafece1511a578e4474d5b63697aac36fc07",
       "runtime": true
     },
     {
@@ -2269,8 +2269,8 @@
     {
       "path": "src/ui/wish-bar-composite.js",
       "installPath": "src/ui/wish-bar-composite.js",
-      "bytes": 10715,
-      "sha256": "ee472cc327c618564b0576dab4143af3a541202b6818db6728777435c9662f7c",
+      "bytes": 13021,
+      "sha256": "78b285b90c7a83a7ffc1830aad98aaf2f8d9c560083885f2de78a1a945d36f12",
       "runtime": true
     },
     {

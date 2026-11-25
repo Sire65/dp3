@@ -483,7 +483,7 @@ function openWishContext(x,y,w){
 }
 K.openWishContext=openWishContext;
 function openShiftContext(x,y,s){
-  const items=[];
+  const items=[...(K.wishBarComposite?.comparisonItems?.(s.personId)||[])];
   if(K.auth?.has('roster.plan.edit')){
     items.push({label:'Bearbeiten',action:()=>openShiftEditor(s)});
     items.push({label:'◷ Istzeiten einlesen und prüfen',action:openActualCenter});
@@ -512,7 +512,7 @@ function openStandbyContext(x,y,s){
   openContext(x,y,items.length?items:[{label:'Keine verfügbaren Aktionen',action:()=>{}}]);
 }
 function openPersonContext(x,y,p){
-  const items=[];
+  const items=[...(K.wishBarComposite?.comparisonItems?.(p.personId)||[])];
   if(K.auth?.has('roster.plan.edit'))items.push({label:'Dienst hinzufügen',action:()=>openShiftEditor({id:'',personId:p.personId,date:day().date,start:day().start,end:Math.min(day().start+4,day().end),zone:day().type==='market'?'front':'neutral',area:day().type==='market'?'Verkauf':'Vor-/Nachbereitung',layer:'planned',breakMinutes:0})});
   if(K.auth?.canEditWish(p.personId))items.push({label:'Wunsch hinzufügen',action:()=>openWishEditor({id:'',personId:p.personId,date:day().date,start:day().start,end:Math.min(day().start+4,day().end),wishType:'available',source:p.personId===K.currentUser?.personId?'self_service':'admin_entry',comment:'',confidence:1,status:'confirmed'})});
   if(K.auth?.has('roster.standby.edit'))items.push({label:'Bereitschaft hinzufügen',action:()=>openStandbyEditor({id:'',personId:p.personId,date:day().date,start:day().start,end:day().end,phone:p.phone||'nicht hinterlegt',status:'planned'})});

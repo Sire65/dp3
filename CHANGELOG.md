@@ -1,3 +1,7 @@
+## Build 328 RC – Wunschvergleich im Sollplan
+
+Wunsch-/Kann-Balken sind im Sollplan standardmäßig ausgeblendet. Sichtbarer Schalter für den gesamten Plan, Rechtsklick auf Name oder Dienst für einzelne Personen und den gesamten Plan. Auswahl bleibt auf diesem Browser gespeichert; keine Änderungen an Wünschen, Diensten oder Supabase.
+
 ## Build 327 RC – Teilübernahmen bleiben offen
 
 Sollplan- und Bereitschaftsimporte mit Fehlern werden nicht mehr als vollständig übernommen quittiert. Gültige Positionen bleiben gespeichert, offene Positionen erscheinen im Hinweis und können erneut geprüft werden; Wiederholung ohne Dubletten. Auch ein alter lastApplied-Merker darf Fehler nicht still quittieren. Der Server weist Quittungen mit skipped/fehler/remaining, offenen Problemen oder complete=false ab. Rechte unverändert. Persönliche Zeitgrenzen werden nicht still erhöht.
