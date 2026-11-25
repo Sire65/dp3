@@ -1,3 +1,7 @@
+## Build 329 RC – Einheitliches Rechtsklickmenü im Sollplan
+
+Wunschvergleich auch über Rechtsklick auf lila Vergleichsbalken und freie Zeitfelder ausblendbar. Der alte globale Rechtsklick-Handler mit irreführender Soll-zu-Ist-Frage entfällt; Rechtsklick öffnet nur das passende Menü. Keine Planungsdaten werden dadurch verändert.
+
 ## Build 328 RC – Wunschvergleich im Sollplan
 
 Wunsch-/Kann-Balken sind im Sollplan standardmäßig ausgeblendet. Sichtbarer Schalter für den gesamten Plan, Rechtsklick auf Name oder Dienst für einzelne Personen und den gesamten Plan. Auswahl bleibt auf diesem Browser gespeichert; keine Änderungen an Wünschen, Diensten oder Supabase.

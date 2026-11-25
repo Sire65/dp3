@@ -2,9 +2,9 @@
   "schema": "KC_DP_UPDATE_MANIFEST_V1",
   "app": "KC DP2",
   "version": "0.20.0",
-  "build": 328,
+  "build": 329,
   "stage": "RC",
-  "cacheName": "kc-dp-release-0.20.0-b328",
+  "cacheName": "kc-dp-release-0.20.0-b329",
   "releaseNotes": [
     "Build 327 RC: Unvollständige Sollplan-Übernahmen bleiben sichtbar offen. Keine falsche Vollquittung; erneute Prüfung ohne Dubletten. Persönliche Einsatzgrenzen bleiben wirksam.",
     "Build 326 RC: Kontoauszug für die Club App (KICC-F-113): DP2 veröffentlicht im Auto-Sync die gezählten Ist-Zeilen je Person (gleiche Rechnung wie der Kontoauszug), nur bei Änderung. Die Club App zeigt sie in „Mein Stundenkonto“ als bestätigt.",
@@ -163,8 +163,8 @@
     "Reproduzierbare Release- und Integritätsprüfung ergänzt",
     "Pastellfarbene Start-/Zielzeilen beim Markieren und Verschieben von Dienstbalken"
   ],
-  "generatedAt": "2026-11-25T14:52:07.035Z",
-  "totalRuntimeBytes": 37374930,
+  "generatedAt": "2026-11-25T19:07:02.294Z",
+  "totalRuntimeBytes": 37374547,
   "files": [
     {
       "path": "assets/kc-app-icon.svg",
@@ -345,7 +345,7 @@
       "path": "index.html",
       "installPath": "index.html",
       "bytes": 36007,
-      "sha256": "03ae88f142135e4abe22311755bdce9375d8e13eb35a98bd54f0901268576209",
+      "sha256": "fa77f3a7f27a43ffaf635e44b4f6ab7156170fdc26a71e5f96b70625e02bc523",
       "runtime": true,
       "forceRefresh": true
     },
@@ -1198,8 +1198,8 @@
     {
       "path": "src/ui/app.js",
       "installPath": "src/ui/app.js",
-      "bytes": 268961,
-      "sha256": "57724fbd4895943882f8f14bf6a08a1188a38e2abcca26404dae67453fc17a99",
+      "bytes": 269075,
+      "sha256": "4ff415df05877640f3e19d44ad40d66ffbd53799bd3a55db7435d7d62ac55174",
       "runtime": true
     },
     {
@@ -1814,8 +1814,8 @@
     {
       "path": "src/ui/plan-transfer.js",
       "installPath": "src/ui/plan-transfer.js",
-      "bytes": 16228,
-      "sha256": "6a782c809c133fba55a16f54d2e5d0b17fcd6439d215825f439db853bdcc2c4e",
+      "bytes": 15731,
+      "sha256": "14b0355634c6c686bc2700facbb11f6b4b29ccb64d0b64c8c567c3ea828d64c3",
       "runtime": true
     },
     {

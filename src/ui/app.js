@@ -465,7 +465,7 @@ function openSearchResults(q){q=q.trim().toLowerCase();const box=$('searchResult
 function openContext(x,y,items){const m=$('contextMenu');m.innerHTML=items.map((it,i)=>`<button data-ci="${i}">${it.label}</button>`).join('');m.style.left=Math.min(x,innerWidth-230)+'px';m.style.top=Math.min(y,innerHeight-260)+'px';m.classList.remove('hidden');m.querySelectorAll('[data-ci]').forEach(b=>b.onclick=()=>{m.classList.add('hidden');items[Number(b.dataset.ci)].action()})}
 function openWishContext(x,y,w){
   if(!w)return;
-  const items=[];
+  const items=[...(K.wishBarComposite?.comparisonItems?.(w.personId)||[])];
   if(K.auth?.canEditWish(w.personId)){
     items.push({label:'Wunsch bearbeiten',action:()=>openWishEditor(w)});
     items.push({label:w.wishType==='available'||w.wishType==='if_needed'?'Kann-Zeit löschen':'Wunsch löschen',action:()=>deletePlanningBar({kind:'wish',id:w.id},'Kontextmenü')});
@@ -521,7 +521,7 @@ function openPersonContext(x,y,p){
   openContext(x,y,items);
 }
 function openEmptyContext(x,y,personId,t){
-  const items=[];
+  const items=[...(K.wishBarComposite?.comparisonItems?.(personId)||[])];
   if(K.auth?.has('roster.plan.edit'))items.push({label:`Dienst ab ${fmtTime(t)} beginnen`,action:()=>openShiftEditor({id:'',personId,date:day().date,start:t,end:Math.min(t+4,day().end),zone:day().type==='market'?'front':'neutral',area:day().type==='market'?'Verkauf':'Vor-/Nachbereitung',layer:'planned',breakMinutes:0})});
   if(K.auth?.canEditWish(personId))items.push({label:`Wunsch ab ${fmtTime(t)} eintragen`,action:()=>openWishEditor({id:'',personId,date:day().date,start:t,end:Math.min(t+4,day().end),wishType:'available',source:personId===K.currentUser?.personId?'self_service':'admin_entry',comment:'',confidence:1,status:'confirmed'})});
   openContext(x,y,items.length?items:[{label:'Keine verfügbaren Aktionen',action:()=>{}}]);
